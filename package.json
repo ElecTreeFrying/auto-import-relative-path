@@ -1,25 +1,222 @@
 {
 	"name": "auto-import",
-	"displayName": "auto-import",
-	"description": "test",
+	"publisher": "ElecTreeFrying",
+	"displayName": "Auto Import",
+	"description": "Auto import without typing long and tedious import statements and file paths.",
 	"version": "0.0.1",
-	"engines": {
-		"vscode": "^1.42.0"
-	},
+	"icon": "images/github.png",
 	"categories": [
 		"Other"
 	],
+	"keywords": [
+		"auto",
+		"import",
+		"javascript",
+		"css"
+	],
+	"galleryBanner": {
+		"color": "#494949",
+		"theme": "dark"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ElecTreeFrying/auto-import.git"
+	},
+	"license": "MIT",
+	"engines": {
+		"vscode": "^1.42.0"
+	},
 	"activationEvents": [
-		"onCommand:extension.helloWorld"
+		"onCommand:extension.autoImport",
+		"onLanguage:javascript",
+		"onLanguage:javascriptreact",
+		"onLanguage:typescript",
+		"onLanguage:typescriptreact",
+		"onLanguage:css",
+		"onLanguage:scss",
+		"onLanguage:sass",
+		"onLanguage:less"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "extension.helloWorld",
-				"title": "Hello World"
+				"command": "extension.autoImport",
+				"title": "Auto Import"
 			}
-		]
+		],
+		"keybindings": [
+			{
+				"command": "extension.autoImport",
+				"key": "ctrl+i",
+				"mac": "cmd+i",
+				"when": "editorTextFocus"
+			}
+		],
+		"configuration": {
+			"title": "auto-import",
+			"properties": {
+				"quoteStyle": {
+					"title": "Quote style",
+					"description": "Select a quote style for import path.",
+					"type": "string",
+					"default": "Single quotes",
+					"enum": [
+						"Single quotes",
+						"Double quotes"
+					],
+					"enumDescriptions": [
+						"Wrap import paths with single quotes",
+						"Wrap import paths with double quotes"
+					]
+				},
+				"addSemicolon": {
+					"title": "Semicolon",
+					"description": "Add semicolon at the end of import statement.",
+					"type": "boolean",
+					"default": true
+				},
+				"disableNotifs": {
+					"title": "Disable all notifications",
+					"description": "Disable all notifications on file drop to active pane. ",
+					"type": "boolean",
+					"default": false
+				},
+				"closeAllNotif": {
+					"title": "Close all notifications on ESC",
+					"description": "Close all active notifications on Escape keydown",
+					"type": "boolean",
+					"default": false
+				},
+				"importStatements.javascript.jsSupport": {
+					"title": "Javascript import style",
+					"description": "",
+					"type": "string",
+					"default": "import  from '';",
+					"enum": [
+						"import  from '';",
+						"import {  } from '';",
+						"import {  as  } from '';",
+						"import {  as name } from '';",
+						"import * as  from '';",
+						"import * as name from '';",
+						"import '';",
+						"var  = require('');",
+						"const  = require('');",
+						"var name = require('');",
+						"const name = require('');",
+						"var  = import('');",
+						"const  = import('');",
+						"var name = import('');",
+						"const name = import('');"
+					]
+				},
+				"importStatements.javascript.jsxSupport": {
+					"title": "JSX import style",
+					"description": "",
+					"type": "string",
+					"default": "import  from '';",
+					"enum": [
+						"import  from '';",
+						"import {  } from '';",
+						"import {  as  } from '';",
+						"import {  as name } from '';",
+						"import * as  from '';",
+						"import * as name from '';",
+						"import '';",
+						"var  = require('');",
+						"const  = require('');",
+						"var name = require('');",
+						"const name = require('');",
+						"var  = import('');",
+						"const  = import('');",
+						"var name = import('');",
+						"const name = import('');"
+					]
+				},
+				"importStatements.javascript.withExtnameJS": {
+					"title": "File type",
+					"description": "Add file type or extension name at the end of path. _{ex. \"../path.js\"}_",
+					"type": "boolean",
+					"default": false
+				},
+				"importStatements.typescript.tsSupport": {
+					"title": "Typescript import style",
+					"description": "",
+					"type": "string",
+					"default": "import {  } from '';",
+					"enum": [
+						"import  from '';",
+						"import {  } from '';",
+						"import {  as  } from '';",
+						"import * as  from '';",
+						"import '';"
+					]
+				},
+				"importStatements.typescript.tsxSupport": {
+					"title": "TSX import style",
+					"description": "",
+					"type": "string",
+					"default": "import {  } from '';",
+					"enum": [
+						"import  from '';",
+						"import {  } from '';",
+						"import {  as  } from '';",
+						"import * as  from '';",
+						"import '';"
+					]
+				},
+				"importStatements.typescript.withExtnameTS": {
+					"title": "File type",
+					"description": "Add file type or extension name at the end of path. _{ex. \"../path.ts\"}_",
+					"type": "boolean",
+					"default": false
+				},
+				"importStatements.typescript.addExportName": {
+					"title": "Export name",
+					"description": "Include component name in import statement. (Angular)<br/>*same behaviour applies in .tsx files.*",
+					"type": "boolean",
+					"default": true
+				},
+				"importStatements.stylesheet.cssSupport": {
+					"title": "CSS import style",
+					"description": "",
+					"type": "string",
+					"default": "@import '';",
+					"enum": [
+						"@import '';",
+						"@import url('');"
+					]
+				},
+				"importStatements.stylesheet.scssSupport": {
+					"title": "SCSS/SASS import style",
+					"description": "",
+					"type": "string",
+					"default": "@import '';",
+					"enum": [
+						"@import '';",
+						"@import url('');",
+						"@use '';"
+					]
+				},
+				"importStatements.stylesheet.lessSupport": {
+					"title": "LESS import style",
+					"description": "",
+					"type": "string",
+					"default": "@import '';",
+					"enum": [
+						"@import '';",
+						"@import () '';"
+					]
+				},
+				"importStatements.stylesheet.withExtnameCSS": {
+					"title": "File type",
+					"description": "Add file type or extension name at the end of path. _{ex. \"../path.css\"}_",
+					"type": "boolean",
+					"default": false
+				}
+			}
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
@@ -41,5 +238,8 @@
 		"mocha": "^7.0.1",
 		"typescript": "^3.7.5",
 		"vscode-test": "^1.3.0"
+	},
+	"dependencies": {
+		"relative": "^3.0.2"
 	}
 }

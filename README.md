@@ -1,65 +1,68 @@
-# auto-import README
 
-This is the README for your extension "auto-import". After writing up a brief description, we recommend including the following sections.
+# Auto-import (vscode extension)
 
-## Features
+Auto import [extension] for [VS Code]. Auto import without typing long and tedious import statements and file paths.
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+### Supported file types:
+*  JS , JSX , TS , TSX , CSS , SCSS , SASS , LESS.
 
-For example if there is an image subfolder under your extension project workspace:
+As of now drag and drop import feature is still not available in vscode.
 
-\!\[feature X\]\(images/feature-x.png\)
+> https://github.com/microsoft/vscode/issues/61667
+> <br> Drag and drop to import files in JS! [#61667][0]
+>
+> https://github.com/microsoft/vscode/issues/5240
+> <br> Allow to add file reference with drag and drop. [#5240][1]
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+## Usage
 
-## Requirements
+* Copy file path from tree view `Shift+Alt+C`.
+* On your text editor `Ctrl+I` / `Ctrl+Shift+P` > `Auto Import`
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+![sample1](https://bit.ly/39R06mu)
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+* `quoteStyle`: Select a quote style for import path.
+* `addSemicolon`: Add semicolon at the end of import statement.
+* `disableNotifs`: Disable all notifications on file drop to active pane.
+* `closeAllNotif`: Close all active notifications on Escape keydown.
 
-For example:
+Import statements > Javascript
 
-This extension contributes the following settings:
+* `importStatements.javascript.jsSupport`: Select **.js** import style of choice.
+* `importStatements.javascript.jsxSupport`: Select **.jsx** import style of choice.
+* `importStatements.javascript.withExtnameJS`: (enable/disable) Add file type or extension name at the end of path. _{ex. "../path.js"}_
 
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
+Import statements > Typescript
 
-## Known Issues
+* `importStatements.typescript.tsSupport`: Select **.ts** import style of choice.
+* `importStatements.typescript.tsxSupport`: Select **.tsx** import style of choice.
+* `importStatements.typescript.withExtnameTS`: (enable/disable)	Add file type or extension name at the end of path. _{ex. "../path.ts"}_
+* `importStatements.typescript.addExportName`: (enable/disable)	Include component name in import statement. (Angular)<br/>*same behaviour applies in .tsx files.*
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+Import statements > Stylesheet
 
-## Release Notes
+* `importStatements.stylesheet.cssSupport`: Select **.css** import style of choice.
+* `importStatements.stylesheet.scssSupport`: Select **.scss** import style of choice.
+* `importStatements.stylesheet.lessSupport`: Select **.less** import style of choice.
+* `importStatements.stylesheet.withExtnameCSS`: (enable/disable) Add file type or extension name at the end of path. _{ex. "../path.css"}_
 
-Users appreciate release notes as you update your extension.
 
-### 1.0.0
+## Installation
 
-Initial release of ...
+  1. Install Visual Studio Code v1.30.0 or higher
+  1. Launch Code
+  1. From the command palette `Ctrl+Shift+P` (Windows, Linux) or `Cmd+Shift+P` (OSX)
+  1. Select `Install Extensions`
+  1. Choose the extension
+  1. Reload Visual Studio Code
 
-### 1.0.1
+## License
 
-Fixed issue #.
+MIT
 
-### 1.1.0
-
-Added features X, Y, and Z.
-
------------------------------------------------------------------------------------------------------------
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+[VS Code]: https://code.visualstudio.com/
+[extension]: https://marketplace.visualstudio.com/VSCode
+[0]: https://github.com/microsoft/vscode/issues/61667
+[1]: https://github.com/microsoft/vscode/issues/5240
