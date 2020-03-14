@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.0.6 (2020-3-15)
+
+### Fixes
+
+- `TypeError: camelcase_1.default is not a function`
+
 ## v0.0.5 (2020-3-15)
 
 ### Features
@@ -8,7 +14,7 @@
 
 ## v0.0.4 (2020-3-14)
 
-### Fix
+### Fixes
 
 - version inconsistencies
 

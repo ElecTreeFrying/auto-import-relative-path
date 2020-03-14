@@ -79,8 +79,6 @@ export function activate(context: vscode.ExtensionContext) {
 
 	const autoImportCommand = vscode.commands.registerCommand('extension.autoImport', async () => {
 
-		console.clear();
-
 		const editor      		 = vscode.window.activeTextEditor;
 		if (!editor) { return notify({ editor }); }
 

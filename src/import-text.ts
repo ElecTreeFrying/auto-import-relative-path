@@ -1,5 +1,5 @@
 import { Config } from './config-retrival';
-import camelcase from 'camelcase';
+import * as camelcase from 'camelcase';
 
 const SINGLE_QUOTES = "\'";
 const DOUBLE_QUOTES = "\"";
