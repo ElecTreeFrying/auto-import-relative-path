@@ -75,6 +75,22 @@
 						"Wrap import paths with double quotes"
 					]
 				},
+				"importType": {
+					"title": "Import type",
+					"description": "Import configuration.",
+					"type": "string",
+					"default": "Bottom",
+					"enum": [
+						"Top",
+						"Buttom",
+						"Cursor"
+					],
+					"enumDescriptions": [
+						"Paste at the top of the import list.",
+						"Paste at the bottom of the import list.",
+						"Paste import on selected line."
+					]
+				},
 				"addSemicolon": {
 					"title": "Semicolon",
 					"description": "Add semicolon at the end of import statement.",

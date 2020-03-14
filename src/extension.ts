@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as relative from 'relative';
 
 import { ImportText } from './import-text';
+import { ImportPosition } from './import-position';
 import { ConfigRetrival, Config, configEnum } from './config-retrival';
 
 let param: Config;
@@ -21,6 +22,7 @@ function configObserve(context: vscode.ExtensionContext, retrival = new ConfigRe
 	context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(e => {
 
 		param.quoteStyle     = e.affectsConfiguration(configEnum.QUOTESTYLE) 		 ? retrival.quoteStyle 		 : param.quoteStyle;
+		param.importType     = e.affectsConfiguration(configEnum.IMPORTTYPE) 		 ? retrival.importType 		 : param.importType;
 		param.addSemicolon   = e.affectsConfiguration(configEnum.ADDSEMICOLON)   ? retrival.addSemicolon   : param.addSemicolon;
 		param.disableNotifs  = e.affectsConfiguration(configEnum.DISABLENOTIFS)  ? retrival.disableNotifs  : param.disableNotifs;
 		param.closeAllNotif  = e.affectsConfiguration(configEnum.CLOSEALLNOTIF)  ? retrival.closeAllNotif  : param.closeAllNotif;
@@ -52,8 +54,7 @@ async function setup(editor: vscode.TextEditor, clipboard: string) {
 	const fromClass   = new ImportText(relativePath, pathExtname, param);
   const importText  = <string>fromClass.convertedImportText;
 
-	const doc = await vscode.window.showTextDocument(editor.document);
-	doc.edit((value) => value.insert(new vscode.Position(0,0), importText));
+	(new ImportPosition(editor, importText, param)).pasteImport();
 }
 
 function notify(option: Notif) {
@@ -78,23 +79,20 @@ export function activate(context: vscode.ExtensionContext) {
 
 	const autoImportCommand = vscode.commands.registerCommand('extension.autoImport', async () => {
 
+		console.clear();
+
 		const editor      		 = vscode.window.activeTextEditor;
 		if (!editor) { return notify({ editor }); }
 
 		const activeTE 				 = editor.document.uri.fsPath;
 		const clipboard 			 = await vscode.env.clipboard.readText();
-
 		const activeTEExtname  = path.extname(activeTE);
 		const activeTEIsValid  = validTypes.some((e) => activeTEExtname.includes(e));
-
 		const clipboardExtname = path.extname(clipboard);
 		const clipboardIsValid = validTypes.some((e) => clipboardExtname.includes(e));
-
 		const isNotSamePath		 = activeTE.toLowerCase() !== clipboard.toLowerCase();
 		const isSameExtname 	 = activeTEExtname === clipboardExtname;
 		const isBothValid 		 = activeTEIsValid && clipboardIsValid;
-
-
 		const isValid 				 = isBothValid && isNotSamePath && isSameExtname;
 		const option           = { editor, isNotSamePath, activeTEIsValid, clipboardIsValid };
 

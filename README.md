@@ -17,7 +17,7 @@ As of now drag and drop import feature is still not available in vscode.
 > https://github.com/microsoft/vscode/issues/5240
 > <br> Allow to add file reference with drag and drop. [#5240][1]
 
-<br> Here's my solution ! 
+<br> Here's my solution !
 
 * Copy file path from tree view `Shift+Alt+C`.
 * On your text editor `Ctrl+I` / `Ctrl+Shift+P` > `Auto Import`
@@ -27,6 +27,7 @@ As of now drag and drop import feature is still not available in vscode.
 ## Extension Settings
 
 * `quoteStyle`: (double/single quote) Select quote style for path.
+* `importType`: Paste import on selected line at the top or bottom of the import list.
 * `addSemicolon`: Toggle semicolon at the end of import statement.
 * `disableNotifs`: Disable all notifications on file drop to active pane.
 * `closeAllNotif`: Close all active notifications on Escape keydown.

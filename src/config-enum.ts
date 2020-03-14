@@ -4,6 +4,12 @@ export const quoteStyleEnum = [
   { value: false, description: "Double quotes" }
 ]
 
+export const importTypeEnum = [
+  { value: 0, description: "Top" },
+  { value: 1, description: "Buttom" },
+  { value: 2, description: "Cursor" }
+]
+
 export const javascriptEnum = [
   { value: 0, description: "import  from '';" },
   { value: 1, description: "import {  } from '';" },
