@@ -18,11 +18,15 @@
 		"color": "#494949",
 		"theme": "dark"
 	},
+	"homepage": "https://github.com/ElecTreeFrying/auto-import/blob/master/README.md",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/ElecTreeFrying/auto-import.git"
 	},
-	"homepage": "https://github.com/ElecTreeFrying/auto-import/blob/master/README.md",
+	"bugs": {
+		"email": "electreefrying.git@gmail.com",
+		"url": "https://github.com/ElecTreeFrying/auto-import/issues"
+	},
 	"license": "MIT",
 	"engines": {
 		"vscode": "^1.42.0"
@@ -175,7 +179,7 @@
 				},
 				"importStatements.typescript.addExportName": {
 					"title": "Export name",
-					"description": "Include component name in import statement. (Angular)<br/>*same behaviour applies in .tsx files.*",
+					"description": "Include component name in import statement. (Angular/.tsx)",
 					"type": "boolean",
 					"default": true
 				},
@@ -242,5 +246,10 @@
 	},
 	"dependencies": {
 		"relative": "^3.0.2"
+	},
+	"__metadata": {
+		"id": "d89b6a41-408a-4f11-98fc-84c5f0bfe373",
+		"publisherDisplayName": "ElecTreeFrying",
+		"publisherId": "bb9ce4c3-e0fd-46bb-9807-083cf4ee4379"
 	}
 }

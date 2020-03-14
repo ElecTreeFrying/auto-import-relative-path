@@ -1,10 +1,13 @@
 
-# Auto-import (vscode extension)
+# Auto Import (vscode extension)
 
 Auto import [extension] for [VS Code]. Auto import without typing long and tedious import statements and file paths.
 
-### Supported file types:
-*  JS , JSX , TS , TSX , CSS , SCSS , SASS , LESS.
+## Supported file types
+
+* JS , JSX , TS , TSX , CSS , SCSS , SASS , LESS.
+
+## Usage
 
 As of now drag and drop import feature is still not available in vscode.
 
@@ -14,7 +17,7 @@ As of now drag and drop import feature is still not available in vscode.
 > https://github.com/microsoft/vscode/issues/5240
 > <br> Allow to add file reference with drag and drop. [#5240][1]
 
-## Usage
+<br> Here's my solution ! 
 
 * Copy file path from tree view `Shift+Alt+C`.
 * On your text editor `Ctrl+I` / `Ctrl+Shift+P` > `Auto Import`
@@ -23,31 +26,30 @@ As of now drag and drop import feature is still not available in vscode.
 
 ## Extension Settings
 
-* `quoteStyle`: Select a quote style for import path.
-* `addSemicolon`: Add semicolon at the end of import statement.
+* `quoteStyle`: (double/single quote) Select quote style for path.
+* `addSemicolon`: Toggle semicolon at the end of import statement.
 * `disableNotifs`: Disable all notifications on file drop to active pane.
 * `closeAllNotif`: Close all active notifications on Escape keydown.
 
 Import statements > Javascript
 
-* `importStatements.javascript.jsSupport`: Select **.js** import style of choice.
-* `importStatements.javascript.jsxSupport`: Select **.jsx** import style of choice.
-* `importStatements.javascript.withExtnameJS`: (enable/disable) Add file type or extension name at the end of path. _{ex. "../path.js"}_
+* `importStatements.javascript.jsSupport`: Select **.js** import style.
+* `importStatements.javascript.jsxSupport`: Select **.jsx** import style.
+* `importStatements.javascript.withExtnameJS`: Toggle file type or extension name at the end of path. _{ex. "../path.js"}_
 
 Import statements > Typescript
 
-* `importStatements.typescript.tsSupport`: Select **.ts** import style of choice.
-* `importStatements.typescript.tsxSupport`: Select **.tsx** import style of choice.
-* `importStatements.typescript.withExtnameTS`: (enable/disable)	Add file type or extension name at the end of path. _{ex. "../path.ts"}_
-* `importStatements.typescript.addExportName`: (enable/disable)	Include component name in import statement. (Angular)<br/>*same behaviour applies in .tsx files.*
+* `importStatements.typescript.tsSupport`: Select **.ts** import style.
+* `importStatements.typescript.tsxSupport`: Select **.tsx** import style.
+* `importStatements.typescript.withExtnameTS`: Toggle file type/extension name at the end of path. _{ex. "../path.ts"}_
+* `importStatements.typescript.addExportName`: Toggle component name in import statement. (Angular/.tsx)
 
 Import statements > Stylesheet
 
-* `importStatements.stylesheet.cssSupport`: Select **.css** import style of choice.
-* `importStatements.stylesheet.scssSupport`: Select **.scss** import style of choice.
-* `importStatements.stylesheet.lessSupport`: Select **.less** import style of choice.
-* `importStatements.stylesheet.withExtnameCSS`: (enable/disable) Add file type or extension name at the end of path. _{ex. "../path.css"}_
-
+* `importStatements.stylesheet.cssSupport`: Select **.css** import style.
+* `importStatements.stylesheet.scssSupport`: Select **.scss** import style.
+* `importStatements.stylesheet.lessSupport`: Select **.less** import style.
+* `importStatements.stylesheet.withExtnameCSS`: Toggle file type or extension name at the end of path. _{ex. "../path.css"}_
 
 ## Installation
 

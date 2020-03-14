@@ -79,7 +79,7 @@ export function activate(context: vscode.ExtensionContext) {
 	const autoImportCommand = vscode.commands.registerCommand('extension.autoImport', async () => {
 
 		const editor      		 = vscode.window.activeTextEditor;
-		if (!editor) { return notify({ editor }) }
+		if (!editor) { return notify({ editor }); }
 
 		const activeTE 				 = editor.document.uri.fsPath;
 		const clipboard 			 = await vscode.env.clipboard.readText();

@@ -20,14 +20,12 @@ export class ImportText {
     let  importName = cleanPath.split('/').reverse()[0];
          importName = camelcase(importName, { pascalCase: true });
 
-    const importNameText = param.addExportName ? importName : '';
-
-    this.quote           = param.quoteStyle ? SINGLE_QUOTES : DOUBLE_QUOTES;
-    this.isSemicolon     = param.addSemicolon ? ';' : '';
-    this.importNameText  = importNameText;
-    this.relativePath    = cleanPath;
-    this.extname         = extname;
-    this.param           = param;
+    this.quote          = param.quoteStyle ? SINGLE_QUOTES : DOUBLE_QUOTES;
+    this.importNameText = param.addExportName ? importName : '';
+    this.isSemicolon    = param.addSemicolon ? ';' : '';
+    this.relativePath   = cleanPath;
+    this.extname        = extname;
+    this.param          = param;
   }
 
   removeExtname(relativePath: string, extname: string) {
@@ -144,13 +142,13 @@ export class ImportText {
   }
 
   get convertedImportText() {
-    if (this.extname === '.js')        return this.extJS;
-    else if (this.extname === '.jsx')  return this.extJSX;
-    else if (this.extname === '.ts')   return this.extTS;
-    else if (this.extname === '.tsx')  return this.extTSX;
-    else if (this.extname === '.css')  return this.extCSS;
-    else if (this.extname === '.scss') return this.extSCSS;
-    else if (this.extname === '.sass') return this.extSCSS;
-    else if (this.extname === '.less') return this.extLESS;
+    if (this.extname === '.js')        { return this.extJS; }
+    else if (this.extname === '.jsx')  { return this.extJSX; }
+    else if (this.extname === '.ts')   { return this.extTS; }
+    else if (this.extname === '.tsx')  { return this.extTSX; }
+    else if (this.extname === '.css')  { return this.extCSS; }
+    else if (this.extname === '.scss') { return this.extSCSS; }
+    else if (this.extname === '.sass') { return this.extSCSS; }
+    else if (this.extname === '.less') { return this.extLESS; }
   }
 }
