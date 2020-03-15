@@ -30,10 +30,10 @@ As of now drag and drop import feature is still not available in vscode.
 
 ## Commands
 
-Key Binding   | Command                     | Description
--             | -                           | -
-`Ctrl+Shit+A` | Auto Import: Copy path      | Copy relative path
-`Ctrl+I`      | Auto Import: Paste relative | Paste relative import
+| Key Binding   | Command                     | Description           |
+|---------------|-----------------------------|-----------------------|
+| `Ctrl+Shit+A` | Auto Import: Copy path      | Copy relative path    |
+| `Ctrl+I`      | Auto Import: Paste relative | Paste relative import |
 
 ## Extension Settings
 
@@ -95,7 +95,7 @@ See [CHANGELOG] for more information.
 
 MIT
 
-[version svg]: https://vsmarketplacebadge.apphb.com/version-short/ElecTreeFrying.auto-import.svg
+[version svg]: https://vsmarketplacebadge.apphb.com/version/ElecTreeFrying.auto-import.svg
 [downloads svg]: https://vsmarketplacebadge.apphb.com/downloads/ElecTreeFrying.auto-import.svg
 [ratings svg]: https://vsmarketplacebadge.apphb.com/rating-short/ElecTreeFrying.auto-import.svg
 [package]: https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import

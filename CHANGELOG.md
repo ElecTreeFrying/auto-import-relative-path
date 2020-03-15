@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.1.1 (2020-3-15)
+
+### Fixes
+
+- README.md Table
+- settings.gif not showing.
+
+### Changes
+
+- Changed icon from square to circle.
+
 ## v0.1.0 (2020-3-15)
 
 ### Features
