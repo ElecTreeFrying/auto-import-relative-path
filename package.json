@@ -32,7 +32,8 @@
 		"vscode": "^1.42.0"
 	},
 	"activationEvents": [
-		"onCommand:extension.autoImport",
+		"onCommand:extension.autoImportPaste",
+		"onCommand:extension.autoImportCopy",
 		"onLanguage:javascript",
 		"onLanguage:javascriptreact",
 		"onLanguage:typescript",
@@ -46,16 +47,26 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "extension.autoImport",
-				"title": "Auto Import"
+				"command": "extension.autoImportPaste",
+				"title": "Auto Import: Paste relative"
+			},
+			{
+				"command": "extension.autoImportCopy",
+				"title": "Auto Import: Copy path"
 			}
 		],
 		"keybindings": [
 			{
-				"command": "extension.autoImport",
+				"command": "extension.autoImportPaste",
 				"key": "ctrl+i",
 				"mac": "cmd+i",
 				"when": "editorTextFocus"
+			},
+			{
+				"command": "extension.autoImportCopy",
+				"key": "ctrl+shift+a",
+				"mac": "cmd++shift+a",
+				"when": "editorTextFocus || filesExplorerFocus"
 			}
 		],
 		"configuration": {

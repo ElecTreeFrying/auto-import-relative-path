@@ -1,4 +1,6 @@
 import { Config } from './config-retrival';
+import * as path from 'path';
+import * as relative from 'relative';
 import * as camelcase from 'camelcase';
 
 const SINGLE_QUOTES = "\'";
@@ -13,10 +15,15 @@ export class ImportText {
   extname: string;
   param: Config;
 
-  constructor(relativePath: string, extname: string, param: Config) {
+  constructor(param: Config, toPath: string, fromPath: string) {
 
+    let relativePath  = <string>relative(toPath, fromPath);
+  			relativePath  = relativePath.split('\\').join('/');
+  	const isSameDir   = relativePath[0] !== '.';
+  			relativePath  = isSameDir ? './'.concat(relativePath) : relativePath;
+
+  	const extname   = path.extname(relativePath);
     const cleanPath = this.removeExtname(relativePath, extname);
-
     let  importName = cleanPath.split('/').reverse()[0];
          importName = camelcase(importName, { pascalCase: true });
 

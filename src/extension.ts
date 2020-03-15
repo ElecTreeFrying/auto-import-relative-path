@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import * as relative from 'relative';
 
 import { ImportText } from './import-text';
 import { ImportPosition } from './import-position';
@@ -40,18 +39,11 @@ function configObserve(context: vscode.ExtensionContext, retrival = new ConfigRe
 	}));
 }
 
-async function setup(editor: vscode.TextEditor, clipboard: string) {
+async function setup(editor: vscode.TextEditor, activeTE: string, clipboard: string) {
 
-	const toPath      = editor.document.uri.fsPath;
-	const fromPath    = clipboard;
-	let relativePath  = <string>relative(toPath, fromPath);
-			relativePath  = relativePath.split('\\').join('/');
-
-	const isSameDir   = relativePath[0] !== '.';
-			relativePath  = isSameDir ? './'.concat(relativePath) : relativePath;
-
-	const pathExtname = path.extname(relativePath);
-	const fromClass   = new ImportText(relativePath, pathExtname, param);
+	await vscode.commands.executeCommand('notifications.clearAll');
+	
+	const fromClass   = new ImportText(param, activeTE, clipboard);
   const importText  = <string>fromClass.convertedImportText;
 
 	(new ImportPosition(editor, importText, param)).pasteImport();
@@ -59,15 +51,14 @@ async function setup(editor: vscode.TextEditor, clipboard: string) {
 
 function notify(option: Notif) {
 
-	const editor 		= !option.editor;
-	const toNotValid 	= !option.activeTEIsValid;
+	const toNotValid = !option.activeTEIsValid;
 	const fromNotValid = !option.clipboardIsValid;
-	const isSame 	  = !option.isNotSamePath;
-	const notValid 		= toNotValid || fromNotValid;
+	const both = (toNotValid && fromNotValid);
+	const either = (toNotValid || fromNotValid);
 
-	editor 	   ? vscode.window.showErrorMessage(`No active pane.`)
-	: isSame   ? vscode.window.showWarningMessage(`Same file path.`)
-	: notValid ? vscode.window.showErrorMessage(`Invalid import.`) : 0;
+	!option.editor 	        ? vscode.window.showErrorMessage(`No active pane.`)
+	: !option.isNotSamePath ? vscode.window.showWarningMessage(`Same file path.`)
+	: both || either        ? vscode.window.showErrorMessage(`Invalid import.`) : 0;
 }
 
 export function activate(context: vscode.ExtensionContext) {
@@ -77,8 +68,9 @@ export function activate(context: vscode.ExtensionContext) {
 	const styles     = [ '.css', '.scss', '.sass', '.less' ];
 	const validTypes = [ ...scripts, ...styles ];
 
-	const autoImportCommand = vscode.commands.registerCommand('extension.autoImport', async () => {
+	const autoImportPaste = vscode.commands.registerCommand('extension.autoImportPaste', async () => {
 
+		await vscode.commands.executeCommand('notifications.clearAll');
 		const editor      		 = vscode.window.activeTextEditor;
 		if (!editor) { return notify({ editor }); }
 
@@ -94,11 +86,28 @@ export function activate(context: vscode.ExtensionContext) {
 		const isValid 				 = isBothValid && isNotSamePath && isSameExtname;
 		const option           = { editor, isNotSamePath, activeTEIsValid, clipboardIsValid };
 
-		if (isValid) { setup(editor, clipboard); }
+		if (isValid) { setup(editor, activeTE, clipboard); }
 		else 				 { notify(option); }
 	});
 
-	context.subscriptions.push(autoImportCommand);
+	const autoImportCopy = vscode.commands.registerCommand('extension.autoImportCopy', async () => {
+		
+		await vscode.commands.executeCommand('notifications.clearAll');
+		await vscode.commands.executeCommand('workbench.files.action.focusFilesExplorer');
+		await vscode.commands.executeCommand('copyFilePath');
+
+		const active = await vscode.env.clipboard.readText();
+		const extname = path.extname(active);
+		const isValid = validTypes.some((e) => extname.includes(e));
+		const file = path.basename(active);
+
+		if (isValid) {
+			vscode.env.clipboard.writeText(active);
+			vscode.window.showInformationMessage(`Copied: ${file}`);
+		}
+	});
+
+	context.subscriptions.push(autoImportPaste, autoImportCopy);
 }
 
 export function deactivate() {}
