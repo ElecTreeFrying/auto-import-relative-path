@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.2 (2020-3-15)
+
+### Changes
+
+- updated configuration name
+
 ## v0.1.1 (2020-3-15)
 
 ### Fixes
