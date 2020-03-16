@@ -1,9 +1,9 @@
 
-# Auto Import Path (vscode extension)
+# Auto Import Relative Path (vscode extension)
 
-[![Current version of Auto Import][version svg]][package] [![Current downloads of Auto Import][downloads svg]][package] [![Current ratings of Auto Import][ratings svg]][package]
+[![Current version of Auto Import Relative Path][version svg]][package] [![Current downloads of Auto Import Relative Path][downloads svg]][package] [![Current ratings of Auto Import Relative Path][ratings svg]][package]
 
-Auto import [extension] for [VS Code]. Auto import without typing long and tedious import statements and file paths.
+Auto import relative path [extension] for [VS Code]. Auto import Relative Path without typing long and tedious import statements and file paths.
 
 ## Supported file types
 
@@ -106,6 +106,6 @@ MIT
 [1]: https://github.com/microsoft/vscode/issues/5240
 
 [CHANGELOG]: https://marketplace.visualstudio.com/items/ElecTreeFrying.auto-import/changelog
-[Github Issues]: https://github.com/ElecTreeFrying/auto-import/issues
+[Github Issues]: https://github.com/ElecTreeFrying/auto-import-relative-path/issues
 [Visual Studio Marketplace]: https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import&ssr=false#review-details
 [More extensions of mine]: https://marketplace.visualstudio.com/publishers/ElecTreeFrying

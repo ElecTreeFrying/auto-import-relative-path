@@ -1,7 +1,7 @@
 {
 	"name": "auto-import",
 	"publisher": "ElecTreeFrying",
-	"displayName": "Auto Import Path",
+	"displayName": "Auto Import Relative Path",
 	"description": "Auto import without typing long and tedious import statements and file paths.",
 	"version": "0.1.4",
 	"icon": "images/github.png",
@@ -9,8 +9,10 @@
 		"Other"
 	],
 	"keywords": [
+		"relative",
 		"auto",
 		"import",
+		"path",
 		"javascript",
 		"css"
 	],
@@ -18,14 +20,14 @@
 		"color": "#494949",
 		"theme": "dark"
 	},
-	"homepage": "https://github.com/ElecTreeFrying/auto-import/blob/master/README.md",
+	"homepage": "https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/README.md",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/ElecTreeFrying/auto-import.git"
+		"url": "https://github.com/ElecTreeFrying/auto-import-relative-path.git"
 	},
 	"bugs": {
 		"email": "electreefrying.git@gmail.com",
-		"url": "https://github.com/ElecTreeFrying/auto-import/issues"
+		"url": "https://github.com/ElecTreeFrying/auto-import-relative-path/issues"
 	},
 	"license": "MIT",
 	"engines": {
@@ -70,7 +72,7 @@
 			}
 		],
 		"configuration": {
-			"title": "Auto Import",
+			"title": "Auto Import Relative Path",
 			"properties": {
 				"quoteStyle": {
 					"title": "Quote style",
