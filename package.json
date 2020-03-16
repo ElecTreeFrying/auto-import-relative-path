@@ -3,7 +3,7 @@
 	"publisher": "ElecTreeFrying",
 	"displayName": "Auto Import Path",
 	"description": "Auto import without typing long and tedious import statements and file paths.",
-	"version": "0.1.3",
+	"version": "0.1.4",
 	"icon": "images/github.png",
 	"categories": [
 		"Other"
