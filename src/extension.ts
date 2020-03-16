@@ -93,7 +93,6 @@ export function activate(context: vscode.ExtensionContext) {
 	const autoImportCopy = vscode.commands.registerCommand('extension.autoImportCopy', async () => {
 		
 		await vscode.commands.executeCommand('notifications.clearAll');
-		await vscode.commands.executeCommand('workbench.files.action.focusFilesExplorer');
 		await vscode.commands.executeCommand('copyFilePath');
 
 		const active = await vscode.env.clipboard.readText();

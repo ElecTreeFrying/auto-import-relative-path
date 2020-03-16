@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.3 (2020-3-16)
+
+### Fixed
+
+- Copy relative on-focus in text editor.
+
 ## v0.1.2 (2020-3-15)
 
 ### Changes
