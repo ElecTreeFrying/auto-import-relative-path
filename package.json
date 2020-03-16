@@ -1,7 +1,7 @@
 {
 	"name": "auto-import",
 	"publisher": "ElecTreeFrying",
-	"displayName": "Auto Import",
+	"displayName": "Auto Import Path",
 	"description": "Auto import without typing long and tedious import statements and file paths.",
 	"version": "0.1.3",
 	"icon": "images/github.png",

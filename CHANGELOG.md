@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.4 (2020-3-16)
+
+### Changes
+
+- TODO: Change extension name.
+
 ## v0.1.3 (2020-3-16)
 
 ### Fixed

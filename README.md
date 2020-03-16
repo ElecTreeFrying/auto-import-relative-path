@@ -1,5 +1,5 @@
 
-# Auto Import (vscode extension)
+# Auto Import Path (vscode extension)
 
 [![Current version of Auto Import][version svg]][package] [![Current downloads of Auto Import][downloads svg]][package] [![Current ratings of Auto Import][ratings svg]][package]
 
