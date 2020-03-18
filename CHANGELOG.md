@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.1.6 (2020-3-16)
+
+### Changes
+
+- modified extension description in package.json
+- removed unused command `closeAllNotif`
+- updated README
+
+### Changes
+
+- TODO: Change extension name.
+
 ## v0.1.5 (2020-3-16)
 
 ### Changes
@@ -9,8 +21,8 @@
 ### _TODO:_
 
 - Completly rename package from _Auto Import_ to _Auto Import Relative Path_.
-    * [How I can rename my theme extension #25988](https://github.com/Microsoft/vscode/issues/25988)
-    * [Possible to change package name? #54](https://github.com/Binaryify/OneDark-Pro/issues/54)
+    * [How I can rename my theme extension](https://github.com/Microsoft/vscode/issues/25988)
+    * [Possible to change package name?](https://github.com/Binaryify/OneDark-Pro/issues/54)
 
 ## v0.1.4 (2020-3-16)
 

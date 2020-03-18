@@ -1,8 +1,12 @@
 {
 	"name": "auto-import",
 	"publisher": "ElecTreeFrying",
+	"author": {
+			"name": "John James Ermitaño",
+			"email": "jjgermitano@gmail.com"
+	},
 	"displayName": "Auto Import Relative Path",
-	"description": "Auto import without typing long and tedious import statements and file paths.",
+	"description": "Auto import relative path without typing long and tedious import statements and file paths.",
 	"version": "0.1.5",
 	"icon": "images/github.png",
 	"categories": [
@@ -114,13 +118,7 @@
 					"title": "Disable all notifications",
 					"description": "Disable all notifications on file drop to active pane. ",
 					"type": "boolean",
-					"default": false
-				},
-				"closeAllNotif": {
-					"title": "Close all notifications on ESC",
-					"description": "Close all active notifications on Escape keydown",
-					"type": "boolean",
-					"default": false
+					"default": true
 				},
 				"importStatements.javascript.jsSupport": {
 					"title": "Javascript import style",

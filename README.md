@@ -1,9 +1,9 @@
 
 # Auto Import Relative Path (vscode extension)
 
-[![Current version of Auto Import Relative Path][version svg]][package] [![Current downloads of Auto Import Relative Path][downloads svg]][package] [![Current ratings of Auto Import Relative Path][ratings svg]][package]
+[![Current version of Auto Import Relative Path][version svg]][package] [![Current installs of Auto Import Relative Path][installs svg]][package] [![Current downloads of Auto Import Relative Path][downloads svg]][package] [![Current ratings of Auto Import Relative Path][ratings svg]][package]
 
-Auto import relative path [extension] for [VS Code]. Auto import Relative Path without typing long and tedious import statements and file paths.
+Auto import relative path [extension] for [VS Code]. Auto import relative path without typing long and tedious import statements and file paths.
 
 ## Supported file types
 
@@ -21,10 +21,11 @@ As of now drag and drop import feature is still not available in vscode.
 
 <br> Here's my solution !
 
-1. Click file on Explorer or Select text editor.
-    * Copy relative path - `Ctrl+Shit+A` / ( `Auto Import: Paste relative` )
-1. On your text editor.
-    * Paste relative - `Ctrl+I` / ( `Auto Import: Paste relative` )
+* Copy relative path by entering command `Auto Import: Paste relative` or press `Ctrl+Shit+A`.
+    1. In selected text editor.
+    1. In a file in explorer.
+* And import in selected text editor see demo.
+* In selected text editor enter command `Auto Import: Paste relative` or press `Ctrl+I`.
 
 ![auto-import-demo](images/playback.gif "Auto import demo")
 
@@ -43,7 +44,6 @@ As of now drag and drop import feature is still not available in vscode.
 * `importType`: Paste import on selected line at the top or bottom of the import list.
 * `addSemicolon`: Toggle semicolon at the end of import statement.
 * `disableNotifs`: Disable all notifications on file drop to active pane.
-* `closeAllNotif`: Close all active notifications on Escape keydown.
 
 ### Import statements > Javascript
 
@@ -74,8 +74,8 @@ As of now drag and drop import feature is still not available in vscode.
   1. Install Visual Studio Code v1.30.0 or higher
   1. Launch Code
   1. From the command palette `Ctrl+Shift+P` (Windows, Linux) or `Cmd+Shift+P` (OSX)
-  1. Select `Install Extensions`
-  1. Choose Auto Import by _ElecTreeFrying_
+  1. Select Install Extensions
+  1. Choose **Auto Import** by _ElecTreeFrying_
   1. Reload Visual Studio Code
 
 ## Changelog
@@ -95,8 +95,9 @@ See [CHANGELOG] for more information.
 
 MIT
 
-[version svg]: https://vsmarketplacebadge.apphb.com/version/ElecTreeFrying.auto-import.svg
-[downloads svg]: https://vsmarketplacebadge.apphb.com/downloads/ElecTreeFrying.auto-import.svg
+[version svg]: https://vsmarketplacebadge.apphb.com/version-short/electreefrying.auto-import.svg
+[installs svg]: https://vsmarketplacebadge.apphb.com/installs/electreefrying.auto-import.svg
+[downloads svg]: https://vsmarketplacebadge.apphb.com/downloads/electreefrying.auto-import.svg
 [ratings svg]: https://vsmarketplacebadge.apphb.com/rating-short/ElecTreeFrying.auto-import.svg
 [package]: https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import
 
@@ -105,7 +106,7 @@ MIT
 [0]: https://github.com/microsoft/vscode/issues/61667
 [1]: https://github.com/microsoft/vscode/issues/5240
 
-[CHANGELOG]: https://marketplace.visualstudio.com/items/ElecTreeFrying.auto-import/changelog
+[CHANGELOG]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/CHANGELOG.md
 [Github Issues]: https://github.com/ElecTreeFrying/auto-import-relative-path/issues
 [Visual Studio Marketplace]: https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import&ssr=false#review-details
 [More extensions of mine]: https://marketplace.visualstudio.com/publishers/ElecTreeFrying

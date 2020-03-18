@@ -24,7 +24,6 @@ function configObserve(context: vscode.ExtensionContext, retrival = new ConfigRe
 		param.importType     = e.affectsConfiguration(configEnum.IMPORTTYPE) 		 ? retrival.importType 		 : param.importType;
 		param.addSemicolon   = e.affectsConfiguration(configEnum.ADDSEMICOLON)   ? retrival.addSemicolon   : param.addSemicolon;
 		param.disableNotifs  = e.affectsConfiguration(configEnum.DISABLENOTIFS)  ? retrival.disableNotifs  : param.disableNotifs;
-		param.closeAllNotif  = e.affectsConfiguration(configEnum.CLOSEALLNOTIF)  ? retrival.closeAllNotif  : param.closeAllNotif;
 		param.jsSupport 		 = e.affectsConfiguration(configEnum.JSSUPPORT) 		 ? retrival.jsSupport 		 : param.jsSupport;
 		param.jsxSupport  	 = e.affectsConfiguration(configEnum.JSXSUPPORT) 		 ? retrival.jsxSupport 		 : param.jsxSupport;
 		param.withExtnameJS  = e.affectsConfiguration(configEnum.WITHEXTNAMEJS)  ? retrival.withExtnameJS  : param.withExtnameJS;

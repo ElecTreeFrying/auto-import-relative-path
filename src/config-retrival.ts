@@ -8,7 +8,6 @@ import {
 export interface Config {
   quoteStyle:     boolean; importType:     number;
   addSemicolon:   boolean; disableNotifs:  boolean;
-  closeAllNotif:  boolean;
   jsSupport:      number;  jsxSupport:     number;
   withExtnameJS:  boolean;
   tsSupport:      number;  tsxSupport:     number;
@@ -20,7 +19,6 @@ export interface Config {
 export const configEnum = {
   QUOTESTYLE:     'quoteStyle',       IMPORTTYPE:     'importType',
   ADDSEMICOLON:   'addSemicolon',     DISABLENOTIFS:  'disableNotifs',
-  CLOSEALLNOTIF:  'closeAllNotif',
   JSSUPPORT:      'importStatements.javascript.jsSupport',
   JSXSUPPORT:     'importStatements.javascript.jsxSupport',
   WITHEXTNAMEJS:  'importStatements.javascript.withExtnameJS',
@@ -47,7 +45,6 @@ export class ConfigRetrival {
     return {
       quoteStyle:     this.quoteStyle,      importType:     this.importType,
       addSemicolon:   this.addSemicolon,    disableNotifs:  this.disableNotifs,
-      closeAllNotif:  this.closeAllNotif,
       jsSupport:      this.jsSupport,       jsxSupport:     this.jsxSupport,
       withExtnameJS:  this.withExtnameJS,
       tsSupport:      this.tsSupport,       tsxSupport:     this.tsxSupport,
@@ -71,7 +68,6 @@ export class ConfigRetrival {
 
   get addSemicolon(): boolean { return this.workspace.getConfiguration().get('addSemicolon'); }
   get disableNotifs(): boolean { return this.workspace.getConfiguration().get('disableNotifs'); }
-  get closeAllNotif(): boolean { return this.workspace.getConfiguration().get('closeAllNotif'); }
 
   // Javascript
 
