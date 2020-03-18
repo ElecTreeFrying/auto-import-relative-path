@@ -2,12 +2,12 @@
 	"name": "auto-import",
 	"publisher": "ElecTreeFrying",
 	"author": {
-			"name": "John James Ermitaño",
-			"email": "jjgermitano@gmail.com"
+		"name": "John James Ermitaño",
+		"email": "jjgermitano@gmail.com"
 	},
 	"displayName": "Auto Import Relative Path",
 	"description": "Auto import relative path without typing long and tedious import statements and file paths.",
-	"version": "0.1.5",
+	"version": "0.1.6",
 	"icon": "images/github.png",
 	"categories": [
 		"Other"
