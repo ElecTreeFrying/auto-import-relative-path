@@ -5,9 +5,15 @@
 
 Auto import relative path [extension] for [VS Code]. Auto import relative path without typing long and tedious import statements and file paths.
 
-## Supported file types
+## Features
 
-* JS , JSX , TS , TSX , CSS , SCSS , SASS , LESS.
+**Supported file types: → js ∙ tsx ∙ ts ∙ tsx ∙ css ∙ scss ∙ sass ∙ less**
+
+* [Configure import styles](#Import-statements)
+* [Copy and paste like import](#Here's-my-solution)
+* [Import to cursor](#Import-to-cursor)
+* [Import to bottom](#Import-to-bottom)
+* [Import to top](#Import-to-top)
 
 ## Usage
 
@@ -19,7 +25,7 @@ As of now drag and drop import feature is still not available in vscode.
 > https://github.com/microsoft/vscode/issues/5240
 > <br> Allow to add file reference with drag and drop. [#5240][1]
 
-<br> Here's my solution !
+### Here's my solution !
 
 * Copy relative path by entering command `Auto Import: Paste relative` or press `Ctrl+Shit+A`.
     1. In selected text editor.
@@ -45,20 +51,22 @@ As of now drag and drop import feature is still not available in vscode.
 * `addSemicolon`: Toggle semicolon at the end of import statement.
 * `disableNotifs`: Disable all notifications on file drop to active pane.
 
-### Import statements > Javascript
+### Import statements
+
+#### Javascript
 
 * `importStatements.javascript.jsSupport`: Select **.js** import style.
 * `importStatements.javascript.jsxSupport`: Select **.jsx** import style.
 * `importStatements.javascript.withExtnameJS`: Toggle file type or extension name at the end of path. _{ex. "../path.js"}_
 
-### Import statements > Typescript
+#### Typescript
 
 * `importStatements.typescript.tsSupport`: Select **.ts** import style.
 * `importStatements.typescript.tsxSupport`: Select **.tsx** import style.
 * `importStatements.typescript.withExtnameTS`: Toggle file type/extension name at the end of path. _{ex. "../path.ts"}_
 * `importStatements.typescript.addExportName`: Toggle component name in import statement. (Angular/.tsx)
 
-### Import statements > Stylesheet
+#### Stylesheet
 
 * `importStatements.stylesheet.cssSupport`: Select **.css** import style.
 * `importStatements.stylesheet.scssSupport`: Select **.scss** import style.
@@ -68,6 +76,20 @@ As of now drag and drop import feature is still not available in vscode.
 ### Settings Preview
 
 ![extension-settings-preview](images/settings.gif "Extension settings")
+
+## Demo
+
+### Import to cursor 
+
+![extension-settings-preview](images/cursor.gif "Extension settings")
+
+### Import to bottom
+
+![extension-settings-preview](images/bottom.gif "Extension settings")
+
+### Import to top
+
+![extension-settings-preview](images/top.gif "Extension settings")
 
 ## Installation
 

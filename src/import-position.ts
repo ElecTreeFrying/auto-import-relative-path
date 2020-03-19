@@ -51,7 +51,7 @@ export class ImportPosition {
     this.editor.edit((active) => {
       const selection = this.editor.selection.anchor.line;
       const position = new vscode.Position(selection, 0);
-      active.insert(position, this.importText);
+      active.insert(position, this.importText.trim());
   	});
   }
 

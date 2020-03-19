@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.1.7 (2020-3-19)
+
+### Changes
+
+- removed newline (`\n`) to import to cursor
+- added features and demo section in README
+
 ## v0.1.6 (2020-3-16)
 
 ### Changes
@@ -7,10 +14,13 @@
 - modified extension description in package.json
 - removed unused command `closeAllNotif`
 - updated README
+- changed display name and repository name.
+- added author in package.json
 
-### Changes
+### _TODO:_
 
-- TODO: Change extension name.
+- Extension rename
+
 
 ## v0.1.5 (2020-3-16)
 
