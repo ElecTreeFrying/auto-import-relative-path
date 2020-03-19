@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.10 (2020-3-*19*)
+
+### Fixes
+
+- README not linking to other sections properly
+
 ## v0.1.9 (2020-3-19)
 
 ### Fixes

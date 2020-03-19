@@ -10,7 +10,7 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 **Supported file types: → js ∙ tsx ∙ ts ∙ tsx ∙ css ∙ scss ∙ sass ∙ less**
 
 * [Configure import styles](#Import-statements)
-* [Copy and paste like import](#Here's-my-solution)
+* [Copy and paste like import](#Heres-my-solution)
 * [Import to cursor](#Import-to-cursor)
 * [Import to bottom](#Import-to-bottom)
 * [Import to top](#Import-to-top)
@@ -42,7 +42,7 @@ As of now drag and drop import feature is still not available in vscode.
 | `Ctrl+Shit+A` | Auto Import: Copy path      | Copy relative path    |
 | `Ctrl+I`      | Auto Import: Paste relative | Paste relative import |
 
-## Extension Settings
+## Configuration Settings
 
 ### General settings
 
@@ -79,7 +79,7 @@ As of now drag and drop import feature is still not available in vscode.
 
 ## Demo
 
-### Import to cursor 
+### Import to cursor
 
 ![extension-settings-preview](images/cursor.gif "Extension settings")
 
