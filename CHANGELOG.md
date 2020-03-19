@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.8 (2020-3-19)
+
+### Changes
+
+- updated settings preview .gif file
+
 ## v0.1.7 (2020-3-19)
 
 ### Changes
