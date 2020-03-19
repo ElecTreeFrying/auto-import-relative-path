@@ -10,7 +10,7 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 **Supported file types: → js ∙ tsx ∙ ts ∙ tsx ∙ css ∙ scss ∙ sass ∙ less**
 
 * [Configure import styles](#Import-statements)
-* [Copy and paste like import](#Heres-my-solution)
+* [Copy and paste like import](#heres-my-solution-)
 * [Import to cursor](#Import-to-cursor)
 * [Import to bottom](#Import-to-bottom)
 * [Import to top](#Import-to-top)
