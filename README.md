@@ -37,10 +37,10 @@ As of now drag and drop import feature is still not available in vscode.
 
 ## Commands
 
-| Key Binding   | Command                     | Description           |
-|---------------|-----------------------------|-----------------------|
-| `Ctrl+Shit+A` | Auto Import: Copy path      | Copy relative path    |
-| `Ctrl+I`      | Auto Import: Paste relative | Paste relative import |
+| Key Binding    | Command                     | Description           |
+| -------------- | --------------------------- | --------------------- |
+| `Ctrl+Shift+A` | Auto Import: Copy path      | Copy relative path    |
+| `Ctrl+I`       | Auto Import: Paste relative | Paste relative import |
 
 ## Configuration Settings
 

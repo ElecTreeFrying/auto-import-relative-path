@@ -1,6 +1,12 @@
 # Changelog
 
-## v0.1.10 - v0.1.11 (2020-3-*19*)
+## v0.1.12 (2020-3-20)
+
+### Fixes
+
+- typo in readme Commmands section, `Ctrl+Shit+A` to `Ctrl+Shift+A` 😆
+
+## v0.1.10 - v0.1.11 (2020-3-19)
 
 ### Fixes
 
