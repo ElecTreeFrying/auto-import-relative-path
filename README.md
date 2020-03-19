@@ -75,7 +75,7 @@ As of now drag and drop import feature is still not available in vscode.
 
 ### Settings Preview
 
-![extension-settings-preview](images/settings.gif "Extension settings")
+![extension-settings-preview](images/preview.gif "Extension settings")
 
 ## Demo
 

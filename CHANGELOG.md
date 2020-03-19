@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.9 (2020-3-19)
+
+### Fixes
+
+- settings preview not updated
+
 ## v0.1.8 (2020-3-19)
 
 ### Changes
@@ -48,7 +54,7 @@
 
 ## v0.1.3 (2020-3-16)
 
-### Fixed
+### Fixes
 
 - Copy relative on-focus in text editor.
 
