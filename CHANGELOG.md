@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.13 (2020-3-20)
+
+### Fixes
+
+- found another misspelled `Shift` 😆
+
 ## v0.1.12 (2020-3-20)
 
 ### Fixes

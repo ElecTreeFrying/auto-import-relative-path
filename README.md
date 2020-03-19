@@ -27,7 +27,7 @@ As of now drag and drop import feature is still not available in vscode.
 
 ### Here's my solution !
 
-* Copy relative path by entering command `Auto Import: Paste relative` or press `Ctrl+Shit+A`.
+* Copy relative path by entering command `Auto Import: Paste relative` or press `Ctrl+Shift+A`.
     1. In selected text editor.
     1. In a file in explorer.
 * And import in selected text editor see demo.
