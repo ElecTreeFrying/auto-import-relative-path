@@ -96,7 +96,7 @@ As of now drag and drop import feature is still not available in vscode.
   1. Install Visual Studio Code v1.30.0 or higher
   1. Launch Code
   1. From the command palette `Ctrl+Shift+P` (Windows, Linux) or `Cmd+Shift+P` (OSX)
-  1. Select Install Extensions
+  1. Select Install Extensions.
   1. Choose **Auto Import** by _ElecTreeFrying_
   1. Reload Visual Studio Code
 
@@ -111,7 +111,7 @@ See [CHANGELOG] for more information.
 
 ## Related
 
-[More extensions of mine]
+[More extensions of mine.]
 
 ## License
 
@@ -131,4 +131,4 @@ MIT
 [CHANGELOG]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/CHANGELOG.md
 [Github Issues]: https://github.com/ElecTreeFrying/auto-import-relative-path/issues
 [Visual Studio Marketplace]: https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import&ssr=false#review-details
-[More extensions of mine]: https://marketplace.visualstudio.com/publishers/ElecTreeFrying
+[More extensions of mine.]: https://marketplace.visualstudio.com/publishers/ElecTreeFrying
