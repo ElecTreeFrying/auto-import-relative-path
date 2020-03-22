@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.6 (2020-3-23)
+
+### Fixes
+
+- DEMO typo
+
 ## v0.2.5 (2020-3-23)
 
 ### Changes
