@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.2.0 (2020-3-22)
+
+### Added
+
+- markdown support for image import and markdown relative import
+- DEMO markdown
+- .gif files for markdown support
+
+### Changes
+
+- updated .gitignore
+
 ## v0.1.14 (2020-3-21)
 
 ### Changes
@@ -101,7 +113,7 @@
 
 ## v0.1.0 (2020-3-15)
 
-### Features
+### Added
 
 - `Auto Import: Copy path` command.
 - Notification on `Auto Import: Copy path` command.
@@ -122,7 +134,7 @@
 
 ## v0.0.5 (2020-3-15)
 
-### Features
+### Added
 
 - Paste import on selected line at the top or bottom of the import list.
 

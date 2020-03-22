@@ -3,17 +3,44 @@
 
 [![Current version of Auto Import Relative Path][version svg]][package] [![Current installs of Auto Import Relative Path][installs svg]][package] [![Current downloads of Auto Import Relative Path][downloads svg]][package] [![Current ratings of Auto Import Relative Path][ratings svg]][package]
 
+[version svg]: https://vsmarketplacebadge.apphb.com/version-short/electreefrying.auto-import.svg
+[installs svg]: https://vsmarketplacebadge.apphb.com/installs/electreefrying.auto-import.svg
+[downloads svg]: https://vsmarketplacebadge.apphb.com/downloads/electreefrying.auto-import.svg
+[ratings svg]: https://vsmarketplacebadge.apphb.com/rating-short/ElecTreeFrying.auto-import.svg
+[package]: https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import
+
 Auto import relative path [extension] for [VS Code]. Auto import relative path without typing long and tedious import statements and file paths.
+
+[VS Code]: https://code.visualstudio.com/
+[extension]: https://marketplace.visualstudio.com/VSCode
+
+[Click here for more examples.][demo]
+
+[demo]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md
+
 
 ## Features
 
-**Supported file types: → js ∙ tsx ∙ ts ∙ tsx ∙ css ∙ scss ∙ sass ∙ less**
+### Supported file types: → js ∙ tsx ∙ ts ∙ tsx ∙ css ∙ scss ∙ sass ∙ less • md
 
 * [Configure import styles](#Import-statements)
 * [Copy and paste like import](#heres-my-solution-)
 * [Import to cursor](#Import-to-cursor)
 * [Import to bottom](#Import-to-bottom)
 * [Import to top](#Import-to-top)
+* [NEW UPDATE !! ⚡️ → Markdown support 🔥🔥][markdown support]
+  1. [Auto import image to markdown.][markdown image import]
+  1. [Auto import relative between markdown files.][markdown import]
+
+
+### TODO
+
+1. HTML support
+
+
+[markdown support]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#Markdown-support
+[markdown image import]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#Import-image-to-markdown
+[markdown import]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#Import-markdown
 
 ## Usage
 
@@ -24,6 +51,9 @@ As of now drag and drop import feature is still not available in vscode.
 >
 > https://github.com/microsoft/vscode/issues/5240
 > <br> Allow to add file reference with drag and drop. [#5240][1]
+
+[0]: https://github.com/microsoft/vscode/issues/61667
+[1]: https://github.com/microsoft/vscode/issues/5240
 
 ### Here's my solution !
 
@@ -73,6 +103,11 @@ As of now drag and drop import feature is still not available in vscode.
 * `importStatements.stylesheet.lessSupport`: Select **.less** import style.
 * `importStatements.stylesheet.withExtnameCSS`: Toggle file type or extension name at the end of path. _{ex. "../path.css"}_
 
+#### Markdown
+
+* `importStatements.markdown.markdownSupport`: Select **.md** import style.
+* `importStatements.markdown.markdownImageSupport`: Select import style for iamge import in markdown.
+
 ### Settings Preview
 
 ![extension-settings-preview](images/preview.gif "Extension settings")
@@ -104,31 +139,24 @@ As of now drag and drop import feature is still not available in vscode.
 
 See [CHANGELOG] for more information.
 
+[CHANGELOG]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/CHANGELOG.md
+
 ## Contributing
 
 * File bugs, feature requests in [GitHub Issues].
 * Leave a review on [Visual Studio Marketplace].
 
+[Github Issues]: https://github.com/ElecTreeFrying/auto-import-relative-path/issues
+[Visual Studio Marketplace]: https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import&ssr=false#review-details
+
 ## Related
 
 [More extensions of mine.]
 
+[More extensions of mine.]: https://marketplace.visualstudio.com/publishers/ElecTreeFrying
+
 ## License
 
-MIT
+[MIT]
 
-[version svg]: https://vsmarketplacebadge.apphb.com/version-short/electreefrying.auto-import.svg
-[installs svg]: https://vsmarketplacebadge.apphb.com/installs/electreefrying.auto-import.svg
-[downloads svg]: https://vsmarketplacebadge.apphb.com/downloads/electreefrying.auto-import.svg
-[ratings svg]: https://vsmarketplacebadge.apphb.com/rating-short/ElecTreeFrying.auto-import.svg
-[package]: https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import
-
-[VS Code]: https://code.visualstudio.com/
-[extension]: https://marketplace.visualstudio.com/VSCode
-[0]: https://github.com/microsoft/vscode/issues/61667
-[1]: https://github.com/microsoft/vscode/issues/5240
-
-[CHANGELOG]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/CHANGELOG.md
-[Github Issues]: https://github.com/ElecTreeFrying/auto-import-relative-path/issues
-[Visual Studio Marketplace]: https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import&ssr=false#review-details
-[More extensions of mine.]: https://marketplace.visualstudio.com/publishers/ElecTreeFrying
+[MIT]: https://marketplace.visualstudio.com/items/ElecTreeFrying.auto-import/license

@@ -1,4 +1,13 @@
+
+# VS Code
+
 out
 node_modules
 .vscode-test/
 *.vsix
+
+
+# App dev
+
+/images/test
+

@@ -2,35 +2,39 @@ import {
   quoteStyleEnum, importTypeEnum,
   javascriptEnum, javascriptXEnum,
   typescriptEnum, typescriptXEnum,
-  cssEnum, scssSassEnum, lessEnum
+  cssEnum, scssSassEnum, lessEnum,
+  markdownEnum, markdownImageEnum
 } from './config-enum';
 
 export interface Config {
-  quoteStyle:     boolean; importType:     number;
-  addSemicolon:   boolean; disableNotifs:  boolean;
-  jsSupport:      number;  jsxSupport:     number;
-  withExtnameJS:  boolean;
-  tsSupport:      number;  tsxSupport:     number;
-  withExtnameTS:  boolean; addExportName:  boolean;
-  cssSupport:     number;  scssSupport:    number;
-  lessSupport:    number;  withExtnameCSS: boolean;
+  quoteStyle:      boolean; importType:           number;
+  addSemicolon:    boolean; disableNotifs:        boolean;
+  jsSupport:       number;  jsxSupport:           number;
+  withExtnameJS:   boolean;
+  tsSupport:       number;  tsxSupport:           number;
+  withExtnameTS:   boolean; addExportName:        boolean;
+  cssSupport:      number;  scssSupport:          number;
+  lessSupport:     number;  withExtnameCSS:       boolean;
+  markdownSupport: number;  markdownImageSupport: number
 }
 
 export const configEnum = {
-  QUOTESTYLE:     'quoteStyle',       IMPORTTYPE:     'importType',
-  ADDSEMICOLON:   'addSemicolon',     DISABLENOTIFS:  'disableNotifs',
-  JSSUPPORT:      'importStatements.javascript.jsSupport',
-  JSXSUPPORT:     'importStatements.javascript.jsxSupport',
-  WITHEXTNAMEJS:  'importStatements.javascript.withExtnameJS',
-  TSSUPPORT:      'importStatements.typescript.tsSupport',
-  TSXSUPPORT:     'importStatements.typescript.tsxSupport',
-  WITHEXTNAMETS:  'importStatements.typescript.withExtnameTS',
-  ADDEXPORTNAME:  'importStatements.typescript.addExportName',
-  CSSSUPPORT:     'importStatements.stylesheet.cssSupport',
-  SCSSSUPPORT:    'importStatements.stylesheet.scssSupport',
-  LESSSUPPORT:    'importStatements.stylesheet.lessSupport',
-  WITHEXTNAMECSS: 'importStatements.stylesheet.withExtnameCSS'
-}
+  QUOTESTYLE:      'quoteStyle',       IMPORTTYPE:     'importType',
+  ADDSEMICOLON:    'addSemicolon',     DISABLENOTIFS:  'disableNotifs',
+  JSSUPPORT:       'importStatements.javascript.jsSupport',
+  JSXSUPPORT:      'importStatements.javascript.jsxSupport',
+  WITHEXTNAMEJS:   'importStatements.javascript.withExtnameJS',
+  TSSUPPORT:       'importStatements.typescript.tsSupport',
+  TSXSUPPORT:      'importStatements.typescript.tsxSupport',
+  WITHEXTNAMETS:   'importStatements.typescript.withExtnameTS',
+  ADDEXPORTNAME:   'importStatements.typescript.addExportName',
+  CSSSUPPORT:      'importStatements.stylesheet.cssSupport',
+  SCSSSUPPORT:     'importStatements.stylesheet.scssSupport',
+  LESSSUPPORT:     'importStatements.stylesheet.lessSupport',
+  WITHEXTNAMECSS:  'importStatements.stylesheet.withExtnameCSS',
+  MARKDOWNIMAGESUPPORT: 'importStatements.markdown.markdownImageSupport',
+  MARKDOWNSUPPORT:      'importStatements.markdown.markdownSupport'
+};
 
 export class ConfigRetrival {
 
@@ -43,15 +47,16 @@ export class ConfigRetrival {
 
   get param() {
     return {
-      quoteStyle:     this.quoteStyle,      importType:     this.importType,
-      addSemicolon:   this.addSemicolon,    disableNotifs:  this.disableNotifs,
-      jsSupport:      this.jsSupport,       jsxSupport:     this.jsxSupport,
-      withExtnameJS:  this.withExtnameJS,
-      tsSupport:      this.tsSupport,       tsxSupport:     this.tsxSupport,
-      withExtnameTS:  this.withExtnameTS,   addExportName:  this.addExportName,
-      cssSupport:     this.cssSupport,      scssSupport:    this.scssSupport,
-      lessSupport:    this.lessSupport,     withExtnameCSS: this.withExtnameCSS,
-    }
+      quoteStyle:      this.quoteStyle,      importType:     this.importType,
+      addSemicolon:    this.addSemicolon,    disableNotifs:  this.disableNotifs,
+      jsSupport:       this.jsSupport,       jsxSupport:     this.jsxSupport,
+      withExtnameJS:   this.withExtnameJS,
+      tsSupport:       this.tsSupport,       tsxSupport:     this.tsxSupport,
+      withExtnameTS:   this.withExtnameTS,   addExportName:  this.addExportName,
+      cssSupport:      this.cssSupport,      scssSupport:    this.scssSupport,
+      lessSupport:     this.lessSupport,     withExtnameCSS: this.withExtnameCSS,
+      markdownSupport: this.markdownSupport, markdownImageSupport: this.markdownImageSupport
+    };
   }
 
   // Preferences
@@ -116,5 +121,17 @@ export class ConfigRetrival {
   }
 
   get withExtnameCSS(): boolean { return this.workspace.getConfiguration('importStatements.stylesheet').get('withExtnameCSS'); }
+
+  // Markdown Support
+
+  get markdownSupport() {
+    const configValue = this.workspace.getConfiguration('importStatements.markdown').get('markdownSupport');
+    return markdownEnum.find(e => e.description === configValue).value;
+  }
+
+  get markdownImageSupport() {
+    const configValue = this.workspace.getConfiguration('importStatements.markdown').get('markdownImageSupport');
+    return markdownImageEnum.find(e => e.description === configValue).value;
+  }
 
 }

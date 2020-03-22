@@ -48,17 +48,22 @@ export class ImportPosition {
 
   private importToCursor() {
 
+    const trimmedImportText = this.importText.trim();
+    const markerRemoved     = trimmedImportText.replace('markdown', '');
+
     this.editor.edit((active) => {
       const selection = this.editor.selection.anchor.line;
       const position = new vscode.Position(selection, 0);
-      active.insert(position, this.importText.trim());
+      active.insert(position, markerRemoved);
   	});
   }
 
   pasteImport() {
-    this.param.importType === 0   ? this.importToTop()
-    : this.param.importType === 1 ? this.importToBottom()
-    : this.param.importType === 2 ? this.importToCursor() : 0;
+    this.importText.includes('markdown') ? this.importToCursor()
+    : this.importText.includes('.md')    ? this.importToCursor()
+    : this.param.importType === 0        ? this.importToTop()
+    : this.param.importType === 1        ? this.importToBottom()
+    : this.param.importType === 2        ? this.importToCursor() : 0;
   }
 
 }

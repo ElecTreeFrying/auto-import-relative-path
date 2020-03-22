@@ -246,6 +246,25 @@
 					"description": "Add file type or extension name at the end of path. _{ex. \"../path.css\"}_",
 					"type": "boolean",
 					"default": false
+				},
+				"importStatements.markdown.markdownSupport": {
+					"title": "Markdown import style",
+					"description": "",
+					"type": "string",
+					"default": "![text](path)",
+					"enum": [
+						"![text](path)"
+					]
+				},
+				"importStatements.markdown.markdownImageSupport": {
+					"title": "Markdown image import style",
+					"description": "",
+					"type": "string",
+					"default": "Inline style: ![alt-text](path \"Hover text\")",
+					"enum": [
+						"Inline style: ![alt-text](path \"Hover text\")",
+						"Reference style: ![alt-text][image] / [image]: path \"Hover text\""
+					]
 				}
 			}
 		}

@@ -15,6 +15,8 @@ export class ImportText {
   extname: string;
   param: Config;
 
+	validImagesFormats = [ '.gif', '.jpeg', '.jpg', '.png' ];
+
   constructor(param: Config, toPath: string, fromPath: string) {
 
     let relativePath  = <string>relative(toPath, fromPath);
@@ -132,7 +134,7 @@ export class ImportText {
     const isSemicolon = this.isSemicolon;
     const isExtname = this.param.withExtnameCSS ? this.extname : '';
     let relativePath = `${quote}${path}${isExtname}${quote}`;
-    relativePath = relativePath.replace(/_/gi, '');
+        relativePath = relativePath.replace(/_/gi, '');
     return this.param.scssSupport === 0 ? `@import ${relativePath}${isSemicolon}\n`
       : this.param.scssSupport === 1    ? `@import url(${relativePath})${isSemicolon}\n`
       : this.param.scssSupport === 2    ? `@use ${relativePath}${isSemicolon}\n` : 0;
@@ -148,6 +150,21 @@ export class ImportText {
       : this.param.lessSupport === 1    ? `@import () ${relativePath}${isSemicolon}\n` : 0;
   }
 
+  get extMD() {
+    let path = this.relativePath ;
+        path = path.startsWith('./') ? path.slice(2) : path; 
+    const relativePath = `${path}${this.extname}`;
+    return this.param.markdownSupport === 0 ? `![text](${relativePath})\n`: 0;
+  }
+
+  get extImgMD() {
+    let path = this.relativePath ;
+        path = path.startsWith('./') ? path.slice(2) : path; 
+    const relativePath = `${path}${this.extname}`;
+    return this.param.markdownImageSupport === 0 ? `markdown![alt-text](${relativePath} \"Hover text\")\n`
+      : this.param.markdownImageSupport === 1    ? `markdown![alt text][logo]\n\n[logo]: ${relativePath}  "Hover text"\n` : 0;
+  }
+
   get convertedImportText() {
     if (this.extname === '.js')        { return this.extJS; }
     else if (this.extname === '.jsx')  { return this.extJSX; }
@@ -157,5 +174,9 @@ export class ImportText {
     else if (this.extname === '.scss') { return this.extSCSS; }
     else if (this.extname === '.sass') { return this.extSCSS; }
     else if (this.extname === '.less') { return this.extLESS; }
+    else if (this.extname === '.md')   { return this.extMD; }
+    else if (this.validImagesFormats.includes(this.extname)) { 
+      return this.extImgMD; 
+    }
   }
 }

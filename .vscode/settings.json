@@ -1,11 +1,7 @@
 // Place your settings in this file to overwrite default and user settings.
 {
     "files.exclude": {
-        "out": false,
-        "**/out": true,
-        "**/node_modules": true,
-        "**/.vscode-test/": true,
-        "**/*.vsix": true
+      "out": false
     },
     "search.exclude": {
         "out": true // set this to false to include "out" folder in search results

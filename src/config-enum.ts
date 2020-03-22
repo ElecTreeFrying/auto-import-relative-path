@@ -2,13 +2,13 @@
 export const quoteStyleEnum = [
   { value: true, description: "Single quotes" },
   { value: false, description: "Double quotes" }
-]
+];
 
 export const importTypeEnum = [
   { value: 0, description: "Top" },
   { value: 1, description: "Buttom" },
   { value: 2, description: "Cursor" }
-]
+];
 
 export const javascriptEnum = [
   { value: 0, description: "import  from '';" },
@@ -76,4 +76,13 @@ export const scssSassEnum = [
 export const lessEnum = [
   { value: 0, description: "@import '';" },
   { value: 1, description: "@import () '';" }
+];
+
+export const markdownEnum = [
+  { value: 0, description: "![text](path)" }
+];
+
+export const markdownImageEnum = [
+  { value: 0, description: "Inline style: ![alt-text](path \"Hover text\")" },
+  { value: 1, description: "Reference style: ![alt-text][image] / [image]: path \"Hover text\"" }
 ];
