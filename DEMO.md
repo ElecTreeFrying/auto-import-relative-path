@@ -10,8 +10,8 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 
 ### Supported file types: → js ∙ tsx ∙ ts ∙ tsx ∙ css ∙ scss ∙ sass ∙ less
 
-* [Configure import styles](#Import-statements)
-* [Copy and paste like import](#heres-my-solution-)
+* [Configure import styles][configure]
+* [Copy and paste like import][copy paste]
 * [Import to cursor](#Import-to-cursor)
 * [Import to bottom](#Import-to-bottom)
 * [Import to top](#Import-to-top)
@@ -22,8 +22,10 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
   1. [Auto import image to markdown.](#Import-image-to-markdown)
   1. [Auto import relative between markdown files.](#Import-markdown)
 
-## Commands
+[configure]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/README.md#Import-statements
+[copy paste]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/README.md#heres-my-solution-
 
+## Commands
 
 | Key Binding    | Command                     | Description           |
 | -------------- | --------------------------- | --------------------- |

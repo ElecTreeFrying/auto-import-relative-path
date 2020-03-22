@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.5 (2020-3-23)
+
+### Changes
+
+- DEMO markdown feature links.
+
 ## v0.2.3 - v0.2.4 (2020-3-23)
 
 ### Fixes
