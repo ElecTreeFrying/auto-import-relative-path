@@ -7,7 +7,7 @@
 	},
 	"displayName": "Auto Import Relative Path",
 	"description": "Auto import relative path without typing long and tedious import statements and file paths.",
-	"version": "0.2.1",
+	"version": "0.2.2",
 	"icon": "images/github.png",
 	"categories": [
 		"Other"
@@ -272,7 +272,7 @@
 					"type": "string",
 					"default": "<script type=\"text/javascript\" src=\"path\"></script>",
 					"enum": [
-            "<script type=\"text/javascript\" src=\"path\"></script>"
+						"<script type=\"text/javascript\" src=\"path\"></script>"
 					]
 				},
 				"importStatements.html.htmlStylesheetSupport": {
