@@ -265,6 +265,24 @@
 						"Inline style: ![alt-text](path \"Hover text\")",
 						"Reference style: ![alt-text][image] / [image]: path \"Hover text\""
 					]
+				},
+				"importStatements.html.htmlScriptSupport": {
+					"title": "HTML import style for script",
+					"description": "",
+					"type": "string",
+					"default": "<script type=\"text/javascript\" src=\"path\"></script>",
+					"enum": [
+            "<script type=\"text/javascript\" src=\"path\"></script>"
+					]
+				},
+				"importStatements.html.htmlStylesheetSupport": {
+					"title": "HTML import style from stylesheet",
+					"description": "",
+					"type": "string",
+					"default": "<link href=\"path\" rel=\"stylesheet\">",
+					"enum": [
+						"<link href=\"path\" rel=\"stylesheet\">"
+					]
 				}
 			}
 		}

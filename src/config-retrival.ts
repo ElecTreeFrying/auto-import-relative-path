@@ -3,7 +3,8 @@ import {
   javascriptEnum, javascriptXEnum,
   typescriptEnum, typescriptXEnum,
   cssEnum, scssSassEnum, lessEnum,
-  markdownEnum, markdownImageEnum
+  markdownEnum, markdownImageEnum,
+  HTMLScriptEnum, HTMLStylesheetEnum
 } from './config-enum';
 
 export interface Config {
@@ -15,7 +16,8 @@ export interface Config {
   withExtnameTS:   boolean; addExportName:        boolean;
   cssSupport:      number;  scssSupport:          number;
   lessSupport:     number;  withExtnameCSS:       boolean;
-  markdownSupport: number;  markdownImageSupport: number
+  markdownSupport: number;  markdownImageSupport: number;
+  htmlScriptSupport: number, htmlStylesheetSupport: number;
 }
 
 export const configEnum = {
@@ -32,8 +34,10 @@ export const configEnum = {
   SCSSSUPPORT:     'importStatements.stylesheet.scssSupport',
   LESSSUPPORT:     'importStatements.stylesheet.lessSupport',
   WITHEXTNAMECSS:  'importStatements.stylesheet.withExtnameCSS',
-  MARKDOWNIMAGESUPPORT: 'importStatements.markdown.markdownImageSupport',
-  MARKDOWNSUPPORT:      'importStatements.markdown.markdownSupport'
+  MARKDOWNIMAGESUPPORT:  'importStatements.markdown.markdownImageSupport',
+  MARKDOWNSUPPORT:       'importStatements.markdown.markdownSupport',
+  HTMLSCRIPTSUPPORT:     'importStatements.markdown.htmlScriptSupport',
+  HTMLSTYLESHEETSUPPORT: 'importStatements.markdown.htmlStylesheetSupport'
 };
 
 export class ConfigRetrival {
@@ -55,7 +59,8 @@ export class ConfigRetrival {
       withExtnameTS:   this.withExtnameTS,   addExportName:  this.addExportName,
       cssSupport:      this.cssSupport,      scssSupport:    this.scssSupport,
       lessSupport:     this.lessSupport,     withExtnameCSS: this.withExtnameCSS,
-      markdownSupport: this.markdownSupport, markdownImageSupport: this.markdownImageSupport
+      markdownSupport: this.markdownSupport, markdownImageSupport: this.markdownImageSupport,
+      htmlScriptSupport: this.htmlScriptSupport, htmlStylesheetSupport: this.htmlStylesheetSupport
     };
   }
 
@@ -132,6 +137,18 @@ export class ConfigRetrival {
   get markdownImageSupport() {
     const configValue = this.workspace.getConfiguration('importStatements.markdown').get('markdownImageSupport');
     return markdownImageEnum.find(e => e.description === configValue).value;
+  }
+
+  // HTML Support
+
+  get htmlScriptSupport() {
+    const configValue = this.workspace.getConfiguration('importStatements.html').get('htmlScriptSupport');
+    return HTMLScriptEnum.find(e => e.description === configValue).value;
+  }
+  
+  get htmlStylesheetSupport() {
+    const configValue = this.workspace.getConfiguration('importStatements.html').get('htmlStylesheetSupport');
+    return HTMLStylesheetEnum.find(e => e.description === configValue).value;
   }
 
 }

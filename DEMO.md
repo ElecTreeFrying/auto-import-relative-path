@@ -15,7 +15,10 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 * [Import to cursor](#Import-to-cursor)
 * [Import to bottom](#Import-to-bottom)
 * [Import to top](#Import-to-top)
-* [NEW UPDATE !! ⚡️ → Markdown support 🔥🔥](#Markdown-support)
+* [⭐️ NEW UPDATE !! ⭐️ → HTML support 🔥🔥](#HTML-Support)
+  1. [Auto import script files to HTML.](#Import-script-and-stylesheet)
+  1. [Auto import stylesheet files to HTML.](#Import-script-and-stylesheet)
+* [⭐️ NEW UPDATE !! ⭐️ → Markdown support 🔥🔥](#Markdown-Support)
   1. [Auto import image to markdown.](#Import-image-to-markdown)
   1. [Auto import relative between markdown files.](#Import-markdown)
 
@@ -42,6 +45,12 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 ### Import to top
 
 ![extension-settings-preview](images/top.gif "Extension settings")
+
+## HTML Support
+
+## Import script and stylesheet
+
+![import-script-stylesheet-demo](images/html.gif "Import script and stylesheet")
 
 ## Markdown Support
 

@@ -15,7 +15,9 @@ export class ImportText {
   extname: string;
   param: Config;
 
-	validImagesFormats = [ '.gif', '.jpeg', '.jpg', '.png' ];
+  activeExtname: string;
+
+  validImagesFormats = [ '.gif', '.jpeg', '.jpg', '.png' ];
 
   constructor(param: Config, toPath: string, fromPath: string) {
 
@@ -35,6 +37,8 @@ export class ImportText {
     this.relativePath   = cleanPath;
     this.extname        = extname;
     this.param          = param;
+
+    this.activeExtname = path.extname(toPath);
   }
 
   removeExtname(relativePath: string, extname: string) {
@@ -151,32 +155,48 @@ export class ImportText {
   }
 
   get extMD() {
-    let path = this.relativePath ;
+    let path = this.relativePath;
         path = path.startsWith('./') ? path.slice(2) : path; 
     const relativePath = `${path}${this.extname}`;
     return this.param.markdownSupport === 0 ? `![text](${relativePath})\n`: 0;
   }
 
   get extImgMD() {
-    let path = this.relativePath ;
+    let path = this.relativePath;
         path = path.startsWith('./') ? path.slice(2) : path; 
     const relativePath = `${path}${this.extname}`;
     return this.param.markdownImageSupport === 0 ? `markdown![alt-text](${relativePath} \"Hover text\")\n`
       : this.param.markdownImageSupport === 1    ? `markdown![alt text][logo]\n\n[logo]: ${relativePath}  "Hover text"\n` : 0;
   }
 
+  get extHTMLScriptSupport() {
+    let path = this.relativePath;
+    const relativePath = `${path}${this.extname}`;
+    return this.param.htmlScriptSupport === 0 ? `markdown<script type="text/javascript" src="${relativePath}"></script>\n`: 0;
+  }
+  
+  get extHTMLStylesheetSupport() {
+    let path = this.relativePath;
+    const relativePath = `${path}${this.extname}`;
+    return this.param.htmlStylesheetSupport === 0 ? `markdown<link href="${relativePath}" rel="stylesheet">`: 0;
+  }
+
   get convertedImportText() {
-    if (this.extname === '.js')        { return this.extJS; }
-    else if (this.extname === '.jsx')  { return this.extJSX; }
-    else if (this.extname === '.ts')   { return this.extTS; }
-    else if (this.extname === '.tsx')  { return this.extTSX; }
-    else if (this.extname === '.css')  { return this.extCSS; }
-    else if (this.extname === '.scss') { return this.extSCSS; }
-    else if (this.extname === '.sass') { return this.extSCSS; }
-    else if (this.extname === '.less') { return this.extLESS; }
-    else if (this.extname === '.md')   { return this.extMD; }
-    else if (this.validImagesFormats.includes(this.extname)) { 
+    if (this.extname === '.js' && this.activeExtname === '.html') { 
+      return this.extHTMLScriptSupport; 
+    } else if (this.extname === '.css' && this.activeExtname === '.html') { 
+      return this.extHTMLStylesheetSupport; 
+    } else if (this.validImagesFormats.includes(this.extname) && this.activeExtname !== '.html') { 
       return this.extImgMD; 
     }
+    else if (this.extname === '.js'   && this.activeExtname !== '.html') { return this.extJS;   }
+    else if (this.extname === '.jsx'  && this.activeExtname !== '.html') { return this.extJSX;  } 
+    else if (this.extname === '.ts'   && this.activeExtname !== '.html') { return this.extTS;   }
+    else if (this.extname === '.tsx'  && this.activeExtname !== '.html') { return this.extTSX;  }
+    else if (this.extname === '.css'  && this.activeExtname !== '.html') { return this.extCSS;  }
+    else if (this.extname === '.scss' && this.activeExtname !== '.html') { return this.extSCSS; }
+    else if (this.extname === '.sass' && this.activeExtname !== '.html') { return this.extSCSS; }
+    else if (this.extname === '.less' && this.activeExtname !== '.html') { return this.extLESS; }
+    else if (this.extname === '.md'   && this.activeExtname !== '.html') { return this.extMD;   }
   }
 }

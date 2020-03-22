@@ -27,13 +27,15 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 * [Import to cursor](#Import-to-cursor)
 * [Import to bottom](#Import-to-bottom)
 * [Import to top](#Import-to-top)
-* [NEW UPDATE !! ⚡️ → Markdown support 🔥🔥][markdown support]
+* [⭐️ NEW UPDATE !! ⭐️ → HTML support 🔥🔥][html support]
+  1. [Auto import script files to HTML.][html script stylesheet import demo]
+  1. [Auto import stylesheet files to HTML.][html script stylesheet import demo]
+* [⭐️ NEW UPDATE !! ⭐️ → Markdown support 🔥🔥][markdown support]
   1. [Auto import image to markdown.][markdown image import]
   1. [Auto import relative between markdown files.][markdown import]
 
-### TODO
-
-1. HTML support
+[html support]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#html-support
+[html script stylesheet import demo]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#import-script-and-stylesheet
 
 [markdown support]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#markdown-support
 [markdown image import]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#import-image-to-markdown
@@ -100,14 +102,19 @@ As of now drag and drop import feature is still not available in vscode.
 * `importStatements.stylesheet.lessSupport`: Select **.less** import style.
 * `importStatements.stylesheet.withExtnameCSS`: Toggle file type or extension name at the end of path. _{ex. "../path.css"}_
 
+#### HTML
+
+* `importStatements.html.htmlScriptSupport`: Select script import style for HTML.
+* `importStatements.html.htmlStylesheetSupport`: Select stylesheet import style for HTML.
+
 #### Markdown
 
 * `importStatements.markdown.markdownSupport`: Select **.md** import style.
-* `importStatements.markdown.markdownImageSupport`: Select import style for iamge import in markdown.
+* `importStatements.markdown.markdownImageSupport`: Select import style for image import in markdown.
 
 ### Settings Preview
 
-![extension-settings-preview](images/preview.gif "Extension settings")
+![extension-settings-preview](images/settings.gif "Extension settings")
 
 ## Demo
 

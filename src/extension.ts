@@ -20,23 +20,25 @@ function configObserve(context: vscode.ExtensionContext, retrival = new ConfigRe
 
 	context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(e => {
 
-		param.quoteStyle      = e.affectsConfiguration(configEnum.QUOTESTYLE) 		 ? retrival.quoteStyle 		  : param.quoteStyle;
-		param.importType      = e.affectsConfiguration(configEnum.IMPORTTYPE) 		 ? retrival.importType 		  : param.importType;
-		param.addSemicolon    = e.affectsConfiguration(configEnum.ADDSEMICOLON)    ? retrival.addSemicolon    : param.addSemicolon;
-		param.disableNotifs   = e.affectsConfiguration(configEnum.DISABLENOTIFS)   ? retrival.disableNotifs   : param.disableNotifs;
-		param.jsSupport 		  = e.affectsConfiguration(configEnum.JSSUPPORT) 		   ? retrival.jsSupport 		  : param.jsSupport;
-		param.jsxSupport  	  = e.affectsConfiguration(configEnum.JSXSUPPORT) 		 ? retrival.jsxSupport 		  : param.jsxSupport;
-		param.withExtnameJS   = e.affectsConfiguration(configEnum.WITHEXTNAMEJS)   ? retrival.withExtnameJS   : param.withExtnameJS;
-		param.tsSupport 		  = e.affectsConfiguration(configEnum.TSSUPPORT) 		   ? retrival.tsSupport 		  : param.tsSupport;
-		param.tsxSupport 		  = e.affectsConfiguration(configEnum.TSXSUPPORT) 		 ? retrival.tsxSupport 		  : param.tsxSupport;
-		param.withExtnameTS   = e.affectsConfiguration(configEnum.WITHEXTNAMETS)   ? retrival.withExtnameTS   : param.withExtnameTS;
-		param.addExportName   = e.affectsConfiguration(configEnum.ADDEXPORTNAME)   ? retrival.addExportName   : param.addExportName;
-		param.cssSupport 		  = e.affectsConfiguration(configEnum.CSSSUPPORT) 		 ? retrival.cssSupport 		  : param.cssSupport;
-		param.scssSupport 	  = e.affectsConfiguration(configEnum.SCSSSUPPORT) 	   ? retrival.scssSupport 	  : param.scssSupport;
-		param.lessSupport 	  = e.affectsConfiguration(configEnum.LESSSUPPORT) 	   ? retrival.lessSupport     : param.lessSupport;
-		param.withExtnameCSS  = e.affectsConfiguration(configEnum.WITHEXTNAMECSS)  ? retrival.withExtnameCSS  : param.withExtnameCSS;
-		param.markdownSupport = e.affectsConfiguration(configEnum.MARKDOWNSUPPORT) ? retrival.markdownSupport : param.markdownSupport;
-		param.markdownImageSupport = e.affectsConfiguration(configEnum.MARKDOWNIMAGESUPPORT) ? retrival.markdownImageSupport : param.markdownImageSupport;
+		param.quoteStyle            = e.affectsConfiguration(configEnum.QUOTESTYLE) 		       ? retrival.quoteStyle 		        : param.quoteStyle;
+		param.importType            = e.affectsConfiguration(configEnum.IMPORTTYPE) 		       ? retrival.importType 		        : param.importType;
+		param.addSemicolon          = e.affectsConfiguration(configEnum.ADDSEMICOLON)          ? retrival.addSemicolon          : param.addSemicolon;
+		param.disableNotifs         = e.affectsConfiguration(configEnum.DISABLENOTIFS)         ? retrival.disableNotifs         : param.disableNotifs;
+		param.jsSupport 		        = e.affectsConfiguration(configEnum.JSSUPPORT) 		         ? retrival.jsSupport 		        : param.jsSupport;
+		param.jsxSupport  	        = e.affectsConfiguration(configEnum.JSXSUPPORT) 		       ? retrival.jsxSupport 		        : param.jsxSupport;
+		param.withExtnameJS         = e.affectsConfiguration(configEnum.WITHEXTNAMEJS)         ? retrival.withExtnameJS         : param.withExtnameJS;
+		param.tsSupport 		        = e.affectsConfiguration(configEnum.TSSUPPORT) 		         ? retrival.tsSupport 		        : param.tsSupport;
+		param.tsxSupport 		        = e.affectsConfiguration(configEnum.TSXSUPPORT) 		       ? retrival.tsxSupport 		        : param.tsxSupport;
+		param.withExtnameTS         = e.affectsConfiguration(configEnum.WITHEXTNAMETS)         ? retrival.withExtnameTS         : param.withExtnameTS;
+		param.addExportName         = e.affectsConfiguration(configEnum.ADDEXPORTNAME)         ? retrival.addExportName         : param.addExportName;
+		param.cssSupport 		        = e.affectsConfiguration(configEnum.CSSSUPPORT) 		       ? retrival.cssSupport 		        : param.cssSupport;
+		param.scssSupport 	        = e.affectsConfiguration(configEnum.SCSSSUPPORT) 	         ? retrival.scssSupport 	        : param.scssSupport;
+		param.lessSupport 	        = e.affectsConfiguration(configEnum.LESSSUPPORT) 	         ? retrival.lessSupport           : param.lessSupport;
+		param.withExtnameCSS        = e.affectsConfiguration(configEnum.WITHEXTNAMECSS)        ? retrival.withExtnameCSS        : param.withExtnameCSS;
+		param.markdownSupport       = e.affectsConfiguration(configEnum.MARKDOWNSUPPORT)       ? retrival.markdownSupport       : param.markdownSupport;
+		param.markdownImageSupport  = e.affectsConfiguration(configEnum.MARKDOWNIMAGESUPPORT)  ? retrival.markdownImageSupport  : param.markdownImageSupport;
+		param.htmlScriptSupport     = e.affectsConfiguration(configEnum.HTMLSCRIPTSUPPORT)     ? retrival.htmlScriptSupport     : param.htmlScriptSupport;
+		param.htmlStylesheetSupport = e.affectsConfiguration(configEnum.HTMLSTYLESHEETSUPPORT) ? retrival.htmlStylesheetSupport : param.htmlStylesheetSupport;
 	}));
 }
 
@@ -68,8 +70,10 @@ export function activate(context: vscode.ExtensionContext) {
 	const scripts    = [ '.js', '.jsx', '.ts', '.tsx' ];
 	const styles     = [ '.css', '.scss', '.sass', '.less' ];
 	const images     = [ '.gif', '.jpeg', '.jpg', '.png' ];
-	const others     = [ '.md' ];
-	const validTypes = [ ...scripts, ...styles, ...images, ...others ];
+	const markup     = [ '.md', '.html' ];
+	const validTypes = [ ...scripts, ...styles, ...images, ...markup ];
+
+  const html = [ '.js', '.css' ];
 
 	const autoImportPaste = vscode.commands.registerCommand('extension.autoImportPaste', async () => {
 
@@ -85,15 +89,19 @@ export function activate(context: vscode.ExtensionContext) {
 		const clipboardExtname = path.extname(clipboard);
     const clipboardIsValid = validTypes.some((e) => clipboardExtname.includes(e));
     
-    const isMarkdownActive = others.includes(activeTEExtname);
+    const isMarkdownActive = markup.includes(activeTEExtname);
     const isImageClipboard = images.includes(clipboardExtname);
     const imageMDSupport   = isMarkdownActive && isImageClipboard;
+
+    const isHTMLSctive     = activeTEExtname === '.html';
+    const isValidClipboard = html.some((e) => clipboardExtname.includes(e));
+    const htmlSupport      = isHTMLSctive && isValidClipboard;
 
 		const isNotSamePath		 = activeTE.toLowerCase() !== clipboard.toLowerCase();
 		const isSameExtname 	 = activeTEExtname === clipboardExtname;
 		const isBothValid 		 = activeTEIsValid && clipboardIsValid;
     
-    const isValid 				 = (isBothValid && isNotSamePath && isSameExtname) || imageMDSupport ;
+    const isValid 				 = (isBothValid && isNotSamePath && isSameExtname) || imageMDSupport || htmlSupport;
     
     const option           = { editor, isNotSamePath, activeTEIsValid, clipboardIsValid };
 

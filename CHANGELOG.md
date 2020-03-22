@@ -1,10 +1,17 @@
 # Changelog
 
+## v0.2.2 (2020-3-22)
+
+### Added
+
+- HTML import support for scripts and stylesheets.
+- .gif files for html support
+
 ## v0.2.1 (2020-3-22)
 
 ### Fixes
 
-- links to markdown demo.md not working propoerly.
+- Links to markdown DEMO not working propoerly.
 
 ## v0.2.0 (2020-3-22)
 

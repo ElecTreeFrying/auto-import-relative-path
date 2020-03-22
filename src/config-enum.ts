@@ -78,6 +78,14 @@ export const lessEnum = [
   { value: 1, description: "@import () '';" }
 ];
 
+export const HTMLScriptEnum = [
+  { value: 0, description: "<script type=\"text/javascript\" src=\"path\"></script>" }
+];
+
+export const HTMLStylesheetEnum = [
+  { value: 0, description: "<link href=\"path\" rel=\"stylesheet\">" }
+];
+
 export const markdownEnum = [
   { value: 0, description: "![text](path)" }
 ];
