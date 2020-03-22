@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.1 (2020-3-22)
+
+### Fixes
+
+- links to markdown demo.md not working propoerly.
+
 ## v0.2.0 (2020-3-22)
 
 ### Added

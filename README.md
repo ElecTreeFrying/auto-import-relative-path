@@ -18,7 +18,6 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 
 [demo]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md
 
-
 ## Features
 
 ### Supported file types: → js ∙ tsx ∙ ts ∙ tsx ∙ css ∙ scss ∙ sass ∙ less • md
@@ -32,15 +31,13 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
   1. [Auto import image to markdown.][markdown image import]
   1. [Auto import relative between markdown files.][markdown import]
 
-
 ### TODO
 
 1. HTML support
 
-
-[markdown support]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#Markdown-support
-[markdown image import]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#Import-image-to-markdown
-[markdown import]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#Import-markdown
+[markdown support]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#markdown-support
+[markdown image import]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#import-image-to-markdown
+[markdown import]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#import-markdown
 
 ## Usage
 
