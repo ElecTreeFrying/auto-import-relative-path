@@ -20,7 +20,7 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 
 ## Features
 
-### Supported file types: → js ∙ tsx ∙ ts ∙ tsx ∙ css ∙ scss ∙ sass ∙ less • html •  md
+### Supported file types: → js ∙ tsx ∙ ts ∙ tsx ∙ css ∙ scss ∙ sass ∙ less ∙ html ∙  md
 
 * [Configure import styles](#Import-statements)
 * [Copy and paste like import](#heres-my-solution-)
