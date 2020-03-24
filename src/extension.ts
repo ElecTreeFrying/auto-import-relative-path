@@ -14,6 +14,12 @@ interface Notif {
 	clipboardIsValid?: boolean;
 }
 
+interface ImportOption { 
+  copy?: boolean, 
+  paste?: boolean, 
+  import?: boolean 
+}
+
 function configObserve(context: vscode.ExtensionContext, retrival = new ConfigRetrival(vscode.workspace)) {
 
 	param = retrival.param;
@@ -64,54 +70,17 @@ function notify(option: Notif) {
 	: both || either        ? vscode.window.showErrorMessage(`Invalid import.`) : 0;
 }
 
-export function activate(context: vscode.ExtensionContext) {
+async function autoImport(option: ImportOption = { copy: false, paste: false, import: false }) {
 
-	configObserve(context);
-	const scripts    = [ '.js', '.jsx', '.ts', '.tsx' ];
+  const scripts    = [ '.js', '.jsx', '.ts', '.tsx' ];
 	const styles     = [ '.css', '.scss', '.sass', '.less' ];
 	const images     = [ '.gif', '.jpeg', '.jpg', '.png' ];
 	const markup     = [ '.md', '.html' ];
 	const validTypes = [ ...scripts, ...styles, ...images, ...markup ];
+  const html       = [ '.js', '.css' ];
 
-  const html = [ '.js', '.css' ];
-
-	const autoImportPaste = vscode.commands.registerCommand('extension.autoImportPaste', async () => {
-
-		await vscode.commands.executeCommand('notifications.clearAll');
-		const editor      		 = vscode.window.activeTextEditor;
-		if (!editor) { return notify({ editor }); }
-
-		const activeTE 				 = editor.document.uri.fsPath;
-    const clipboard 			 = await vscode.env.clipboard.readText();
-    
-		const activeTEExtname  = path.extname(activeTE);
-		const activeTEIsValid  = validTypes.some((e) => activeTEExtname.includes(e));
-		const clipboardExtname = path.extname(clipboard);
-    const clipboardIsValid = validTypes.some((e) => clipboardExtname.includes(e));
-    
-    const isMarkdownActive = markup.includes(activeTEExtname);
-    const isImageClipboard = images.includes(clipboardExtname);
-    const imageMDSupport   = isMarkdownActive && isImageClipboard;
-
-    const isHTMLSctive     = activeTEExtname === '.html';
-    const isValidClipboard = html.some((e) => clipboardExtname.includes(e));
-    const htmlSupport      = isHTMLSctive && isValidClipboard;
-
-		const isNotSamePath		 = activeTE.toLowerCase() !== clipboard.toLowerCase();
-		const isSameExtname 	 = activeTEExtname === clipboardExtname;
-		const isBothValid 		 = activeTEIsValid && clipboardIsValid;
-    
-    const isValid 				 = (isBothValid && isNotSamePath && isSameExtname) || imageMDSupport || htmlSupport;
-    
-    const option           = { editor, isNotSamePath, activeTEIsValid, clipboardIsValid };
-
-		if (isValid) { setup(editor, activeTE, clipboard); }
-		else 				 { notify(option); }
-	});
-
-	const autoImportCopy = vscode.commands.registerCommand('extension.autoImportCopy', async () => {
-		
-		await vscode.commands.executeCommand('notifications.clearAll');
+  const copy = async () => {
+    await vscode.commands.executeCommand('notifications.clearAll');
 		await vscode.commands.executeCommand('copyFilePath');
 
 		const active = await vscode.env.clipboard.readText();
@@ -121,11 +90,61 @@ export function activate(context: vscode.ExtensionContext) {
 
 		if (isValid) {
 			vscode.env.clipboard.writeText(active);
-			vscode.window.showInformationMessage(`Copied: ${file}`);
+			vscode.window.showInformationMessage(`Auto Import: Copied: ${file}`);
 		}
-	});
+  };
 
-	context.subscriptions.push(autoImportPaste, autoImportCopy);
+  const paste = async () => {
+    await vscode.commands.executeCommand('notifications.clearAll');
+		const editor      		 = vscode.window.activeTextEditor;
+		if (!editor) { return notify({ editor }); }
+
+		const activeTE 				 = editor.document.uri.fsPath;
+    const clipboard 			 = await vscode.env.clipboard.readText();
+
+		const activeExtname    = path.extname(activeTE);
+		const activeIsValid    = validTypes.some((e) => activeExtname.includes(e));
+		const clipboardExtname = path.extname(clipboard);
+    const clipboardIsValid = validTypes.some((e) => clipboardExtname.includes(e));
+
+    const isMarkdownActive = markup.includes(activeExtname);
+    const isImageClipboard = images.includes(clipboardExtname);
+    const imageMDSupport   = isMarkdownActive && isImageClipboard;
+
+    const isHTMLActive     = activeExtname === '.html';
+    const isValidClipboard = html.some((e) => clipboardExtname.includes(e));
+    const htmlSupport      = isHTMLActive && isValidClipboard;
+
+		const isNotSamePath		 = activeTE.toLowerCase() !== clipboard.toLowerCase();
+		const isSameExtname 	 = activeExtname === clipboardExtname;
+		const isBothValid 		 = activeIsValid && clipboardIsValid;
+
+    const isValid 				 = (isBothValid && isNotSamePath && isSameExtname) || imageMDSupport || htmlSupport;
+
+    const option           = { editor, isNotSamePath, activeIsValid, clipboardIsValid };
+
+		if (isValid) { setup(editor, activeTE, clipboard); }
+		else 				 { notify(option); }
+  };
+
+  if (option.copy) {
+    await copy();
+  } else if (option.paste) {
+    await paste();
+  } else if (option.import) {
+    await copy();
+    await paste();
+  }
+}
+
+export function activate(context: vscode.ExtensionContext) {
+
+	configObserve(context);
+	const autoImportPaste = vscode.commands.registerCommand('extension.autoImportPaste', () => autoImport({ paste: true }));
+	const autoImportCopy = vscode.commands.registerCommand('extension.autoImportCopy', () => autoImport({ copy: true }));
+	const autoImportRelative = vscode.commands.registerCommand('extension.autoImportRelative', () => autoImport({ import: true }));
+
+	context.subscriptions.push(autoImportPaste, autoImportCopy, autoImportRelative);
 }
 
 export function deactivate() {}
