@@ -1,16 +1,16 @@
 
-export const quoteStyleEnum = [
+export const quoteStyle = [
   { value: true, description: "Single quotes" },
   { value: false, description: "Double quotes" }
 ];
 
-export const importTypeEnum = [
+export const importType = [
   { value: 0, description: "Top" },
-  { value: 1, description: "Buttom" },
+  { value: 1, description: "Bottom" },
   { value: 2, description: "Cursor" }
 ];
 
-export const javascriptEnum = [
+export const javascript = [
   { value: 0, description: "import  from '';" },
   { value: 1, description: "import {  } from '';" },
   { value: 2, description: "import {  as  } from '';" },
@@ -28,7 +28,7 @@ export const javascriptEnum = [
   { value: 14, description: "export const value = import('');" }
 ];
 
-export const javascriptXEnum = [
+export const javascriptX = [
   { value: 0, description: "import  from '';" },
   { value: 1, description: "import {  } from '';" },
   { value: 2, description: "import {  as  } from '';" },
@@ -46,7 +46,7 @@ export const javascriptXEnum = [
   { value: 14, description: "export const value = import('');" }
 ];
 
-export const typescriptEnum = [
+export const typescript = [
   { value: 0, description: "import  from '';" },
   { value: 1, description: "import {  } from '';" },
   { value: 2, description: "import {  as  } from '';" },
@@ -54,7 +54,7 @@ export const typescriptEnum = [
   { value: 4, description: "import '';" }
 ];
 
-export const typescriptXEnum = [
+export const typescriptX = [
   { value: 0, description: "import  from '';" },
   { value: 1, description: "import {  } from '';" },
   { value: 2, description: "import {  as  } from '';" },
@@ -62,35 +62,35 @@ export const typescriptXEnum = [
   { value: 4, description: "import '';" }
 ];
 
-export const cssEnum = [
+export const css = [
   { value: 0, description: "@import '';" },
   { value: 1, description: "@import url('');" }
 ];
 
-export const scssSassEnum = [
+export const scssSass = [
   { value: 0, description: "@import '';" },
   { value: 1, description: "@import url('');" },
   { value: 2, description: "@use '';" }
 ];
 
-export const lessEnum = [
+export const less = [
   { value: 0, description: "@import '';" },
   { value: 1, description: "@import () '';" }
 ];
 
-export const HTMLScriptEnum = [
+export const HTMLScript = [
   { value: 0, description: "<script type=\"text/javascript\" src=\"path\"></script>" }
 ];
 
-export const HTMLStylesheetEnum = [
+export const HTMLStylesheet = [
   { value: 0, description: "<link href=\"path\" rel=\"stylesheet\">" }
 ];
 
-export const markdownEnum = [
+export const markdown = [
   { value: 0, description: "![text](path)" }
 ];
 
-export const markdownImageEnum = [
-  { value: 0, description: "Inline style: ![alt-text](path \"Hover text\")" },
-  { value: 1, description: "Reference style: ![alt-text][image] / [image]: path \"Hover text\"" }
+export const markdownImage = [
+  { value: 0, description: "![alt-text](path \"Hover text\")" },
+  { value: 1, description: "![alt-text][image] / [image]: path \"Hover text\"" }
 ];

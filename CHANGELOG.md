@@ -1,5 +1,23 @@
 # Changelog
 
+## v0.3.0 (2020-4-4)
+
+### Added
+
+- New feature added `Auto Import: Import relative path` command. Auto copy and paste relative import path to active text editor.
+
+### Changes
+
+- updated README
+- updated extension keywords
+- removed unused activation events
+- updated setting configurations
+
+### Fixes
+
+- README typos
+- variable typos
+
 ## v0.2.6 (2020-3-23)
 
 ### Fixes

@@ -1,4 +1,4 @@
-import { Config } from './config-retrival';
+import { Config } from './config-retrieval';
 import * as path from 'path';
 import * as relative from 'relative';
 import * as camelcase from 'camelcase';
@@ -9,27 +9,26 @@ const DOUBLE_QUOTES = "\"";
 export class ImportText {
 
   quote: any;
+  isSemicolon: string;
   importNameText: string;
   relativePath: string;
-  isSemicolon: string;
   extname: string;
-  param: Config;
 
   activeExtname: string;
 
   validImagesFormats = [ '.gif', '.jpeg', '.jpg', '.png' ];
 
-  constructor(param: Config, toPath: string, fromPath: string) {
+  constructor(private param: Config, toPath: string, fromPath: string) {
 
-    let relativePath  = <string>relative(toPath, fromPath);
-  			relativePath  = relativePath.split('\\').join('/');
-  	const isSameDir   = relativePath[0] !== '.';
-  			relativePath  = isSameDir ? './'.concat(relativePath) : relativePath;
+      let relativePath = <string>relative(toPath, fromPath);
+  			  relativePath = relativePath.split('\\').join('/');
+  	const isSameDir    = relativePath[0] !== '.';
+  		   	relativePath = isSameDir ? './'.concat(relativePath) : relativePath;
 
-  	const extname   = path.extname(relativePath);
-    const cleanPath = this.removeExtname(relativePath, extname);
-    let  importName = cleanPath.split('/').reverse()[0];
-         importName = camelcase(importName, { pascalCase: true });
+  	const extname    = path.extname(relativePath);
+    const cleanPath  = this.removeExtname(relativePath, extname);
+     let  importName = cleanPath.split('/').reverse()[0];
+          importName = camelcase(importName, { pascalCase: true });
 
     this.quote          = param.quoteStyle ? SINGLE_QUOTES : DOUBLE_QUOTES;
     this.importNameText = param.addExportName ? importName : '';
@@ -47,142 +46,142 @@ export class ImportText {
     return normalizeWindows.split(extname)[0];
   }
 
-  get extTS() {
-    const quote = this.quote;
-    const path = this.relativePath;
-    const isSemicolon = this.isSemicolon;
+  private get extTS() {
+    const quote          = this.quote;
+    const path           = this.relativePath;
+    const isSemicolon    = this.isSemicolon;
     const importNameText = this.importNameText;
-    const isExtname = this.param.withExtnameTS ? this.extname : '';
-    const relativePath = `${quote}${path}${isExtname}${quote}`;
+    const isExtname      = this.param.withExtnameTS ? this.extname : '';
+    const relativePath   = `${quote}${path}${isExtname}${quote}`;
     return this.param.tsSupport === 0 ? `import  from ${relativePath}${isSemicolon}\n`
-      : this.param.tsSupport === 1    ? `import { ${importNameText} } from ${relativePath}${isSemicolon}\n`
-      : this.param.tsSupport === 2    ? `import { ${importNameText} as  } from ${relativePath}${isSemicolon}\n`
-      : this.param.tsSupport === 3    ? `import * as ${importNameText} from ${relativePath}${isSemicolon}\n`
-      : this.param.tsSupport === 4    ? `import ${relativePath}${isSemicolon}\n` : 0;
+         : this.param.tsSupport === 1 ? `import { ${importNameText} } from ${relativePath}${isSemicolon}\n`
+         : this.param.tsSupport === 2 ? `import { ${importNameText} as  } from ${relativePath}${isSemicolon}\n`
+         : this.param.tsSupport === 3 ? `import * as ${importNameText} from ${relativePath}${isSemicolon}\n`
+         : this.param.tsSupport === 4 ? `import ${relativePath}${isSemicolon}\n` : 0;
   }
 
-  get extJS() {
-    const quote = this.quote;
-    const path = this.relativePath;
-    const isSemicolon = this.isSemicolon;
-    const isExtname = this.param.withExtnameJS ? this.extname : '';
+  private get extJS() {
+    const quote        = this.quote;
+    const path         = this.relativePath;
+    const isSemicolon  = this.isSemicolon;
+    const isExtname    = this.param.withExtnameJS ? this.extname : '';
     const relativePath = `${quote}${path}${isExtname}${quote}`;
     return this.param.jsSupport === 0 ? `import  from ${relativePath}${isSemicolon}\n`
-      : this.param.jsSupport === 1    ? `import {  } from ${relativePath}${isSemicolon}\n`
-      : this.param.jsSupport === 2    ? `import {  as  } from ${relativePath}${isSemicolon}\n`
-      : this.param.jsSupport === 3    ? `import {  as name } from ${relativePath}${isSemicolon}\n`
-      : this.param.jsSupport === 4    ? `import * as  from ${relativePath}${isSemicolon}\n`
-      : this.param.jsSupport === 5    ? `import * as name from ${relativePath}${isSemicolon}\n`
-      : this.param.jsSupport === 6    ? `import ${relativePath}${isSemicolon}\n`
-      : this.param.jsSupport === 7    ? `var  = require(${relativePath})${isSemicolon}\n`
-      : this.param.jsSupport === 8    ? `const  = require(${relativePath})${isSemicolon}\n`
-      : this.param.jsSupport === 9    ? `var name = require(${relativePath})${isSemicolon}\n`
-      : this.param.jsSupport === 10   ? `const name = require(${relativePath})${isSemicolon}\n`
-      : this.param.jsSupport === 11   ? `var  = import(${relativePath})${isSemicolon}\n`
-      : this.param.jsSupport === 12   ? `const  = import(${relativePath})${isSemicolon}\n`
-      : this.param.jsSupport === 13   ? `var name = import(${relativePath})${isSemicolon}\n`
-      : this.param.jsSupport === 14   ? `const name = import(${relativePath})${isSemicolon}\n` : 0;
+         : this.param.jsSupport === 1 ? `import {  } from ${relativePath}${isSemicolon}\n`
+         : this.param.jsSupport === 2 ? `import {  as  } from ${relativePath}${isSemicolon}\n`
+         : this.param.jsSupport === 3 ? `import {  as name } from ${relativePath}${isSemicolon}\n`
+         : this.param.jsSupport === 4 ? `import * as  from ${relativePath}${isSemicolon}\n`
+         : this.param.jsSupport === 5 ? `import * as name from ${relativePath}${isSemicolon}\n`
+         : this.param.jsSupport === 6 ? `import ${relativePath}${isSemicolon}\n`
+         : this.param.jsSupport === 7 ? `var  = require(${relativePath})${isSemicolon}\n`
+         : this.param.jsSupport === 8 ? `const  = require(${relativePath})${isSemicolon}\n`
+         : this.param.jsSupport === 9 ? `var name = require(${relativePath})${isSemicolon}\n`
+        : this.param.jsSupport === 10 ? `const name = require(${relativePath})${isSemicolon}\n`
+        : this.param.jsSupport === 11 ? `var  = import(${relativePath})${isSemicolon}\n`
+        : this.param.jsSupport === 12 ? `const  = import(${relativePath})${isSemicolon}\n`
+        : this.param.jsSupport === 13 ? `var name = import(${relativePath})${isSemicolon}\n`
+        : this.param.jsSupport === 14 ? `const name = import(${relativePath})${isSemicolon}\n` : 0;
   }
 
-  get extTSX() {
-    const quote = this.quote;
-    const path = this.relativePath;
-    const isSemicolon = this.isSemicolon;
+  private get extTSX() {
+    const quote          = this.quote;
+    const path           = this.relativePath;
+    const isSemicolon    = this.isSemicolon;
     const importNameText = this.importNameText;
-    const isExtname = this.param.withExtnameTS ? this.extname : '';
-    const relativePath = `${quote}${path}${isExtname}${quote}`;
+    const isExtname      = this.param.withExtnameTS ? this.extname : '';
+    const relativePath   = `${quote}${path}${isExtname}${quote}`;
     return this.param.tsxSupport === 0 ? `import  from ${relativePath}${isSemicolon}\n`
-      : this.param.tsxSupport === 1    ? `import { ${importNameText} } from ${relativePath}${isSemicolon}\n`
-      : this.param.tsxSupport === 2    ? `import { ${importNameText} as  } from ${relativePath}${isSemicolon}\n`
-      : this.param.tsxSupport === 3    ? `import * as ${importNameText} from ${relativePath}${isSemicolon}\n`
-      : this.param.tsxSupport === 4    ? `import ${relativePath}${isSemicolon}\n` : 0;
+         : this.param.tsxSupport === 1 ? `import { ${importNameText} } from ${relativePath}${isSemicolon}\n`
+         : this.param.tsxSupport === 2 ? `import { ${importNameText} as  } from ${relativePath}${isSemicolon}\n`
+         : this.param.tsxSupport === 3 ? `import * as ${importNameText} from ${relativePath}${isSemicolon}\n`
+         : this.param.tsxSupport === 4 ? `import ${relativePath}${isSemicolon}\n` : 0;
   }
 
-  get extJSX() {
-    const quote = this.quote;
-    const path = this.relativePath;
-    const isSemicolon = this.isSemicolon;
-    const isExtname = this.param.withExtnameJS ? this.extname : '';
+  private get extJSX() {
+    const quote        = this.quote;
+    const path         = this.relativePath;
+    const isSemicolon  = this.isSemicolon;
+    const isExtname    = this.param.withExtnameJS ? this.extname : '';
     const relativePath = `${quote}${path}${isExtname}${quote}`;
     return this.param.jsxSupport === 0 ? `import  from ${relativePath}${isSemicolon}\n`
-      : this.param.jsxSupport === 1    ? `import {  } from ${relativePath}${isSemicolon}\n`
-      : this.param.jsxSupport === 2    ? `import {  as  } from ${relativePath}${isSemicolon}\n`
-      : this.param.jsxSupport === 3    ? `import {  as name } from ${relativePath}${isSemicolon}\n`
-      : this.param.jsxSupport === 4    ? `import * as  from ${relativePath}${isSemicolon}\n`
-      : this.param.jsxSupport === 5    ? `import * as name from ${relativePath}${isSemicolon}\n`
-      : this.param.jsxSupport === 6    ? `import ${relativePath}${isSemicolon}\n`
-      : this.param.jsxSupport === 7    ? `var  = require(${relativePath})${isSemicolon}\n`
-      : this.param.jsxSupport === 8    ? `const  = require(${relativePath})${isSemicolon}\n`
-      : this.param.jsxSupport === 9    ? `var name = require(${relativePath})${isSemicolon}\n`
-      : this.param.jsxSupport === 10   ? `const name = require(${relativePath})${isSemicolon}\n`
-      : this.param.jsxSupport === 11   ? `var  = import(${relativePath})${isSemicolon}\n`
-      : this.param.jsxSupport === 12   ? `const  = import(${relativePath})${isSemicolon}\n`
-      : this.param.jsxSupport === 13   ? `var name = import(${relativePath})${isSemicolon}\n`
-      : this.param.jsxSupport === 14   ? `const name = import(${relativePath})${isSemicolon}\n` : 0;
+         : this.param.jsxSupport === 1 ? `import {  } from ${relativePath}${isSemicolon}\n`
+         : this.param.jsxSupport === 2 ? `import {  as  } from ${relativePath}${isSemicolon}\n`
+         : this.param.jsxSupport === 3 ? `import {  as name } from ${relativePath}${isSemicolon}\n`
+         : this.param.jsxSupport === 4 ? `import * as  from ${relativePath}${isSemicolon}\n`
+         : this.param.jsxSupport === 5 ? `import * as name from ${relativePath}${isSemicolon}\n`
+         : this.param.jsxSupport === 6 ? `import ${relativePath}${isSemicolon}\n`
+         : this.param.jsxSupport === 7 ? `var  = require(${relativePath})${isSemicolon}\n`
+         : this.param.jsxSupport === 8 ? `const  = require(${relativePath})${isSemicolon}\n`
+         : this.param.jsxSupport === 9 ? `var name = require(${relativePath})${isSemicolon}\n`
+        : this.param.jsxSupport === 10 ? `const name = require(${relativePath})${isSemicolon}\n`
+        : this.param.jsxSupport === 11 ? `var  = import(${relativePath})${isSemicolon}\n`
+        : this.param.jsxSupport === 12 ? `const  = import(${relativePath})${isSemicolon}\n`
+        : this.param.jsxSupport === 13 ? `var name = import(${relativePath})${isSemicolon}\n`
+        : this.param.jsxSupport === 14 ? `const name = import(${relativePath})${isSemicolon}\n` : 0;
   }
 
-
-  get extCSS() {
-    const quote = this.quote;
-    const path = this.relativePath;
-    const isSemicolon = this.isSemicolon;
-    const isExtname = this.param.withExtnameCSS ? this.extname : '';
+  private get extCSS() {
+    const quote        = this.quote;
+    const path         = this.relativePath;
+    const isSemicolon  = this.isSemicolon;
+    const isExtname    = this.param.withExtnameCSS ? this.extname : '';
     const relativePath = `${quote}${path}${isExtname}${quote}`;
     return this.param.cssSupport === 0 ? `@import ${relativePath}${isSemicolon}\n`
-      : this.param.cssSupport === 1    ? `@import url(${relativePath})${isSemicolon}\n` : 0;
+         : this.param.cssSupport === 1 ? `@import url(${relativePath})${isSemicolon}\n` : 0;
   }
 
-  get extSCSS() {
-    const quote = this.quote;
-    const path = this.relativePath;
-    const isSemicolon = this.isSemicolon;
-    const isExtname = this.param.withExtnameCSS ? this.extname : '';
-    let relativePath = `${quote}${path}${isExtname}${quote}`;
-        relativePath = relativePath.replace(/_/gi, '');
+  private get extSCSS() {
+    const quote        = this.quote;
+    const path         = this.relativePath;
+    const isSemicolon  = this.isSemicolon;
+    const isExtname    = this.param.withExtnameCSS ? this.extname : '';
+      let relativePath = `${quote}${path}${isExtname}${quote}`;
+          relativePath = relativePath.replace(/_/gi, '');
+          
     return this.param.scssSupport === 0 ? `@import ${relativePath}${isSemicolon}\n`
-      : this.param.scssSupport === 1    ? `@import url(${relativePath})${isSemicolon}\n`
-      : this.param.scssSupport === 2    ? `@use ${relativePath}${isSemicolon}\n` : 0;
+         : this.param.scssSupport === 1 ? `@import url(${relativePath})${isSemicolon}\n`
+         : this.param.scssSupport === 2 ? `@use ${relativePath}${isSemicolon}\n` : 0;
   }
 
-  get extLESS() {
-    const quote = this.quote;
-    const path = this.relativePath;
-    const isSemicolon = this.isSemicolon;
-    const isExtname = this.param.withExtnameCSS ? this.extname : '';
+  private get extLESS() {
+    const quote        = this.quote;
+    const path         = this.relativePath;
+    const isSemicolon  = this.isSemicolon;
+    const isExtname    = this.param.withExtnameCSS ? this.extname : '';
     const relativePath = `${quote}${path}${isExtname}${quote}`;
     return this.param.lessSupport === 0 ? `@import ${relativePath}${isSemicolon}\n`
-      : this.param.lessSupport === 1    ? `@import () ${relativePath}${isSemicolon}\n` : 0;
+         : this.param.lessSupport === 1 ? `@import () ${relativePath}${isSemicolon}\n` : 0;
   }
 
-  get extMD() {
-    let path = this.relativePath;
-        path = path.startsWith('./') ? path.slice(2) : path; 
+  private get extMD() {
+      let path         = this.relativePath;
+          path         = path.startsWith('./') ? path.slice(2) : path; 
     const relativePath = `${path}${this.extname}`;
     return this.param.markdownSupport === 0 ? `![text](${relativePath})\n`: 0;
   }
 
-  get extImgMD() {
-    let path = this.relativePath;
-        path = path.startsWith('./') ? path.slice(2) : path; 
+  private get extImgMD() {
+      let path         =  this.relativePath;
+          path         = path.startsWith('./') ? path.slice(2) : path; 
     const relativePath = `${path}${this.extname}`;
     return this.param.markdownImageSupport === 0 ? `markdown![alt-text](${relativePath} \"Hover text\")\n`
-      : this.param.markdownImageSupport === 1    ? `markdown![alt text][logo]\n\n[logo]: ${relativePath}  "Hover text"\n` : 0;
+         : this.param.markdownImageSupport === 1 ? `markdown![alt text][logo]\n\n[logo]: ${relativePath}  "Hover text"\n` : 0;
   }
 
-  get extHTMLScriptSupport() {
-    let path = this.relativePath;
+  private get extHTMLScriptSupport() {
+      let path         = this.relativePath;
     const relativePath = `${path}${this.extname}`;
     return this.param.htmlScriptSupport === 0 ? `markdown<script type="text/javascript" src="${relativePath}"></script>\n`: 0;
   }
   
-  get extHTMLStylesheetSupport() {
-    let path = this.relativePath;
+  private get extHTMLStylesheetSupport() {
+      let path         = this.relativePath;
     const relativePath = `${path}${this.extname}`;
     return this.param.htmlStylesheetSupport === 0 ? `markdown<link href="${relativePath}" rel="stylesheet">`: 0;
   }
 
   get convertedImportText() {
-    if (this.extname === '.js' && this.activeExtname === '.html') { 
+     if (this.extname === '.js' && this.activeExtname === '.html') { 
       return this.extHTMLScriptSupport; 
     } else if (this.extname === '.css' && this.activeExtname === '.html') { 
       return this.extHTMLStylesheetSupport; 

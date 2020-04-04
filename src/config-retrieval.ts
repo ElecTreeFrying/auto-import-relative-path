@@ -1,94 +1,110 @@
+import * as vscode from 'vscode';
 import {
-  quoteStyleEnum, importTypeEnum,
-  javascriptEnum, javascriptXEnum,
-  typescriptEnum, typescriptXEnum,
-  cssEnum, scssSassEnum, lessEnum,
-  markdownEnum, markdownImageEnum,
-  HTMLScriptEnum, HTMLStylesheetEnum
+  quoteStyle, importType,
+  javascript, javascriptX,
+  typescript, typescriptX,
+  css, scssSass, less,
+  markdown, markdownImage,
+  HTMLScript, HTMLStylesheet
 } from './config-enum';
 
 export interface Config {
+  // General
   quoteStyle:      boolean; importType:           number;
   addSemicolon:    boolean; disableNotifs:        boolean;
+  // Javascript
   jsSupport:       number;  jsxSupport:           number;
   withExtnameJS:   boolean;
+  // Typescript
   tsSupport:       number;  tsxSupport:           number;
   withExtnameTS:   boolean; addExportName:        boolean;
+  // Stylesheet
   cssSupport:      number;  scssSupport:          number;
   lessSupport:     number;  withExtnameCSS:       boolean;
+  // Markdown
   markdownSupport: number;  markdownImageSupport: number;
+  // HTML
   htmlScriptSupport: number, htmlStylesheetSupport: number;
 }
 
-export const configEnum = {
-  QUOTESTYLE:      'quoteStyle',       IMPORTTYPE:     'importType',
-  ADDSEMICOLON:    'addSemicolon',     DISABLENOTIFS:  'disableNotifs',
-  JSSUPPORT:       'importStatements.javascript.jsSupport',
-  JSXSUPPORT:      'importStatements.javascript.jsxSupport',
-  WITHEXTNAMEJS:   'importStatements.javascript.withExtnameJS',
-  TSSUPPORT:       'importStatements.typescript.tsSupport',
-  TSXSUPPORT:      'importStatements.typescript.tsxSupport',
-  WITHEXTNAMETS:   'importStatements.typescript.withExtnameTS',
-  ADDEXPORTNAME:   'importStatements.typescript.addExportName',
-  CSSSUPPORT:      'importStatements.stylesheet.cssSupport',
-  SCSSSUPPORT:     'importStatements.stylesheet.scssSupport',
-  LESSSUPPORT:     'importStatements.stylesheet.lessSupport',
-  WITHEXTNAMECSS:  'importStatements.stylesheet.withExtnameCSS',
+export const section = {
+  // General
+  QUOTESTYLE:            'general.quoteStyle',       
+  IMPORTTYPE:            'general.importType',
+  ADDSEMICOLON:          'general.addSemicolon',     
+  DISABLENOTIFS:         'general.disableNotifs',
+  // Javascript
+  JSSUPPORT:             'importStatements.javascript.jsSupport',
+  JSXSUPPORT:            'importStatements.javascript.jsxSupport',
+  WITHEXTNAMEJS:         'importStatements.javascript.withExtnameJS',
+  // Typescript
+  TSSUPPORT:             'importStatements.typescript.tsSupport',
+  TSXSUPPORT:            'importStatements.typescript.tsxSupport',
+  WITHEXTNAMETS:         'importStatements.typescript.withExtnameTS',
+  ADDEXPORTNAME:         'importStatements.typescript.addExportName',
+  // Stylesheet
+  CSSSUPPORT:            'importStatements.stylesheet.cssSupport',
+  SCSSSUPPORT:           'importStatements.stylesheet.scssSupport',
+  LESSSUPPORT:           'importStatements.stylesheet.lessSupport',
+  WITHEXTNAMECSS:        'importStatements.stylesheet.withExtnameCSS',
+  // Markdown
   MARKDOWNIMAGESUPPORT:  'importStatements.markdown.markdownImageSupport',
   MARKDOWNSUPPORT:       'importStatements.markdown.markdownSupport',
+  // HTML
   HTMLSCRIPTSUPPORT:     'importStatements.markdown.htmlScriptSupport',
   HTMLSTYLESHEETSUPPORT: 'importStatements.markdown.htmlStylesheetSupport'
 };
 
-export class ConfigRetrival {
+export class ConfigRetrieval {
 
-  private workspace: any = null;
-
-  constructor(workspace: any) {
-
-    this.workspace = workspace;
-  }
+  constructor(private workspace: any = vscode.workspace) { }
 
   get param() {
     return {
+      // General
       quoteStyle:      this.quoteStyle,      importType:     this.importType,
       addSemicolon:    this.addSemicolon,    disableNotifs:  this.disableNotifs,
+      // Javascript
       jsSupport:       this.jsSupport,       jsxSupport:     this.jsxSupport,
       withExtnameJS:   this.withExtnameJS,
+      // Typescript
       tsSupport:       this.tsSupport,       tsxSupport:     this.tsxSupport,
       withExtnameTS:   this.withExtnameTS,   addExportName:  this.addExportName,
+      // Stylesheet
       cssSupport:      this.cssSupport,      scssSupport:    this.scssSupport,
       lessSupport:     this.lessSupport,     withExtnameCSS: this.withExtnameCSS,
+      // Markdown
       markdownSupport: this.markdownSupport, markdownImageSupport: this.markdownImageSupport,
+      // HTML
       htmlScriptSupport: this.htmlScriptSupport, htmlStylesheetSupport: this.htmlStylesheetSupport
     };
   }
 
-  // Preferences
+  // General
 
   get quoteStyle(): boolean {
-    const configValue = this.workspace.getConfiguration().get('quoteStyle');
-    return quoteStyleEnum.find(e => e.description === configValue).value;
+    const configValue = this.workspace.getConfiguration('general').get('quoteStyle');
+    return quoteStyle.find(e => e.description === configValue).value;
   }
 
   get importType(): number {
-    const configValue = this.workspace.getConfiguration().get('importType');
-    return importTypeEnum.find(e => e.description === configValue).value;
+    const configValue = this.workspace.getConfiguration('general').get('importType');
+    return importType.find(e => e.description === configValue).value;
   }
 
-  get addSemicolon(): boolean { return this.workspace.getConfiguration().get('addSemicolon'); }
-  get disableNotifs(): boolean { return this.workspace.getConfiguration().get('disableNotifs'); }
+  get addSemicolon(): boolean { return this.workspace.getConfiguration('general').get('addSemicolon'); }
+  get disableNotifs(): boolean { return this.workspace.getConfiguration('general').get('disableNotifs'); }
 
   // Javascript
 
   get jsSupport(): number {
     const configValue = this.workspace.getConfiguration('importStatements.javascript').get('jsSupport');
-    return javascriptEnum.find(e => e.description === configValue).value;
+    return javascript.find(e => e.description === configValue).value;
   }
 
   get jsxSupport(): number {
     const configValue = this.workspace.getConfiguration('importStatements.javascript').get('jsxSupport');
-    return javascriptXEnum.find(e => e.description === configValue).value;
+    return javascriptX.find(e => e.description === configValue).value;
   }
 
   get withExtnameJS(): boolean { return this.workspace.getConfiguration('importStatements.javascript').get('withExtnameJS'); }
@@ -97,12 +113,12 @@ export class ConfigRetrival {
 
   get tsSupport(): number {
     const configValue = this.workspace.getConfiguration('importStatements.typescript').get('tsSupport');
-    return typescriptEnum.find(e => e.description === configValue).value;
+    return typescript.find(e => e.description === configValue).value;
   }
 
   get tsxSupport(): number {
     const configValue = this.workspace.getConfiguration('importStatements.typescript').get('tsxSupport');
-    return typescriptXEnum.find(e => e.description === configValue).value;
+    return typescriptX.find(e => e.description === configValue).value;
   }
 
   get withExtnameTS(): boolean { return this.workspace.getConfiguration('importStatements.typescript').get('withExtnameTS'); }
@@ -112,17 +128,17 @@ export class ConfigRetrival {
 
   get cssSupport(): number {
     const configValue = this.workspace.getConfiguration('importStatements.stylesheet').get('cssSupport');
-    return cssEnum.find(e => e.description === configValue).value;
+    return css.find(e => e.description === configValue).value;
   }
 
   get scssSupport(): number {
     const configValue = this.workspace.getConfiguration('importStatements.stylesheet').get('scssSupport');
-    return scssSassEnum.find(e => e.description === configValue).value;
+    return scssSass.find(e => e.description === configValue).value;
   }
 
   get lessSupport(): number {
     const configValue = this.workspace.getConfiguration('importStatements.stylesheet').get('lessSupport');
-    return lessEnum.find(e => e.description === configValue).value;
+    return less.find(e => e.description === configValue).value;
   }
 
   get withExtnameCSS(): boolean { return this.workspace.getConfiguration('importStatements.stylesheet').get('withExtnameCSS'); }
@@ -131,24 +147,24 @@ export class ConfigRetrival {
 
   get markdownSupport() {
     const configValue = this.workspace.getConfiguration('importStatements.markdown').get('markdownSupport');
-    return markdownEnum.find(e => e.description === configValue).value;
+    return markdown.find(e => e.description === configValue).value;
   }
 
   get markdownImageSupport() {
     const configValue = this.workspace.getConfiguration('importStatements.markdown').get('markdownImageSupport');
-    return markdownImageEnum.find(e => e.description === configValue).value;
+    return markdownImage.find(e => e.description === configValue).value;
   }
 
   // HTML Support
 
   get htmlScriptSupport() {
     const configValue = this.workspace.getConfiguration('importStatements.html').get('htmlScriptSupport');
-    return HTMLScriptEnum.find(e => e.description === configValue).value;
+    return HTMLScript.find(e => e.description === configValue).value;
   }
   
   get htmlStylesheetSupport() {
     const configValue = this.workspace.getConfiguration('importStatements.html').get('htmlStylesheetSupport');
-    return HTMLStylesheetEnum.find(e => e.description === configValue).value;
+    return HTMLStylesheet.find(e => e.description === configValue).value;
   }
 
 }

@@ -20,26 +20,13 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 
 ## Features
 
-### Supported file types: → js ∙ tsx ∙ ts ∙ tsx ∙ css ∙ scss ∙ sass ∙ less ∙ html ∙  md
+### Supported file types: → html ∙ md ∙ js ∙ tsx ∙ ts ∙ tsx ∙ css ∙ scss ∙ sass ∙ less
 
 * [Configure import styles](#Import-statements)
 * [Copy and paste like import](#heres-my-solution-)
 * [Import to cursor](#Import-to-cursor)
 * [Import to bottom](#Import-to-bottom)
 * [Import to top](#Import-to-top)
-* [⭐️ NEW UPDATE !! ⭐️ → HTML support 🔥🔥][html support]
-  1. [Auto import script files to HTML.][html script stylesheet import demo]
-  1. [Auto import stylesheet files to HTML.][html script stylesheet import demo]
-* [⭐️ NEW UPDATE !! ⭐️ → Markdown support 🔥🔥][markdown support]
-  1. [Auto import image to markdown.][markdown image import]
-  1. [Auto import relative between markdown files.][markdown import]
-
-[html support]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#html-support
-[html script stylesheet import demo]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#import-script-and-stylesheet
-
-[markdown support]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#markdown-support
-[markdown image import]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#import-image-to-markdown
-[markdown import]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#import-markdown
 
 ## Usage
 
@@ -56,58 +43,54 @@ As of now drag and drop import feature is still not available in vscode.
 
 ### Here's my solution !
 
-* Copy relative path by entering command `Auto Import: Paste relative` or press `Ctrl+Shift+A`.
-    1. In selected text editor.
-    1. In a file in explorer.
-* And import in selected text editor see demo.
-* In selected text editor enter command `Auto Import: Paste relative` or press `Ctrl+I`.
+* Copy relative path of an active text editor or a file by entering `Auto Import: Paste relative` command.
+* Enter command `Auto Import: Paste relative` to paste relative import.
 
 ![auto-import-demo](images/playback.gif "Auto import demo")
 
 ## Commands
 
-| Key Binding    | Command                     | Description           |
-| -------------- | --------------------------- | --------------------- |
-| `Ctrl+Shift+A` | Auto Import: Copy path      | Copy relative path    |
-| `Ctrl+I`       | Auto Import: Paste relative | Paste relative import |
+| Command                             | Key Binding    | Description
+| ----------------------------------- | -------------- | --
+| `Auto Import: Copy path`            | `Ctrl+Shift+A` | Copy relative path.
+| `Auto Import: Paste relative`       | `Ctrl+I`       | Paste relative import in active text editor.
+| `Auto Import: Import relative path` | `Alt+D`        | Auto copy and paste relative import inactive text editor.
 
 ## Configuration Settings
 
 ### General settings
 
-* `quoteStyle`: (double/single quote) Select quote style for path.
-* `importType`: Paste import on selected line at the top or bottom of the import list.
-* `addSemicolon`: Toggle semicolon at the end of import statement.
-* `disableNotifs`: Disable all notifications on file drop to active pane.
+* `quoteStyle`: Select quote style for relative import path. *(double/single quote)*
+* `importType`: Paste import on selected line, at the top or bottom of the import list.
+* `addSemicolon`: Toggle include semicolon at the end of import statement.
+* `disableNotifs`: Disable all notifications.
 
-### Import statements
-
-#### Javascript
+### Import statements > Javascript
 
 * `importStatements.javascript.jsSupport`: Select **.js** import style.
 * `importStatements.javascript.jsxSupport`: Select **.jsx** import style.
-* `importStatements.javascript.withExtnameJS`: Toggle file type or extension name at the end of path. _{ex. "../path.js"}_
+* `importStatements.javascript.withExtnameJS`: Include file type at the end of relative import path.
 
-#### Typescript
+### Import statements > Typescript
 
 * `importStatements.typescript.tsSupport`: Select **.ts** import style.
 * `importStatements.typescript.tsxSupport`: Select **.tsx** import style.
-* `importStatements.typescript.withExtnameTS`: Toggle file type/extension name at the end of path. _{ex. "../path.ts"}_
-* `importStatements.typescript.addExportName`: Toggle component name in import statement. (Angular/.tsx)
+* `importStatements.typescript.withExtnameTS`: Include file type at the end of relative import path.
+* `importStatements.typescript.addExportName`: Toggle component name in import statement. **(Angular feature)**
 
-#### Stylesheet
+### Import statements > Stylesheet
 
 * `importStatements.stylesheet.cssSupport`: Select **.css** import style.
 * `importStatements.stylesheet.scssSupport`: Select **.scss** import style.
 * `importStatements.stylesheet.lessSupport`: Select **.less** import style.
-* `importStatements.stylesheet.withExtnameCSS`: Toggle file type or extension name at the end of path. _{ex. "../path.css"}_
+* `importStatements.stylesheet.withExtnameCSS`: Include file type at the end of relative import path.
 
-#### HTML
+### Import statements > HTML
 
 * `importStatements.html.htmlScriptSupport`: Select script import style for HTML.
 * `importStatements.html.htmlStylesheetSupport`: Select stylesheet import style for HTML.
 
-#### Markdown
+### Import statements > Markdown
 
 * `importStatements.markdown.markdownSupport`: Select **.md** import style.
 * `importStatements.markdown.markdownImageSupport`: Select import style for image import in markdown.
@@ -132,12 +115,12 @@ As of now drag and drop import feature is still not available in vscode.
 
 ## Installation
 
-  1. Install Visual Studio Code v1.30.0 or higher
-  1. Launch Code
-  1. From the command palette `Ctrl+Shift+P` (Windows, Linux) or `Cmd+Shift+P` (OSX)
-  1. Select Install Extensions.
-  1. Choose **Auto Import** by _ElecTreeFrying_
-  1. Reload Visual Studio Code
+  1. Install Visual Studio Code v1.40.0 or higher
+  2. Launch Code
+  3. From the command palette `Ctrl+Shift+P` (Windows, Linux) or `Cmd+Shift+P` (OSX)
+  4. Select Install Extensions.
+  5. Choose **Auto Import** by _ElecTreeFrying_
+  6. Reload Visual Studio Code
 
 ## Changelog
 
@@ -147,7 +130,7 @@ See [CHANGELOG] for more information.
 
 ## Contributing
 
-* File bugs, feature requests in [GitHub Issues].
+* File bugs, or any feature requests in [GitHub Issues].
 * Leave a review on [Visual Studio Marketplace].
 
 [Github Issues]: https://github.com/ElecTreeFrying/auto-import-relative-path/issues

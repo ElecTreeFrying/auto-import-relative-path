@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { Config } from './config-retrival';
+import { Config } from './config-retrieval';
 
 export class ImportPosition {
 
@@ -24,10 +24,12 @@ export class ImportPosition {
   private importToBottom() {
 
     const indicators = [
+      // Script
   		'import  from ', 'import { ', 'import {  as  } from ', 'import {  as name } from ',
   		'import * as  from ', 'import * as name from ', 'import * as ', 'import \'', 'import \"',
   		'var  = require(', 'const  = require(', 'var name = require(', 'const name = require(',
-  		'var  = import(', 'const  = import(', 'var name = import(', 'const name = import(',
+      'var  = import(', 'const  = import(', 'var name = import(', 'const name = import(',
+      // Stylesheet
   		'@import \'', '@import \"', '@import url(', '@import () ', '@use \'', '@use \"'
   	];
 
@@ -37,7 +39,7 @@ export class ImportPosition {
   	let lastLine = 0;
   	(<string[]>documentText).forEach((context, line) => {
   		const count = indicators.some((e) => context.includes(e));
-  		count ? (lastLine = ++line) : 0;
+  		      count ? (lastLine = ++line) : 0;
   	});
 
   	this.editor.edit((active) => {
@@ -63,7 +65,7 @@ export class ImportPosition {
     : this.importText.includes('.md')    ? this.importToCursor()
     : this.param.importType === 0        ? this.importToTop()
     : this.param.importType === 1        ? this.importToBottom()
-    : this.param.importType === 2        ? this.importToCursor() : 0;
+    : this.param.importType === 2        ? this.importToCursor()     : 0;
   }
 
 }

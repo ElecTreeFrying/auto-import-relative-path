@@ -18,7 +18,9 @@
 		"import",
 		"path",
 		"javascript",
-		"css"
+    "css",
+    "html",
+    "markdown"
 	],
 	"galleryBanner": {
 		"color": "#494949",
@@ -40,15 +42,7 @@
 	"activationEvents": [
 		"onCommand:extension.autoImportPaste",
 		"onCommand:extension.autoImportCopy",
-		"onCommand:extension.autoImportRelative",
-		"onLanguage:javascript",
-		"onLanguage:javascriptreact",
-		"onLanguage:typescript",
-		"onLanguage:typescriptreact",
-		"onLanguage:css",
-		"onLanguage:scss",
-		"onLanguage:sass",
-		"onLanguage:less"
+		"onCommand:extension.autoImportRelative"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -83,13 +77,13 @@
 				"command": "extension.autoImportRelative",
 				"key": "alt+d",
 				"mac": "alt+d",
-				"when": "editorTextFocus || filesExplorerFocus"
+				"when": "filesExplorerFocus"
 			}
 		],
 		"configuration": {
 			"title": "Auto Import Relative Path",
 			"properties": {
-				"quoteStyle": {
+				"general.quoteStyle": {
 					"title": "Quote style",
 					"description": "Select a quote style for import path.",
 					"type": "string",
@@ -103,14 +97,14 @@
 						"Wrap import paths with double quotes"
 					]
 				},
-				"importType": {
+				"general.importType": {
 					"title": "Import type",
 					"description": "Import configuration.",
 					"type": "string",
 					"default": "Bottom",
 					"enum": [
 						"Top",
-						"Buttom",
+						"Bottom",
 						"Cursor"
 					],
 					"enumDescriptions": [
@@ -119,13 +113,13 @@
 						"Paste import on selected line."
 					]
 				},
-				"addSemicolon": {
+				"general.addSemicolon": {
 					"title": "Semicolon",
 					"description": "Add semicolon at the end of import statement.",
 					"type": "boolean",
 					"default": true
 				},
-				"disableNotifs": {
+				"general.disableNotifs": {
 					"title": "Disable all notifications",
 					"description": "Disable all notifications on file drop to active pane. ",
 					"type": "boolean",
@@ -271,9 +265,9 @@
 					"title": "Markdown image import style",
 					"description": "",
 					"type": "string",
-					"default": "Inline style: ![alt-text](path \"Hover text\")",
+					"default": "![alt-text](path \"Hover text\")",
 					"enum": [
-						"Inline style: ![alt-text](path \"Hover text\")",
+						"![alt-text](path \"Hover text\")",
 						"Reference style: ![alt-text][image] / [image]: path \"Hover text\""
 					]
 				},
