@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.3.1 (2020-4-23)
+
+### Added
+
+- more demo
+
+### Changes
+
+- updated readme and demo.md
+
 ## v0.3.0 (2020-4-4)
 
 ### Added

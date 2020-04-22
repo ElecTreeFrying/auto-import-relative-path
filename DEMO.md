@@ -6,35 +6,37 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 [VS Code]: https://code.visualstudio.com/
 [extension]: https://marketplace.visualstudio.com/VSCode
 
-## Features
+## Contents
 
-### Supported file types: → js ∙ tsx ∙ ts ∙ tsx ∙ css ∙ scss ∙ sass ∙ less ∙ html ∙ md
+* [Position](#Position)
+* [Keybindings](#Keybindings)
+* [HTML Support](#HTML-Support)
+* [Markdown Support](#Markdown-Support)
 
-* [Configure import styles][configure]
-* [Copy and paste like import][copy paste]
-* [Import to cursor](#Import-to-cursor)
-* [Import to bottom](#Import-to-bottom)
-* [Import to top](#Import-to-top)
-* [⭐️ NEW UPDATE !! ⭐️ → HTML support 🔥🔥](#HTML-Support)
-  1. [Auto import script files to HTML.](#Import-script-and-stylesheet)
-  1. [Auto import stylesheet files to HTML.](#Import-script-and-stylesheet)
-* [⭐️ NEW UPDATE !! ⭐️ → Markdown support 🔥🔥](#Markdown-Support)
-  1. [Auto import image to markdown.](#Import-image-to-markdown)
-  1. [Auto import relative between markdown files.](#Import-markdown)
-
-[configure]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/README.md#Import-statements
-[copy paste]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/README.md#heres-my-solution-
+[configure]: https://github.com/ElecTreeFrying/auto-import-relative-path#import-statements--javascript
+[copy paste]: https://github.com/ElecTreeFrying/auto-import-relative-path#heres-my-solution-
 
 ## Commands
 
-| Key Binding    | Command                     | Description           |
-| -------------- | --------------------------- | --------------------- |
-| `Ctrl+Shift+A` | Auto Import: Copy path      | Copy relative path    |
-| `Ctrl+I`       | Auto Import: Paste relative | Paste relative import |
-
-![auto-import-demo](images/playback.gif "Auto import demo")
+| Command                             | Key Binding    | Description
+| ----------------------------------- | -------------- | --
+| `Auto Import: Copy path`            | `Ctrl+Shift+A` | Copy relative path.
+| `Auto Import: Paste relative`       | `Ctrl+I`       | Paste relative import in active text editor.
+| `Auto Import: Import relative path` | `Alt+D`        | Auto copy and paste relative import inactive text editor.
 
 ## Demo
+
+* (Position) → [Import to cursor](#Import-to-cursor)
+* (Position) → [Import to bottom](#Import-to-bottom)
+* (Position) → [Import to top](#Import-to-top)
+* [Auto import from Explorer → `Ctrl+Shift+A` / `Ctrl+I`](#Auto-import-from-Explorer-→-`Ctrl+Shift+A`-/-`Ctrl+I)
+* [Single keybinding import → `Alt+D`](#Single-keybinding-import-→-`Alt+D`)
+* [Auto Import from text editor](#Auto-Import-from-text-editor)
+* (HTML Support) → [Import script and stylesheet](#Import-script-and-stylesheet)
+* (Markdown Support) → [Import image to markdown](#Import-image-to-markdown)
+* (Markdown Support) → [Import markdown](#Import-markdown)
+
+## Position
 
 ### Import to cursor
 
@@ -47,6 +49,20 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 ### Import to top
 
 ![extension-settings-preview](images/top.gif "Extension settings")
+
+## Keybindings
+
+### Auto import from Explorer → `Ctrl+Shift+A` / `Ctrl+I`
+
+![auto-import-from-explorer](images/keybinding-copy-and-paste.gif "Auto import from explorer demo")
+
+### Single keybinding import → `Alt+D`
+
+![single-keybinding-import](images/keybinding-single.gif "Single keybinding import demo")
+
+### Auto Import from text editor
+
+![auto-import-from-text-editor](images/keybinding-feature.gif "Auto import from text editor demo")
 
 ## HTML Support
 
@@ -72,7 +88,7 @@ See [CHANGELOG] for more information.
 
 ## Contributing
 
-* File bugs, feature requests in [GitHub Issues].
+* File bugs, or any feature requests in [GitHub Issues].
 * Leave a review on [Visual Studio Marketplace].
 
 [Github Issues]: https://github.com/ElecTreeFrying/auto-import-relative-path/issues

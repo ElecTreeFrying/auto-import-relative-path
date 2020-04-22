@@ -22,7 +22,7 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 
 ### Supported file types: → html ∙ md ∙ js ∙ tsx ∙ ts ∙ tsx ∙ css ∙ scss ∙ sass ∙ less
 
-* [Configure import styles](#Import-statements)
+* [Configure import styles](#import-statements--javascript)
 * [Copy and paste like import](#heres-my-solution-)
 * [Import to cursor](#Import-to-cursor)
 * [Import to bottom](#Import-to-bottom)
@@ -45,6 +45,10 @@ As of now drag and drop import feature is still not available in vscode.
 
 * Copy relative path of an active text editor or a file by entering `Auto Import: Paste relative` command.
 * Enter command `Auto Import: Paste relative` to paste relative import.
+
+[Click here for more usage.][more-usage]
+
+[more-usage]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#Keybindings
 
 ![auto-import-demo](images/playback.gif "Auto import demo")
 
