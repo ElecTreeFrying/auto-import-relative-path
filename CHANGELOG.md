@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.2 - v0.3.4 (2020-4-23)
+
+### Fix
+
+- publisher token has gone expired
+
 ## v0.3.1 (2020-4-23)
 
 ### Added
