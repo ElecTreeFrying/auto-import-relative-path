@@ -6,16 +6,6 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 [VS Code]: https://code.visualstudio.com/
 [extension]: https://marketplace.visualstudio.com/VSCode
 
-## Contents
-
-* [Position](#Position)
-* [Keybindings](#Keybindings)
-* [HTML Support](#HTML-Support)
-* [Markdown Support](#Markdown-Support)
-
-[configure]: https://github.com/ElecTreeFrying/auto-import-relative-path#import-statements--javascript
-[copy paste]: https://github.com/ElecTreeFrying/auto-import-relative-path#heres-my-solution-
-
 ## Commands
 
 | Command                             | Key Binding    | Description
@@ -24,13 +14,20 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 | `Auto Import: Paste relative`       | `Ctrl+I`       | Paste relative import in active text editor.
 | `Auto Import: Import relative path` | `Alt+D`        | Auto copy and paste relative import inactive text editor.
 
+## Contents
+
+* [Position](#Position)
+* [Keybindings](#Keybindings)
+* [HTML Support](#HTML-Support)
+* [Markdown Support](#Markdown-Support)
+
 ## Demo
 
 * (Position) → [Import to cursor](#Import-to-cursor)
 * (Position) → [Import to bottom](#Import-to-bottom)
 * (Position) → [Import to top](#Import-to-top)
-* [Auto import from Explorer → `Ctrl+Shift+A` / `Ctrl+I`](#Auto-import-from-Explorer-→-`Ctrl+Shift+A`-/-`Ctrl+I)
-* [Single keybinding import → `Alt+D`](#Single-keybinding-import-→-`Alt+D`)
+* [Auto import from Explorer → `Ctrl+Shift+A` / `Ctrl+I`](#auto-import-from-explorer--ctrlshifta--ctrli)
+* [Single keybinding import → `Alt+D`](#single-keybinding-import--altd)
 * [Auto Import from text editor](#Auto-Import-from-text-editor)
 * (HTML Support) → [Import script and stylesheet](#Import-script-and-stylesheet)
 * (Markdown Support) → [Import image to markdown](#Import-image-to-markdown)
