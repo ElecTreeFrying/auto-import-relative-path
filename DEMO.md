@@ -36,7 +36,7 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 * (Position) → [Import to top](#Import-to-top--ctrli)
 * (Keybindings) → [Auto import from Explorer → `Ctrl+Shift+A` / `Ctrl+I`](#auto-import-from-explorer--ctrlshifta--ctrli)
 * (Keybindings) → [Single keybinding import → `Alt+D`](#single-keybinding-import--altd)
-* (Keybindings) → [Auto import across active tabs](#Auto-Import-from-text-editor)
+* (Keybindings) → [Auto import across active tabs](#auto-import-across-active-tabs--ctrlshifta--ctrli)
 * (HTML Support) → [Import script and stylesheet](#Import-script-and-stylesheet)
 * (Markdown Support) → [Import image to markdown](#Import-image-to-markdown)
 * (Markdown Support) → [Import markdown](#Import-markdown)

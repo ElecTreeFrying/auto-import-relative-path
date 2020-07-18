@@ -44,7 +44,6 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 |      .html      | .js, .jsx, .ts, .tsx |     .css     |
 |       .md       |                      | .scss, .sass |
 |                 |                      |     .less    |
-|                 |                      |              |
 
 ## Usage
 
