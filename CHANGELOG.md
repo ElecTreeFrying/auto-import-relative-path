@@ -1,10 +1,17 @@
 # Changelog
 
+## v0.3.7 (2020-7-18)
+
+### Changes
+
+- renamed commands from `Auto Import: Copy path`, `Auto Import: Paste relative`, `Auto Import: Auto relative path	` to `Auto Import: Copy`, `Auto Import: Paste`, `Auto Import: Auto`
+- updated readme and demo
+
 ## v0.3.6 (2020-4-23)
 
 ### Fix
 
-- demo.md links
+- demo links
 
 ## v0.3.2 - v0.3.5 (2020-4-23)
 
@@ -20,7 +27,7 @@
 
 ### Changes
 
-- updated readme and demo.md
+- updated readme and demo
 
 ## v0.3.0 (2020-4-4)
 
@@ -175,7 +182,7 @@
 
 ### Fixes
 
-- README.md Table
+- README Table
 - settings.gif not showing.
 
 ### Changes
@@ -195,7 +202,7 @@
 - Renamed `Auto Import` command to `Auto Import: Paste relative`
 - Updated Usage demo.gif.
 - Added Settings preview gif.
-- Added badges on README.md.
+- Added badges on README.
 
 ## v0.0.6 (2020-3-15)
 
@@ -219,7 +226,7 @@
 
 ### Changes
 
-- README.md
+- README
 - Updated add export name description.
 
 ## v0.0.2 (2020-3-13)

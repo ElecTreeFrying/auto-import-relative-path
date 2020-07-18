@@ -6,13 +6,21 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 [VS Code]: https://code.visualstudio.com/
 [extension]: https://marketplace.visualstudio.com/VSCode
 
+*An alternative solution of drag and drop import that is not currently available in VS Code.*
+
+> Drag and drop to import files in JS! [#61667][0] </br> 
+> Allow to add file reference with drag and drop. [#5240][1]
+
+[0]: https://github.com/microsoft/vscode/issues/61667
+[1]: https://github.com/microsoft/vscode/issues/5240
+
 ## Commands
 
-| Command                             | Key Binding    | Description
-| ----------------------------------- | -------------- | --
-| `Auto Import: Copy path`            | `Ctrl+Shift+A` | Copy relative path.
-| `Auto Import: Paste relative`       | `Ctrl+I`       | Paste relative import in active text editor.
-| `Auto Import: Import relative path` | `Alt+D`        | Auto copy and paste relative import inactive text editor.
+| Command              | Key Binding    | Description                                                                          |
+| -------------------- | -------------- | ------------------------------------------------------------------------------------ |
+| `Auto Import: Copy`  | `Ctrl+Shift+A` | Copy relative path of selected file in explorer.                                     |
+| `Auto Import: Paste` | `Ctrl+I`       | Paste import in selected/active tab.                                                 |
+| `Auto Import: Auto`  | `Alt+D`        | Auto copy and paste import statement of a file from explorer to selected/active tab. |
 
 ## Contents
 
@@ -23,29 +31,29 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 
 ## Demo
 
-* (Position) → [Import to cursor](#Import-to-cursor)
-* (Position) → [Import to bottom](#Import-to-bottom)
-* (Position) → [Import to top](#Import-to-top)
-* [Auto import from Explorer → `Ctrl+Shift+A` / `Ctrl+I`](#auto-import-from-explorer--ctrlshifta--ctrli)
-* [Single keybinding import → `Alt+D`](#single-keybinding-import--altd)
-* [Auto Import from text editor](#Auto-Import-from-text-editor)
+* (Position) → [Import to cursor](#Import-to-cursor--ctrli)
+* (Position) → [Import to bottom](#Import-to-bottom--ctrli)
+* (Position) → [Import to top](#Import-to-top--ctrli)
+* (Keybindings) → [Auto import from Explorer → `Ctrl+Shift+A` / `Ctrl+I`](#auto-import-from-explorer--ctrlshifta--ctrli)
+* (Keybindings) → [Single keybinding import → `Alt+D`](#single-keybinding-import--altd)
+* (Keybindings) → [Auto import across active tabs](#Auto-Import-from-text-editor)
 * (HTML Support) → [Import script and stylesheet](#Import-script-and-stylesheet)
 * (Markdown Support) → [Import image to markdown](#Import-image-to-markdown)
 * (Markdown Support) → [Import markdown](#Import-markdown)
 
 ## Position
 
-### Import to cursor
+### Import to cursor → `Ctrl+I`
 
-![extension-settings-preview](images/cursor.gif "Extension settings")
+![extension-settings-preview](images/cursor.gif "import to cursor using ctrl+i command")
 
-### Import to bottom
+### Import to bottom → `Ctrl+I`
 
-![extension-settings-preview](images/bottom.gif "Extension settings")
+![extension-settings-preview](images/bottom.gif "import to bottom using ctrl+i command")
 
-### Import to top
+### Import to top → `Ctrl+I`
 
-![extension-settings-preview](images/top.gif "Extension settings")
+![extension-settings-preview](images/top.gif "import to top using ctrl+i command")
 
 ## Keybindings
 
@@ -57,7 +65,7 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 
 ![single-keybinding-import](images/keybinding-single.gif "Single keybinding import demo")
 
-### Auto Import from text editor
+### Auto import across active tabs → `Ctrl+Shift+A` / `Ctrl+I`
 
 ![auto-import-from-text-editor](images/keybinding-feature.gif "Auto import from text editor demo")
 

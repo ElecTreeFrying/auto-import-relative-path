@@ -14,51 +14,60 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 [VS Code]: https://code.visualstudio.com/
 [extension]: https://marketplace.visualstudio.com/VSCode
 
-[Click here for more examples.][demo]
+*An alternative solution of drag and drop import that is currently not available in VS Code.*
 
-[demo]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md
-
-## Features
-
-### Supported file types: → html ∙ md ∙ js ∙ tsx ∙ ts ∙ tsx ∙ css ∙ scss ∙ sass ∙ less
-
-* [Configure import styles](#import-statements--javascript)
-* [Copy and paste like import](#heres-my-solution-)
-* [Import to cursor](#Import-to-cursor)
-* [Import to bottom](#Import-to-bottom)
-* [Import to top](#Import-to-top)
-
-## Usage
-
-As of now drag and drop import feature is still not available in vscode.
-
-> https://github.com/microsoft/vscode/issues/61667
-> <br> Drag and drop to import files in JS! [#61667][0]
->
-> https://github.com/microsoft/vscode/issues/5240
-> <br> Allow to add file reference with drag and drop. [#5240][1]
+> Drag and drop to import files in JS! [#61667][0] </br> 
+> Allow to add file reference with drag and drop. [#5240][1]
 
 [0]: https://github.com/microsoft/vscode/issues/61667
 [1]: https://github.com/microsoft/vscode/issues/5240
 
-### Here's my solution !
+## Features
 
-* Copy relative path of an active text editor or a file by entering `Auto Import: Paste relative` command.
-* Enter command `Auto Import: Paste relative` to paste relative import.
+* [Configure import styles](#import-statements--javascript)
+* [Usage](#usage)
+* [Import to cursor](#Import-to-cursor--ctrli)
+* [Import to bottom](#Import-to-bottom--ctrli)
+* [Import to top](#Import-to-top--ctrli)
+* _[Keybindings]_
+* _[HTML Support]_
+* _[Markdown Support]_
 
-[Click here for more usage.][more-usage]
+[Keybindings]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#keybindings
+[HTML Support]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#html-support
+[Markdown Support]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#markdown-support
 
-[more-usage]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#Keybindings
+## Supported file types
 
-![auto-import-demo](images/playback.gif "Auto import demo")
+| Markup Language | Programming Language |  Stylesheet  |
+|:---------------:|:--------------------:|:------------:|
+|      .html      | .js, .jsx, .ts, .tsx |     .css     |
+|       .md       |                      | .scss, .sass |
+|                 |                      |     .less    |
+|                 |                      |              |
+
+## Usage
+
+* Copy relative path of your file in explorer by `Ctrl+Shift+A` command.
+* Paste import to your active editor tab using `Ctrl+I` command.
+
+### Alternatively
+
+* Select a file in explorer, then enter `Alt+D` command to auto import relative path to your active editor tab.
+
+### [Click here for more usage examples.]
+
+[Click here for more usage examples.]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md
+
+![auto-import-demo](images/playback.gif "auto import relative path demo")
 
 ## Commands
 
-| Command                             | Key Binding    | Description
-| ----------------------------------- | -------------- | --
-| `Auto Import: Copy path`            | `Ctrl+Shift+A` | Copy relative path.
-| `Auto Import: Paste relative`       | `Ctrl+I`       | Paste relative import in active text editor.
-| `Auto Import: Import relative path` | `Alt+D`        | Auto copy and paste relative import inactive text editor.
+| Command              | Key Binding    | Description                                                  |
+| -------------------- | -------------- | ------------------------------------------------------------ |
+| `Auto Import: Copy`  | `Ctrl+Shift+A` | Copy relative path of selected file in explorer.             |
+| `Auto Import: Paste` | `Ctrl+I`       | Paste import in selected tab.                                |
+| `Auto Import: Auto`  | `Alt+D`        | Auto copy and paste of a file from explorer to selected tab. |
 
 ## Configuration Settings
 
@@ -101,29 +110,36 @@ As of now drag and drop import feature is still not available in vscode.
 
 ### Settings Preview
 
-![extension-settings-preview](images/settings.gif "Extension settings")
+![extension-settings-preview](images/settings.gif "auto import relative path extension settings preview")
 
 ## Demo
 
-### Import to cursor
+### Import to cursor → `Ctrl+I`
 
-![extension-settings-preview](images/cursor.gif "Extension settings")
+![extension-settings-preview](images/cursor.gif "import to cursor using ctrl+i command")
 
-### Import to bottom
+### Import to bottom → `Ctrl+I`
 
-![extension-settings-preview](images/bottom.gif "Extension settings")
+![extension-settings-preview](images/bottom.gif "import to bottom using ctrl+i command")
 
-### Import to top
+### Import to top → `Ctrl+I`
 
-![extension-settings-preview](images/top.gif "Extension settings")
+![extension-settings-preview](images/top.gif "import to top using ctrl+i command")
+
+## To do
+
+- [ ] (Svelte) Add auto import support to **.svelte** file extensions.
+- [ ] (Python) Add auto import support to **.py** file extensions.
+- [ ] (Java) Add auto import support to **.java** file extensions.
+- [ ] (PHP) Add auto import support to **.php** file extensions.
 
 ## Installation
 
-  1. Install Visual Studio Code v1.40.0 or higher
-  2. Launch Code
-  3. From the command palette `Ctrl+Shift+P` (Windows, Linux) or `Cmd+Shift+P` (OSX)
-  4. Select Install Extensions.
-  5. Choose **Auto Import** by _ElecTreeFrying_
+  1. Install VS Code v1.42.0 or higher
+  2. Launch Visual Studio Code
+  3. Enter command `Ctrl+Shift+P` (Windows, Linux) or `Cmd+Shift+P` (OSX)
+  4. Select → `Extensions: Install Extensions`.
+  5. Choose **Auto Import Relative Path** by _ElecTreeFrying_
   6. Reload Visual Studio Code
 
 ## Changelog

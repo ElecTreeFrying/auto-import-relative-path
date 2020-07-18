@@ -49,15 +49,15 @@
 		"commands": [
 			{
 				"command": "extension.autoImportPaste",
-				"title": "Auto Import: Paste relative"
+				"title": "Auto Import: Paste"
 			},
 			{
 				"command": "extension.autoImportCopy",
-				"title": "Auto Import: Copy path"
+				"title": "Auto Import: Copy"
 			},
 			{
 				"command": "extension.autoImportRelative",
-				"title": "Auto Import: Import relative path"
+				"title": "Auto Import: Auto"
 			}
 		],
 		"keybindings": [
