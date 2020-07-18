@@ -14,7 +14,7 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 [VS Code]: https://code.visualstudio.com/
 [extension]: https://marketplace.visualstudio.com/VSCode
 
-*An alternative solution of drag and drop import that is currently not available in VS Code.*
+*This extension is my alternative solution of drag and drop import that is currently not available in VS Code.*
 
 > Drag and drop to import files in JS! [#61667][0] </br> 
 > Allow to add file reference with drag and drop. [#5240][1]
@@ -47,26 +47,30 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 
 ## Usage
 
-* Copy relative path of your file in explorer by `Ctrl+Shift+A` command.
-* Paste import to your active editor tab using `Ctrl+I` command.
+* Copy relative path of selected file in explorer by `Ctrl+Shift+A` command.
+* Paste import statement to selected tab using `Ctrl+I` command. [demo][usage-example-1]
+
+[usage-example-1]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#auto-import-from-explorer--ctrlshifta--ctrli
 
 ### Alternatively
 
-* Select a file in explorer, then enter `Alt+D` command to auto import relative path to your active editor tab.
+* Select a file in explorer, then enter `Alt+D` command to auto import relative path to your active tab. [demo][usage-example-2]
 
-### [Click here for more usage examples.]
+[usage-example-2]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#single-keybinding-import--altd
 
 [Click here for more usage examples.]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md
 
 ![auto-import-demo](images/playback.gif "auto import relative path demo")
 
+### [Click here for more usage examples.]
+
 ## Commands
 
-| Command              | Key Binding    | Description                                                  |
-| -------------------- | -------------- | ------------------------------------------------------------ |
-| `Auto Import: Copy`  | `Ctrl+Shift+A` | Copy relative path of selected file in explorer.             |
-| `Auto Import: Paste` | `Ctrl+I`       | Paste import in selected tab.                                |
-| `Auto Import: Auto`  | `Alt+D`        | Auto copy and paste of a file from explorer to selected tab. |
+| Command              | Key Binding    | Description                                                                          |
+| -------------------- | -------------- | ------------------------------------------------------------------------------------ |
+| `Auto Import: Copy`  | `Ctrl+Shift+A` | Copy relative path of selected file in explorer.                                     |
+| `Auto Import: Paste` | `Ctrl+I`       | Paste import statement on selected tab.                                              |
+| `Auto Import: Auto`  | `Alt+D`        | Auto copy and paste import statement of a file from explorer to selected tab.        |
 
 ## Configuration Settings
 
