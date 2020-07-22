@@ -26,9 +26,9 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 
 * [Configure import styles](#import-statements--javascript)
 * [Usage](#usage)
-* [Import to cursor](#Import-to-cursor--ctrli)
-* [Import to bottom](#Import-to-bottom--ctrli)
-* [Import to top](#Import-to-top--ctrli)
+* [Import to cursor](#Import-to-cursor)
+* [Import to bottom](#Import-to-bottom)
+* [Import to top](#Import-to-top)
 * _[Keybindings]_
 * _[HTML Support]_
 * _[Markdown Support]_
@@ -47,22 +47,17 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 
 ## Usage
 
-* Copy relative path of selected file in explorer by `Ctrl+Shift+A` command.
-* Paste import statement to selected tab using `Ctrl+I` command. [demo][usage-example-1]
+1. `Ctrl+Shift+A` a file in explorer → `Ctrl+I` in your editor tab. [demo][usage-example-1]
+2. or `Alt+D` a file in explorer to automatically import in editor tab. [demo][usage-example-2]
 
-[usage-example-1]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#auto-import-from-explorer--ctrlshifta--ctrli
+### [Click here for more usage examples.]
 
-### Alternatively
-
-* Select a file in explorer, then enter `Alt+D` command to auto import relative path to your active tab. [demo][usage-example-2]
-
-[usage-example-2]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#single-keybinding-import--altd
+[usage-example-1]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#auto-import-from-explorer
+[usage-example-2]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#single-keybinding-import
 
 [Click here for more usage examples.]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md
 
 ![auto-import-demo](images/playback.gif "auto import relative path demo")
-
-### [Click here for more usage examples.]
 
 ## Commands
 
@@ -117,21 +112,31 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 
 ## Demo
 
-### Import to cursor → `Ctrl+I`
+### Import to cursor
+
+1. `Ctrl+Shift+A` a file in explorer → `Ctrl+I` in your editor tab.
+2. or `Alt+D` a file in explorer to automatically import in editor tab.
 
 ![extension-settings-preview](images/cursor.gif "import to cursor using ctrl+i command")
 
-### Import to bottom → `Ctrl+I`
+### Import to bottom
+
+1. `Ctrl+Shift+A` a file in explorer → `Ctrl+I` in your editor tab.
+2. or `Alt+D` a file in explorer to automatically import in editor tab.
 
 ![extension-settings-preview](images/bottom.gif "import to bottom using ctrl+i command")
 
-### Import to top → `Ctrl+I`
+### Import to top
+
+1. `Ctrl+Shift+A` a file in explorer → `Ctrl+I` in your editor tab.
+2. or `Alt+D` a file in explorer to automatically import in editor tab.
 
 ![extension-settings-preview](images/top.gif "import to top using ctrl+i command")
 
 ## To do
 
-- [ ] (Svelte) Add auto import support to **.svelte** file extensions.
+- [ ] (Svelte) Add auto import support to **.svelte** file extensions. _**(Aug. 2020)**_
+- [ ] (Vue) Add auto import support to **.vue** file extensions. _**(Sept. 2020)**_
 - [ ] (Python) Add auto import support to **.py** file extensions.
 - [ ] (Java) Add auto import support to **.java** file extensions.
 - [ ] (PHP) Add auto import support to **.php** file extensions.

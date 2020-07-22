@@ -31,47 +31,66 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 
 ## Demo
 
-* (Position) → [Import to cursor → `Ctrl+I`](#Import-to-cursor--ctrli)
-* (Position) → [Import to bottom → `Ctrl+I`](#Import-to-bottom--ctrli)
-* (Position) → [Import to top → `Ctrl+I`](#Import-to-top--ctrli)
-* (Keybindings) → [Auto import from Explorer → `Ctrl+Shift+A` / `Ctrl+I`](#auto-import-from-explorer--ctrlshifta--ctrli)
-* (Keybindings) → [Single keybinding import → `Alt+D`](#single-keybinding-import--altd)
-* (Keybindings) → [Auto import across active tabs → `Ctrl+Shift+A` / `Ctrl+I`](#auto-import-across-active-tabs--ctrlshifta--ctrli)
+* (Position) → [Import to cursor](#Import-to-cursor)
+* (Position) → [Import to bottom](#Import-to-bottom)
+* (Position) → [Import to top](#Import-to-top)
+* (Keybindings) → [Auto import from Explorer](#auto-import-from-explorer)
+* (Keybindings) → [Single keybinding import](#single-keybinding-import)
+* (Keybindings) → [Auto import across active tabs](#auto-import-across-active-tabs)
 * (HTML Support) → [Import script and stylesheet](#Import-script-and-stylesheet)
 * (Markdown Support) → [Import image to markdown](#Import-image-to-markdown)
 * (Markdown Support) → [Import markdown](#Import-markdown)
 
 ## Position
 
-### Import to cursor → `Ctrl+I`
+### Import to cursor
+
+1. `Ctrl+Shift+A` a file in explorer → `Ctrl+I` in your editor tab.
+2. or `Alt+D` a file in explorer to automatically import in editor tab.
 
 ![extension-settings-preview](images/cursor.gif "import to cursor using ctrl+i command")
 
-### Import to bottom → `Ctrl+I`
+### Import to bottom
+
+1. `Ctrl+Shift+A` a file in explorer → `Ctrl+I` in your editor tab.
+2. or `Alt+D` a file in explorer to automatically import in editor tab.
 
 ![extension-settings-preview](images/bottom.gif "import to bottom using ctrl+i command")
 
-### Import to top → `Ctrl+I`
+### Import to top
+
+1. `Ctrl+Shift+A` a file in explorer → `Ctrl+I` in your editor tab.
+2. or `Alt+D` a file in explorer to automatically import in editor tab.
 
 ![extension-settings-preview](images/top.gif "import to top using ctrl+i command")
 
 ## Keybindings
 
-### Auto import from Explorer → `Ctrl+Shift+A` / `Ctrl+I`
+### Auto import from Explorer
+
+1. `Ctrl+Shift+A` a file in explorer → `Ctrl+I` in your editor tab.
 
 ![auto-import-from-explorer](images/keybinding-copy-and-paste.gif "Auto import from explorer demo")
 
-### Single keybinding import → `Alt+D`
+### Single keybinding import
+
+1. `Alt+D` a file in explorer to automatically import in editor tab.
+
 
 ![single-keybinding-import](images/keybinding-single.gif "Single keybinding import demo")
 
-### Auto import across active tabs → `Ctrl+Shift+A` / `Ctrl+I`
+### Auto import across active tabs
+
+1. `Ctrl+Shift+A` a file in explorer → `Ctrl+I` in your editor tab.
 
 ![auto-import-from-text-editor](images/keybinding-feature.gif "Auto import from text editor demo")
 
 ## HTML Support
 
-## Import script and stylesheet
+### Import script and stylesheet
+
+1. `Ctrl+Shift+A` a file in explorer → `Ctrl+I` in your editor tab.
+2. or `Alt+D` a file in explorer to automatically import in editor tab.
 
 ![import-script-stylesheet-demo](images/html.gif "Import script and stylesheet")
 
@@ -79,9 +98,15 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 
 ### Import image to markdown
 
+1. `Ctrl+Shift+A` a file in explorer → `Ctrl+I` in your editor tab.
+2. or `Alt+D` a file in explorer to automatically import in editor tab.
+
 ![markdown-image-import](images/markdown-image.gif "Markdown image import demo")
 
 ### Import markdown
+
+1. `Ctrl+Shift+A` a file in explorer → `Ctrl+I` in your editor tab.
+2. or `Alt+D` a file in explorer to automatically import in editor tab.
 
 ![markdown-import](images/markdown.gif "Markdown import demo")
 

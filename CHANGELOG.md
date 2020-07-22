@@ -1,29 +1,41 @@
 # Changelog
 
+## v0.3.10 (2020-7-22)
+
+### Changes
+
+- updated readme and demo
+
 ## v0.3.7 - v0.3.9 (2020-7-18)
 
 ### Changes
 
-- renamed commands from `Auto Import: Copy path`, `Auto Import: Paste relative`, `Auto Import: Auto relative path	` to `Auto Import: Copy`, `Auto Import: Paste`, `Auto Import: Auto`
+- renamed commands
 - updated readme and demo
+
+| Old command names                 | New command names    |
+| --------------------------------- | -------------------- |
+| `Auto Import: Paste relative`     | `Auto Import: Copy`  |
+| `Auto Import: Paste`              | `Auto Import: Paste` |
+| `Auto Import: Auto relative path` | `Auto Import: Auto`  |
 
 ## v0.3.6 (2020-4-23)
 
-### Fix
+### Fixes
 
 - demo links
 
 ## v0.3.2 - v0.3.5 (2020-4-23)
 
-### Fix
+### Fixes
 
-- publisher token has gone expired
+- updated expired publisher token
 
 ## v0.3.1 (2020-4-23)
 
 ### Added
 
-- more demo
+- more examples in demo
 
 ### Changes
 
@@ -37,33 +49,33 @@
 
 ### Changes
 
-- updated README
+- updated readme
 - updated extension keywords
 - removed unused activation events
 - updated setting configurations
 
 ### Fixes
 
-- README typos
+- readme typos
 - variable typos
 
 ## v0.2.6 (2020-3-23)
 
 ### Fixes
 
-- DEMO typo
+- demo typo
 
 ## v0.2.5 (2020-3-23)
 
 ### Changes
 
-- DEMO markdown feature links.
+- feature links in demo
 
 ## v0.2.3 - v0.2.4 (2020-3-23)
 
 ### Fixes
 
-- README typo
+- readme typo
 
 ## v0.2.2 (2020-3-23)
 
@@ -76,14 +88,14 @@
 
 ### Fixes
 
-- Links to markdown DEMO not working propoerly.
+- links to demo not working properly.
 
 ## v0.2.0 (2020-3-22)
 
 ### Added
 
-- markdown support for image import and markdown relative import
-- DEMO markdown
+- support for markdown image import and markdown relative import
+- demo in markdown support
 - .gif files for markdown support
 
 ### Changes
@@ -94,25 +106,25 @@
 
 ### Changes
 
-- updated README
+- updated readme
 
 ## v0.1.13 (2020-3-20)
 
-### Fixes
+### Changes
 
-- found another misspelled `Shift` 😆
+- updated readme
 
 ## v0.1.12 (2020-3-20)
 
-### Fixes
+### Changes
 
-- typo in readme Commmands section, `Ctrl+Shit+A` to `Ctrl+Shift+A` 😆
+- updated readme
 
 ## v0.1.10 - v0.1.11 (2020-3-19)
 
 ### Fixes
 
-- README not linking to other sections properly
+- readme not linking to other sections properly
 
 ## v0.1.9 (2020-3-19)
 
@@ -128,10 +140,13 @@
 
 ## v0.1.7 (2020-3-19)
 
+### Added
+
+- features and demo section in readme
+
 ### Changes
 
-- removed newline (`\n`) to import to cursor
-- added features and demo section in README
+- removed newline (`\n`) in import to cursor
 
 ## v0.1.6 (2020-3-16)
 
@@ -139,13 +154,13 @@
 
 - modified extension description in package.json
 - removed unused command `closeAllNotif`
-- updated README
+- updated readme
 - changed display name and repository name.
 - added author in package.json
 
-### _TODO:_
+### _To do:_
 
-- Extension rename
+- extension rename
 
 
 ## v0.1.5 (2020-3-16)
@@ -154,23 +169,23 @@
 
 - Renamed extension display name from _Auto Import_ to _Auto Import Relative Path_.
 
-### _TODO:_
+### _To do:_
 
-- Completly rename package from _Auto Import_ to _Auto Import Relative Path_.
-    * [How I can rename my theme extension](https://github.com/Microsoft/vscode/issues/25988)
-    * [Possible to change package name?](https://github.com/Binaryify/OneDark-Pro/issues/54)
+- rename package from _Auto Import_ to _Auto Import Relative Path_.
+    1. [How I can rename my theme extension](https://github.com/Microsoft/vscode/issues/25988)
+    2. [Possible to change package name?](https://github.com/Binaryify/OneDark-Pro/issues/54)
 
 ## v0.1.4 (2020-3-16)
 
 ### Changes
 
-- TODO: Change extension name.
+- preparations to rename the extension name
 
 ## v0.1.3 (2020-3-16)
 
 ### Fixes
 
-- Copy relative on-focus in text editor.
+- copy relative on-focus in text editor
 
 ## v0.1.2 (2020-3-15)
 
@@ -182,27 +197,27 @@
 
 ### Fixes
 
-- README Table
-- settings.gif not showing.
+- readme table
+- settings.gif not showing
 
 ### Changes
 
-- Changed icon from square to circle.
+- changed icon from square to circle
 
 ## v0.1.0 (2020-3-15)
 
 ### Added
 
-- `Auto Import: Copy path` command.
-- Notification on `Auto Import: Copy path` command.
+- `Auto Import: Copy path` command
+- notification on `Auto Import: Copy path` command
 
 ### Changes
 
-- Removed unnecessary notification pop ups.
-- Renamed `Auto Import` command to `Auto Import: Paste relative`
-- Updated Usage demo.gif.
-- Added Settings preview gif.
-- Added badges on README.
+- removed unnecessary notification pop ups
+- renamed `Auto Import` command to `Auto Import: Paste relative`
+- updated **Usage** demo.gif
+- added **Settings** preview gif
+- added badges to readme
 
 ## v0.0.6 (2020-3-15)
 
@@ -214,7 +229,7 @@
 
 ### Added
 
-- Paste import on selected line at the top or bottom of the import list.
+- paste import on selected line at the top or bottom of the import list
 
 ## v0.0.4 (2020-3-14)
 
@@ -226,8 +241,8 @@
 
 ### Changes
 
-- README
-- Updated add export name description.
+- updated readme
+- updated add export name description
 
 ## v0.0.2 (2020-3-13)
 
@@ -237,4 +252,4 @@
 
 ## v0.0.1 (2020-3-13)
 
-- Initial release
+- published extension in marketplace
