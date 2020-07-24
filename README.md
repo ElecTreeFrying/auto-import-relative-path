@@ -164,6 +164,14 @@ See [CHANGELOG] for more information.
 [Github Issues]: https://github.com/ElecTreeFrying/auto-import-relative-path/issues
 [Visual Studio Marketplace]: https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import&ssr=false#review-details
 
+## Support
+
+### Donate by Bitcoin (BTC)
+
+bc1q9hjnxk67c9y6tsyp8jde43xg9hacf0kgdxq6jsxl47666d3hk8aqunv0xr
+
+![donate-by-bitcoin](images/BITCOIN.png "donate by bitcoin")
+
 ## Related
 
 [More extensions of mine.]
