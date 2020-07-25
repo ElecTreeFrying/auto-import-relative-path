@@ -172,6 +172,12 @@ bc1q9hjnxk67c9y6tsyp8jde43xg9hacf0kgdxq6jsxl47666d3hk8aqunv0xr
 
 ![donate-by-bitcoin](images/BITCOIN.png "donate by bitcoin")
 
+### Donate by Mining
+
+|      Mining address (NiceHash)     |
+|:----------------------------------:|
+| 3GJoX9cKs7eUHr6n5LcwNYEkSoD6mEqb1r |
+
 ## Related
 
 [More extensions of mine.]

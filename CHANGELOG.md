@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.12 (2020-7-25)
+
+### Added
+
+- bitcoin mining and donation on readme
+
 ## v0.3.10 - v0.3.11 (2020-7-24)
 
 ### Changes
