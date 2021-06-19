@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
-import { Config } from './config-retrieval';
+
+import { Config } from './interfaces/auto-import.interface';
 
 export class ImportPosition {
 

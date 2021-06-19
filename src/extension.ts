@@ -3,47 +3,37 @@ import * as path from 'path';
 
 import { ImportText } from './import-text';
 import { ImportPosition } from './import-position';
-import { ConfigRetrieval, Config, section } from './config-retrieval';
+import { ConfigRetrieval } from './config-retrieval';
+
+import { section } from './data/extension-settings';
+import { Notification, ImportOption, Config } from './interfaces/auto-import.interface';
 
 let param: Config;
-
-interface Notif {
-	editor: vscode.TextEditor;
-	isNotSamePath?: boolean;
-	activeTEIsValid?: boolean;
-	clipboardIsValid?: boolean;
-}
-
-interface ImportOption { 
-  copy?: boolean, 
-  paste?: boolean, 
-  import?: boolean 
-}
 
 function configObserve(retrieval = new ConfigRetrieval(vscode.workspace)) {
 
 	param = retrieval.param;
 
   return vscode.workspace.onDidChangeConfiguration((config: vscode.ConfigurationChangeEvent) => {
-		param.quoteStyle            = config.affectsConfiguration(section.QUOTESTYLE) 		       ? retrieval.quoteStyle 		       : param.quoteStyle;
-		param.importType            = config.affectsConfiguration(section.IMPORTTYPE) 		       ? retrieval.importType 		       : param.importType;
-		param.addSemicolon          = config.affectsConfiguration(section.ADDSEMICOLON)          ? retrieval.addSemicolon          : param.addSemicolon;
-		param.disableNotifs         = config.affectsConfiguration(section.DISABLENOTIFS)         ? retrieval.disableNotifs         : param.disableNotifs;
-		param.jsSupport 		        = config.affectsConfiguration(section.JSSUPPORT) 		         ? retrieval.jsSupport 		         : param.jsSupport;
-		param.jsxSupport  	        = config.affectsConfiguration(section.JSXSUPPORT) 		       ? retrieval.jsxSupport 		       : param.jsxSupport;
-		param.withExtnameJS         = config.affectsConfiguration(section.WITHEXTNAMEJS)         ? retrieval.withExtnameJS         : param.withExtnameJS;
-		param.tsSupport 		        = config.affectsConfiguration(section.TSSUPPORT) 		         ? retrieval.tsSupport 		         : param.tsSupport;
-		param.tsxSupport 		        = config.affectsConfiguration(section.TSXSUPPORT) 		       ? retrieval.tsxSupport 		       : param.tsxSupport;
-		param.withExtnameTS         = config.affectsConfiguration(section.WITHEXTNAMETS)         ? retrieval.withExtnameTS         : param.withExtnameTS;
-		param.addExportName         = config.affectsConfiguration(section.ADDEXPORTNAME)         ? retrieval.addExportName         : param.addExportName;
-		param.cssSupport 		        = config.affectsConfiguration(section.CSSSUPPORT) 		       ? retrieval.cssSupport 		       : param.cssSupport;
-		param.scssSupport 	        = config.affectsConfiguration(section.SCSSSUPPORT) 	         ? retrieval.scssSupport 	         : param.scssSupport;
-		param.lessSupport 	        = config.affectsConfiguration(section.LESSSUPPORT) 	         ? retrieval.lessSupport           : param.lessSupport;
-		param.withExtnameCSS        = config.affectsConfiguration(section.WITHEXTNAMECSS)        ? retrieval.withExtnameCSS        : param.withExtnameCSS;
-		param.markdownSupport       = config.affectsConfiguration(section.MARKDOWNSUPPORT)       ? retrieval.markdownSupport       : param.markdownSupport;
-		param.markdownImageSupport  = config.affectsConfiguration(section.MARKDOWNIMAGESUPPORT)  ? retrieval.markdownImageSupport  : param.markdownImageSupport;
-		param.htmlScriptSupport     = config.affectsConfiguration(section.HTMLSCRIPTSUPPORT)     ? retrieval.htmlScriptSupport     : param.htmlScriptSupport;
-		param.htmlStylesheetSupport = config.affectsConfiguration(section.HTMLSTYLESHEETSUPPORT) ? retrieval.htmlStylesheetSupport : param.htmlStylesheetSupport;
+		param.quoteStyle            = config.affectsConfiguration(section.quoteStyle) 		       ? retrieval.quoteStyle 		       : param.quoteStyle;
+		param.importType            = config.affectsConfiguration(section.importType) 		       ? retrieval.importType 		       : param.importType;
+		param.addSemicolon          = config.affectsConfiguration(section.addSemicolon)          ? retrieval.addSemicolon          : param.addSemicolon;
+		param.disableNotifications  = config.affectsConfiguration(section.disableNotifications)  ? retrieval.disableNotifications  : param.disableNotifications;
+		param.jsSupport 		        = config.affectsConfiguration(section.jsSupport) 		         ? retrieval.jsSupport 		         : param.jsSupport;
+		param.jsxSupport  	        = config.affectsConfiguration(section.jsxSupport) 		       ? retrieval.jsxSupport 		       : param.jsxSupport;
+		param.withExtnameJS         = config.affectsConfiguration(section.withExtNameJs)         ? retrieval.withExtnameJS         : param.withExtnameJS;
+		param.tsSupport 		        = config.affectsConfiguration(section.tsSupport) 		         ? retrieval.tsSupport 		         : param.tsSupport;
+		param.tsxSupport 		        = config.affectsConfiguration(section.tsxSupport) 		       ? retrieval.tsxSupport 		       : param.tsxSupport;
+		param.withExtnameTS         = config.affectsConfiguration(section.withExtNameTs)         ? retrieval.withExtnameTS         : param.withExtnameTS;
+		param.addExportName         = config.affectsConfiguration(section.addExportName)         ? retrieval.addExportName         : param.addExportName;
+		param.cssSupport 		        = config.affectsConfiguration(section.cssSupport) 		       ? retrieval.cssSupport 		       : param.cssSupport;
+		param.scssSupport 	        = config.affectsConfiguration(section.scssSupport) 	         ? retrieval.scssSupport 	         : param.scssSupport;
+		param.lessSupport 	        = config.affectsConfiguration(section.lessSupport) 	         ? retrieval.lessSupport           : param.lessSupport;
+		param.withExtnameCSS        = config.affectsConfiguration(section.withExtNameCSS)        ? retrieval.withExtnameCSS        : param.withExtnameCSS;
+		param.markdownSupport       = config.affectsConfiguration(section.markdownSupport)       ? retrieval.markdownSupport       : param.markdownSupport;
+		param.markdownImageSupport  = config.affectsConfiguration(section.markdownImageSupport)  ? retrieval.markdownImageSupport  : param.markdownImageSupport;
+		param.htmlScriptSupport     = config.affectsConfiguration(section.htmlScriptSupport)     ? retrieval.htmlScriptSupport     : param.htmlScriptSupport;
+		param.htmlStylesheetSupport = config.affectsConfiguration(section.htmlStylesheetSupport) ? retrieval.htmlStylesheetSupport : param.htmlStylesheetSupport;
 	});
 }
 
@@ -57,9 +47,9 @@ async function process(editor: vscode.TextEditor, activeTE: string, clipboard: s
 	(new ImportPosition(editor, importText, param)).pasteImport();
 }
 
-function notify(option: Notif) {
+function notify(option: Notification) {
 
-	const toNotValid = !option.activeTEIsValid;
+	const toNotValid = !option.activeEditorIsValid;
 	const fromNotValid = !option.clipboardIsValid;
 	const both = (toNotValid && fromNotValid);
 	const either = (toNotValid || fromNotValid);
@@ -97,7 +87,7 @@ async function setup(option: ImportOption = { copy: false, paste: false, import:
 
     await vscode.commands.executeCommand('notifications.clearAll');
 
-		const editor      		 = vscode.window.activeTextEditor;
+		const editor      		 = <vscode.TextEditor>vscode.window.activeTextEditor;
     
     if (!editor) { return notify({ editor }); }
 

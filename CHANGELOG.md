@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.4.0 (2021-6-19)
+
+### Changes
+
+- Updated package.json
+- Modified readme
+
 ## v0.3.12 (2020-7-25)
 
 ### Added

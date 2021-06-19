@@ -37,7 +37,7 @@
 	},
 	"license": "MIT",
 	"engines": {
-		"vscode": "^1.42.0"
+		"vscode": "^1.57.0"
 	},
 	"activationEvents": [
 		"onCommand:extension.autoImportPaste",
@@ -119,7 +119,7 @@
 					"type": "boolean",
 					"default": true
 				},
-				"general.disableNotifs": {
+				"general.disableNotifications": {
 					"title": "Disable all notifications",
 					"description": "Disable all notifications on file drop to active pane. ",
 					"type": "boolean",
@@ -293,7 +293,10 @@
 		}
 	},
 	"scripts": {
-		"vscode:prepublish": "npm run compile",
+    "vscode:prepublish": "npm run -S esbuild-base -- --minify",
+    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
+    "esbuild": "npm run -S esbuild-base -- --sourcemap",
+    "esbuild-watch": "npm run -S esbuild-base -- --sourcemap --watch",
 		"compile": "tsc -p ./",
 		"lint": "eslint src --ext ts",
 		"watch": "tsc -watch -p ./",
@@ -302,20 +305,21 @@
 	},
 	"devDependencies": {
 		"@types/camelcase": "^5.2.0",
-		"@types/glob": "^7.1.1",
-		"@types/mocha": "^7.0.1",
-		"@types/node": "^12.11.7",
-		"@types/vscode": "^1.42.0",
-		"@typescript-eslint/eslint-plugin": "^2.18.0",
-		"@typescript-eslint/parser": "^2.18.0",
-		"eslint": "^6.8.0",
-		"glob": "^7.1.6",
-		"mocha": "^7.0.1",
-		"typescript": "^3.7.5",
-		"vscode-test": "^1.3.0"
+		"@types/glob": "^7.1.3",
+		"@types/mocha": "^8.2.2",
+		"@types/node": "14.x",
+		"@types/vscode": "^1.57.0",
+		"@typescript-eslint/eslint-plugin": "^4.26.0",
+		"@typescript-eslint/parser": "^4.26.0",
+		"esbuild": "^0.12.9",
+		"eslint": "^7.27.0",
+		"glob": "^7.1.7",
+		"mocha": "^8.4.0",
+		"typescript": "^4.3.2",
+		"vscode-test": "^1.5.2"
 	},
 	"dependencies": {
-		"camelcase": "^5.3.1",
+		"camelcase": "^6.2.0",
 		"relative": "^3.0.2"
 	},
 	"__metadata": {

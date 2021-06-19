@@ -1,7 +1,8 @@
-import { Config } from './config-retrieval';
 import * as path from 'path';
-import * as relative from 'relative';
-import * as camelcase from 'camelcase';
+import relative from 'relative';
+import camelcase from 'camelcase';
+
+import { Config } from './interfaces/auto-import.interface';
 
 const SINGLE_QUOTES = "\'";
 const DOUBLE_QUOTES = "\"";
@@ -20,7 +21,7 @@ export class ImportText {
 
   constructor(private param: Config, toPath: string, fromPath: string) {
 
-      let relativePath = <string>relative(toPath, fromPath);
+      let relativePath = relative(toPath, fromPath);
   			  relativePath = relativePath.split('\\').join('/');
   	const isSameDir    = relativePath[0] !== '.';
   		   	relativePath = isSameDir ? './'.concat(relativePath) : relativePath;
