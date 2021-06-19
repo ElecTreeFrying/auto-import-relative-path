@@ -7,7 +7,7 @@
 	},
 	"displayName": "Auto Import Relative Path",
 	"description": "Auto import relative path without typing long and tedious import statements and file paths.",
-	"version": "0.3.12",
+	"version": "0.4.0",
 	"icon": "images/github.png",
 	"categories": [
 		"Other"
@@ -293,10 +293,10 @@
 		}
 	},
 	"scripts": {
-    "vscode:prepublish": "npm run -S esbuild-base -- --minify",
-    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
-    "esbuild": "npm run -S esbuild-base -- --sourcemap",
-    "esbuild-watch": "npm run -S esbuild-base -- --sourcemap --watch",
+		"vscode:prepublish": "npm run -S esbuild-base -- --minify",
+		"esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
+		"esbuild": "npm run -S esbuild-base -- --sourcemap",
+		"esbuild-watch": "npm run -S esbuild-base -- --sourcemap --watch",
 		"compile": "tsc -p ./",
 		"lint": "eslint src --ext ts",
 		"watch": "tsc -watch -p ./",
