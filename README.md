@@ -1,4 +1,3 @@
-
 # Auto Import Relative Path (vscode extension)
 
 [![Current version of Auto Import Relative Path][version svg]][package] [![Current installs of Auto Import Relative Path][installs svg]][package] [![Current downloads of Auto Import Relative Path][downloads svg]][package] [![Current ratings of Auto Import Relative Path][ratings svg]][package]
@@ -14,7 +13,7 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 [VS Code]: https://code.visualstudio.com/
 [extension]: https://marketplace.visualstudio.com/VSCode
 
-*This extension is my alternative solution of drag and drop import that is currently not available in VS Code.*
+*This extension is an alternative solution of drag and drop import that is currently not available in VS Code.*
 
 > Drag and drop to import files in JS! [#61667][0] </br> 
 > Allow to add file reference with drag and drop. [#5240][1]
@@ -63,9 +62,9 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 
 | Command              | Key Binding    | Description                                                                          |
 | -------------------- | -------------- | ------------------------------------------------------------------------------------ |
-| `Auto Import: Copy`  | `Ctrl+Shift+A` | Copy relative path of selected file in explorer.                                     |
-| `Auto Import: Paste` | `Ctrl+I`       | Paste import statement on selected tab.                                              |
-| `Auto Import: Auto`  | `Alt+D`        | Auto copy and paste import statement of a file from explorer to selected tab.        |
+| `Auto Import: Copy`  | `Ctrl+Shift+A` | **Copy** relative path of selected file in explorer.                                     |
+| `Auto Import: Paste` | `Ctrl+I`       | **Paste** import statement on selected tab.                                              |
+| `Auto Import: Auto`  | `Alt+D`        | **Auto** copy and paste import statement of a file from explorer to selected tab.        |
 
 ## Configuration Settings
 
@@ -74,7 +73,7 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 * `quoteStyle`: Select quote style for relative import path. *(double/single quote)*
 * `importType`: Paste import on selected line, at the top or bottom of the import list.
 * `addSemicolon`: Toggle include semicolon at the end of import statement.
-* `disableNotifs`: Disable all notifications.
+* `disableNotifications`: Disable all notifications.
 
 ### Import statements > Javascript
 
@@ -133,17 +132,9 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 
 ![extension-settings-preview](images/top.gif "import to top using ctrl+i command")
 
-## To do
-
-- [ ] (Svelte) Add auto import support to **.svelte** file extensions. _**(Aug. 2020)**_
-- [ ] (Vue) Add auto import support to **.vue** file extensions. _**(Sept. 2020)**_
-- [ ] (Python) Add auto import support to **.py** file extensions.
-- [ ] (Java) Add auto import support to **.java** file extensions.
-- [ ] (PHP) Add auto import support to **.php** file extensions.
-
 ## Installation
 
-  1. Install VS Code v1.42.0 or higher
+  1. Install VS Code v1.57.0 or higher
   2. Launch Visual Studio Code
   3. Enter command `Ctrl+Shift+P` (Windows, Linux) or `Cmd+Shift+P` (OSX)
   4. Select → `Extensions: Install Extensions`.
@@ -166,17 +157,14 @@ See [CHANGELOG] for more information.
 
 ## Support
 
-### Donate by Bitcoin (BTC)
+### Donate by Cryptocurrencies
 
-bc1q9hjnxk67c9y6tsyp8jde43xg9hacf0kgdxq6jsxl47666d3hk8aqunv0xr
-
-![donate-by-bitcoin](images/BITCOIN.png "donate by bitcoin")
-
-### Donate by Mining
-
-|      Mining address (NiceHash)     |
-|:----------------------------------:|
-| 3GJoX9cKs7eUHr6n5LcwNYEkSoD6mEqb1r |
+| Coin | Address                                    |                       |
+|:-----|:-------------------------------------------|:----------------------|
+| BTC  | bc1qtp9ch0uaxavdxv7jujtzfhtyxep06wccla3m8k | Native BTC Blockchain |
+| ETH  | 0x9605e41544789E31Aa3a17Ff1eCfC5FA93f11337 | ERC20                 |
+| USDT | 0x9605e41544789E31Aa3a17Ff1eCfC5FA93f11337 | ERC20                 |
+| USDC | 0x9605e41544789E31Aa3a17Ff1eCfC5FA93f11337 | ERC20                 |
 
 ## Related
 

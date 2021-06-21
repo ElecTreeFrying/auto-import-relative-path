@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.4.2 (2021-6-21)
+
+### Fixes
+
+- Extension not working properly in other VSCode versions.
+
+### Todo
+
+- Fix issue on new engine.
+
+## v0.4.0 - v0.4.1 (2021-6-19)
+
+### Changes
+
+- Updated package.json
+- Modified readme
+
 ## v0.3.12 (2020-7-25)
 
 ### Added
