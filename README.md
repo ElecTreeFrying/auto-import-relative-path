@@ -2,10 +2,10 @@
 
 [![Current version of Auto Import Relative Path][version svg]][package] [![Current installs of Auto Import Relative Path][installs svg]][package] [![Current downloads of Auto Import Relative Path][downloads svg]][package] [![Current ratings of Auto Import Relative Path][ratings svg]][package]
 
-[version svg]: https://vsmarketplacebadge.apphb.com/version-short/electreefrying.auto-import.svg
-[installs svg]: https://vsmarketplacebadge.apphb.com/installs/electreefrying.auto-import.svg
-[downloads svg]: https://vsmarketplacebadge.apphb.com/downloads/electreefrying.auto-import.svg
-[ratings svg]: https://vsmarketplacebadge.apphb.com/rating-short/ElecTreeFrying.auto-import.svg
+[version svg]: https://vsmarketplacebadges.dev/version-short/electreefrying.auto-import.svg
+[installs svg]: https://vsmarketplacebadges.dev/installs/electreefrying.auto-import.svg
+[downloads svg]: https://vsmarketplacebadges.dev/downloads/electreefrying.auto-import.svg
+[ratings svg]: https://vsmarketplacebadges.dev/rating-short/ElecTreeFrying.auto-import.svg
 [package]: https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import
 
 Auto import relative path [extension] for [VS Code]. Auto import relative path without typing long and tedious import statements and file paths.
@@ -20,6 +20,10 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 
 [0]: https://github.com/microsoft/vscode/issues/61667
 [1]: https://github.com/microsoft/vscode/issues/5240
+
+## [Drag And Drop Import Relative Path Extension (click here)]
+
+[Drag And Drop Import Relative Path Extension (click here)]: https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.drag-import-relative-path
 
 ## Features
 
@@ -39,10 +43,10 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 ## Supported file types
 
 | Markup Language | Programming Language |  Stylesheet  |
-|:---------------:|:--------------------:|:------------:|
+| :-------------: | :------------------: | :----------: |
 |      .html      | .js, .jsx, .ts, .tsx |     .css     |
 |       .md       |                      | .scss, .sass |
-|                 |                      |     .less    |
+|                 |                      |    .less     |
 
 ## Usage
 
@@ -60,11 +64,27 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 
 ## Commands
 
-| Command              | Key Binding    | Description                                                                          |
-| -------------------- | -------------- | ------------------------------------------------------------------------------------ |
-| `Auto Import: Copy`  | `Ctrl+Shift+A` | **Copy** relative path of selected file in explorer.                                     |
-| `Auto Import: Paste` | `Ctrl+I`       | **Paste** import statement on selected tab.                                              |
-| `Auto Import: Auto`  | `Alt+D`        | **Auto** copy and paste import statement of a file from explorer to selected tab.        |
+| Command              | Key Binding    | Description                                                                       |
+| -------------------- | -------------- | --------------------------------------------------------------------------------- |
+| `Auto Import: Copy`  | `Ctrl+Shift+A` | **Copy** relative path of selected file in explorer.                              |
+| `Auto Import: Paste` | `Ctrl+I`       | **Paste** import statement on selected tab.                                       |
+| `Auto Import: Auto`  | `Alt+D`        | **Auto** copy and paste import statement of a file from explorer to selected tab. |
+
+## Valid Imports
+
+
+|      Import destination      | Valid filetypes                           | References    |
+| :--------------------------: | :---------------------------------------- | :------------ |
+|           `.html`            | `.js`, `.css`, supported image file types | [(demo)][demo1] |
+|            `.md`             | supported image file types                | [(demo)][demo2] |
+| `.js`, `.jsx`, `.ts`, `.tsx` | filetype itself                           | [(demo)][demo3] |
+|            `.css`            | filetype itself                           | [(demo)][demo3] |
+|  `.scss`, `.sass`, `.less`   | `.css`, filetype itself                   | [(demo)][demo3] |
+
+
+[demo1]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#html-support
+[demo2]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#markdown-support
+[demo3]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md
 
 ## Configuration Settings
 
@@ -155,22 +175,15 @@ See [CHANGELOG] for more information.
 [Github Issues]: https://github.com/ElecTreeFrying/auto-import-relative-path/issues
 [Visual Studio Marketplace]: https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import&ssr=false#review-details
 
-## Support
-
-### Donate by Cryptocurrencies
-
-| Coin | Address                                    |                       |
-|:-----|:-------------------------------------------|:----------------------|
-| BTC  | bc1qtp9ch0uaxavdxv7jujtzfhtyxep06wccla3m8k | Native BTC Blockchain |
-| ETH  | 0x9605e41544789E31Aa3a17Ff1eCfC5FA93f11337 | ERC20                 |
-| USDT | 0x9605e41544789E31Aa3a17Ff1eCfC5FA93f11337 | ERC20                 |
-| USDC | 0x9605e41544789E31Aa3a17Ff1eCfC5FA93f11337 | ERC20                 |
-
 ## Related
 
-[More extensions of mine.]
+### More extensions of mine
 
-[More extensions of mine.]: https://marketplace.visualstudio.com/publishers/ElecTreeFrying
+* [VSCode Text editor]
+* [Atom Text editor]
+
+[VSCode Text editor]: https://marketplace.visualstudio.com/publishers/ElecTreeFrying
+[Atom Text editor]: https://atom.io/users/ElecTreeFrying
 
 ## License
 
