@@ -21,7 +21,9 @@ Auto import relative path [extension] for [VS Code]. Auto import relative path w
 [0]: https://github.com/microsoft/vscode/issues/61667
 [1]: https://github.com/microsoft/vscode/issues/5240
 
-## [Drag And Drop Import Relative Path Extension (click here)]
+## Drag and drop import extension
+
+**[Drag And Drop Import Relative Path Extension (click here)]**
 
 [Drag And Drop Import Relative Path Extension (click here)]: https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.drag-import-relative-path
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.4.8 (2022-8-19)
+
+### Changes
+
+- Updated readme
+
 ## v0.4.3 - v0.4.7 (2022-8-18)
 
 ### Changes
