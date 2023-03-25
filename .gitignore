@@ -1,13 +1,5 @@
-
-# VS Code
-
 out
+dist
 node_modules
 .vscode-test/
 *.vsix
-
-
-# App dev
-
-/images/test
-

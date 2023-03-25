@@ -1,352 +1,51 @@
 {
-	"name": "auto-import",
-	"publisher": "ElecTreeFrying",
-	"author": {
-		"name": "John James Ermitaño",
-		"email": "jjgermitano@gmail.com"
-	},
-	"displayName": "Auto Import Relative Path",
-	"description": "Auto import relative path without typing long and tedious import statements and file paths.",
-	"version": "0.4.8",
-	"icon": "images/github.png",
-	"badges": [
-		{
-			"url": "https://vsmarketplacebadge.apphb.com/version-short/Electreefrying.auto-import.png",
-			"description": "Version badge",
-			"href": "https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import"
-		},
-		{
-			"url": "https://vsmarketplacebadges.dev/downloads-short/ElecTreeFrying.auto-import.png",
-			"description": "Downloads badge",
-			"href": "https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import"
-		},
-		{
-			"url": "https://vsmarketplacebadges.dev/installs-short/ElecTreeFrying.auto-import.png",
-			"description": "Installs badge",
-			"href": "https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import"
-		},
-		{
-			"url": "https://vsmarketplacebadges.dev/rating-short/ElecTreeFrying.auto-import.png",
-			"description": "Rating badge",
-			"href": "https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import"
-		}
-	],
-	"categories": [
-		"Other"
-	],
-	"keywords": [
-		"relative",
-		"auto",
-		"import",
-		"path",
-		"javascript",
-		"css",
-		"html",
-		"markdown"
-	],
-	"galleryBanner": {
-		"color": "#494949",
-		"theme": "dark"
-	},
-	"homepage": "https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/README.md",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/ElecTreeFrying/auto-import-relative-path.git"
-	},
-	"bugs": {
-		"email": "electreefrying.git@gmail.com",
-		"url": "https://github.com/ElecTreeFrying/auto-import-relative-path/issues"
-	},
-	"license": "MIT",
-	"engines": {
-		"vscode": "^1.57.0"
-	},
-	"activationEvents": [
-		"onCommand:extension.autoImportPaste",
-		"onCommand:extension.autoImportCopy",
-		"onCommand:extension.autoImportRelative"
-	],
-	"main": "./out/extension.js",
-	"contributes": {
-		"commands": [
-			{
-				"command": "extension.autoImportPaste",
-				"title": "Auto Import: Paste"
-			},
-			{
-				"command": "extension.autoImportCopy",
-				"title": "Auto Import: Copy"
-			},
-			{
-				"command": "extension.autoImportRelative",
-				"title": "Auto Import: Auto"
-			}
-		],
-		"keybindings": [
-			{
-				"command": "extension.autoImportPaste",
-				"key": "ctrl+i",
-				"mac": "cmd+i",
-				"when": "editorTextFocus"
-			},
-			{
-				"command": "extension.autoImportCopy",
-				"key": "ctrl+shift+a",
-				"mac": "cmd++shift+a",
-				"when": "editorTextFocus || filesExplorerFocus"
-			},
-			{
-				"command": "extension.autoImportRelative",
-				"key": "alt+d",
-				"mac": "alt+d",
-				"when": "filesExplorerFocus"
-			}
-		],
-		"configuration": {
-			"title": "Auto Import Relative Path",
-			"properties": {
-				"general.quoteStyle": {
-					"title": "Quote style",
-					"description": "Select a quote style for import path.",
-					"type": "string",
-					"default": "Single quotes",
-					"enum": [
-						"Single quotes",
-						"Double quotes"
-					],
-					"enumDescriptions": [
-						"Wrap import paths with single quotes",
-						"Wrap import paths with double quotes"
-					]
-				},
-				"general.importType": {
-					"title": "Import type",
-					"description": "Import configuration.",
-					"type": "string",
-					"default": "Bottom",
-					"enum": [
-						"Top",
-						"Bottom",
-						"Cursor"
-					],
-					"enumDescriptions": [
-						"Paste at the top of the import list.",
-						"Paste at the bottom of the import list.",
-						"Paste import on selected line."
-					]
-				},
-				"general.addSemicolon": {
-					"title": "Semicolon",
-					"description": "Add semicolon at the end of import statement.",
-					"type": "boolean",
-					"default": true
-				},
-				"general.disableNotifications": {
-					"title": "Disable all notifications",
-					"description": "Disable all notifications on file drop to active pane. ",
-					"type": "boolean",
-					"default": true
-				},
-				"importStatements.javascript.jsSupport": {
-					"title": "Javascript import style",
-					"description": "",
-					"type": "string",
-					"default": "import  from '';",
-					"enum": [
-						"import  from '';",
-						"import {  } from '';",
-						"import {  as  } from '';",
-						"import {  as name } from '';",
-						"import * as  from '';",
-						"import * as name from '';",
-						"import '';",
-						"var  = require('');",
-						"const  = require('');",
-						"var name = require('');",
-						"const name = require('');",
-						"var  = import('');",
-						"const  = import('');",
-						"var name = import('');",
-						"const name = import('');"
-					]
-				},
-				"importStatements.javascript.jsxSupport": {
-					"title": "JSX import style",
-					"description": "",
-					"type": "string",
-					"default": "import  from '';",
-					"enum": [
-						"import  from '';",
-						"import {  } from '';",
-						"import {  as  } from '';",
-						"import {  as name } from '';",
-						"import * as  from '';",
-						"import * as name from '';",
-						"import '';",
-						"var  = require('');",
-						"const  = require('');",
-						"var name = require('');",
-						"const name = require('');",
-						"var  = import('');",
-						"const  = import('');",
-						"var name = import('');",
-						"const name = import('');"
-					]
-				},
-				"importStatements.javascript.withExtnameJS": {
-					"title": "File type",
-					"description": "Add file type or extension name at the end of path. _{ex. \"../path.js\"}_",
-					"type": "boolean",
-					"default": false
-				},
-				"importStatements.typescript.tsSupport": {
-					"title": "Typescript import style",
-					"description": "",
-					"type": "string",
-					"default": "import {  } from '';",
-					"enum": [
-						"import  from '';",
-						"import {  } from '';",
-						"import {  as  } from '';",
-						"import * as  from '';",
-						"import '';"
-					]
-				},
-				"importStatements.typescript.tsxSupport": {
-					"title": "TSX import style",
-					"description": "",
-					"type": "string",
-					"default": "import {  } from '';",
-					"enum": [
-						"import  from '';",
-						"import {  } from '';",
-						"import {  as  } from '';",
-						"import * as  from '';",
-						"import '';"
-					]
-				},
-				"importStatements.typescript.withExtnameTS": {
-					"title": "File type",
-					"description": "Add file type or extension name at the end of path. _{ex. \"../path.ts\"}_",
-					"type": "boolean",
-					"default": false
-				},
-				"importStatements.typescript.addExportName": {
-					"title": "Export name",
-					"description": "Include component name in import statement. (Angular/.tsx)",
-					"type": "boolean",
-					"default": true
-				},
-				"importStatements.stylesheet.cssSupport": {
-					"title": "CSS import style",
-					"description": "",
-					"type": "string",
-					"default": "@import '';",
-					"enum": [
-						"@import '';",
-						"@import url('');"
-					]
-				},
-				"importStatements.stylesheet.scssSupport": {
-					"title": "SCSS/SASS import style",
-					"description": "",
-					"type": "string",
-					"default": "@import '';",
-					"enum": [
-						"@import '';",
-						"@import url('');",
-						"@use '';"
-					]
-				},
-				"importStatements.stylesheet.lessSupport": {
-					"title": "LESS import style",
-					"description": "",
-					"type": "string",
-					"default": "@import '';",
-					"enum": [
-						"@import '';",
-						"@import () '';"
-					]
-				},
-				"importStatements.stylesheet.withExtnameCSS": {
-					"title": "File type",
-					"description": "Add file type or extension name at the end of path. _{ex. \"../path.css\"}_",
-					"type": "boolean",
-					"default": false
-				},
-				"importStatements.markdown.markdownSupport": {
-					"title": "Markdown import style",
-					"description": "",
-					"type": "string",
-					"default": "![text](path)",
-					"enum": [
-						"![text](path)"
-					]
-				},
-				"importStatements.markdown.markdownImageSupport": {
-					"title": "Markdown image import style",
-					"description": "",
-					"type": "string",
-					"default": "![alt-text](path \"Hover text\")",
-					"enum": [
-						"![alt-text](path \"Hover text\")",
-						"Reference style: ![alt-text][image] / [image]: path \"Hover text\""
-					]
-				},
-				"importStatements.html.htmlScriptSupport": {
-					"title": "HTML import style for script",
-					"description": "",
-					"type": "string",
-					"default": "<script type=\"text/javascript\" src=\"path\"></script>",
-					"enum": [
-						"<script type=\"text/javascript\" src=\"path\"></script>"
-					]
-				},
-				"importStatements.html.htmlStylesheetSupport": {
-					"title": "HTML import style from stylesheet",
-					"description": "",
-					"type": "string",
-					"default": "<link href=\"path\" rel=\"stylesheet\">",
-					"enum": [
-						"<link href=\"path\" rel=\"stylesheet\">"
-					]
-				}
-			}
-		}
-	},
-	"scripts": {
-		"vscode:prepublish": "npm run -S esbuild-base -- --minify",
-		"esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
-		"esbuild": "npm run -S esbuild-base -- --sourcemap",
-		"esbuild-watch": "npm run -S esbuild-base -- --sourcemap --watch",
-		"compile": "tsc -p ./",
-		"lint": "eslint src --ext ts",
-		"watch": "tsc -watch -p ./",
-		"pretest": "npm run compile && npm run lint",
-		"test": "node ./out/test/runTest.js"
-	},
-	"devDependencies": {
-		"@types/camelcase": "^5.2.0",
-		"@types/glob": "^7.1.3",
-		"@types/mocha": "^8.2.2",
-		"@types/node": "14.x",
-		"@types/vscode": "^1.57.0",
-		"@typescript-eslint/eslint-plugin": "^4.26.0",
-		"@typescript-eslint/parser": "^4.26.0",
-		"esbuild": "^0.12.9",
-		"eslint": "^7.27.0",
-		"glob": "^7.1.7",
-		"mocha": "^8.4.0",
-		"typescript": "^4.3.2",
-		"vscode-test": "^1.5.2"
-	},
-	"dependencies": {
-		"camelcase": "^6.2.0",
-		"relative": "^3.0.2"
-	},
-	"__metadata": {
-		"id": "d89b6a41-408a-4f11-98fc-84c5f0bfe373",
-		"publisherDisplayName": "ElecTreeFrying",
-		"publisherId": "bb9ce4c3-e0fd-46bb-9807-083cf4ee4379"
-	}
+  "name": "auto-import",
+  "displayName": "auto-import",
+  "description": "",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.76.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:auto-import.helloWorld"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "auto-import.helloWorld",
+        "title": "Hello World"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.76.0",
+    "@types/glob": "^8.0.1",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "16.x",
+    "@typescript-eslint/eslint-plugin": "^5.49.0",
+    "@typescript-eslint/parser": "^5.49.0",
+    "eslint": "^8.33.0",
+    "glob": "^8.1.0",
+    "mocha": "^10.1.0",
+    "typescript": "^4.9.4",
+    "ts-loader": "^9.4.2",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1",
+    "@vscode/test-electron": "^2.2.2"
+  }
 }
