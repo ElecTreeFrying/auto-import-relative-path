@@ -1,23 +1,275 @@
 {
   "name": "auto-import",
-  "displayName": "auto-import",
-  "description": "",
+	"displayName": "Auto Import Relative Path",
+	"description": "Auto Import Relative Path, is an extension that makes importing relative paths much easier and less tedious. With this extension, you can say goodbye to long and complicated import statements and file paths. It provides a simple and efficient way to import files without having to manually type out the entire path. Whether you're working on a small project or a large one with many files, this extension can save you a lot of time and effort",
+	"publisher": "ElecTreeFrying",
   "version": "0.0.1",
+	"author": {
+		"name": "John James Ermitaño",
+		"email": "jjgermitano@gmail.com"
+	},
+  "icon": "assets/extension-icon.png",
   "engines": {
     "vscode": "^1.76.0"
   },
+	"homepage": "https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/README.md",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ElecTreeFrying/auto-import-relative-path.git"
+	},
+	"bugs": {
+		"email": "octobergroup721@gmail.com",
+		"url": "https://github.com/ElecTreeFrying/auto-import-relative-path/issues"
+	},
+	"badges": [
+		{
+			"url": "https://vsmarketplacebadge.apphb.com/version-short/Electreefrying.auto-import.png",
+			"description": "Version badge",
+			"href": "https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import"
+		},
+		{
+			"url": "https://vsmarketplacebadges.dev/downloads-short/ElecTreeFrying.auto-import.png",
+			"description": "Downloads badge",
+			"href": "https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import"
+		},
+		{
+			"url": "https://vsmarketplacebadges.dev/installs-short/ElecTreeFrying.auto-import.png",
+			"description": "Installs badge",
+			"href": "https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import"
+		},
+		{
+			"url": "https://vsmarketplacebadges.dev/rating-short/ElecTreeFrying.auto-import.png",
+			"description": "Rating badge",
+			"href": "https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import"
+		}
+	],
+  "extensionPack": [
+    "ElecTreeFrying.drag-import-relative-path"
+  ],
+	"galleryBanner": {
+		"color": "#494949",
+		"theme": "dark"
+	},
+	"license": "MIT",
   "categories": [
     "Other"
   ],
+	"keywords": [
+    "auto import relative",
+    "auto import relative path",
+    "relative import",
+    "auto import",
+    "relative path",
+    "drag",
+    "import",
+    "path",
+    "relative",
+    "angular",
+    "react",
+    "vue",
+    "javascript",
+    "typescript",
+    "css",
+    "scss",
+    "html",
+    "markdown"
+	],
   "activationEvents": [
-    "onCommand:auto-import.helloWorld"
+    "onCommand:extension.autoImportPaste",
+    "onCommand:extension.autoImportCopy",
+    "onCommand:extension.autoImportRelative"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "auto-import.helloWorld",
-        "title": "Hello World"
+        "command": "extension.autoImportPaste",
+        "title": "Auto Import: Paste"
+      },
+      {
+        "command": "extension.autoImportCopy",
+        "title": "Auto Import: Copy"
+      },
+      {
+        "command": "extension.autoImportRelative",
+        "title": "Auto Import: Auto"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "extension.autoImportPaste",
+        "key": "ctrl+shift+w",
+        "mac": "cmd+i",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "extension.autoImportCopy",
+        "key": "ctrl+shift+q",
+        "mac": "cmd++shift+a",
+        "when": "editorTextFocus || filesExplorerFocus"
+      },
+      {
+        "command": "extension.autoImportRelative",
+        "key": "alt+d",
+        "mac": "alt+d",
+        "when": "filesExplorerFocus"
+      }
+    ],
+    "configuration": [
+      {
+        "title": "Auto Import Relative Path",
+        "properties": {
+          "auto-import.preferences.disableAllDropNotifications": {
+            "title": "Disable all drag-and-drop notifications",
+            "description": "Disable all drag-and-drop notifications when a file is dropped on the active pane.",
+            "type": "boolean",
+            "default": false
+          },
+          "auto-import.preferences.importStatementPlacement": {
+            "title": "Import statement placement",
+            "description": "Choose where you want your import statements to be placed in your code with this setting. You can choose to place them at the 'top' of the import list, at the 'bottom', or on the current position of the mouse cursor with the 'Cursor' option.",
+            "type": "string",
+            "default": "Bottom",
+            "enum": [
+              "Top",
+              "Bottom",
+              "Cursor"
+            ],
+            "enumDescriptions": [
+              "Place the import statement at the 'top' of the import list.",
+              "Place the import statement at the 'bottom' of the import list.",
+              "Place the import statement on the current position of the mouse cursor."
+            ]
+          },
+          "auto-import.importStatement.script.preserveScriptFileExtension": {
+            "title": "Preserve file extension",
+            "description": "Preserve the file extension in the relative path.",
+            "type": "boolean",
+            "default": false
+          },
+          "auto-import.importStatement.script.javascriptImportStyle": {
+            "title": "Javascript (.ts)/React Javascript(.tsx) import styles",
+            "description": "Supported Javascript (.ts)/React Javascript(.tsx) import styles",
+            "type": "string",
+            "default": "import name from '_relativePath_';",
+            "enum": [
+              "import name from '_relativePath_';",
+              "import { name } from '_relativePath_';",
+              "import { default as name } from '_relativePath_';",
+              "import * as name from '_relativePath_';",
+              "import '_relativePath_';",
+              "var name = require('_relativePath_');",
+              "const name = require('_relativePath_');",
+              "var name = import('_relativePath_');",
+              "const name = import('_relativePath_');"
+            ]
+          },
+          "auto-import.importStatement.script.typescriptImportStyle": {
+            "title": "Typescript (.ts)/React Typescript(.tsx) import styles",
+            "description": "Supported Typescript (.ts)/React Typescript(.tsx) import styles",
+            "type": "string",
+            "default": "import name from '_relativePath_';",
+            "enum": [
+              "import name from '_relativePath_';",
+              "import { name } from '_relativePath_';",
+              "import { default as name } from '_relativePath_';",
+              "import * as name from '_relativePath_';",
+              "import '_relativePath_';"
+            ]
+          },
+          "auto-import.importStatement.styleSheet.preserveStylesheetFileExtension": {
+            "title": "Preserve file extension",
+            "description": "Preserve the file extension in the relative path.",
+            "type": "boolean",
+            "default": false
+          },
+          "auto-import.importStatement.styleSheet.cssImportStyle": {
+            "title": "CSS import styles",
+            "description": "Supported CSS import styles",
+            "type": "string",
+            "default": "@import '_relativePath_';",
+            "enum": [
+              "@import '_relativePath_';",
+              "@import url('_relativePath_');"
+            ]
+          },
+          "auto-import.importStatement.styleSheet.cssImageImportStyle": {
+            "title": "CSS import styles",
+            "description": "Supported CSS import styles",
+            "type": "string",
+            "default": "url('_relativePath_')",
+            "enum": [
+              "url('_relativePath_')"
+            ]
+          },
+          "auto-import.importStatement.styleSheet.scssImportStyle": {
+            "title": "SCSS import styles",
+            "description": "Supported SCSS import styles",
+            "type": "string",
+            "default": "@import '_relativePath_';",
+            "enum": [
+              "@import '_relativePath_';",
+              "@import url('_relativePath_');",
+              "@use '_relativePath_';",
+              "@use '_relativePath_' as *;"
+            ]
+          },
+          "auto-import.importStatement.styleSheet.scssImageImportStyle": {
+            "title": "SCSS import styles",
+            "description": "Supported SCSS import styles",
+            "type": "string",
+            "default": "url('_relativePath_')",
+            "enum": [
+              "url('_relativePath_')"
+            ]
+          },
+          "auto-import.importStatement.markup.htmlScriptImportStyle": {
+            "title": "HTML import styles for script",
+            "description": "Supported HTML import styles for script",
+            "type": "string",
+            "default": "<script type=\"text/javascript\" src=\"_relativePath_\"></script>",
+            "enum": [
+              "<script type=\"text/javascript\" src=\"_relativePath_\"></script>"
+            ]
+          },
+          "auto-import.importStatement.markup.htmlImageImportStyle": {
+            "title": "HTML image import styles for script",
+            "description": "Supported HTML image import styles for script",
+            "type": "string",
+            "default": "<img src=\"_relativePath_\" alt=\"sample\">",
+            "enum": [
+              "<img src=\"_relativePath_\" alt=\"sample\">"
+            ]
+          },
+          "auto-import.importStatement.markup.htmlStyleSheetImportStyle": {
+            "title": "HTML import styles from stylesheet",
+            "description": "Supported HTML import styles from stylesheet",
+            "type": "string",
+            "default": "<link href=\"_relativePath_\" rel=\"stylesheet\">",
+            "enum": [
+              "<link href=\"_relativePath_\" rel=\"stylesheet\">"
+            ]
+          },
+          "auto-import.importStatement.markup.markdownImportStyle": {
+            "title": "Markdown import styles",
+            "description": "Supported markdown import styles",
+            "type": "string",
+            "default": "![text](_relativePath_)",
+            "enum": [
+              "![text](_relativePath_)"
+            ]
+          },
+          "auto-import.importStatement.markup.markdownImageImportStyle": {
+            "title": "Markdown image import styles",
+            "description": "Supported markdown image import styles",
+            "type": "string",
+            "default": "![alt-text](_relativePath_ \"Hover text\")",
+            "enum": [
+              "![alt-text](_relativePath_ \"Hover text\")",
+              "![alt-text][image] / [image]: _relativePath_ \"Hover text\""
+            ]
+          }
+        }
       }
     ]
   },
@@ -33,19 +285,19 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@types/vscode": "^1.76.0",
     "@types/glob": "^8.0.1",
     "@types/mocha": "^10.0.1",
     "@types/node": "16.x",
+    "@types/vscode": "^1.76.0",
     "@typescript-eslint/eslint-plugin": "^5.49.0",
     "@typescript-eslint/parser": "^5.49.0",
+    "@vscode/test-electron": "^2.2.2",
     "eslint": "^8.33.0",
     "glob": "^8.1.0",
     "mocha": "^10.1.0",
-    "typescript": "^4.9.4",
     "ts-loader": "^9.4.2",
+    "typescript": "^4.9.4",
     "webpack": "^5.75.0",
-    "webpack-cli": "^5.0.1",
-    "@vscode/test-electron": "^2.2.2"
+    "webpack-cli": "^5.0.1"
   }
 }
