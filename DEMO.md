@@ -1,114 +1,121 @@
 
 # Auto Import Relative Path (DEMO)
 
-Auto import relative path [extension] for [VS Code]. Auto import relative path without typing long and tedious import statements and file paths.
+[version svg]: https://vsmarketplacebadges.dev/version-short/electreefrying.auto-import.png
+[installs svg]: https://vsmarketplacebadges.dev/installs/electreefrying.auto-import.png
+[downloads svg]: https://vsmarketplacebadges.dev/downloads/electreefrying.auto-import.png
+[ratings svg]: https://vsmarketplacebadges.dev/rating-short/ElecTreeFrying.auto-import.png
+[package]: https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import
+
+Auto Import Relative Path, is an [extension] for [VS Code] that makes importing relative paths much easier and less tedious. With this extension, you can say goodbye to long and complicated import statements and file paths. It provides a simple and efficient way to import files without having to manually type out the entire path. Whether you're working on a small project or a large one with many files, this extension can save you a lot of time and effort
 
 [VS Code]: https://code.visualstudio.com/
 [extension]: https://marketplace.visualstudio.com/VSCode
 
-*This extension is my alternative solution of drag and drop import that is currently not available in VS Code.*
+## Supported file extensions
 
-> Drag and drop to import files in JS! [#61667][0] </br> 
-> Allow to add file reference with drag and drop. [#5240][1]
-
-[0]: https://github.com/microsoft/vscode/issues/61667
-[1]: https://github.com/microsoft/vscode/issues/5240
+|                      | File extension               |
+| -------------------- | ---------------------------- |
+| Programming Language | `.js`, `.jsx`, `.ts`, `.tsx` |
+| Markup Language      | `.html`, `.md`               |
+| Stylesheet           | `.css`, `.scss`              |
 
 ## Commands
 
-| Command              | Key Binding    | Description                                                                          |
-| -------------------- | -------------- | ------------------------------------------------------------------------------------ |
-| `Auto Import: Copy`  | `Ctrl+Shift+A` | Copy relative path of selected file in explorer.                                     |
-| `Auto Import: Paste` | `Ctrl+I`       | Paste import statement on selected tab.                                              |
-| `Auto Import: Auto`  | `Alt+D`        | Auto copy and paste import statement of a file from explorer to selected tab.        |
+| Command              | Key Binding    | Description                                                                                      |        See in action        |
+| -------------------- | -------------- | ------------------------------------------------------------------------------------------------ | :-------------------------: |
+| `Auto Import: Copy`  | `Ctrl+Shift+A` | **Copy** the relative path of the selected file in Explorer.                                     | [click here](#auto-import-from-explorer) |
+| `Auto Import: Paste` | `Ctrl+I`       | **Paste** the import statement into your active text editor.                                     | [click here](#auto-import-from-explorer) |
+| `Auto Import: Auto`  | `Alt+D`        | **Auto** copy and paste the import statement of a file from Explorer to your active text editor. | [click here](#single-keybinding-import) |
+
+
 
 ## Contents
 
-* [Position](#Position)
-* [Keybindings](#Keybindings)
-* [HTML Support](#HTML-Support)
-* [Markdown Support](#Markdown-Support)
+- [Import statement position](#import-statement-position)
+	- [Append to cursor](#append-to-cursor)
+	- [Append to the bottom of the import list](#append-to-the-bottom-of-the-import-list)
+	- [Append to the top of the import list](#append-to-the-top-of-the-import-list)
+- [Keybindings](#keybindings)
+	- [Auto import from Explorer](#auto-import-from-explorer)
+	- [Single keybinding import](#single-keybinding-import)
+	- [Auto import across active tabs](#auto-import-across-active-tabs)
+- [HTML Support](#html-support)
+	- [Import script and stylesheet](#import-script-and-stylesheet)
+- [Markdown Support](#markdown-support)
+	- [Import image to markdown](#import-image-to-markdown)
+	- [Import markdown](#import-markdown)
 
-## Demo
+## Import statement position
 
-* (Position) → [Import to cursor](#Import-to-cursor)
-* (Position) → [Import to bottom](#Import-to-bottom)
-* (Position) → [Import to top](#Import-to-top)
-* (Keybindings) → [Auto import from Explorer](#auto-import-from-explorer)
-* (Keybindings) → [Single keybinding import](#single-keybinding-import)
-* (Keybindings) → [Auto import across active tabs](#auto-import-across-active-tabs)
-* (HTML Support) → [Import script and stylesheet](#Import-script-and-stylesheet)
-* (Markdown Support) → [Import image to markdown](#Import-image-to-markdown)
-* (Markdown Support) → [Import markdown](#Import-markdown)
+### Append to cursor
 
-## Position
 
-### Import to cursor
+1. Press `Ctrl+Shift+A` on a file in Explorer, then press `Ctrl+I` in your active text editor to import it.
+2. Alternatively, press `Alt+D` to automatically import the file in your active text editor.
 
-1. `Ctrl+Shift+A` a file in explorer → `Ctrl+I` in your editor tab.
-2. or `Alt+D` a file in explorer to automatically import in editor tab.
+![extension-settings-preview](assets/cursor.gif "import to cursor using ctrl+i command")
 
-![extension-settings-preview](images/cursor.gif "import to cursor using ctrl+i command")
+### Append to the bottom of the import list
 
-### Import to bottom
 
-1. `Ctrl+Shift+A` a file in explorer → `Ctrl+I` in your editor tab.
-2. or `Alt+D` a file in explorer to automatically import in editor tab.
+1. Press `Ctrl+Shift+A` on a file in Explorer, then press `Ctrl+I` in your active text editor to import it.
+2. Alternatively, press `Alt+D` to automatically import the file in your active text editor.
 
-![extension-settings-preview](images/bottom.gif "import to bottom using ctrl+i command")
+![extension-settings-preview](assets/bottom.gif "import to bottom using ctrl+i command")
 
-### Import to top
+### Append to the top of the import list
 
-1. `Ctrl+Shift+A` a file in explorer → `Ctrl+I` in your editor tab.
-2. or `Alt+D` a file in explorer to automatically import in editor tab.
+1. Press `Ctrl+Shift+A` on a file in Explorer, then press `Ctrl+I` in your active text editor to import it.
+2. Alternatively, press `Alt+D` to automatically import the file in your active text editor.
 
-![extension-settings-preview](images/top.gif "import to top using ctrl+i command")
+![extension-settings-preview](assets/top.gif "import to top using ctrl+i command")
 
 ## Keybindings
 
 ### Auto import from Explorer
 
-1. `Ctrl+Shift+A` a file in explorer → `Ctrl+I` in your editor tab.
+1. Press `Ctrl+Shift+A` on a file in Explorer, then press `Ctrl+I` in your active text editor to import it.
 
-![auto-import-from-explorer](images/keybinding-copy-and-paste.gif "Auto import from explorer demo")
+![auto-import-from-explorer](assets/keybinding-copy-and-paste.gif "Auto import from explorer demo")
 
 ### Single keybinding import
 
-1. `Alt+D` a file in explorer to automatically import in editor tab.
+1. Press `Alt+D` to automatically import the file in your active text editor.
 
 
-![single-keybinding-import](images/keybinding-single.gif "Single keybinding import demo")
+![single-keybinding-import](assets/keybinding-single.gif "Single keybinding import demo")
 
 ### Auto import across active tabs
 
-1. `Ctrl+Shift+A` a file in explorer → `Ctrl+I` in your editor tab.
+1. Press `Ctrl+Shift+A` on a file in Explorer, then press `Ctrl+I` in your active text editor to import it.
 
-![auto-import-from-text-editor](images/keybinding-feature.gif "Auto import from text editor demo")
+![auto-import-from-text-editor](assets/keybinding-feature.gif "Auto import from text editor demo")
 
 ## HTML Support
 
 ### Import script and stylesheet
 
-1. `Ctrl+Shift+A` a file in explorer → `Ctrl+I` in your editor tab.
-2. or `Alt+D` a file in explorer to automatically import in editor tab.
+1. Press `Ctrl+Shift+A` on a file in Explorer, then press `Ctrl+I` in your active text editor to import it.
+2. Alternatively, press `Alt+D` to automatically import the file in your active text editor.
 
-![import-script-stylesheet-demo](images/html.gif "Import script and stylesheet")
+![import-script-stylesheet-demo](assets/html.gif "Import script and stylesheet")
 
 ## Markdown Support
 
 ### Import image to markdown
 
-1. `Ctrl+Shift+A` a file in explorer → `Ctrl+I` in your editor tab.
-2. or `Alt+D` a file in explorer to automatically import in editor tab.
+1. Press `Ctrl+Shift+A` on a file in Explorer, then press `Ctrl+I` in your active text editor to import it.
+2. Alternatively, press `Alt+D` to automatically import the file in your active text editor.
 
-![markdown-image-import](images/markdown-image.gif "Markdown image import demo")
+![markdown-image-import](assets/markdown-image.gif "Markdown image import demo")
 
 ### Import markdown
 
-1. `Ctrl+Shift+A` a file in explorer → `Ctrl+I` in your editor tab.
-2. or `Alt+D` a file in explorer to automatically import in editor tab.
+1. Press `Ctrl+Shift+A` on a file in Explorer, then press `Ctrl+I` in your active text editor to import it.
+2. Alternatively, press `Alt+D` to automatically import the file in your active text editor.
 
-![markdown-import](images/markdown.gif "Markdown import demo")
+![markdown-import](assets/markdown.gif "Markdown import demo")
 
 ## Changelog
 

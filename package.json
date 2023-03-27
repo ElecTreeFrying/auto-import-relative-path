@@ -136,9 +136,9 @@
               "Cursor"
             ],
             "enumDescriptions": [
-              "Place the import statement at the 'top' of the import list.",
-              "Place the import statement at the 'bottom' of the import list.",
-              "Place the import statement on the current position of the mouse cursor."
+              "Append the import statement at the 'top' of the import list.",
+              "Append the import statement at the 'bottom' of the import list.",
+              "Append the import statement on the current position of the mouse cursor."
             ]
           },
           "auto-import.importStatement.script.preserveScriptFileExtension": {

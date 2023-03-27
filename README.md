@@ -8,155 +8,128 @@
 [ratings svg]: https://vsmarketplacebadges.dev/rating-short/ElecTreeFrying.auto-import.png
 [package]: https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import
 
-Auto import relative path [extension] for [VS Code]. Auto import relative path without typing long and tedious import statements and file paths.
+Auto Import Relative Path, is an [extension] for [VS Code] that makes importing relative paths much easier and less tedious. With this extension, you can say goodbye to long and complicated import statements and file paths. It provides a simple and efficient way to import files without having to manually type out the entire path. Whether you're working on a small project or a large one with many files, this extension can save you a lot of time and effort
 
 [VS Code]: https://code.visualstudio.com/
 [extension]: https://marketplace.visualstudio.com/VSCode
 
-*This extension is an alternative solution of drag and drop import that is currently not available in VS Code.*
+## Supported file extensions
 
-> Drag and drop to import files in JS! [#61667][0] </br> 
-> Allow to add file reference with drag and drop. [#5240][1]
-
-[0]: https://github.com/microsoft/vscode/issues/61667
-[1]: https://github.com/microsoft/vscode/issues/5240
-
-## Drag and drop import extension
-
-**[Drag And Drop Import Relative Path Extension (click here)]**
-
-[Drag And Drop Import Relative Path Extension (click here)]: https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.drag-import-relative-path
-
-## Features
-
-* [Configure import styles](#import-statements--javascript)
-* [Usage](#usage)
-* [Import to cursor](#Import-to-cursor)
-* [Import to bottom](#Import-to-bottom)
-* [Import to top](#Import-to-top)
-* _[Keybindings]_
-* _[HTML Support]_
-* _[Markdown Support]_
-
-[Keybindings]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#keybindings
-[HTML Support]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#html-support
-[Markdown Support]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#markdown-support
-
-## Supported file types
-
-| Markup Language | Programming Language |  Stylesheet  |
-| :-------------: | :------------------: | :----------: |
-|      .html      | .js, .jsx, .ts, .tsx |     .css     |
-|       .md       |                      | .scss, .sass |
-|                 |                      |    .less     |
+|                      | File extension               |
+| -------------------- | ---------------------------- |
+| Programming Language | `.js`, `.jsx`, `.ts`, `.tsx` |
+| Markup Language      | `.html`, `.md`               |
+| Stylesheet           | `.css`, `.scss`              |
 
 ## Usage
 
-1. `Ctrl+Shift+A` a file in explorer → `Ctrl+I` in your editor tab. [demo][usage-example-1]
-2. or `Alt+D` a file in explorer to automatically import in editor tab. [demo][usage-example-2]
+1. Press `Ctrl+Shift+A` on a file in Explorer, then press `Ctrl+I` in your active text editor to import it. → [*Click here to see it in action.*][usagedemo1]
+2. Alternatively, press `Alt+D` to automatically import the file in your active text editor. → [*Click here to see it in action.*][usagedemo2]
 
 ### [Click here for more usage examples.]
 
-[usage-example-1]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#auto-import-from-explorer
-[usage-example-2]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#single-keybinding-import
+[usagedemo1]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#auto-import-from-explorer
+[usagedemo2]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#single-keybinding-import
 
 [Click here for more usage examples.]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md
 
-![auto-import-demo](images/playback.gif "auto import relative path demo")
+![auto-import-demo](assets/playback.gif "auto import relative path demo")
+
+|  Active text editor  | Supported file extensions                               |      More examples       |
+| :------------------: | :------------------------------------------------------ | :----------------------: |
+|       `.html`        | `.js`, `.css`, `.gif`, `.jpeg`, `.jpg`, `.png`, .`webp` | [click here][usagedemo3] |
+|        `.md`         | self, `.gif`, `.jpeg`, `.jpg`, `.png`, .`webp`          | [click here][usagedemo4] |
+| `.js`, `.jsx`, `.ts` | self                                                    |                          |
+|        `.tsx`        | self, `.scss`                                           |                          |
+|        `.css`        | self, `.gif`, `.jpeg`, `.jpg`, `.png`, .`webp`          |                          |
+|       `.scss`        | self,  `.css`, `.gif`, `.jpeg`, `.jpg`, `.png`, .`webp` |                          |
+
+[usagedemo3]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#html-support
+[usagedemo4]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#markdown-support
 
 ## Commands
 
-| Command              | Key Binding    | Description                                                                       |
-| -------------------- | -------------- | --------------------------------------------------------------------------------- |
-| `Auto Import: Copy`  | `Ctrl+Shift+A` | **Copy** relative path of selected file in explorer.                              |
-| `Auto Import: Paste` | `Ctrl+I`       | **Paste** import statement on selected tab.                                       |
-| `Auto Import: Auto`  | `Alt+D`        | **Auto** copy and paste import statement of a file from explorer to selected tab. |
+| Command              | Key Binding    | Description                                                                                      |        See in action        |
+| -------------------- | -------------- | ------------------------------------------------------------------------------------------------ | :-------------------------: |
+| `Auto Import: Copy`  | `Ctrl+Shift+A` | **Copy** the relative path of the selected file in Explorer.                                     | [click here][commandsdemo1] |
+| `Auto Import: Paste` | `Ctrl+I`       | **Paste** the import statement into your active text editor.                                     | [click here][commandsdemo1] |
+| `Auto Import: Auto`  | `Alt+D`        | **Auto** copy and paste the import statement of a file from Explorer to your active text editor. | [click here][commandsdemo2] |
 
-## Valid Imports
-
-
-|      Import destination      | Valid filetypes                           | References    |
-| :--------------------------: | :---------------------------------------- | :------------ |
-|           `.html`            | `.js`, `.css`, supported image file types | [(demo)][demo1] |
-|            `.md`             | supported image file types                | [(demo)][demo2] |
-| `.js`, `.jsx`, `.ts`, `.tsx` | filetype itself                           | [(demo)][demo3] |
-|            `.css`            | filetype itself                           | [(demo)][demo3] |
-|  `.scss`, `.sass`, `.less`   | `.css`, filetype itself                   | [(demo)][demo3] |
-
-
-[demo1]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#html-support
-[demo2]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#markdown-support
-[demo3]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md
+[commandsdemo1]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#auto-import-from-explorer
+[commandsdemo2]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#single-keybinding-import
 
 ## Configuration Settings
 
 ### General settings
 
-* `quoteStyle`: Select quote style for relative import path. *(double/single quote)*
-* `importType`: Paste import on selected line, at the top or bottom of the import list.
-* `addSemicolon`: Toggle include semicolon at the end of import statement.
-* `disableNotifications`: Disable all notifications.
+* `preferences.disableNotifications`: Disable all notifications.
+* `preferences.importStatementPlacement`: Choose where you want your import statements to be placed in your code with this setting. You can choose to place them at the 'top' of the import list, at the 'bottom', or on the current position of the mouse cursor with the 'Cursor' option.
 
-### Import statements > Javascript
+### Import statements
 
-* `importStatements.javascript.jsSupport`: Select **.js** import style.
-* `importStatements.javascript.jsxSupport`: Select **.jsx** import style.
-* `importStatements.javascript.withExtnameJS`: Include file type at the end of relative import path.
+**Scripts:** Javascript, React Javascript, Typescript, React Typescript
 
-### Import statements > Typescript
+* `importStatements.script.preserveFileExtension`: _(Boolean)_
+  
+* `importStatements.script.javascriptImportStyle`
+  * `import $1 from '_relativePath_';` **→ default**
+  * `import { $1 } from '_relativePath_';`
+  * `import { $1 as $2 } from '_relativePath_';`
+  * `import * as $1 from '_relativePath_';`
+  * `import '_relativePath_';`
+  * `var $1 = require('_relativePath_');`
+  * `const $1 = require('_relativePath_');`
+  * `var $1 = import('_relativePath_');`
+  * `const $1 = import('_relativePath_');`
 
-* `importStatements.typescript.tsSupport`: Select **.ts** import style.
-* `importStatements.typescript.tsxSupport`: Select **.tsx** import style.
-* `importStatements.typescript.withExtnameTS`: Include file type at the end of relative import path.
-* `importStatements.typescript.addExportName`: Toggle component name in import statement. **(Angular feature)**
+* `importStatements.script.typescriptImportStyle`
+  * `import $1 from '_relativePath_';`
+  * `import { $1 } from '_relativePath_';` **→ default**
+  * `import { $1 as $2 } from '_relativePath_';`
+  * `import * as $1 from '_relativePath_';`
+  * `import '_relativePath_';`
 
-### Import statements > Stylesheet
+**Stylesheets:** CSS, SCSS
 
-* `importStatements.stylesheet.cssSupport`: Select **.css** import style.
-* `importStatements.stylesheet.scssSupport`: Select **.scss** import style.
-* `importStatements.stylesheet.lessSupport`: Select **.less** import style.
-* `importStatements.stylesheet.withExtnameCSS`: Include file type at the end of relative import path.
+* `importStatements.styleSheet.preserveFileExtension`: _(Boolean)_
 
-### Import statements > HTML
+* `importStatements.styleSheet.cssImportStyle`
+  * `@import '_relativePath_';` **→ default**
+  * `@import url('_relativePath_');`
 
-* `importStatements.html.htmlScriptSupport`: Select script import style for HTML.
-* `importStatements.html.htmlStylesheetSupport`: Select stylesheet import style for HTML.
+* `importStatements.styleSheet.cssImageImportStyle`
+  * `url('_relativePath_')` **→ default**
 
-### Import statements > Markdown
+* `importStatements.styleSheet.scssImportStyle`
+  * `@import '_relativePath_';` **→ default**
+  * `@import url('_relativePath_');`
+  * `@use '_relativePath_';`
+  * `@use '_relativePath_' as *;`
 
-* `importStatements.markdown.markdownSupport`: Select **.md** import style.
-* `importStatements.markdown.markdownImageSupport`: Select import style for image import in markdown.
+* `importStatements.styleSheet.scssImageImportStyle`
+  * `url('_relativePath_')';` **→ default**
 
-### Settings Preview
+**Markup:** HTML, Markdown
 
-![extension-settings-preview](images/settings.gif "auto import relative path extension settings preview")
+* `importStatements.markup.htmlScriptImportStyle`
+  * `<script type="text/javascript" src="_relativePath_"></script>` **→ default**
 
-## Demo
+* `importStatements.markup.htmlImageImportStyle`
+  * `<img src="_relativePath_" alt="sample">` **→ default**
 
-### Import to cursor
+* `importStatements.markup.htmlStyleSheetImportStyle`
+  * `<link href="_relativePath_" rel="stylesheet">` **→ default**
 
-1. `Ctrl+Shift+A` a file in explorer → `Ctrl+I` in your editor tab.
-2. or `Alt+D` a file in explorer to automatically import in editor tab.
+* `importStatements.markup.markdownImportStyle`
+  * `![text](_relativePath_)` **→ default**
 
-![extension-settings-preview](images/cursor.gif "import to cursor using ctrl+i command")
-
-### Import to bottom
-
-1. `Ctrl+Shift+A` a file in explorer → `Ctrl+I` in your editor tab.
-2. or `Alt+D` a file in explorer to automatically import in editor tab.
-
-![extension-settings-preview](images/bottom.gif "import to bottom using ctrl+i command")
-
-### Import to top
-
-1. `Ctrl+Shift+A` a file in explorer → `Ctrl+I` in your editor tab.
-2. or `Alt+D` a file in explorer to automatically import in editor tab.
-
-![extension-settings-preview](images/top.gif "import to top using ctrl+i command")
+* `importStatements.markup.markdownImageImportStyle`
+  * `![alt-text](_relativePath_ "Hover text")` **→ default**
+  * `![alt-text][image] / [image]: _relativePath_ "Hover text"`
 
 ## Installation
 
-  1. Install VS Code v1.57.0 or higher
+  1. Install VS Code v1.76.0 or higher
   2. Launch Visual Studio Code
   3. Enter command `Ctrl+Shift+P` (Windows, Linux) or `Cmd+Shift+P` (OSX)
   4. Select → `Extensions: Install Extensions`.
