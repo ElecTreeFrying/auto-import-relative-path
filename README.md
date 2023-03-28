@@ -65,7 +65,6 @@ Auto Import Relative Path, is an [extension] for [VS Code] that makes importing 
 
 ### General settings
 
-* `preferences.disableNotifications`: Disable all notifications.
 * `preferences.importStatementPlacement`: Choose where you want your import statements to be placed in your code with this setting. 
   You can choose to place them at the 'top' of the import list, at the 'bottom', or on the current position of the mouse cursor with the 'Cursor' option.
 

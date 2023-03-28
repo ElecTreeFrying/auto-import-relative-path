@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.5.4 (2023-3-28)
+
+- Updated README.md and DEMO.md.
+
 ## v0.5.3 (2023-3-28)
 
 - Added "Snippet" in categories
