@@ -17,12 +17,14 @@ export function notify(type: NotifyType): void {
         Emit same file path, window notification (warning)
       */
       disableAllDropNotifications || vscode.window.showWarningMessage(`Same file path.`);
+      break;
     }
     case NotifyType.NotSupported: {
       /* 
         Emit not supported, window notification (warning)
       */
       disableAllDropNotifications || vscode.window.showWarningMessage(`Not supported.`);
+      break;
     }
   }
 

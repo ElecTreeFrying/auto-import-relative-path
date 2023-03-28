@@ -1,21 +1,25 @@
-/* 
-  Supported file extension types
-  */
-export type FileExtension = '.ts' | '.tsx' | '.js' | '.jsx' 
-  | '.css' | '.scss'
-  | '.html' | '.md';
+export type HTMLFileExtension = '.html';
 
-/* 
-  Supported image file extension types
-  */
+export type YAMLFileExtension = '.yaml' | '.yml';
+
+export type MarkdownFileExtension = '.md';
+
+export type StylesheetFileExtension = '.css' | '.scss';
+
+export type ScriptFileExtension = '.ts' | '.tsx' | '.js' | '.jsx';
+
 export type ImageFileExtension = '.gif' | '.jpeg' | '.jpg' | '.png' | '.webp';
 
-/* 
-  Supported image and file extension types
-  */
-export type SupportedFileExtension = FileExtension | ImageFileExtension;
+export type FontFileExtension = '.woff' | '.woff2' | '.ttf' | '.eot';
 
-/* 
-  Get Import text option types
-  */
+export type WebFileExtension = HTMLFileExtension | StylesheetFileExtension | YAMLFileExtension | MarkdownFileExtension | ImageFileExtension | FontFileExtension;
+
+export type DataFileExtension = '.json';
+
+export type JSX_SupportedFileExtension = '.js' | '.jsx' | WebFileExtension | DataFileExtension;
+
+export type TSX_SupportedFileExtension = '.js' | '.ts' | '.tsx' | WebFileExtension | DataFileExtension;
+
+export type FileExtension = WebFileExtension | ScriptFileExtension | DataFileExtension;
+
 export type ImportType = 'script' | 'stylesheet' | 'markdown' | 'image';

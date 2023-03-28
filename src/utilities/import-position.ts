@@ -1,7 +1,14 @@
 import * as vscode from 'vscode';
+import { NotifyType } from '../model';
+import { notify } from './notify';
 import { insertSnippetString } from './snippet-string';
 
 export function insertSnippet(snippet: vscode.SnippetString): void {
+
+  if (snippet.value === '\n') {
+    return notify(NotifyType.NotSupported);
+  }
+  
   switch (vscode.workspace.getConfiguration('auto-import.preferences').get('importStatementPlacement')) {
     case 'Top':    return importToTop(snippet);
     case 'Bottom': return importToBottom(snippet);

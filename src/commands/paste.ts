@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { NotifyType } from '../model';
-import { getFileExt, importStatement, notify, getRelativePath, insertSnippet } from '../utilities';
+import { getFileExt, importStatementSnippet, notify, getRelativePath, insertSnippet } from '../utilities';
 import { cssSupported, htmlSupported, markdownSupported, scssSupported } from '../providers';
 
 export async function paste(): Promise<void> {
@@ -17,8 +17,8 @@ export async function paste(): Promise<void> {
   if (
     // Checks unsupported drag and drop files
     (
-      (getFileExt(fromFilepath) !== getFileExt(toFilepath)) 
-      && ![ '.html', '.md', '.css', '.scss', '.tsx' ].includes(getFileExt(toFilepath))
+      ![ '.html', '.md', '.css', '.scss', '.tsx', '.jsx' ].includes(getFileExt(toFilepath))
+      && (getFileExt(fromFilepath) !== getFileExt(toFilepath)) 
     )
     // Checks HTML to HTML drag and drop
     || (getFileExt(fromFilepath) === '.html' && getFileExt(toFilepath) === '.html')
@@ -34,11 +34,11 @@ export async function paste(): Promise<void> {
     return notify(NotifyType.NotSupported);
   }
 
-  const snippet = importStatement(
+  const snippet = importStatementSnippet(
     getRelativePath(toFilepath, fromFilepath),
     fromFilepath,
     toFilepath
-  ).appendText('\n');
+  );
 
-  insertSnippet(snippet);
+  insertSnippet(snippet.appendText('\n'));
 }

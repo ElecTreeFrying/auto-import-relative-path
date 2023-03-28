@@ -98,14 +98,14 @@
     "keybindings": [
       {
         "command": "extension.autoImportPaste",
-        "key": "ctrl+shift+w",
+        "key": "ctrl+i",
         "mac": "cmd+i",
         "when": "editorTextFocus"
       },
       {
         "command": "extension.autoImportCopy",
-        "key": "ctrl+shift+q",
-        "mac": "cmd++shift+a",
+        "key": "ctrl+shift+a",
+        "mac": "cmd+shift+a",
         "when": "editorTextFocus || filesExplorerFocus"
       },
       {
@@ -168,7 +168,7 @@
             "title": "Typescript (.ts)/React Typescript(.tsx) import styles",
             "description": "Supported Typescript (.ts)/React Typescript(.tsx) import styles",
             "type": "string",
-            "default": "import name from '_relativePath_';",
+            "default": "import { name } from '_relativePath_';",
             "enum": [
               "import name from '_relativePath_';",
               "import { name } from '_relativePath_';",

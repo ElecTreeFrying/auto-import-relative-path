@@ -45,6 +45,8 @@ export function cssImportStatement(relativePath: string): vscode.SnippetString {
  */
 export function scssImportStatement(relativePath: string): vscode.SnippetString {
 
+  relativePath = parsePartialFile(relativePath);
+
   let configValue = vscode.workspace.getConfiguration('auto-import.importStatement.styleSheet').get('scssImportStyle');
       configValue = importStyle.scss.find((config: ImportStyle) => config.description === configValue).value;
 
@@ -73,4 +75,11 @@ export function scssImageImportStatement(relativePath: string): vscode.SnippetSt
     default: return new vscode.SnippetString(`url('${relativePath}')`);
   }
 
+}
+
+function parsePartialFile(relativePath: string): string {
+  const arr = relativePath.split('/');
+  const lastElemIndex = arr.length - 1;
+  arr[lastElemIndex].startsWith('_') && (arr[lastElemIndex] = arr[lastElemIndex].substring(1));
+  return arr.join('/');
 }

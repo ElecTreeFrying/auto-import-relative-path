@@ -10,20 +10,24 @@ import { getFileExt } from '.';
  * @param {string} toFilepath Dropped file path. 
  * @returns Import statement string
  */
-export function importStatement(
+export function importStatementSnippet(
   relativePath: string,
   fromFilepath: string,
   toFilepath: string
 ): vscode.SnippetString {
 
   switch (getFileExt(toFilepath)) {
-    case '.js':
-    case '.jsx': {
+    case '.js': {
       return importPath.javascript.snippet(relativePath, fromFilepath);
     }
-    case '.ts':
+    case '.jsx': {
+      return importPath.jsx.snippet(relativePath, fromFilepath);
+    }
+    case '.ts': {
+      return importPath.typescript.snippet(relativePath, fromFilepath);
+    }
     case '.tsx': {
-      return importPath.typescript.snippet(relativePath, fromFilepath, toFilepath);
+      return importPath.tsx.snippet(relativePath, fromFilepath);
     }
     case '.css': {
       return importPath.css.snippet(relativePath, fromFilepath);
