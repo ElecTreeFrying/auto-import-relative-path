@@ -1,9 +1,9 @@
-import { ImageFileExtension, FileExtension } from "../model";
+import { FileExtension } from "../model";
 
 /* 
   Supported image files extensions 
   */
-const supportedImages: ImageFileExtension[] = [ '.gif', '.jpeg', '.jpg', '.png', '.webp' ];
+const supportedImages: FileExtension[] = [ '.gif', '.jpeg', '.jpg', '.png', '.webp' ];
 
 /* 
   Supported import file extensions to HTML 

@@ -35,14 +35,15 @@ Auto Import Relative Path, is an [extension] for [VS Code] that makes importing 
 
 ![auto-import-demo](assets/playback.gif "auto import relative path demo")
 
-|  Active text editor  | Supported file extensions                               |      More examples       |
-| :------------------: | :------------------------------------------------------ | :----------------------: |
-|       `.html`        | `.js`, `.css`, `.gif`, `.jpeg`, `.jpg`, `.png`, .`webp` | [click here][usagedemo3] |
-|        `.md`         | self, `.gif`, `.jpeg`, `.jpg`, `.png`, .`webp`          | [click here][usagedemo4] |
-| `.js`, `.jsx`, `.ts` | self                                                    |                          |
-|        `.tsx`        | self, `.scss`                                           |                          |
-|        `.css`        | self, `.gif`, `.jpeg`, `.jpg`, `.png`, .`webp`          |                          |
-|       `.scss`        | self,  `.css`, `.gif`, `.jpeg`, `.jpg`, `.png`, .`webp` |                          |
+| Active text editor | Supported file extensions                                                                                                                                                 |      More examples       |
+| :----------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :----------------------: |
+|      `.html`       | `.js`, `.css`, `.gif`, `.jpeg`, `.jpg`, `.png`, .`webp`                                                                                                                   | [click here][usagedemo3] |
+|       `.md`        | self, `.gif`, `.jpeg`, `.jpg`, `.png`, .`webp`                                                                                                                            | [click here][usagedemo4] |
+|    `.js`, `.ts`    | self                                                                                                                                                                      |                          |
+|       `.jsx`       | self, `.js`, `.json`<br>`.css`,`.sass` `.scss`<br>`.png`, `.jpg`, `.gif`, `.svg`, `.webp`<br>`.woff`, `.woff2`, `.ttf`, `.eot`<br>`.md`, `.yml`, `.yaml`, `.html`         |                          |
+|       `.tsx`       | self, `.ts`, `.js`, `.json`<br>`.css`, `.sass` `.scss`<br>`.png`, `.jpg`, `.gif`, `.svg`, `.webp`<br>`.woff`, `.woff2`, `.ttf`, `.eot`<br>`.md`, `.yml`, `.yaml`, `.html` |                          |
+|       `.css`       | self, `.gif`, `.jpeg`, `.jpg`, `.png`, .`webp`                                                                                                                            |                          |
+|      `.scss`       | self,  `.css`, `.gif`, `.jpeg`, `.jpg`, `.png`, .`webp`                                                                                                                   |                          |
 
 [usagedemo3]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#html-support
 [usagedemo4]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#markdown-support
@@ -63,13 +64,14 @@ Auto Import Relative Path, is an [extension] for [VS Code] that makes importing 
 ### General settings
 
 * `preferences.disableNotifications`: Disable all notifications.
-* `preferences.importStatementPlacement`: Choose where you want your import statements to be placed in your code with this setting. You can choose to place them at the 'top' of the import list, at the 'bottom', or on the current position of the mouse cursor with the 'Cursor' option.
+* `preferences.importStatementPlacement`: Choose where you want your import statements to be placed in your code with this setting. 
+  You can choose to place them at the 'top' of the import list, at the 'bottom', or on the current position of the mouse cursor with the 'Cursor' option.
 
 ### Import statements
 
 **Scripts:** Javascript, React Javascript, Typescript, React Typescript
 
-* `importStatements.script.preserveFileExtension`: _(Boolean)_
+* `importStatements.script.preserveFileExtension`: _(Boolean)_ **default → false**
   
 * `importStatements.script.javascriptImportStyle`
   * `import $1 from '_relativePath_';` **→ default**
@@ -91,7 +93,7 @@ Auto Import Relative Path, is an [extension] for [VS Code] that makes importing 
 
 **Stylesheets:** CSS, SCSS
 
-* `importStatements.styleSheet.preserveFileExtension`: _(Boolean)_
+* `importStatements.styleSheet.preserveFileExtension`: _(Boolean)_ **default → false**
 
 * `importStatements.styleSheet.cssImportStyle`
   * `@import '_relativePath_';` **→ default**

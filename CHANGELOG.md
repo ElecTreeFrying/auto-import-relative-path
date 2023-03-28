@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.5.0 (2023-4-1)
+
+- Import statements are now inserted as snippets into active text editors.
+- Added more supported file extensions in .jsx and .tsx.
+- Removed all third-party dependencies.
+- Updated to the latest vscode engine.
+- Updated README.md and DEMO.md
+
 ## v0.4.8 (2022-8-19)
 
 ### Changes

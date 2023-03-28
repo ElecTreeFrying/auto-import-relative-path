@@ -1,22 +1,22 @@
 import * as vscode from 'vscode';
 
 import { getFileExt } from '../utilities';
-import { TSX_SupportedFileExtension } from '../model';
+import { FileExtension } from '../model';
 
 export function snippet(
   relativePath: string,
   fromFilepath: string
 ): vscode.SnippetString {
 
-  switch (getFileExt(fromFilepath) as TSX_SupportedFileExtension) {
+  switch (getFileExt(fromFilepath) as FileExtension) {
     case '.gif': // Images
     case '.jpeg':
     case '.jpg':
     case '.png':
     case '.webp':
     case '.json': // Data
-    case '.ts': case '.js': // Scripts
-    case '.tsx':
+    case '.js': // Scripts
+    case '.jsx':
     case '.html': // HTML
     case '.yml': // YAML
     case '.yaml':
@@ -37,4 +37,5 @@ export function snippet(
       return new vscode.SnippetString(``);
     }
   }
+
 }

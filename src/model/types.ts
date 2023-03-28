@@ -1,24 +1,20 @@
-export type HTMLFileExtension = '.html';
+type HTMLFileExtension = '.html';
 
-export type YAMLFileExtension = '.yaml' | '.yml';
+type YAMLFileExtension = '.yaml' | '.yml';
 
-export type MarkdownFileExtension = '.md';
+type MarkdownFileExtension = '.md';
 
-export type StylesheetFileExtension = '.css' | '.scss';
+type StylesheetFileExtension = '.css' | '.scss';
 
-export type ScriptFileExtension = '.ts' | '.tsx' | '.js' | '.jsx';
+type ScriptFileExtension = '.ts' | '.tsx' | '.js' | '.jsx';
 
-export type ImageFileExtension = '.gif' | '.jpeg' | '.jpg' | '.png' | '.webp';
+type ImageFileExtension = '.gif' | '.jpeg' | '.jpg' | '.png' | '.webp';
 
-export type FontFileExtension = '.woff' | '.woff2' | '.ttf' | '.eot';
+type FontFileExtension = '.woff' | '.woff2' | '.ttf' | '.eot';
 
-export type WebFileExtension = HTMLFileExtension | StylesheetFileExtension | YAMLFileExtension | MarkdownFileExtension | ImageFileExtension | FontFileExtension;
+type WebFileExtension = HTMLFileExtension | StylesheetFileExtension | YAMLFileExtension | MarkdownFileExtension | ImageFileExtension | FontFileExtension;
 
-export type DataFileExtension = '.json';
-
-export type JSX_SupportedFileExtension = '.js' | '.jsx' | WebFileExtension | DataFileExtension;
-
-export type TSX_SupportedFileExtension = '.js' | '.ts' | '.tsx' | WebFileExtension | DataFileExtension;
+type DataFileExtension = '.json';
 
 export type FileExtension = WebFileExtension | ScriptFileExtension | DataFileExtension;
 
