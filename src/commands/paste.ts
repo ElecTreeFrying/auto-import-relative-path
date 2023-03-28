@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { NotifyType } from '../model';
 import { getFileExt, importStatementSnippet, notify, getRelativePath, insertSnippet } from '../utilities';
-import { cssSupported, htmlSupported, markdownSupported, scssSupported } from '../providers';
+import { cssSupported, htmlSupported, markdownSupported, permittedExts, scssSupported } from '../providers';
 
 export async function paste(): Promise<void> {
   vscode.commands.executeCommand('notifications.clearAll');
@@ -16,10 +16,7 @@ export async function paste(): Promise<void> {
 
   if (
     // Checks unsupported drag and drop files
-    (
-      ![ '.html', '.md', '.css', '.scss', '.tsx', '.jsx' ].includes(getFileExt(toFilepath))
-      && (getFileExt(fromFilepath) !== getFileExt(toFilepath)) 
-    )
+    (!permittedExts.includes(getFileExt(toFilepath)) && (getFileExt(fromFilepath) !== getFileExt(toFilepath)) )
     // Checks HTML to HTML drag and drop
     || (getFileExt(fromFilepath) === '.html' && getFileExt(toFilepath) === '.html')
     // Checks unsupported HTML drag import file extensions
@@ -31,6 +28,7 @@ export async function paste(): Promise<void> {
     // Checks unsupported SCSS drag import file extensions
     || (!scssSupported.includes(getFileExt(fromFilepath)) && getFileExt(toFilepath) === '.scss')
   ) {
+    importRelativePath(toFilepath, fromFilepath);
     return notify(NotifyType.NotSupported);
   }
 
@@ -40,5 +38,25 @@ export async function paste(): Promise<void> {
     toFilepath
   );
 
-  insertSnippet(snippet.appendText('\n'));
+  if (snippet.value === '\n') {
+    importRelativePath(toFilepath, fromFilepath);
+    return notify(NotifyType.NotSupported);
+  }
+
+  insertSnippet(
+    snippet.appendText('\n'),
+    isCursorPosition(toFilepath, fromFilepath)
+  );
+}
+
+function importRelativePath(toFilepath: string, fromFilepath: string): void {
+  const snippet = new vscode.SnippetString(`${getRelativePath(toFilepath, fromFilepath) + getFileExt(fromFilepath)}`);
+  insertSnippet(snippet.appendText('\n'), true);
+}
+
+function isCursorPosition(toFilepath: string, fromFilepath: string): boolean {
+  return (getFileExt(fromFilepath) !== '.css' && getFileExt(toFilepath) === '.css')
+    || (getFileExt(fromFilepath) !== '.scss' && getFileExt(toFilepath) === '.scss')
+    || getFileExt(toFilepath) === '.html'
+    || getFileExt(toFilepath) === '.md';
 }

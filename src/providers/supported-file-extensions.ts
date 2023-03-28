@@ -24,3 +24,5 @@ export const cssSupported: FileExtension[] = [ '.css', ...supportedImages ];
   Supported import file extensions to SCSS 
   */
 export const scssSupported: FileExtension[] = [ '.scss', '.css', ...supportedImages ];
+
+export const permittedExts: FileExtension[] = [ '.html', '.md', '.css', '.scss', '.tsx', '.jsx' ];
