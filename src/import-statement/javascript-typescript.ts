@@ -56,7 +56,11 @@ export function typescriptImportStatement(relativePath: string): vscode.SnippetS
  * @returns Import name
  */
 function importName(relativePath: string): string {
-  if (relativePath.includes('.component')) {
+  if (
+    relativePath.includes('.component')
+    || relativePath.includes('.directive')
+    || relativePath.includes('.pipe')
+  ) {
     const snackCase = path.basename(relativePath).replace(/\./g, '-');
     return snackCase.split('-').map(e => e[0].toUpperCase() + e.slice(1)).join('');  
   } else {

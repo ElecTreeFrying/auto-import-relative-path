@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.5.2 (2023-3-28)
+
+- Added enhanced support for angular files
+
 ## v0.5.1 (2023-3-28)
 
 - Removed notification preference
