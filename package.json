@@ -1,7 +1,7 @@
 {
   "name": "auto-import",
   "displayName": "Auto Import Relative Path",
-  "description": "Auto Import Relative Path, is an extension that makes importing relative paths much easier and less tedious. With this extension, you can say goodbye to long and complicated import statements and file paths. It provides a simple and efficient way to import files without having to manually type out the entire path. Whether you're working on a small project or a large one with many files, this extension can save you a lot of time and effort",
+  "description": "Auto Import Relative Path is a time-saving extension that simplifies importing relative paths in your code. With this tool, you can easily import files without the need to type out lengthy and complex paths. It's a great solution for projects of any size and can help streamline your workflow.",
   "publisher": "ElecTreeFrying",
   "version": "0.5.0",
   "author": {
@@ -119,12 +119,6 @@
       {
         "title": "Auto Import Relative Path",
         "properties": {
-          "auto-import.preferences.disableAllDropNotifications": {
-            "title": "Disable all drag-and-drop notifications",
-            "description": "Disable all drag-and-drop notifications when a file is dropped on the active pane.",
-            "type": "boolean",
-            "default": false
-          },
           "auto-import.preferences.importStatementPlacement": {
             "title": "Import statement placement",
             "description": "Choose where you want your import statements to be placed in your code with this setting. You can choose to place them at the 'top' of the import list, at the 'bottom', or on the current position of the mouse cursor with the 'Cursor' option.",

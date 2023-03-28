@@ -9,21 +9,19 @@ import { NotifyType } from "../model";
  */
 export function notify(type: NotifyType): void {
 
-  const disableAllDropNotifications = vscode.workspace.getConfiguration('auto-import.preferences').get<boolean>('disableAllDropNotifications');
-
   switch (type) {
     case NotifyType.SameFilePath: {
       /* 
         Emit same file path, window notification (warning)
       */
-      disableAllDropNotifications || vscode.window.showWarningMessage(`Same file path.`);
+      vscode.window.showWarningMessage(`Same file path.`);
       break;
     }
     case NotifyType.NotSupported: {
       /* 
         Emit not supported, window notification (warning)
       */
-      disableAllDropNotifications || vscode.window.showWarningMessage(`Not supported.`);
+      vscode.window.showWarningMessage(`Not supported.`);
       break;
     }
   }

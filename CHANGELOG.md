@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.5.1 (2023-3-28)
+
+- Removed notification preference
+
 ## v0.5.0 (2023-3-28)
 
 - Import statements are now inserted as snippets into active text editors.
