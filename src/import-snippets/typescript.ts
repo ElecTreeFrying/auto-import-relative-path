@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-import { importStatement } from '../import-statement';
+import { importStatement } from '../import-statements';
 import { getFileExt } from '../utilities';
 
 /**

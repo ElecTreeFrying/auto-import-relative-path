@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-import * as importPath from '../import-snippet';
+import * as importPath from '../import-snippets';
 import { getFileExt } from '.';
 
 /**

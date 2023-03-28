@@ -1,9 +1,10 @@
 import * as vscode from 'vscode';
+
 import { NotifyType } from '../model';
 import { getFileExt, importStatementSnippet, notify, getRelativePath, insertSnippet } from '../utilities';
 import { cssSupported, htmlSupported, markdownSupported, permittedExts, scssSupported } from '../providers';
 
-export async function paste(): Promise<void> {
+export async function pasteCommand(): Promise<void> {
   vscode.commands.executeCommand('notifications.clearAll');
 
   const editor = vscode.window.activeTextEditor;

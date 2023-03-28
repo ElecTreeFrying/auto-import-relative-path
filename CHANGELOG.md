@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.5.3 (2023-3-28)
+
+- Added "Snippet" in categories
+- Minor code changes
+
 ## v0.5.2 (2023-3-28)
 
 - Added enhanced support for angular files
