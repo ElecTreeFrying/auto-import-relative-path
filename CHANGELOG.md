@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.5.0 (2023-4-1)
+## v0.5.0 (2023-3-28)
 
 - Import statements are now inserted as snippets into active text editors.
 - Added more supported file extensions in .jsx and .tsx.
