@@ -1,60 +1,60 @@
 {
   "name": "auto-import",
-	"displayName": "Auto Import Relative Path",
-	"description": "Auto Import Relative Path, is an extension that makes importing relative paths much easier and less tedious. With this extension, you can say goodbye to long and complicated import statements and file paths. It provides a simple and efficient way to import files without having to manually type out the entire path. Whether you're working on a small project or a large one with many files, this extension can save you a lot of time and effort",
-	"publisher": "ElecTreeFrying",
-	"version": "0.4.8",
-	"author": {
-		"name": "John James Ermitaño",
-		"email": "jjgermitano@gmail.com"
-	},
+  "displayName": "Auto Import Relative Path",
+  "description": "Auto Import Relative Path, is an extension that makes importing relative paths much easier and less tedious. With this extension, you can say goodbye to long and complicated import statements and file paths. It provides a simple and efficient way to import files without having to manually type out the entire path. Whether you're working on a small project or a large one with many files, this extension can save you a lot of time and effort",
+  "publisher": "ElecTreeFrying",
+  "version": "0.5.0",
+  "author": {
+    "name": "John James Ermitaño",
+    "email": "jjgermitano@gmail.com"
+  },
   "icon": "assets/extension-icon.png",
   "engines": {
     "vscode": "^1.76.0"
   },
-	"homepage": "https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/README.md",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/ElecTreeFrying/auto-import-relative-path.git"
-	},
-	"bugs": {
-		"email": "octobergroup721@gmail.com",
-		"url": "https://github.com/ElecTreeFrying/auto-import-relative-path/issues"
-	},
-	"badges": [
-		{
-			"url": "https://vsmarketplacebadge.apphb.com/version-short/Electreefrying.auto-import.png",
-			"description": "Version badge",
-			"href": "https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import"
-		},
-		{
-			"url": "https://vsmarketplacebadges.dev/downloads-short/ElecTreeFrying.auto-import.png",
-			"description": "Downloads badge",
-			"href": "https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import"
-		},
-		{
-			"url": "https://vsmarketplacebadges.dev/installs-short/ElecTreeFrying.auto-import.png",
-			"description": "Installs badge",
-			"href": "https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import"
-		},
-		{
-			"url": "https://vsmarketplacebadges.dev/rating-short/ElecTreeFrying.auto-import.png",
-			"description": "Rating badge",
-			"href": "https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import"
-		}
-	],
+  "homepage": "https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ElecTreeFrying/auto-import-relative-path.git"
+  },
+  "bugs": {
+    "email": "octobergroup721@gmail.com",
+    "url": "https://github.com/ElecTreeFrying/auto-import-relative-path/issues"
+  },
+  "badges": [
+    {
+      "url": "https://vsmarketplacebadge.apphb.com/version-short/Electreefrying.auto-import.png",
+      "description": "Version badge",
+      "href": "https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import"
+    },
+    {
+      "url": "https://vsmarketplacebadges.dev/downloads-short/ElecTreeFrying.auto-import.png",
+      "description": "Downloads badge",
+      "href": "https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import"
+    },
+    {
+      "url": "https://vsmarketplacebadges.dev/installs-short/ElecTreeFrying.auto-import.png",
+      "description": "Installs badge",
+      "href": "https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import"
+    },
+    {
+      "url": "https://vsmarketplacebadges.dev/rating-short/ElecTreeFrying.auto-import.png",
+      "description": "Rating badge",
+      "href": "https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import"
+    }
+  ],
   "extensionPack": [
     "ElecTreeFrying.drag-import-relative-path"
   ],
-	"galleryBanner": {
-		"color": "#494949",
-		"theme": "dark"
-	},
-	"license": "MIT",
+  "galleryBanner": {
+    "color": "#494949",
+    "theme": "dark"
+  },
+  "license": "MIT",
   "categories": [
     "Other"
   ],
-	"keywords": [
+  "keywords": [
     "auto import relative",
     "auto import relative path",
     "relative import",
@@ -73,7 +73,7 @@
     "scss",
     "html",
     "markdown"
-	],
+  ],
   "activationEvents": [
     "onCommand:extension.autoImportPaste",
     "onCommand:extension.autoImportCopy",
