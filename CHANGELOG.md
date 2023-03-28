@@ -6,6 +6,7 @@
 - Added more supported file extensions in .jsx and .tsx.
 - Removed all third-party dependencies.
 - Updated to the latest vscode engine.
+- Fixes [#6](https://github.com/ElecTreeFrying/auto-import-relative-path/issues/6), [#7](https://github.com/ElecTreeFrying/auto-import-relative-path/issues/7)
 - Updated README.md and DEMO.md
 
 ## v0.4.8 (2022-8-19)

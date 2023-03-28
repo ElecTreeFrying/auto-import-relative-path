@@ -33,7 +33,9 @@ Auto Import Relative Path, is an [extension] for [VS Code] that makes importing 
 
 [Click here for more usage examples.]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md
 
-![auto-import-demo](assets/playback.gif "auto import relative path demo")
+![auto-import-demo][playback]
+
+[playback]: https://res.cloudinary.com/october7/image/upload/v1679982147/github/auto-import-relative-path/playback.gif "auto import relative path demo"
 
 | Active text editor | Supported file extensions                                                                                                                                                 |      More examples       |
 | :----------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :----------------------: |

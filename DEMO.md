@@ -33,18 +33,19 @@ Auto Import Relative Path, is an [extension] for [VS Code] that makes importing 
 ## Contents
 
 - [Import statement position](#import-statement-position)
-	- [Append to cursor](#append-to-cursor)
-	- [Append to the bottom of the import list](#append-to-the-bottom-of-the-import-list)
-	- [Append to the top of the import list](#append-to-the-top-of-the-import-list)
+  - [Append to cursor](#append-to-cursor)
+  - [Append to the bottom of the import list](#append-to-the-bottom-of-the-import-list)
+  - [Append to the top of the import list](#append-to-the-top-of-the-import-list)
 - [Keybindings](#keybindings)
-	- [Auto import from Explorer](#auto-import-from-explorer)
-	- [Single keybinding import](#single-keybinding-import)
-	- [Auto import across active tabs](#auto-import-across-active-tabs)
+  - [Auto import from Explorer](#auto-import-from-explorer)
+  - [Single keybinding import](#single-keybinding-import)
+  - [Auto import across active tabs](#auto-import-across-active-tabs)
 - [HTML Support](#html-support)
-	- [Import script and stylesheet](#import-script-and-stylesheet)
+  - [Import script and stylesheet](#import-script-and-stylesheet)
 - [Markdown Support](#markdown-support)
-	- [Import image to markdown](#import-image-to-markdown)
-	- [Import markdown](#import-markdown)
+  - [Import image to markdown](#import-image-to-markdown)
+  - [Import markdown](#import-markdown)
+- [Changelog](#changelog)
 
 ## Import statement position
 
@@ -54,7 +55,9 @@ Auto Import Relative Path, is an [extension] for [VS Code] that makes importing 
 1. Press `Ctrl+Shift+A` on a file in Explorer, then press `Ctrl+I` in your active text editor to import it.
 2. Alternatively, press `Alt+D` to automatically import the file in your active text editor.
 
-![extension-settings-preview](assets/cursor.gif "import to cursor using ctrl+i command")
+![extension-settings-preview][cursor]
+
+[cursor]: https://res.cloudinary.com/october7/image/upload/v1679982363/github/auto-import-relative-path/cursor.gif "import to cursor using ctrl+i command"
 
 ### Append to the bottom of the import list
 
@@ -62,14 +65,18 @@ Auto Import Relative Path, is an [extension] for [VS Code] that makes importing 
 1. Press `Ctrl+Shift+A` on a file in Explorer, then press `Ctrl+I` in your active text editor to import it.
 2. Alternatively, press `Alt+D` to automatically import the file in your active text editor.
 
-![extension-settings-preview](assets/bottom.gif "import to bottom using ctrl+i command")
+![extension-settings-preview][bottom]
+
+[bottom]: https://res.cloudinary.com/october7/image/upload/v1679982363/github/auto-import-relative-path/bottom.gif "import to bottom using ctrl+i command"
 
 ### Append to the top of the import list
 
 1. Press `Ctrl+Shift+A` on a file in Explorer, then press `Ctrl+I` in your active text editor to import it.
 2. Alternatively, press `Alt+D` to automatically import the file in your active text editor.
 
-![extension-settings-preview](assets/top.gif "import to top using ctrl+i command")
+![extension-settings-preview][top]
+
+[top]: https://res.cloudinary.com/october7/image/upload/v1679982367/github/auto-import-relative-path/top.gif "import to top using ctrl+i command"
 
 ## Keybindings
 
@@ -77,20 +84,26 @@ Auto Import Relative Path, is an [extension] for [VS Code] that makes importing 
 
 1. Press `Ctrl+Shift+A` on a file in Explorer, then press `Ctrl+I` in your active text editor to import it.
 
-![auto-import-from-explorer](assets/keybinding-copy-and-paste.gif "Auto import from explorer demo")
+![auto-import-from-explorer][keybinding-copy-and-paste]
+
+[keybinding-copy-and-paste]: https://res.cloudinary.com/october7/image/upload/v1679982581/github/auto-import-relative-path/keybinding-copy-and-paste.gif "Auto import from explorer demo"
 
 ### Single keybinding import
 
 1. Press `Alt+D` to automatically import the file in your active text editor.
 
 
-![single-keybinding-import](assets/keybinding-single.gif "Single keybinding import demo")
+![single-keybinding-import][keybinding-single]
+
+[keybinding-single]: https://res.cloudinary.com/october7/image/upload/v1679982581/github/auto-import-relative-path/keybinding-single.gif "Single keybinding import demo"
 
 ### Auto import across active tabs
 
 1. Press `Ctrl+Shift+A` on a file in Explorer, then press `Ctrl+I` in your active text editor to import it.
 
-![auto-import-from-text-editor](assets/keybinding-feature.gif "Auto import from text editor demo")
+![auto-import-from-text-editor][keybinding-feature]
+
+[keybinding-feature]: https://res.cloudinary.com/october7/image/upload/v1679982581/github/auto-import-relative-path/keybinding-feature.gif "Auto import from text editor demo"
 
 ## HTML Support
 
@@ -99,7 +112,9 @@ Auto Import Relative Path, is an [extension] for [VS Code] that makes importing 
 1. Press `Ctrl+Shift+A` on a file in Explorer, then press `Ctrl+I` in your active text editor to import it.
 2. Alternatively, press `Alt+D` to automatically import the file in your active text editor.
 
-![import-script-stylesheet-demo](assets/html.gif "Import script and stylesheet")
+![import-script-stylesheet-demo][html]
+
+[html]: https://res.cloudinary.com/october7/image/upload/v1679982719/github/auto-import-relative-path/html.gif "Import script and stylesheet"
 
 ## Markdown Support
 
@@ -108,14 +123,18 @@ Auto Import Relative Path, is an [extension] for [VS Code] that makes importing 
 1. Press `Ctrl+Shift+A` on a file in Explorer, then press `Ctrl+I` in your active text editor to import it.
 2. Alternatively, press `Alt+D` to automatically import the file in your active text editor.
 
-![markdown-image-import](assets/markdown-image.gif "Markdown image import demo")
+![markdown-image-import][markdown-image]
+
+[markdown-image]: https://res.cloudinary.com/october7/image/upload/v1679982718/github/auto-import-relative-path/markdown-image.gif "Markdown image import demo"
 
 ### Import markdown
 
 1. Press `Ctrl+Shift+A` on a file in Explorer, then press `Ctrl+I` in your active text editor to import it.
 2. Alternatively, press `Alt+D` to automatically import the file in your active text editor.
 
-![markdown-import](assets/markdown.gif "Markdown import demo")
+![markdown-import][markdown]
+
+[markdown]: https://res.cloudinary.com/october7/image/upload/v1679982718/github/auto-import-relative-path/markdown.gif "Markdown import demo"
 
 ## Changelog
 
