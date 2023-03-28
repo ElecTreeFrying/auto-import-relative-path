@@ -3,7 +3,7 @@
   "displayName": "Auto Import Relative Path",
   "description": "Auto Import Relative Path is a time-saving extension that simplifies importing relative paths in your code. With this tool, you can easily import files without the need to type out lengthy and complex paths. It's a great solution for projects of any size and can help streamline your workflow.",
   "publisher": "ElecTreeFrying",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "author": {
     "name": "John James Ermitaño",
     "email": "jjgermitano@gmail.com"
