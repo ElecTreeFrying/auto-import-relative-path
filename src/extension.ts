@@ -1,9 +1,5 @@
 import * as vscode from 'vscode';
-import {
-  executeCopyFilePathCommand,
-  executePasteImportCommand,
-  executeCopyPasteCommand,
-} from './commands';
+import { executeCopyFilePathCommand, executePasteImportCommand, executeCopyPasteCommand } from './commands';
 
 /**
  * Activates the extension by registering import commands with VS Code.

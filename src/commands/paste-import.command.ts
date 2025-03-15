@@ -1,20 +1,8 @@
 import * as vscode from 'vscode';
 
 import { NotifyType } from '../model';
-import {
-  getFileExtension,
-  generateImportStatementSnippet,
-  showNotification,
-  computeRelativePath,
-  insertImportSnippet
-} from '../utilities';
-import {
-  CSS_SUPPORTED_EXTENSIONS,
-  HTML_SUPPORTED_EXTENSIONS,
-  MARKDOWN_SUPPORTED_EXTENSIONS,
-  PERMITTED_FILE_EXTENSIONS,
-  SCSS_SUPPORTED_EXTENSIONS
-} from '../constants';
+import { getFileExtension, generateImportStatementSnippet, showNotification, computeRelativePath, insertImportSnippet } from '../utilities';
+import { CSS_SUPPORTED_EXTENSIONS, HTML_SUPPORTED_EXTENSIONS, MARKDOWN_SUPPORTED_EXTENSIONS, PERMITTED_FILE_EXTENSIONS, SCSS_SUPPORTED_EXTENSIONS } from '../constants';
 
 /**
  * Attempts to paste/import a previously copied file path into the active editor,
