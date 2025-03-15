@@ -1,7 +1,7 @@
 {
   "name": "auto-import",
   "displayName": "Auto Import Relative Path",
-  "description": "Auto Import Relative Path is a time-saving extension that simplifies importing relative paths in your code. With this tool, you can easily import files without the need to type out lengthy and complex paths. It's a great solution for projects of any size and can help streamline your workflow.",
+  "description": "Streamline your imports with instant relative path generation. Copy or auto-import files for JavaScript, TypeScript, CSS, HTML, and Markdown in a single command—no more manual path typing or memorizing!",
   "publisher": "ElecTreeFrying",
   "version": "0.5.4",
   "author": {
@@ -122,7 +122,7 @@
         "properties": {
           "auto-import.preferences.importStatementPlacement": {
             "title": "Import statement placement",
-            "description": "Choose where you want your import statements to be placed in your code with this setting. You can choose to place them at the 'top' of the import list, at the 'bottom', or on the current position of the mouse cursor with the 'Cursor' option.",
+            "description": "Choose where new import statements are placed in your code: 'Top' inserts at the start of your imports, 'Bottom' appends at the end, and 'Cursor' places it at the current cursor location.",
             "type": "string",
             "default": "Bottom",
             "enum": [
@@ -131,20 +131,20 @@
               "Cursor"
             ],
             "enumDescriptions": [
-              "Append the import statement at the 'top' of the import list.",
-              "Append the import statement at the 'bottom' of the import list.",
-              "Append the import statement on the current position of the mouse cursor."
+              "Insert at the start of the existing import list.",
+              "Append at the end of the existing import list.",
+              "Insert at the current cursor location."
             ]
           },
           "auto-import.importStatement.script.preserveScriptFileExtension": {
-            "title": "Preserve file extension",
-            "description": "Preserve the file extension in the relative path.",
+            "title": "Preserve script file extension",
+            "description": "When enabled, retains the .js or .ts file extension in import paths.",
             "type": "boolean",
             "default": false
           },
           "auto-import.importStatement.script.javascriptImportStyle": {
-            "title": "Javascript (.ts)/React Javascript(.tsx) import styles",
-            "description": "Supported Javascript (.ts)/React Javascript(.tsx) import styles",
+            "title": "JavaScript (JS/JSX) import style",
+            "description": "Select a default import style for JavaScript or JSX files. Use '_relativePath_' to represent the path and 'name' for the import variable.",
             "type": "string",
             "default": "import name from '_relativePath_';",
             "enum": [
@@ -160,8 +160,8 @@
             ]
           },
           "auto-import.importStatement.script.typescriptImportStyle": {
-            "title": "Typescript (.ts)/React Typescript(.tsx) import styles",
-            "description": "Supported Typescript (.ts)/React Typescript(.tsx) import styles",
+            "title": "TypeScript (TS/TSX) import style",
+            "description": "Select a default import style for TypeScript or TSX files. Use '_relativePath_' to represent the path and 'name' for the import variable.",
             "type": "string",
             "default": "import { name } from '_relativePath_';",
             "enum": [
@@ -173,14 +173,14 @@
             ]
           },
           "auto-import.importStatement.styleSheet.preserveStylesheetFileExtension": {
-            "title": "Preserve file extension",
-            "description": "Preserve the file extension in the relative path.",
+            "title": "Preserve stylesheet file extension",
+            "description": "When enabled, retains the .css or .scss file extension in import paths.",
             "type": "boolean",
             "default": false
           },
           "auto-import.importStatement.styleSheet.cssImportStyle": {
-            "title": "CSS import styles",
-            "description": "Supported CSS import styles",
+            "title": "CSS import style",
+            "description": "Choose how CSS files are imported (e.g., '@import' or '@import url').",
             "type": "string",
             "default": "@import '_relativePath_';",
             "enum": [
@@ -189,8 +189,8 @@
             ]
           },
           "auto-import.importStatement.styleSheet.cssImageImportStyle": {
-            "title": "CSS import styles",
-            "description": "Supported CSS import styles",
+            "title": "CSS image import style",
+            "description": "Choose how images are referenced in CSS (e.g., 'url(...)').",
             "type": "string",
             "default": "url('_relativePath_')",
             "enum": [
@@ -198,8 +198,8 @@
             ]
           },
           "auto-import.importStatement.styleSheet.scssImportStyle": {
-            "title": "SCSS import styles",
-            "description": "Supported SCSS import styles",
+            "title": "SCSS import style",
+            "description": "Choose how SCSS files are imported (e.g., '@import', '@use').",
             "type": "string",
             "default": "@import '_relativePath_';",
             "enum": [
@@ -210,8 +210,8 @@
             ]
           },
           "auto-import.importStatement.styleSheet.scssImageImportStyle": {
-            "title": "SCSS import styles",
-            "description": "Supported SCSS import styles",
+            "title": "SCSS image import style",
+            "description": "Choose how images are referenced in SCSS (e.g., 'url(...)').",
             "type": "string",
             "default": "url('_relativePath_')",
             "enum": [
@@ -219,8 +219,8 @@
             ]
           },
           "auto-import.importStatement.markup.htmlScriptImportStyle": {
-            "title": "HTML import styles for script",
-            "description": "Supported HTML import styles for script",
+            "title": "HTML script import style",
+            "description": "Defines how JavaScript files are referenced in HTML. Use '_relativePath_' as the placeholder for the file path.",
             "type": "string",
             "default": "<script type=\"text/javascript\" src=\"_relativePath_\"></script>",
             "enum": [
@@ -228,8 +228,8 @@
             ]
           },
           "auto-import.importStatement.markup.htmlImageImportStyle": {
-            "title": "HTML image import styles for script",
-            "description": "Supported HTML image import styles for script",
+            "title": "HTML image import style",
+            "description": "Defines how images are referenced in HTML. Use '_relativePath_' as the placeholder for the file path.",
             "type": "string",
             "default": "<img src=\"_relativePath_\" alt=\"sample\">",
             "enum": [
@@ -237,8 +237,8 @@
             ]
           },
           "auto-import.importStatement.markup.htmlStyleSheetImportStyle": {
-            "title": "HTML import styles from stylesheet",
-            "description": "Supported HTML import styles from stylesheet",
+            "title": "HTML stylesheet import style",
+            "description": "Defines how stylesheets are referenced in HTML. Use '_relativePath_' as the placeholder for the file path.",
             "type": "string",
             "default": "<link href=\"_relativePath_\" rel=\"stylesheet\">",
             "enum": [
@@ -246,8 +246,8 @@
             ]
           },
           "auto-import.importStatement.markup.markdownImportStyle": {
-            "title": "Markdown import styles",
-            "description": "Supported markdown import styles",
+            "title": "Markdown import style",
+            "description": "Defines how Markdown files are referenced in other Markdown files. Use '_relativePath_' as the placeholder for the file path.",
             "type": "string",
             "default": "![text](_relativePath_)",
             "enum": [
@@ -255,8 +255,8 @@
             ]
           },
           "auto-import.importStatement.markup.markdownImageImportStyle": {
-            "title": "Markdown image import styles",
-            "description": "Supported markdown image import styles",
+            "title": "Markdown image import style",
+            "description": "Defines how images are referenced in Markdown (inline or reference-style). Use '_relativePath_' as the placeholder for the file path.",
             "type": "string",
             "default": "![alt-text](_relativePath_ \"Hover text\")",
             "enum": [
