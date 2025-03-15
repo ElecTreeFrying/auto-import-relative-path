@@ -12,7 +12,7 @@
   "engines": {
     "vscode": "^1.76.0"
   },
-  "homepage": "https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/README.md",
+  "homepage": "https://github.com/ElecTreeFrying/auto-import-relative-path",
   "repository": {
     "type": "git",
     "url": "https://github.com/ElecTreeFrying/auto-import-relative-path.git"
@@ -52,15 +52,24 @@
   },
   "license": "MIT",
   "categories": [
-    "Other",
-    "Snippets"
+    "Programming Languages",
+    "Snippets",
+    "Other"
   ],
   "keywords": [
+    "vscode",
+    "visual studio code",
     "auto import relative",
     "auto import relative path",
     "relative import",
     "auto import",
     "relative path",
+    "import helper",
+    "import statement",
+    "auto import extension",
+    "import automation",
+    "code productivity",
+    "file import",
     "drag",
     "import",
     "path",
@@ -73,7 +82,8 @@
     "css",
     "scss",
     "html",
-    "markdown"
+    "markdown",
+    "code snippet"
   ],
   "activationEvents": [
     "onCommand:extension.pasteImport",
