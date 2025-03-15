@@ -1,316 +1,291 @@
 # Changelog
 
-## v0.5.4 (2023-3-28)
+## [0.5.5] - 2025-03-28
 
-- Updated README.md and DEMO.md.
-
-## v0.5.3 (2023-3-28)
-
-- Added "Snippet" in categories
-- Minor code changes
-
-## v0.5.2 (2023-3-28)
-
-- Added enhanced support for angular files
-
-## v0.5.1 (2023-3-28)
-
-- Removed notification preference
-
-## v0.5.0 (2023-3-28)
-
-- Import statements are now inserted as snippets into active text editors.
-- Added more supported file extensions in .jsx and .tsx.
-- Removed all third-party dependencies.
-- Updated to the latest vscode engine.
-- Fixes [#6](https://github.com/ElecTreeFrying/auto-import-relative-path/issues/6), [#7](https://github.com/ElecTreeFrying/auto-import-relative-path/issues/7)
-- Updated README.md and DEMO.md
-
-## v0.4.8 (2022-8-19)
-
-### Changes
-
-- Updated readme
-
-## v0.4.3 - v0.4.7 (2022-8-18)
-
-### Changes
-
-- Updated readme
-
-## v0.4.2 (2021-6-21)
-
-### Fixes
-
-- Extension not working properly in other VSCode versions.
+### Changed
+- **Repository Revamp:** Completely overhauled the entire repository to follow the latest best practices.
+- **Code & Logic:** Updated all file logic, folder structures, directory names, and file names using advanced AI-driven optimizations to ensure the most efficient and maintainable code.
+- **Comments & Documentation:** Refined all comments and comment blocks for improved clarity and consistency.
+- **Package Configuration:** Enhanced **package.json** by updating configuration titles, descriptions, keywords, and categories for better discoverability and adherence to VS Code extension standards.
+- **Documentation Overhaul:** Revamped **README.md**, **DEMO.md**, and **CHANGELOG.md** to align with the latest VS Code extension format and best practices.
 
 ### Todo
+- Intermittently add comprehensive test cases to ensure no bugs and continuously improve the extension throughout the year using AI-driven insights.
 
-- Fix issue on new engine.
+## [0.5.4] - 2023-03-28
 
-## v0.4.0 - v0.4.1 (2021-6-19)
+### Changed
+- Updated **README.md** and **DEMO.md**.
 
-### Changes
-
-- Updated package.json
-- Modified readme
-
-## v0.3.12 (2020-7-25)
+## [0.5.3] - 2023-03-28
 
 ### Added
+- "Snippet" added to the categories list.
 
-- bitcoin mining and donation on readme
+### Changed
+- Minor code improvements.
 
-## v0.3.10 - v0.3.11 (2020-7-24)
-
-### Changes
-
-- updated readme and demo
-
-## v0.3.7 - v0.3.9 (2020-7-18)
-
-### Changes
-
-- renamed commands
-- updated readme and demo
-
-| Old command names                 | New command names    |
-| --------------------------------- | -------------------- |
-| `Auto Import: Paste relative`     | `Auto Import: Copy`  |
-| `Auto Import: Paste`              | `Auto Import: Paste` |
-| `Auto Import: Auto relative path` | `Auto Import: Auto`  |
-
-## v0.3.6 (2020-4-23)
-
-### Fixes
-
-- demo links
-
-## v0.3.2 - v0.3.5 (2020-4-23)
-
-### Fixes
-
-- updated expired publisher token
-
-## v0.3.1 (2020-4-23)
+## [0.5.2] - 2023-03-28
 
 ### Added
+- Enhanced support for Angular files.
 
-- more examples in demo
+## [0.5.1] - 2023-03-28
 
-### Changes
+### Removed
+- Notification preference.
 
-- updated readme and demo
-
-## v0.3.0 (2020-4-4)
-
-### Added
-
-- New feature added `Auto Import: Import relative path` command. Auto copy and paste relative import path to active text editor.
-
-### Changes
-
-- updated readme
-- updated extension keywords
-- removed unused activation events
-- updated setting configurations
-
-### Fixes
-
-- readme typos
-- variable typos
-
-## v0.2.6 (2020-3-23)
-
-### Fixes
-
-- demo typo
-
-## v0.2.5 (2020-3-23)
-
-### Changes
-
-- feature links in demo
-
-## v0.2.3 - v0.2.4 (2020-3-23)
-
-### Fixes
-
-- readme typo
-
-## v0.2.2 (2020-3-23)
+## [0.5.0] - 2023-03-28
 
 ### Added
+- Import statements are now inserted as snippets directly into active text editors.
+- More supported file extensions for **.jsx** and **.tsx**.
 
+### Changed
+- Updated to the latest VS Code engine.
+- Removed all third-party dependencies.
+
+### Fixed
+- Fixed [#6](https://github.com/ElecTreeFrying/auto-import-relative-path/issues/6) and [#7](https://github.com/ElecTreeFrying/auto-import-relative-path/issues/7).
+- Updated **README.md** and **DEMO.md**.
+
+## [0.4.8] - 2022-08-19
+
+### Changed
+- Updated **README.md**.
+
+## [0.4.3] - [0.4.7] - 2022-08-18
+
+### Changed
+- Updated **README.md**.
+
+## [0.4.2] - 2021-06-21
+
+### Fixed
+- Resolved issues where the extension was not working properly in other VS Code versions.
+
+### Todo
+- Fix issue on new engine compatibility.
+
+## [0.4.0] - [0.4.1] - 2021-06-19
+
+### Changed
+- Updated **package.json**.
+- Modified **README.md**.
+
+## [0.3.12] - 2020-07-25
+
+### Added
+- Bitcoin mining and donation section in **README.md**.
+
+## [0.3.10] - [0.3.11] - 2020-07-24
+
+### Changed
+- Updated **README.md** and **DEMO.md**.
+
+## [0.3.7] - [0.3.9] - 2020-07-18
+
+### Changed
+- Renamed commands.
+- Updated **README.md** and **DEMO.md**.
+
+#### Command Renaming
+| Old Command Name                  | New Command Name      |
+| `Auto Import: Paste`              | `Auto Import: Paste`  |
+| `Auto Import: Auto relative path` | `Auto Import: Auto`   |
+
+## [0.3.6] - 2020-04-23
+
+### Fixed
+- Demo links.
+
+## [0.3.2] - [0.3.5] - 2020-04-23
+
+### Fixed
+- Updated expired publisher token.
+
+## [0.3.1] - 2020-04-23
+
+### Added
+- More examples in the demo.
+
+### Changed
+- Updated **README.md** and **DEMO.md**.
+
+## [0.3.0] - 2020-04-04
+
+### Added
+- New command: `Auto Import: Import relative path` for auto copy & paste of the relative import.
+
+### Changed
+- Updated **README.md**.
+- Refined extension keywords.
+- Removed unused activation events.
+- Updated setting configurations.
+
+### Fixed
+- Corrected typos in **README.md** and variable names.
+
+## [0.2.6] - 2020-03-23
+
+### Fixed
+- Typo in the demo.
+
+## [0.2.5] - 2020-03-23
+
+### Changed
+- Updated feature links in the demo.
+
+## [0.2.3] - [0.2.4] - 2020-03-23
+
+### Fixed
+- Corrected typos in **README.md**.
+
+## [0.2.2] - 2020-03-23
+
+### Added
 - HTML import support for scripts and stylesheets.
-- .gif files for html support
+- Added GIF files for HTML support.
 
-## v0.2.1 (2020-3-22)
+## [0.2.1] - 2020-03-22
 
-### Fixes
+### Fixed
+- Resolved demo link issues.
 
-- links to demo not working properly.
-
-## v0.2.0 (2020-3-22)
-
-### Added
-
-- support for markdown image import and markdown relative import
-- demo in markdown support
-- .gif files for markdown support
-
-### Changes
-
-- updated .gitignore
-
-## v0.1.14 (2020-3-21)
-
-### Changes
-
-- updated readme
-
-## v0.1.13 (2020-3-20)
-
-### Changes
-
-- updated readme
-
-## v0.1.12 (2020-3-20)
-
-### Changes
-
-- updated readme
-
-## v0.1.10 - v0.1.11 (2020-3-19)
-
-### Fixes
-
-- readme not linking to other sections properly
-
-## v0.1.9 (2020-3-19)
-
-### Fixes
-
-- settings preview not updated
-
-## v0.1.8 (2020-3-19)
-
-### Changes
-
-- updated settings preview .gif file
-
-## v0.1.7 (2020-3-19)
+## [0.2.0] - 2020-03-22
 
 ### Added
+- Support for Markdown image import and relative Markdown import.
+- New demo for Markdown support.
+- Added GIF files for Markdown support.
 
-- features and demo section in readme
+### Changed
+- Updated **.gitignore**.
 
-### Changes
+## [0.1.14] - 2020-03-21
 
-- removed newline (`\n`) in import to cursor
+### Changed
+- Updated **README.md**.
 
-## v0.1.6 (2020-3-16)
+## [0.1.13] - 2020-03-20
 
-### Changes
+### Changed
+- Updated **README.md**.
 
-- modified extension description in package.json
-- removed unused command `closeAllNotif`
-- updated readme
-- changed display name and repository name.
-- added author in package.json
+## [0.1.12] - 2020-03-20
 
-### _To do:_
+### Changed
+- Updated **README.md**.
 
-- extension rename
+## [0.1.11] - [0.1.10] - 2020-03-19
 
+### Fixed
+- Corrected internal linking issues in **README.md**.
 
-## v0.1.5 (2020-3-16)
+## [0.1.9] - 2020-03-19
 
-### Changes
+### Fixed
+- Updated settings preview.
 
-- Renamed extension display name from _Auto Import_ to _Auto Import Relative Path_.
+## [0.1.8] - 2020-03-19
 
-### _To do:_
+### Changed
+- Updated settings preview GIF file.
 
-- rename package from _Auto Import_ to _Auto Import Relative Path_.
-    1. [How I can rename my theme extension](https://github.com/Microsoft/vscode/issues/25988)
+## [0.1.7] - 2020-03-19
+
+### Added
+- Features and demo section in **README.md**.
+
+### Changed
+- Removed newline (`\n`) in the "import to cursor" functionality.
+
+## [0.1.6] - 2020-03-16
+
+### Changed
+- Modified extension description in **package.json**.
+- Removed unused command `closeAllNotif`.
+- Updated **README.md**.
+- Changed display name and repository name.
+- Added author information in **package.json**.
+
+#### Todo
+- Rename extension.
+
+## [0.1.5] - 2020-03-16
+
+### Changed
+- Renamed extension display name from *Auto Import* to *Auto Import Relative Path*.
+
+#### Todo
+- Rename package from *Auto Import* to *Auto Import Relative Path*.
+  - See:
+    1. [How to rename my theme extension](https://github.com/Microsoft/vscode/issues/25988)
     2. [Possible to change package name?](https://github.com/Binaryify/OneDark-Pro/issues/54)
 
-## v0.1.4 (2020-3-16)
+## [0.1.4] - 2020-03-16
 
-### Changes
+### Changed
+- Preparations for renaming the extension.
 
-- preparations to rename the extension name
+## [0.1.3] - 2020-03-16
 
-## v0.1.3 (2020-3-16)
+### Fixed
+- Corrected "copy relative on-focus" behavior in the text editor.
 
-### Fixes
+## [0.1.2] - 2020-03-15
 
-- copy relative on-focus in text editor
+### Changed
+- Updated configuration name.
 
-## v0.1.2 (2020-3-15)
+## [0.1.1] - 2020-03-15
 
-### Changes
+### Fixed
+- Corrected table formatting in **README.md**.
+- Fixed issue with settings GIF not showing.
 
-- updated configuration name
+### Changed
+- Changed icon from square to circle.
 
-## v0.1.1 (2020-3-15)
-
-### Fixes
-
-- readme table
-- settings.gif not showing
-
-### Changes
-
-- changed icon from square to circle
-
-## v0.1.0 (2020-3-15)
+## [0.1.0] - 2020-03-15
 
 ### Added
+- `Auto Import: Copy path` command.
+- Notification for the `Auto Import: Copy path` command.
 
-- `Auto Import: Copy path` command
-- notification on `Auto Import: Copy path` command
+### Changed
+- Removed unnecessary notification pop-ups.
+- Renamed `Auto Import` command to `Auto Import: Paste relative`.
+- Updated demo GIF in **Usage**.
+- Added settings preview GIF.
+- Added badges to **README.md**.
 
-### Changes
+## [0.0.6] - 2020-03-15
 
-- removed unnecessary notification pop ups
-- renamed `Auto Import` command to `Auto Import: Paste relative`
-- updated **Usage** demo.gif
-- added **Settings** preview gif
-- added badges to readme
+### Fixed
+- Resolved `TypeError: camelcase_1.default is not a function`.
 
-## v0.0.6 (2020-3-15)
-
-### Fixes
-
-- `TypeError: camelcase_1.default is not a function`
-
-## v0.0.5 (2020-3-15)
+## [0.0.5] - 2020-03-15
 
 ### Added
+- Pasting import directly on the selected line at the top or bottom of the import list.
 
-- paste import on selected line at the top or bottom of the import list
+## [0.0.4] - 2020-03-14
 
-## v0.0.4 (2020-3-14)
+### Fixed
+- Corrected version inconsistencies.
 
-### Fixes
+## [0.0.3] - 2020-03-14
 
-- version inconsistencies
+### Changed
+- Updated **README.md**.
+- Revised export name description.
 
-## v0.0.3 (2020-3-14)
-
-### Changes
-
-- updated readme
-- updated add export name description
-
-## v0.0.2 (2020-3-13)
+## [0.0.2] - 2020-03-13
 
 ### Added
+- "Homepage" field added in **package.json**.
 
-- "homepage" in package.json
+## [0.0.1] - 2020-03-13
 
-## v0.0.1 (2020-3-13)
-
-- published extension in marketplace
+- Published extension on the marketplace.
