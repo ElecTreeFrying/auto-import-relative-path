@@ -1,5 +1,6 @@
 import * as path from 'path';
-import { getFileExtension } from './file-extension.util';
+
+import { getFileExtension } from '../../utils';
 
 /**
  * Computes the relative path from the source file to the target file,

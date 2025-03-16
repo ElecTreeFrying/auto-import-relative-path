@@ -1,5 +1,4 @@
-import { executeCopyFilePathCommand } from './copy-file-path.command';
-import { executePasteImportCommand } from './paste-import.command';
+import { executeCopyFilePathCommand, executePasteImportCommand } from '.';
 
 /**
  * Performs a two-step process:

@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
-import { importSnippetFunctions } from '../statements';
-import { getFileExtension, determineImportType } from '../utilities';
+import { getFileExtension } from '../../utils';
+import { determineImportType, importSnippetFunctions } from '../utils';
 
 /**
  * Generates an import snippet for an HTML file.

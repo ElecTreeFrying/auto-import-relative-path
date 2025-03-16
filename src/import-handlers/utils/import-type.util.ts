@@ -1,5 +1,5 @@
-import { ImportType } from '../model';
-import { getFileExtension } from './file-extension.util';
+import { ImportType } from '../../model';
+import { getFileExtension } from '../../utils';
 
 /**
  * Determines the import type based on the file extension.

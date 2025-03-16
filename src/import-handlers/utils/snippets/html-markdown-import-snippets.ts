@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
-import { importStyle } from '../constants';
-import { ImportStyle } from '../model';
+
+import { importStyle } from '../../../constants';
+import { ImportStyle } from '../../../model';
 
 /**
  * Retrieves an HTML script import snippet string based on the current configuration.

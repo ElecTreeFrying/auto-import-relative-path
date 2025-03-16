@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
-import { importSnippetFunctions } from '../statements';
-import { getFileExtension } from '../utilities';
+import { getFileExtension } from '../../utils';
+import { importSnippetFunctions } from '../utils';
 
 /**
  * Generates a snippet for a TypeScript import statement, optionally preserving the dragged file's extension.

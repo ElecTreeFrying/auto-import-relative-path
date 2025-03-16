@@ -1,7 +1,8 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { importStyle } from '../constants';
-import { ImportStyle } from '../model';
+
+import { importStyle } from '../../../constants';
+import { ImportStyle } from '../../../model';
 
 /**
  * Retrieves a JavaScript import snippet string based on the current configuration.

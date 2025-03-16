@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+
 import { insertSnippetAtPosition } from './snippet-string.util';
 
 /**

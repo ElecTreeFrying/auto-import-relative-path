@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
-import { NotifyType } from '../model';
+
+import { NotifyType } from '../../model';
 
 /**
  * Displays a notification message based on the specified notification type.

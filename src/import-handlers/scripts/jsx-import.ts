@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
-import { getFileExtension } from '../utilities';
-import { FileExtension } from '../model';
+import { FileExtension } from '../../model';
+import { getFileExtension } from '../../utils';
 
 /**
  * Generates an import snippet for a JSX file.

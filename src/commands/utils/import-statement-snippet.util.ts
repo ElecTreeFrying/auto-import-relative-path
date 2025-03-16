@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
-import * as snippetModules from '../snippets';
-import { getFileExtension } from './file-extension.util';
+
+import * as snippetModules from '../../import-handlers';
+import { getFileExtension } from '../../utils';
 
 /**
  * Generates an import statement snippet based on the destination file type.
