@@ -12,8 +12,6 @@ import * as path from 'path';
  */
 export async function executeCopyFilePathCommand(): Promise<void> {
 
-  console.log('\n\n@@@ ', 'Command start: executeCopyFilePathCommand');  
-
   // Clear existing notifications
   vscode.commands.executeCommand('notifications.clearAll');
 

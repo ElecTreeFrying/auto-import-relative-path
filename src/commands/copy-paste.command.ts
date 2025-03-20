@@ -7,8 +7,6 @@ import { executeCopyFilePathCommand, executePasteImportCommand } from '.';
  */
 export async function executeCopyPasteCommand(): Promise<void> {
 
-  console.log('\n\n@@@ ', 'Command start: executeCopyPasteCommand');  
-
   await executeCopyFilePathCommand();
   await executePasteImportCommand();
 }
