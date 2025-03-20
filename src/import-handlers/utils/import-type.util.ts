@@ -1,5 +1,5 @@
 import { ImportType } from '../../model';
-import { getFileExtension } from '../../utils';
+import { getFileExtension } from '.';
 
 /**
  * Determines the import type based on the file extension.
@@ -8,9 +8,6 @@ import { getFileExtension } from '../../utils';
  * @returns The corresponding ImportType if recognized; otherwise, returns null.
  */
 export function determineImportType(filePath: string): ImportType | null {
-
-  console.log('@@@ ', 'determineImportType.filePath', filePath);
-
   switch (getFileExtension(filePath)) {
     case '.js':
       return 'script';

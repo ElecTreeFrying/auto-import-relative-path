@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 
-import { getFileExtension } from '../../utils';
-import { importSnippetFunctions } from '../utils';
+import { getFileExtension, importSnippetFunctions } from '../utils';
 
 /**
  * Generates an import snippet for a JavaScript file.

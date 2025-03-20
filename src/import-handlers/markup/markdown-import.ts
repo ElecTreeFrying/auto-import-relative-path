@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 
-import { getFileExtension } from '../../utils';
-import { determineImportType, importSnippetFunctions } from '../utils';
+import { getFileExtension, determineImportType, importSnippetFunctions } from '../utils';
 
 /**
  * Generates an import snippet for a Markdown file.

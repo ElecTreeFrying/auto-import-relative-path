@@ -2,8 +2,7 @@ import * as vscode from 'vscode';
 
 import { NotifyType } from '../model';
 import { CSS_SUPPORTED_EXTENSIONS, HTML_SUPPORTED_EXTENSIONS, MARKDOWN_SUPPORTED_EXTENSIONS, PERMITTED_FILE_EXTENSIONS, SCSS_SUPPORTED_EXTENSIONS } from '../constants';
-import { getFileExtension, insertImportSnippet } from '../utils';
-import { computeRelativePath, generateImportStatementSnippet, showNotification } from './utils';
+import { getFileExtension, computeRelativePath, generateImportStatementSnippet, showNotification, insertImportSnippet } from './utils';
 
 /**
  * Attempts to paste/import a previously copied file path into the active editor,
@@ -17,8 +16,6 @@ import { computeRelativePath, generateImportStatementSnippet, showNotification }
  * 5. Generates and inserts an import snippet, or a raw relative path if not supported.
  */
 export async function executePasteImportCommand(): Promise<void> {
-
-  console.log('\n\n@@@ ', 'Command start: executePasteImportCommand');  
 
   vscode.commands.executeCommand('notifications.clearAll');
 
