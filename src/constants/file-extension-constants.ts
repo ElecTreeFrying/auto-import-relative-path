@@ -46,6 +46,24 @@ export const SCSS_SUPPORTED_EXTENSIONS: FileExtension[] = [
 ];
 
 /**
+ * List of script file extensions.
+ */
+export const SCRIPT_EXTENSIONS: string[] = [
+  ".ts",
+  ".tsx",
+  ".js",
+  ".jsx"
+];
+
+/**
+ * List of stylesheet file extensions.
+ */
+export const STYLESHEET_EXTENSIONS: string[] = [
+  ".scss",
+  ".css"
+];
+
+/**
  * A collection of permissible file extensions across various contexts.
  */
 export const PERMITTED_FILE_EXTENSIONS: FileExtension[] = [

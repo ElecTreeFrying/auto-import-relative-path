@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-import { insertSnippetAtPosition } from './snippet-string.util';
+import { insertSnippetAtPosition } from './insert-snippet-at-position.util';
 
 /**
  * Inserts an import snippet in the active editor based on the configured placement.
@@ -14,10 +14,8 @@ import { insertSnippetAtPosition } from './snippet-string.util';
  * @param snippet - The snippet to insert.
  * @param useCursorPosition - If true, forces insertion at the current cursor position.
  */
-export function insertImportSnippet(
-  snippet: vscode.SnippetString,
-  useCursorPosition: boolean
-): void {
+export function insertImportSnippet(snippet: vscode.SnippetString, useCursorPosition: boolean): void {
+
   if (useCursorPosition) {
     return insertSnippetAtCursor(snippet);
   }
@@ -45,21 +43,16 @@ function insertSnippetAtTop(snippet: vscode.SnippetString): void {
 
 function insertSnippetAtCursor(snippet: vscode.SnippetString): void {
   const editor = vscode.window.activeTextEditor;
-  if (editor) {
-    const currentLine = editor.selection.anchor.line;
-    insertSnippetAtPosition(snippet, currentLine);
-  }
+  const currentLine = editor.selection.anchor.line;
+  insertSnippetAtPosition(snippet, currentLine);
 }
 
 function insertSnippetAtBottom(snippet: vscode.SnippetString): void {
   const editor = vscode.window.activeTextEditor;
-  if (!editor) {
-    return;
-  }
   const documentText = editor.document.getText();
   const importIndicators = [
     // Script indicators
-    'import ', 'var = require(', 'require(',
+    'import ', 'var name = require(', 'const name = require(', 'require(',
     // Stylesheet indicators
     "@import '", '@import "', '@import url(', '@import (', "@use '", '@use "'
   ];
