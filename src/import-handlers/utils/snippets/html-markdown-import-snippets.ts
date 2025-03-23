@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 
+import { getAutoImportSetting } from '../../../utils';
 import { importStyle } from '../../../constants';
 import { ImportStyle } from '../../../model';
 
@@ -10,9 +11,7 @@ import { ImportStyle } from '../../../model';
  * @returns A vscode.SnippetString representing the HTML script tag.
  */
 export function getHtmlScriptImportSnippet(relativePath: string): vscode.SnippetString {
-  let configValue = vscode.workspace
-    .getConfiguration('auto-import.importStatement.markup')
-    .get('htmlScriptImportStyle');
+  let configValue = getAutoImportSetting('markup', 'htmlScript');
   configValue = importStyle.HTML_SCRIPT_IMPORT_OPTIONS.find(
     (option: ImportStyle) => option.description === configValue
   )?.value;
@@ -27,9 +26,7 @@ export function getHtmlScriptImportSnippet(relativePath: string): vscode.Snippet
  * @returns A vscode.SnippetString representing the HTML image element.
  */
 export function getHtmlImageImportSnippet(relativePath: string): vscode.SnippetString {
-  let configValue = vscode.workspace
-    .getConfiguration('auto-import.importStatement.markup')
-    .get('htmlImageImportStyle');
+  let configValue = getAutoImportSetting('markup', 'htmlImage');
   configValue = importStyle.HTML_IMAGE_IMPORT_OPTIONS.find(
     (option: ImportStyle) => option.description === configValue
   )?.value;
@@ -44,9 +41,7 @@ export function getHtmlImageImportSnippet(relativePath: string): vscode.SnippetS
  * @returns A vscode.SnippetString representing the HTML link element.
  */
 export function getHtmlStylesheetImportSnippet(relativePath: string): vscode.SnippetString {
-  let configValue = vscode.workspace
-    .getConfiguration('auto-import.importStatement.markup')
-    .get('htmlStyleSheetImportStyle');
+  let configValue = getAutoImportSetting('markup', 'htmlStylesheet');
   configValue = importStyle.HTML_STYLESHEET_IMPORT_OPTIONS.find(
     (option: ImportStyle) => option.description === configValue
   )?.value;
@@ -61,9 +56,7 @@ export function getHtmlStylesheetImportSnippet(relativePath: string): vscode.Sni
  * @returns A vscode.SnippetString representing the Markdown import syntax.
  */
 export function getMarkdownImportSnippet(relativePath: string): vscode.SnippetString {
-  let configValue = vscode.workspace
-    .getConfiguration('auto-import.importStatement.markup')
-    .get('markdownImportStyle');
+  let configValue = getAutoImportSetting('markup', 'markdown');
   configValue = importStyle.MARKDOWN_IMPORT_OPTIONS.find(
     (option: ImportStyle) => option.description === configValue
   )?.value;
@@ -78,9 +71,7 @@ export function getMarkdownImportSnippet(relativePath: string): vscode.SnippetSt
  * @returns A vscode.SnippetString representing the Markdown image syntax.
  */
 export function getMarkdownImageImportSnippet(relativePath: string): vscode.SnippetString {
-  let configValue = vscode.workspace
-    .getConfiguration('auto-import.importStatement.markup')
-    .get('markdownImageImportStyle');
+  let configValue = getAutoImportSetting('markup', 'markdownImage');
   configValue = importStyle.MARKDOWN_IMAGE_IMPORT_OPTIONS.find(
     (option: ImportStyle) => option.description === configValue
   )?.value;

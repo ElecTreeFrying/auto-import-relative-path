@@ -1,26 +1,24 @@
 import * as vscode from 'vscode';
 
-import { getFileExtension, determineImportType, importSnippetFunctions } from '../utils';
+import { extractFileExtension, determineImportType, importSnippetFunctions, getFilePathInfo } from '../utils';
 
 /**
  * Generates an import snippet for an SCSS file.
  *
- * @param relativeFilePath - The relative path of the dragged file in the editor.
- * @param draggedFilePath - The file path (extension) of the dragged file.
  * @returns A SnippetString containing the generated import statement.
  */
-export function snippet(
-  relativeFilePath: string,
-  draggedFilePath: string
-): vscode.SnippetString {
-  switch (determineImportType(draggedFilePath)) {
+export async function snippet(): Promise<vscode.SnippetString> {
+
+  const { sourceFilePath, relativePath } = await getFilePathInfo();
+
+  switch (determineImportType(sourceFilePath)) {
     case 'image':
       return importSnippetFunctions.getCssImageImportSnippet(
-        relativeFilePath + getFileExtension(draggedFilePath)
+        relativePath + extractFileExtension(sourceFilePath)
       );
     default:
       return importSnippetFunctions.getScssImportSnippet(
-        relativeFilePath + determineScssExtension(draggedFilePath)
+        relativePath + determineScssExtension(sourceFilePath)
       );
   }
 }
@@ -28,17 +26,17 @@ export function snippet(
 /**
  * Determines whether to preserve the .css extension or not, based on user settings.
  *
- * @param draggedFilePath - The file path (extension) of the dragged file.
+ * @param sourceFilePath - The file path (extension) of the dragged file.
  * @returns Either the `.css` extension (if applicable) or an empty string.
  */
-function determineScssExtension(draggedFilePath: string): string {
-  if (getFileExtension(draggedFilePath) === '.css') {
+function determineScssExtension(sourceFilePath: string): string {
+  if (extractFileExtension(sourceFilePath) === '.css') {
     // Auto preserve file extension if it is CSS
-    return getFileExtension(draggedFilePath);
+    return extractFileExtension(sourceFilePath);
   } else {
     const preserve = vscode.workspace
       .getConfiguration('auto-import.importStatement.styleSheet')
       .get('preserveStylesheetFileExtension');
-    return preserve ? getFileExtension(draggedFilePath) : '';
+    return preserve ? extractFileExtension(sourceFilePath) : '';
   }
 }

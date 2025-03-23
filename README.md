@@ -146,11 +146,11 @@ Below is a summary of configuration settings you can tweak to match your code st
 
 #### Scripts (JS, JSX, TS, TSX)
 
-- **`importStatements.script.preserveFileExtension`** *(Boolean)*  
+- **`importStatement.script.preserveScriptFileExtension`** *(Boolean)*  
   *Default: `false`*  
   Toggle to `true` if you want to keep file extensions in JS/TS imports.
 
-- **`importStatements.script.javascriptImportStyle`** *(String)*  
+- **`importStatement.script.javascriptImportStyle`** *(String)*  
   Various styles for importing JavaScript files.  
   *Default: `import $1 from '_relativePath_';`*
 
@@ -165,26 +165,26 @@ Below is a summary of configuration settings you can tweak to match your code st
   - `var $1 = import('_relativePath_');`
   - `const $1 = import('_relativePath_');`
 
-- **`importStatements.script.typescriptImportStyle`** *(String)*  
+- **`importStatement.script.typescriptImportStyle`** *(String)*  
   Similar to JavaScript import styles, with a default of  
   *`import { $1 } from '_relativePath_';`*
 
 #### Stylesheets (CSS, SCSS)
 
-- **`importStatements.styleSheet.preserveFileExtension`** *(Boolean)*  
+- **`importStatement.styleSheet.preserveStylesheetFileExtension`** *(Boolean)*  
   *Default: `false`*  
   Choose whether to keep `.css` or `.scss` in your imports.
 
-- **`importStatements.styleSheet.cssImportStyle`** *(String)*  
+- **`importStatement.styleSheet.cssImportStyle`** *(String)*  
   *Default: `@import '_relativePath_';`*
 
   Other options:
   - `@import url('_relativePath_');`
 
-- **`importStatements.styleSheet.cssImageImportStyle`** *(String)*  
+- **`importStatement.styleSheet.cssImageImportStyle`** *(String)*  
   *Default: `url('_relativePath_')`*
 
-- **`importStatements.styleSheet.scssImportStyle`** *(String)*  
+- **`importStatement.styleSheet.scssImportStyle`** *(String)*  
   *Default: `@import '_relativePath_';`*
 
   Other options:
@@ -192,23 +192,23 @@ Below is a summary of configuration settings you can tweak to match your code st
   - `@use '_relativePath_';`
   - `@use '_relativePath_' as *;`
 
-- **`importStatements.styleSheet.scssImageImportStyle`** *(String)*  
+- **`importStatement.styleSheet.scssImageImportStyle`** *(String)*  
   *Default: `url('_relativePath_')';`*
 
 #### Markup (HTML, Markdown)
 
 - **HTML**  
-  - **`importStatements.markup.htmlScriptImportStyle`**  
+  - **`importStatement.markup.htmlScriptImportStyle`**  
     *Default: `<script type="text/javascript" src="_relativePath_"></script>`*
-  - **`importStatements.markup.htmlImageImportStyle`**  
+  - **`importStatement.markup.htmlImageImportStyle`**  
     *Default: `<img src="_relativePath_" alt="sample">`*
-  - **`importStatements.markup.htmlStyleSheetImportStyle`**  
+  - **`importStatement.markup.htmlStyleSheetImportStyle`**  
     *Default: `<link href="_relativePath_" rel="stylesheet">`*
 
 - **Markdown**  
-  - **`importStatements.markup.markdownImportStyle`**  
+  - **`importStatement.markup.markdownImportStyle`**  
     *Default: `![text](_relativePath_)`*
-  - **`importStatements.markup.markdownImageImportStyle`**  
+  - **`importStatement.markup.markdownImageImportStyle`**  
     *Default: `![alt-text](_relativePath_ "Hover text")`*
 
 ---

@@ -14,9 +14,6 @@ type MarkdownFileExtension = '.md';
 /** Represents the stylesheet file extensions (CSS and SCSS). */
 type StylesheetFileExtension = '.css' | '.scss';
 
-/** Represents the script file extensions (JavaScript and TypeScript). */
-type ScriptFileExtension = '.ts' | '.tsx' | '.js' | '.jsx';
-
 /** Represents the image file extensions. */
 type ImageFileExtension = '.gif' | '.jpeg' | '.jpg' | '.png' | '.webp';
 
@@ -26,11 +23,14 @@ type FontFileExtension = '.woff' | '.woff2' | '.ttf' | '.eot';
 /** Represents all web-related file extensions (HTML, stylesheets, YAML, Markdown, images, and fonts). */
 type WebFileExtension =
   | HtmlFileExtension
-  | StylesheetFileExtension
   | YamlFileExtension
   | MarkdownFileExtension
+  | StylesheetFileExtension
   | ImageFileExtension
   | FontFileExtension;
+
+/** Represents the script file extensions (JavaScript and TypeScript). */
+type ScriptFileExtension = '.ts' | '.tsx' | '.js' | '.jsx';
 
 /** Represents the data file extension. */
 type DataFileExtension = '.json';

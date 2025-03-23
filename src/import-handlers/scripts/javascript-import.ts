@@ -1,24 +1,18 @@
 import * as vscode from 'vscode';
 
-import { getFileExtension, importSnippetFunctions } from '../utils';
+import { extractFileExtension, getAutoImportSetting, getFilePathInfo, importSnippetFunctions } from '../utils';
 
 /**
  * Generates an import snippet for a JavaScript file.
  *
- * @param relativeFilePath - The relative path of the dragged file in the editor.
- * @param draggedFilePath - The file path (extension) of the dragged file.
  * @returns A SnippetString containing the generated import statement.
  */
-export function snippet(
-  relativeFilePath: string,
-  draggedFilePath: string
-): vscode.SnippetString {
-  const preserve = vscode.workspace
-    .getConfiguration('auto-import.importStatement.script')
-    .get('preserveScriptFileExtension');
-  const fileExtension = preserve ? getFileExtension(draggedFilePath) : '';
+export async function snippet(): Promise<vscode.SnippetString> {
+  
+  const { sourceFilePath, relativePath } = await getFilePathInfo();
 
-  return importSnippetFunctions.getJavaScriptImportSnippet(
-    relativeFilePath + fileExtension
-  );
+  const preserve = getAutoImportSetting('script', 'preserve');
+  const fileExtension = preserve ? extractFileExtension(sourceFilePath) : '';
+
+  return importSnippetFunctions.getJavaScriptImportSnippet(relativePath + fileExtension);
 }

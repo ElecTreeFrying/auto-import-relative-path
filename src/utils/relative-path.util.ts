@@ -1,18 +1,17 @@
 import * as path from 'path';
 
-import { getFileExtension } from '../utils';
+import { getFilePathInfo, extractFileExtension } from '.';
 
 /**
  * Computes the relative path from the source file to the target file,
  * removing the file extension and adding a './' prefix if the files share the same directory.
  *
- * @param sourceFilePath - The full path of the dragged (source) file.
- * @param targetFilePath - The full path of the active editor (target) file.
  * @returns The computed relative path without the file extension.
  */
-export function computeRelativePath(sourceFilePath: string, targetFilePath: string): string {
-  const prefix = areFilesInSameDirectory(sourceFilePath, targetFilePath) ? './' : '';
-  const relativePath = toUnixPath(getRelativePath(sourceFilePath, targetFilePath));
+export async function computeRelativePath(): Promise<string> {
+  const { sourceFilePath, destinationFilePath } = await getFilePathInfo();
+  const prefix = areFilesInSameDirectory(sourceFilePath, destinationFilePath) ? './' : '';
+  const relativePath = toUnixPath(getRelativePath(sourceFilePath, destinationFilePath));
   return prefix + removeFileExtension(relativePath);
 }
 
@@ -44,7 +43,7 @@ function toUnixPath(filePath: string): string {
  * @returns The file path without its extension.
  */
 function removeFileExtension(filePath: string): string {
-  const ext = getFileExtension(filePath);
+  const ext = extractFileExtension(filePath);
   return filePath.slice(0, -ext.length);
 }
 
@@ -52,11 +51,11 @@ function removeFileExtension(filePath: string): string {
  * Checks if the source and target files are in the same directory.
  *
  * @param sourceFilePath - The full path of the source file.
- * @param targetFilePath - The full path of the target file.
+ * @param destinationFilePath - The full path of the target file.
  * @returns True if both files reside in the same directory; otherwise, false.
  */
-function areFilesInSameDirectory(sourceFilePath: string, targetFilePath: string): boolean {
+function areFilesInSameDirectory(sourceFilePath: string, destinationFilePath: string): boolean {
   const sourceDir = path.parse(sourceFilePath).dir.toLowerCase().trim();
-  const targetDir = path.parse(targetFilePath).dir.toLowerCase().trim();
+  const targetDir = path.parse(destinationFilePath).dir.toLowerCase().trim();
   return sourceDir === targetDir;
 }

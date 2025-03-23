@@ -1,22 +1,18 @@
 import * as vscode from 'vscode';
 
-import { getFileExtension, importSnippetFunctions } from '../utils';
+import { extractFileExtension, getAutoImportSetting, getFilePathInfo, importSnippetFunctions } from '../utils';
 
 /**
- * Generates a snippet for a TypeScript import statement, optionally preserving the dragged file's extension.
+ * Generates an import snippet for a Typescript file.
  *
- * @param relativeFilePath - The relative path from the active file to the dragged file.
- * @param draggedFilePath - The full path of the dragged file.
- * @returns A vscode.SnippetString containing the TypeScript import statement.
+ * @returns A SnippetString containing the generated import statement.
  */
-export function snippet(
-  relativeFilePath: string,
-  draggedFilePath: string
-): vscode.SnippetString {
-  const preserveExtension = vscode.workspace
-    .getConfiguration('auto-import.importStatement.script')
-    .get<boolean>('preserveScriptFileExtension');
+export async function snippet(): Promise<vscode.SnippetString> {
+    
+  const { sourceFilePath, relativePath } = await getFilePathInfo();
 
-  const extension = preserveExtension ? getFileExtension(draggedFilePath) : '';
-  return importSnippetFunctions.getTypeScriptImportSnippet(relativeFilePath + extension);
+  const preserve = getAutoImportSetting('script', 'preserve');
+  const fileExtension = preserve ? extractFileExtension(sourceFilePath) : '';
+
+  return importSnippetFunctions.getTypeScriptImportSnippet(relativePath + fileExtension);
 }

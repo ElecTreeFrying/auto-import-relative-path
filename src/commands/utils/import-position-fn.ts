@@ -2,6 +2,24 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 
 import { SCRIPT_EXTENSIONS, STYLESHEET_EXTENSIONS } from '../../constants';
+import { getFilePathInfo } from '.';
+
+/**
+ * Determines whether the cursor should be repositioned based on the file types involved.
+ *
+ * @returns A Promise that resolves to true if the cursor should be repositioned, or false otherwise.
+ */
+export async function shouldRepositionCursor(): Promise<boolean> {
+  
+  const { sourceFileExt: sourceExt, destinationFileExt: destinationExt } = await getFilePathInfo();
+
+  return (
+    (sourceExt !== '.css' && destinationExt === '.css') ||
+    (sourceExt !== '.scss' && destinationExt === '.scss') ||
+    destinationExt === '.html' ||
+    destinationExt === '.md'
+  );
+}
 
 /**
  * Inserts a snippet into the active text editor at a specified line and an appropriate column position.

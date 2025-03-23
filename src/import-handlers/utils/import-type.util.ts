@@ -1,5 +1,5 @@
 import { ImportType } from '../../model';
-import { getFileExtension } from '.';
+import { extractFileExtension } from '.';
 
 /**
  * Determines the import type based on the file extension.
@@ -8,15 +8,20 @@ import { getFileExtension } from '.';
  * @returns The corresponding ImportType if recognized; otherwise, returns null.
  */
 export function determineImportType(filePath: string): ImportType | null {
-  switch (getFileExtension(filePath)) {
+  switch (extractFileExtension(filePath)) {
     case '.js':
+    case '.jsx':
+    case '.ts':
+    case '.tsx':
       return 'script';
     case '.css':
       return 'stylesheet';
-    case '.scss':
-      return null;
     case '.md':
       return 'markdown';
+    case '.html':
+      return null;
+    case '.scss':
+      return null;
     default:
       return 'image';
   }

@@ -1,12 +1,12 @@
 import * as vscode from 'vscode';
 
-import { insertSnippetAtPosition } from './insert-snippet-at-position.util';
+import { getAutoImportSetting } from '../../utils';
+import { shouldRepositionCursor, insertSnippetAtPosition } from './import-position-fn';
 
 /**
  * Inserts an import snippet in the active editor based on the configured placement.
  *
- * The insertion position is determined by the workspace setting
- * `auto-import.preferences.importStatementPlacement`, which may be:
+ * The insertion position is determined by the workspace setting which may be:
  * - 'Top': Insert at the top of the file.
  * - 'Bottom': Insert after the last import statement.
  * - 'Cursor': Insert at the current cursor position.
@@ -14,15 +14,15 @@ import { insertSnippetAtPosition } from './insert-snippet-at-position.util';
  * @param snippet - The snippet to insert.
  * @param useCursorPosition - If true, forces insertion at the current cursor position.
  */
-export function insertImportSnippet(snippet: vscode.SnippetString, useCursorPosition: boolean): void {
+export async function insertImportSnippet(snippet: vscode.SnippetString): Promise<void> {
 
-  if (useCursorPosition) {
+  snippet = snippet.appendText('\n');
+
+  if (await shouldRepositionCursor()) {
     return insertSnippetAtCursor(snippet);
   }
 
-  const placement: string = vscode.workspace
-    .getConfiguration('auto-import.preferences')
-    .get('importStatementPlacement');
+  const placement = getAutoImportSetting('preferences', 'placement');
 
   switch (placement) {
     case 'Top':

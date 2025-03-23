@@ -1,20 +1,18 @@
 import * as vscode from 'vscode';
 
 import { FileExtension } from '../../model';
-import { getFileExtension } from '../../utils';
+import { extractFileExtension, getFilePathInfo } from '../../utils';
 
 /**
  * Generates an import snippet for a TSX file.
  *
- * @param relativeFilePath - The relative path of the dragged file in the editor.
- * @param draggedFilePath - The file path (extension) of the dragged file.
  * @returns A SnippetString containing the generated import statement.
  */
-export function snippet(
-  relativeFilePath: string,
-  draggedFilePath: string
-): vscode.SnippetString {
-  switch (getFileExtension(draggedFilePath) as FileExtension) {
+export async function snippet(): Promise<vscode.SnippetString> {
+   
+  const { sourceFilePath, relativePath } = await getFilePathInfo();
+
+  switch (extractFileExtension(sourceFilePath) as FileExtension) {
     // Images, Data, Scripts, Markup
     case '.gif':
     case '.jpeg':
@@ -30,7 +28,7 @@ export function snippet(
     case '.yaml':
     case '.md':
       return new vscode.SnippetString(
-        `import name$1 from '${relativeFilePath + getFileExtension(draggedFilePath)}';`
+        `import name$1 from '${relativePath + extractFileExtension(sourceFilePath)}';`
       );
 
     // Fonts, Stylesheets
@@ -41,7 +39,7 @@ export function snippet(
     case '.css':
     case '.scss':
       return new vscode.SnippetString(
-        `import '${relativeFilePath + getFileExtension(draggedFilePath)}';`
+        `import '${relativePath + extractFileExtension(sourceFilePath)}';`
       );
 
     default:

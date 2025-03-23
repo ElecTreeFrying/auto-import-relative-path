@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 
+import { getAutoImportSetting } from '../../utils';
 import { importStyle } from '../../../constants';
 import { ImportStyle } from '../../../model';
 
@@ -11,9 +12,7 @@ import { ImportStyle } from '../../../model';
  * @returns A vscode.SnippetString representing the JavaScript import statement.
  */
 export function getJavaScriptImportSnippet(relativePath: string): vscode.SnippetString {
-  let configValue = vscode.workspace
-    .getConfiguration('auto-import.importStatement.script')
-    .get('javascriptImportStyle');
+  let configValue = getAutoImportSetting('script', 'javascript');
   configValue = importStyle.JAVASCRIPT_IMPORT_OPTIONS.find(
     (option: ImportStyle) => option.description === configValue
   )?.value;
@@ -49,9 +48,7 @@ export function getJavaScriptImportSnippet(relativePath: string): vscode.Snippet
  * @returns A vscode.SnippetString representing the TypeScript import statement.
  */
 export function getTypeScriptImportSnippet(relativePath: string): vscode.SnippetString {
-  let configValue = vscode.workspace
-    .getConfiguration('auto-import.importStatement.script')
-    .get('typescriptImportStyle');
+  let configValue = getAutoImportSetting('script', 'typescript');
   configValue = importStyle.TYPESCRIPT_IMPORT_OPTIONS.find(
     (option: ImportStyle) => option.description === configValue
   )?.value;
