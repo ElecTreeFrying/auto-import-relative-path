@@ -10,7 +10,7 @@
   },
   "icon": "assets/extension-icon.png",
   "engines": {
-    "vscode": "^1.76.0"
+    "vscode": "^1.98.0"
   },
   "homepage": "https://github.com/ElecTreeFrying/auto-import-relative-path",
   "repository": {
