@@ -85,11 +85,6 @@
     "markdown",
     "code snippet"
   ],
-  "activationEvents": [
-    "onCommand:extension.pasteImport",
-    "onCommand:extension.copyFilePath",
-    "onCommand:extension.copyPaste"
-  ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
