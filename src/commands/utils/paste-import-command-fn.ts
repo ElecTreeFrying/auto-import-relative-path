@@ -43,10 +43,10 @@ export async function generateImportStatementSnippet(): Promise<vscode.SnippetSt
 export function showNotification(notifyType: NotifyType): void {
   switch (notifyType) {
     case NotifyType.SameFilePath:
-      vscode.window.showWarningMessage('Same file path.');
+      vscode.window.showWarningMessage('Auto Import Relative Path: Same file path.');
       break;
     case NotifyType.NotSupported:
-      vscode.window.showWarningMessage('Not supported.');
+      vscode.window.showWarningMessage('Auto Import Relative Path: Not supported.');
       break;
   }
 }

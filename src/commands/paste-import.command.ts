@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 
 import { NotifyType } from '../model';
-import { CSS_SUPPORTED_EXTENSIONS, HTML_SUPPORTED_EXTENSIONS, MARKDOWN_SUPPORTED_EXTENSIONS, PERMITTED_FILE_EXTENSIONS, SCSS_SUPPORTED_EXTENSIONS } from '../constants';
-import { generateImportStatementSnippet, showNotification, insertImportSnippet, getFilePathInfo, insertRelativePathSnippet } from './utils';
+import { CSS_SUPPORTED_EXTENSIONS, HTML_SUPPORTED_EXTENSIONS, MARKDOWN_SUPPORTED_EXTENSIONS, CROSS_IMPORT_EXTENSIONS, SCSS_SUPPORTED_EXTENSIONS } from '../constants';
+import { generateImportStatementSnippet, showNotification, insertImportSnippet, getFilePathInfo } from './utils';
 
 /**
  * Attempts to paste/import a previously copied file path into the active editor,
@@ -32,8 +32,8 @@ export async function executePasteImportCommand(): Promise<void> {
 
   // Check for various unsupported scenarios
   if (
-    // 1) File extensions not in the permitted list
-    (!PERMITTED_FILE_EXTENSIONS.includes(destinationFileExt) && sourceFileExt !== destinationFileExt)
+    // 1) The destination file extension is not in the allowed cross-import list
+    (!CROSS_IMPORT_EXTENSIONS.includes(destinationFileExt) && sourceFileExt !== destinationFileExt)
     // 2) HTML to HTML relative import
     || (sourceFileExt === '.html' && destinationFileExt === '.html')
     // 3) Unsupported HTML import
@@ -45,13 +45,11 @@ export async function executePasteImportCommand(): Promise<void> {
     // 6) Unsupported SCSS import
     || (!SCSS_SUPPORTED_EXTENSIONS.includes(sourceFileExt) && destinationFileExt === '.scss')
   ) {
-    await insertRelativePathSnippet();
     return showNotification(NotifyType.NotSupported);
   }
 
   // If snippet is empty or just a newline, fall back to a raw relative path
   if (snippet.value === '\n') {
-    await insertRelativePathSnippet();
     return showNotification(NotifyType.NotSupported);
   }
 

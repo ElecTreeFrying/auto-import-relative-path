@@ -11,7 +11,7 @@ export async function snippet(): Promise<vscode.SnippetString> {
     
   const { sourceFilePath, relativePath } = await getFilePathInfo();
 
-  const preserve = getAutoImportSetting('script', 'preserve');
+  const preserve = getAutoImportSetting('script', 'preserveScriptFileExtension');
   const fileExtension = preserve ? extractFileExtension(sourceFilePath) : '';
 
   return importSnippetFunctions.getTypeScriptImportSnippet(relativePath + fileExtension);

@@ -64,9 +64,9 @@ export const STYLESHEET_EXTENSIONS: string[] = [
 ];
 
 /**
- * A collection of permissible file extensions across various contexts.
+ * File extensions that support cross-imports.
  */
-export const PERMITTED_FILE_EXTENSIONS: FileExtension[] = [
+export const CROSS_IMPORT_EXTENSIONS: FileExtension[] = [
   ".html",
   ".md",
   ".css",
