@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 
+import { getAutoImportSetting } from '../../utils';
 import { importStyle } from '../../../constants';
 import { ImportStyle } from '../../../model';
 
@@ -10,9 +11,7 @@ import { ImportStyle } from '../../../model';
  * @returns A vscode.SnippetString representing the CSS import statement.
  */
 export function getCssImportSnippet(relativePath: string): vscode.SnippetString {
-  let configValue = vscode.workspace
-    .getConfiguration('auto-import.importStatement.styleSheet')
-    .get('cssImportStyle');
+  let configValue = getAutoImportSetting('stylesheet', 'css');
   configValue = importStyle.CSS_IMPORT_OPTIONS.find(
     (option: ImportStyle) => option.description === configValue
   )?.value;
@@ -34,9 +33,7 @@ export function getCssImportSnippet(relativePath: string): vscode.SnippetString 
  * @returns A vscode.SnippetString representing the CSS image import statement.
  */
 export function getCssImageImportSnippet(relativePath: string): vscode.SnippetString {
-  let configValue = vscode.workspace
-    .getConfiguration('auto-import.importStatement.styleSheet')
-    .get('cssImageImportStyle');
+  let configValue = getAutoImportSetting('stylesheet', 'cssImage');
   configValue = importStyle.CSS_IMAGE_IMPORT_OPTIONS.find(
     (option: ImportStyle) => option.description === configValue
   )?.value;
@@ -67,10 +64,7 @@ function normalizePartialFilename(relativePath: string): string {
  */
 export function getScssImportSnippet(relativePath: string): vscode.SnippetString {
   relativePath = normalizePartialFilename(relativePath);
-  
-  let configValue = vscode.workspace
-    .getConfiguration('auto-import.importStatement.styleSheet')
-    .get('scssImportStyle');
+  let configValue = getAutoImportSetting('stylesheet', 'scss');
   configValue = importStyle.SCSS_IMPORT_OPTIONS.find(
     (option: ImportStyle) => option.description === configValue
   )?.value;
@@ -96,9 +90,7 @@ export function getScssImportSnippet(relativePath: string): vscode.SnippetString
  * @returns A vscode.SnippetString representing the SCSS image import statement.
  */
 export function getScssImageImportSnippet(relativePath: string): vscode.SnippetString {
-  let configValue = vscode.workspace
-    .getConfiguration('auto-import.importStatement.styleSheet')
-    .get('scssImageImportStyle');
+  let configValue = getAutoImportSetting('stylesheet', 'scssImage');
   configValue = importStyle.SCSS_IMAGE_IMPORT_OPTIONS.find(
     (option: ImportStyle) => option.description === configValue
   )?.value;
