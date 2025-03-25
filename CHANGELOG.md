@@ -9,6 +9,9 @@
 - **Package Configuration:** Enhanced **package.json** by updating configuration titles, descriptions, keywords, and categories for better discoverability and adherence to VS Code extension standards.
 - **Documentation Overhaul:** Revamped **README.md**, **DEMO.md**, and **CHANGELOG.md** to align with the latest VS Code extension format and best practices.
 
+### Added
+- `SUPPORT.md` to guide users on getting help, reporting issues, running tests, and contributing to the extension.
+
 ## [0.5.4] - 2023-03-28
 
 ### Changed
