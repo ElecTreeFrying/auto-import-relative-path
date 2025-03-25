@@ -44,14 +44,8 @@ export async function executePasteImportCommand(): Promise<void> {
     || (!CSS_SUPPORTED_EXTENSIONS.includes(sourceFileExt) && destinationFileExt === '.css')
     // 6) Unsupported SCSS import
     || (!SCSS_SUPPORTED_EXTENSIONS.includes(sourceFileExt) && destinationFileExt === '.scss')
-  ) {
-    return showNotification(NotifyType.NotSupported);
-  }
-
-  if (
-    // If snippet is empty or just a newline, fall back to a raw relative path
-    snippet.value === '\n'
-    || snippet.value === ''
+    // 7) If snippet is empty or just a newline
+    || snippet.value === '\n' || snippet.value === ''
   ) {
     return showNotification(NotifyType.NotSupported);
   }
