@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-import { extractFileExtension, determineImportType, importSnippetFunctions, getFilePathInfo } from '../utils';
+import { extractFileExtension, determineImportType, importSnippetFunctions, getFilePathInfo, getAutoImportSetting } from '../utils';
 
 /**
  * Generates an import snippet for an SCSS file.
@@ -34,9 +34,7 @@ function determineScssExtension(sourceFilePath: string): string {
     // Auto preserve file extension if it is CSS
     return extractFileExtension(sourceFilePath);
   } else {
-    const preserve = vscode.workspace
-      .getConfiguration('auto-import.importStatement.styleSheet')
-      .get('preserveStylesheetFileExtension');
+    const preserve = getAutoImportSetting('stylesheet', 'preserveStylesheetFileExtension');
     return preserve ? extractFileExtension(sourceFilePath) : '';
   }
 }

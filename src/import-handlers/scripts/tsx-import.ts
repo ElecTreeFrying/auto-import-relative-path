@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
 import { FileExtension } from '../../model';
-import { extractFileExtension, getFilePathInfo } from '../../utils';
+import { importSnippetFunctions, extractFileExtension, getAutoImportSetting, getFilePathInfo } from '../utils';
 
 /**
  * Generates an import snippet for a TSX file.
@@ -12,7 +12,20 @@ export async function snippet(): Promise<vscode.SnippetString> {
    
   const { sourceFilePath, relativePath } = await getFilePathInfo();
 
+  const preserve = getAutoImportSetting('script', 'preserveScriptFileExtension');
+  const fileExtension = preserve ? extractFileExtension(sourceFilePath) : '';
+
   switch (extractFileExtension(sourceFilePath) as FileExtension) {
+
+    // Typescript
+    case '.ts':
+    case '.tsx':
+      return importSnippetFunctions.getTypeScriptImportSnippet(relativePath + fileExtension);
+
+    // Javascript
+    case '.js':
+      return importSnippetFunctions.getJavaScriptImportSnippet(relativePath + fileExtension);
+
     // Images, Data, Scripts, Markup
     case '.gif':
     case '.jpeg':
@@ -20,9 +33,6 @@ export async function snippet(): Promise<vscode.SnippetString> {
     case '.png':
     case '.webp':
     case '.json':
-    case '.ts':
-    case '.js':
-    case '.tsx':
     case '.html':
     case '.yml':
     case '.yaml':
