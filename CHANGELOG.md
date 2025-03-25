@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.5.5] - 2025-03-28
+## [0.6.0] - 2025-03-28
 
 ### Changed
 - **Repository Revamp:** Completely overhauled the entire repository to follow the latest best practices.
