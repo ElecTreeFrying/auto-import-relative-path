@@ -1,6 +1,7 @@
+import * as vscode from 'vscode';
 import * as path from 'path';
 
-import { getFilePathInfo, extractFileExtension } from '.';
+import { extractFileExtension } from '.';
 
 /**
  * Computes the relative path from the source file to the target file,
@@ -9,7 +10,11 @@ import { getFilePathInfo, extractFileExtension } from '.';
  * @returns The computed relative path without the file extension.
  */
 export async function computeRelativePath(): Promise<string> {
-  const { sourceFilePath, destinationFilePath } = await getFilePathInfo();
+
+  const editor = vscode.window.activeTextEditor;
+  const sourceFilePath = await vscode.env.clipboard.readText();
+  const destinationFilePath = editor.document.uri.fsPath;
+
   const prefix = areFilesInSameDirectory(sourceFilePath, destinationFilePath) ? './' : '';
   const relativePath = toUnixPath(getRelativePath(sourceFilePath, destinationFilePath));
   return prefix + removeFileExtension(relativePath);
@@ -18,12 +23,12 @@ export async function computeRelativePath(): Promise<string> {
 /**
  * Computes the relative path between two files.
  *
- * @param sourceFilePath - The full path of the source file.
- * @param targetFilePath - The full path of the target file.
+ * @param to - The full path of the source file.
+ * @param from - The full path of the target file.
  * @returns The relative path.
  */
-function getRelativePath(sourceFilePath: string, targetFilePath: string): string {
-  return path.relative(path.dirname(sourceFilePath), targetFilePath);
+function getRelativePath(to: string, from: string): string {
+  return path.relative(path.dirname(from), to);
 }
 
 /**
