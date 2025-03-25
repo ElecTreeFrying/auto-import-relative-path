@@ -48,8 +48,11 @@ export async function executePasteImportCommand(): Promise<void> {
     return showNotification(NotifyType.NotSupported);
   }
 
-  // If snippet is empty or just a newline, fall back to a raw relative path
-  if (snippet.value === '\n') {
+  if (
+    // If snippet is empty or just a newline, fall back to a raw relative path
+    snippet.value === '\n'
+    || snippet.value === ''
+  ) {
     return showNotification(NotifyType.NotSupported);
   }
 
