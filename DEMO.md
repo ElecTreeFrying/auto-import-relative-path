@@ -38,6 +38,7 @@
     - [Import Markdown](#import-markdown)
   - [Changelog](#changelog)
   - [Contributing](#contributing)
+  - [Support](#support)
   - [Support the Project](#support-the-project)
   - [Related](#related)
 
@@ -258,6 +259,17 @@ Found a bug or have a feature request? Feel free to open an issue in [GitHub Iss
 
 [GitHub Issues]: https://github.com/ElecTreeFrying/auto-import-relative-path/issues  
 [Visual Studio Marketplace]: https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import&ssr=false#review-details  
+
+---
+
+## Support
+
+If you're running into issues or need help using **Auto Import Relative Path**, please check the resources below:
+
+- 🛠 **Troubleshooting**: Review the [SUPPORT.md](https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/SUPPORT.md) for known issues and helpful tips.
+- ❓ **Ask a Question**: If your question isn’t answered in the documentation or support page, feel free to [open an issue](https://github.com/ElecTreeFrying/auto-import-relative-path/issues).
+- 💬 **Discussions**: You can also participate in GitHub Discussions (if enabled) or reach out via comments on the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import#review-details).
+- 💡 **Feature Requests**: Use GitHub Issues to suggest improvements or new features.
 
 ---
 
