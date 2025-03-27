@@ -3,7 +3,7 @@
   "displayName": "Auto Import Relative Path",
   "description": "Streamline your imports with instant relative path generation. Copy or auto-import files for JavaScript, TypeScript, CSS, HTML, and Markdown in a single command—no more manual path typing or memorizing!",
   "publisher": "ElecTreeFrying",
-  "version": "0.5.4",
+  "version": "0.6.0",
   "author": {
     "name": "John James Ermitaño",
     "email": "jjgermitano@gmail.com"
