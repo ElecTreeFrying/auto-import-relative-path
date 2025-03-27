@@ -12,6 +12,9 @@
 ### Added
 - `SUPPORT.md` to guide users on getting help, reporting issues, running tests, and contributing to the extension.
 
+### To-Do
+- Improve unit tests for better coverage and maintainability.
+
 ## [0.5.4] - 2023-03-28
 
 ### Changed
