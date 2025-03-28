@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.6.1] - 2025-03-28
+
+### Fixed
+- **Relative Path Bug:** Prepend './' to relative paths for same-directory imports. This critical bug fix ensures that module imports are correctly resolved when files reside in the same directory.
+
 ## [0.6.0] - 2025-03-28
 
 ### Changed

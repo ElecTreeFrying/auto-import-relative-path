@@ -15,8 +15,15 @@ export async function computeRelativePath(): Promise<string> {
   const sourceFilePath = await vscode.env.clipboard.readText();
   const destinationFilePath = editor.document.uri.fsPath;
 
-  const prefix = areFilesInSameDirectory(sourceFilePath, destinationFilePath) ? './' : '';
   const relativePath = toUnixPath(getRelativePath(sourceFilePath, destinationFilePath));
+
+  // Determine whether to add a "./" prefix:
+  // If both files are in the same directory or if the computed relative path doesn't start with a dot,
+  // then prepend "./" to make the import path relative.
+  const shouldAddPrefix =
+    areFilesInSameDirectory(sourceFilePath, destinationFilePath) || !relativePath.startsWith('.');
+  const prefix = shouldAddPrefix ? './' : '';
+
   return prefix + removeFileExtension(relativePath);
 }
 
