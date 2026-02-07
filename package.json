@@ -298,7 +298,7 @@
     "typescript": "^5.7.3",
     "ts-loader": "^9.5.2",
     "vscode-test": "^1.6.1",
-    "webpack": "^5.98.0",
+    "webpack": "^5.105.0",
     "webpack-cli": "^6.0.1",
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.4.1"
