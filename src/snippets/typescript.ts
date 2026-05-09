@@ -57,7 +57,7 @@ export function buildTypeScriptImportSnippet(relativePath: string): vscode.Snipp
     case 1:
       return new vscode.SnippetString(`import { ${generateImportName(relativePath)} } from '${relativePath}';`);
     case 2:
-      return new vscode.SnippetString(`import { $1 as $2 } from '${relativePath}';`);
+      return new vscode.SnippetString(`import { default as $1 } from '${relativePath}';`);
     case 3:
       return new vscode.SnippetString(`import * as $1 from '${relativePath}';`);
     case 4:
