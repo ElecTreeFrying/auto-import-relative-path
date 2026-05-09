@@ -73,8 +73,11 @@ export function buildTypeScriptImportSnippet(relativePath: string): vscode.Snipp
  * `.pipe`, `.service`, `.module`); returns `'$1'` otherwise.
  *
  * @remarks
- * The conversion replaces every `.` with `-`, splits on `-`, capitalises
- * each segment, and joins. So `app-root.component` → `AppRootComponent`.
+ * Strips a trailing script extension (`.ts`/`.tsx`/`.js`/`.jsx`) first so
+ * that `preserveScriptFileExtension: true` doesn't fold the extension into
+ * the identifier (otherwise `app-root.component.ts` → `AppRootComponentTs`).
+ * Then replaces every `.` with `-`, splits on `-`, capitalises each segment,
+ * and joins. So `app-root.component` → `AppRootComponent`.
  *
  * @param relativePath - The import path being inserted into the snippet.
  * @returns The PascalCase identifier, or `'$1'` placeholder for non-Angular paths.
@@ -87,7 +90,11 @@ function generateImportName(relativePath: string): string {
     relativePath.includes('.service') ||
     relativePath.includes('.module')
   ) {
-    const baseName = path.basename(relativePath).replace(/\./g, '-');
+    const ext = extractFileExtension(relativePath);
+    const withoutExt = (ext === '.ts' || ext === '.tsx' || ext === '.js' || ext === '.jsx')
+      ? relativePath.slice(0, -ext.length)
+      : relativePath;
+    const baseName = path.basename(withoutExt).replace(/\./g, '-');
     return baseName
       .split('-')
       .map(segment => segment.charAt(0).toUpperCase() + segment.slice(1))
