@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.7.0] - 2026-05-08
+
+### Changed
+- **Toolchain modernization:** Bumped `engines.vscode` to `^1.118.0`, upgraded all `devDependencies`, and refreshed scaffold configs to match the latest `yo code` conventions.
+- **Bundler migration:** Replaced webpack with esbuild (`esbuild.js` replaces `webpack.config.js`).
+
+### Added
+- **AI-assisted maintenance workflow:** Introduced a [Claude Code](https://claude.com/claude-code) workflow under `.claude/` for recurring maintenance tasks across our VS Code extensions.
+
+### Removed
+- `vscode-test` — legacy, unused (superseded by `@vscode/test-cli`).
+- `webpack`, `webpack-cli`, `ts-loader` — no longer needed after the esbuild migration.
+
 ## [0.6.1] - 2025-03-28
 
 ### Fixed

@@ -1,7 +1,18 @@
+# Build output
 out
 dist
+
+# Dependencies
 node_modules
+
+# VS Code extension testing & packaging
 .vscode-test/
 *.vsix
+
+# Project-private assets & notes
 /assets/test
 /process/*
+
+# Claude Code
+.claude
+CLAUDE.md
