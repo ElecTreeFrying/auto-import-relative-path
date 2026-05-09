@@ -68,7 +68,7 @@ function buildScssImportSnippet(relativePath: string): vscode.SnippetString {
     case 2:
       return new vscode.SnippetString(`@use '${relativePath}';`);
     case 3:
-      return new vscode.SnippetString(`@use '${relativePath}' as $1`);
+      return new vscode.SnippetString(`@use '${relativePath}' as \${1:*};`);
     default:
       return new vscode.SnippetString(`@import '${relativePath}';`);
   }
