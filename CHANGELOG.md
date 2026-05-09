@@ -1,17 +1,23 @@
 # Changelog
 
-## [0.7.0] - 2026-05-08
+## [0.7.0] - 2026-05-09
 
 ### Changed
-- **Toolchain modernization:** Bumped `engines.vscode` to `^1.118.0`, upgraded all `devDependencies`, and refreshed scaffold configs to match the latest `yo code` conventions.
-- **Bundler migration:** Replaced webpack with esbuild (`esbuild.js` replaces `webpack.config.js`).
+- **Toolchain modernization:** Bumped `engines.vscode` to `^1.118.0`, refreshed scaffold configs (`eslint.config.mjs`, `.vscode/tasks.json`, `.vscode/extensions.json`, `.vscodeignore`, `esbuild.js`) to match the latest `yo code` conventions, and updated `devDependencies`.
+- **Bundler migration:** Replaced webpack with esbuild (`esbuild.js` replaces `webpack.config.js`). Production bundle is now ~14 KB (`dist/extension.js`).
+- **Build pipeline:** Adopted the modern scaffold's `compile`/`watch`/`package` scripts — `compile` now runs `check-types && lint && esbuild` in series; `watch` runs parallel `watch:tsc` + `watch:esbuild` via `npm-run-all`.
+- **`@types/node` pinning:** Switched from wildcard `22.x` to explicit `^22.19.18` to match the rest of the deps' caret-+-full-version style.
+- **`tsconfig.json`:** Added defensive `compilerOptions.types: ["node", "mocha"]` to make `@types/node` and `@types/mocha` ambient inclusion explicit (prevents intermittent VS Code TS Server phantom `TS2591` errors after a `node_modules` rebuild).
 
 ### Added
-- **AI-assisted maintenance workflow:** Introduced a [Claude Code](https://claude.com/claude-code) workflow under `.claude/` for recurring maintenance tasks across our VS Code extensions.
+- **`typescript-eslint`** unified package (replaces the separate `@typescript-eslint/parser` + `@typescript-eslint/eslint-plugin`).
+- **`npm-run-all`** to power the parallel `watch:*` scripts.
 
 ### Removed
-- `vscode-test` — legacy, unused (superseded by `@vscode/test-cli`).
 - `webpack`, `webpack-cli`, `ts-loader` — no longer needed after the esbuild migration.
+- `@typescript-eslint/parser`, `@typescript-eslint/eslint-plugin` — superseded by the unified `typescript-eslint` package.
+- `mocha` (direct devDep) — now pulled transitively via `@vscode/test-cli`.
+- `vscode-test` — legacy duplicate of `@vscode/test-cli`.
 
 ## [0.6.1] - 2025-03-28
 
