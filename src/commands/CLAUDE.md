@@ -4,16 +4,16 @@ The three commands registered in `src/extension.ts`. The clipboard is the data c
 
 ## Files
 
-- `copy-file-path.ts` — `executeCopyFilePathCommand`
-- `paste-import.ts` — `executePasteImportCommand`
-- `copy-paste.ts` — `executeCopyPasteCommand`
+- `copy-file-path.ts` — `executeCopyFilePath`
+- `paste-import.ts` — `executePasteImport`
+- `copy-paste.ts` — `executeCopyPaste`
 - `index.ts` — barrel re-export (the only barrel in the project)
 
 ## Conventions
 
-- One file per command; one exported `executeXCommand` per file.
+- One file per command; one exported `executeX` per file (no `Command` suffix — the parent directory carries the kind signal).
 - All commands are `async`, return `Promise<void>`.
-- Every failure path returns void; **nothing throws**. User-visible signals are warning toasts via `editor/notify.ts`.
+- Every failure path returns void; **nothing throws**. User-visible signals are warning toasts via `editor/notification.ts`.
 
 ## `copy-file-path.ts` — clipboard round-trip
 
@@ -24,10 +24,10 @@ Also clears existing notifications and shows the "Copied <basename>" toast.
 ## `paste-import.ts` — the heart of the gating logic
 
 - Aborts if there's no `activeTextEditor`.
-- **Parallel fetch.** `getFilePathInfo()` and `generateImportSnippet()` run together via `Promise.all`. They share no state and both internally read clipboard + active editor; running concurrently halves latency. Don't introduce a code path that mutates the clipboard between them.
+- **Parallel fetch.** `getFilePathInfo()` and `buildImportSnippet()` run together via `Promise.all`. They share no state and both internally read clipboard + active editor; running concurrently halves latency. Don't introduce a code path that mutates the clipboard between them.
 - **Same-file rejection** runs before gating: `sourceFilePath.toLowerCase() === destinationFilePath.toLowerCase()` → `'same-file-path'` toast.
 - **Eight-clause gating conjunction** rejects with `'not-supported'` toast if any clause matches:
-  1. Destination not in `CROSS_IMPORT_EXTENSIONS` AND source ≠ destination extension
+  1. Destination not in `CROSS_IMPORT_DESTINATIONS` AND source ≠ destination extension
   2. `.html → .html` (no relative-import syntax for HTML embedding itself)
   3. Source not in `HTML_SUPPORTED_EXTENSIONS` AND destination is `.html`
   4. Source not in `MARKDOWN_SUPPORTED_EXTENSIONS` AND destination is `.md`
@@ -35,16 +35,16 @@ Also clears existing notifications and shows the "Copied <basename>" toast.
   6. Source not in `SCSS_SUPPORTED_EXTENSIONS` AND destination is `.scss`
   7. `snippet.value === '\n'` (empty snippet — no language module handled this destination)
   8. `snippet.value === ''` (same)
-- See `src/constants/CLAUDE.md` for the gating tables; see `src/snippets/CLAUDE.md` for what generates the snippet.
+- See `src/constants/CLAUDE.md` for the gating tables; see `src/snippets/CLAUDE.md` for what builds the snippet.
 
 ## `copy-paste.ts` — sequential composition
 
-`await copyFilePath; await pasteImport;`. **Must remain sequential** — paste reads what copy wrote.
+`await executeCopyFilePath(); await executePasteImport();`. **Must remain sequential** — paste reads what copy wrote.
 
 ## Adding a new command
 
 1. New file here, kebab-case noun (no `.command.ts` suffix).
-2. Export `executeXCommand: () => Promise<void>`.
+2. Export `executeX: () => Promise<void>` (no `Command` suffix).
 3. Re-export from `index.ts`.
 4. Register in `src/extension.ts:activate`.
 5. Add to `package.json:contributes.commands` (and optionally `contributes.keybindings`).

@@ -12,7 +12,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 
 /** Copies the active file's absolute path to the clipboard, toasts the basename, and rewrites the clipboard to the same value. */
-export async function executeCopyFilePathCommand(): Promise<void> {
+export async function executeCopyFilePath(): Promise<void> {
   vscode.commands.executeCommand('notifications.clearAll');
   vscode.commands.executeCommand('copyFilePath');
 

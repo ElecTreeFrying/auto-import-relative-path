@@ -11,7 +11,7 @@
  * be syntactically valid but conventionally wrong.
  *
  * **`determineScssExtension` is asymmetric** — different from the script
- * `preserve` rule:
+ * `preserveScriptFileExtension` rule:
  *
  * - `.css` source → always preserves the `.css` extension on the import
  *   path, regardless of the user's `preserveStylesheetFileExtension`
@@ -19,7 +19,7 @@
  * - Any other source → respects the setting.
  *
  * **Image branch routes to CSS.** `'image'` source delegates to
- * `getCssImageImportSnippet` (`url('path')`) — there is no SCSS-specific
+ * `buildCssImageImportSnippet` (`url('path')`) — there is no SCSS-specific
  * image snippet because the syntax is identical between the two languages.
  */
 import * as vscode from 'vscode';
@@ -29,22 +29,22 @@ import { extractFileExtension } from '../path/extension';
 import { determineImportType } from '../path/import-type';
 import { getFilePathInfo } from '../editor/file-path-info';
 import { SCSS_IMPORT_OPTIONS, resolveStyleIndex } from './_styles';
-import { getCssImageImportSnippet } from './css';
+import { buildCssImageImportSnippet } from './css';
 
 /**
  * Routes image sources to CSS's `url(...)` snippet and everything else to
- * `getScssImportSnippet` with extension handled by `determineScssExtension`.
+ * `buildScssImportSnippet` with extension handled by `determineScssExtension`.
  *
  * @returns The SCSS import `SnippetString` for the current source.
  */
-export async function snippet(): Promise<vscode.SnippetString> {
+export async function buildSnippet(): Promise<vscode.SnippetString> {
   const { sourceFilePath, relativePath } = await getFilePathInfo();
 
   switch (determineImportType(sourceFilePath)) {
     case 'image':
-      return getCssImageImportSnippet(relativePath + extractFileExtension(sourceFilePath));
+      return buildCssImageImportSnippet(relativePath + extractFileExtension(sourceFilePath));
     default:
-      return getScssImportSnippet(relativePath + determineScssExtension(sourceFilePath));
+      return buildScssImportSnippet(relativePath + determineScssExtension(sourceFilePath));
   }
 }
 
@@ -56,11 +56,11 @@ export async function snippet(): Promise<vscode.SnippetString> {
  * @param relativePath - The already-computed import path.
  * @returns The `SnippetString` for the matched style.
  */
-function getScssImportSnippet(relativePath: string): vscode.SnippetString {
+function buildScssImportSnippet(relativePath: string): vscode.SnippetString {
   relativePath = normalizePartialFilename(relativePath);
-  const idx = resolveStyleIndex(SCSS_IMPORT_OPTIONS, getAutoImportSetting<string>('stylesheet', 'scss'));
+  const styleIndex = resolveStyleIndex(SCSS_IMPORT_OPTIONS, getAutoImportSetting<string>('stylesheet', 'scss'));
 
-  switch (idx) {
+  switch (styleIndex) {
     case 0:
       return new vscode.SnippetString(`@import '${relativePath}';`);
     case 1:
@@ -85,8 +85,8 @@ function determineScssExtension(sourceFilePath: string): string {
   if (extractFileExtension(sourceFilePath) === '.css') {
     return extractFileExtension(sourceFilePath);
   }
-  const preserve = getAutoImportSetting('stylesheet', 'preserveStylesheetFileExtension');
-  return preserve ? extractFileExtension(sourceFilePath) : '';
+  const shouldPreserveExtension = getAutoImportSetting('stylesheet', 'preserveStylesheetFileExtension');
+  return shouldPreserveExtension ? extractFileExtension(sourceFilePath) : '';
 }
 
 /**

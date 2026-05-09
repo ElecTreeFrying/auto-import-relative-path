@@ -12,7 +12,7 @@
  * The classifier is deliberately lossy:
  *
  * - `.css → 'stylesheet'` but `.scss → null`, so SCSS-into-SCSS routes
- *   through `getScssImportSnippet` (which knows about `@use` and partial
+ *   through `buildScssImportSnippet` (which knows about `@use` and partial
  *   filenames) rather than a generic stylesheet bucket.
  * - `.html → null` is defensive — HTML→HTML is rejected by gating before
  *   this classifier runs.

@@ -1,7 +1,7 @@
 /**
  * Shared algorithm for JSX and TSX snippet generation. Both destinations
  * use the same source-extension dispatch; they differ only in *which*
- * script-snippet builder they delegate to. {@link renderReactImport}
+ * script-snippet builder they delegate to. {@link buildReactImport}
  * parameterises that choice via {@link ReactImportOptions}.
  *
  * @remarks
@@ -32,49 +32,49 @@ import { getFilePathInfo } from '../editor/file-path-info';
 import { getAutoImportSetting } from '../config/settings';
 
 /** Builder that turns an already-computed relative path into a script-import `SnippetString`. JSX uses the JS variant; TSX uses TS for `.ts`/`.tsx` and falls back to JS for `.js`. */
-export type ScriptSnippet = (relativePath: string) => vscode.SnippetString;
+export type BuildScriptSnippet = (relativePath: string) => vscode.SnippetString;
 
 export interface ReactImportOptions {
   /** Source extensions that should be rendered with `primarySnippet` (e.g. `['.js', '.jsx']` for JSX, `['.ts', '.tsx']` for TSX). */
-  primaryExts: ReadonlyArray<FileExtension>;
-  /** Snippet builder used when the source extension is in `primaryExts`. */
-  primarySnippet: ScriptSnippet;
+  primaryExtensions: ReadonlyArray<FileExtension>;
+  /** Snippet builder used when the source extension is in `primaryExtensions`. */
+  primarySnippet: BuildScriptSnippet;
   /** Optional secondary extension list. TSX sets `['.js']` so a `.js` source dropped into a TSX file gets a JS-shaped import; JSX leaves this unset. */
-  fallbackExts?: ReadonlyArray<FileExtension>;
-  /** Optional snippet builder paired with `fallbackExts`. Required iff `fallbackExts` is set. */
-  fallbackSnippet?: ScriptSnippet;
+  fallbackExtensions?: ReadonlyArray<FileExtension>;
+  /** Optional snippet builder paired with `fallbackExtensions`. Required iff `fallbackExtensions` is set. */
+  fallbackSnippet?: BuildScriptSnippet;
 }
 
 /**
  * Generates a JSX/TSX import snippet by routing the source extension
- * through (in order) `opts.primaryExts`, `opts.fallbackExts`, then a
+ * through (in order) `opts.primaryExtensions`, `opts.fallbackExtensions`, then a
  * hardcoded image/data/font/stylesheet switch.
  *
  * @param opts - Strategy configuration.
- * @param opts.primaryExts - Source extensions that route to `primarySnippet`.
- * @param opts.primarySnippet - Snippet builder for `primaryExts` sources.
- * @param opts.fallbackExts - Optional secondary extension list (used by TSX for `.js`).
- * @param opts.fallbackSnippet - Optional snippet builder for `fallbackExts` sources.
+ * @param opts.primaryExtensions - Source extensions that route to `primarySnippet`.
+ * @param opts.primarySnippet - Snippet builder for `primaryExtensions` sources.
+ * @param opts.fallbackExtensions - Optional secondary extension list (used by TSX for `.js`).
+ * @param opts.fallbackSnippet - Optional snippet builder for `fallbackExtensions` sources.
  * @returns The rendered `SnippetString`, or an empty one for sources outside
  *   every list.
  */
-export async function renderReactImport(opts: ReactImportOptions): Promise<vscode.SnippetString> {
+export async function buildReactImport(opts: ReactImportOptions): Promise<vscode.SnippetString> {
   const { sourceFilePath, relativePath } = await getFilePathInfo();
 
-  const preserve = getAutoImportSetting('script', 'preserveScriptFileExtension');
-  const fileExtension = preserve ? extractFileExtension(sourceFilePath) : '';
-  const sourceExt = extractFileExtension(sourceFilePath) as FileExtension;
+  const shouldPreserveExtension = getAutoImportSetting('script', 'preserveScriptFileExtension');
+  const fileExtension = shouldPreserveExtension ? extractFileExtension(sourceFilePath) : '';
+  const sourceFileExt = extractFileExtension(sourceFilePath) as FileExtension;
 
-  if (opts.primaryExts.includes(sourceExt)) {
+  if (opts.primaryExtensions.includes(sourceFileExt)) {
     return opts.primarySnippet(relativePath + fileExtension);
   }
-  if (opts.fallbackSnippet && opts.fallbackExts?.includes(sourceExt)) {
+  if (opts.fallbackSnippet && opts.fallbackExtensions?.includes(sourceFileExt)) {
     return opts.fallbackSnippet(relativePath + fileExtension);
   }
 
   const fullPath = relativePath + extractFileExtension(sourceFilePath);
 
-  switch (sourceExt) {
+  switch (sourceFileExt) {
     case '.gif':
     case '.jpeg':
     case '.jpg':

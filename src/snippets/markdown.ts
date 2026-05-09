@@ -20,15 +20,15 @@ import { MARKDOWN_IMAGE_IMPORT_OPTIONS, resolveStyleIndex } from './_styles';
  *
  * @returns The Markdown link/image `SnippetString` for the current source, or empty.
  */
-export async function snippet(): Promise<vscode.SnippetString> {
+export async function buildSnippet(): Promise<vscode.SnippetString> {
   const { sourceFilePath, relativePath } = await getFilePathInfo();
   const fullPath = relativePath + extractFileExtension(sourceFilePath);
 
   switch (determineImportType(sourceFilePath)) {
     case 'markdown':
-      return getMarkdownImportSnippet(fullPath);
+      return buildMarkdownImportSnippet(fullPath);
     case 'image':
-      return getMarkdownImageImportSnippet(fullPath);
+      return buildMarkdownImageImportSnippet(fullPath);
     default:
       return new vscode.SnippetString('');
   }
@@ -40,7 +40,7 @@ export async function snippet(): Promise<vscode.SnippetString> {
  * @param relativePath - The import path.
  * @returns The Markdown inline link as a `SnippetString`.
  */
-function getMarkdownImportSnippet(relativePath: string): vscode.SnippetString {
+function buildMarkdownImportSnippet(relativePath: string): vscode.SnippetString {
   return new vscode.SnippetString(`![text](${relativePath})`);
 }
 
@@ -51,10 +51,10 @@ function getMarkdownImportSnippet(relativePath: string): vscode.SnippetString {
  * @param relativePath - The image's import path.
  * @returns The `SnippetString` for the matched style.
  */
-function getMarkdownImageImportSnippet(relativePath: string): vscode.SnippetString {
-  const idx = resolveStyleIndex(MARKDOWN_IMAGE_IMPORT_OPTIONS, getAutoImportSetting<string>('markup', 'markdownImage'));
+function buildMarkdownImageImportSnippet(relativePath: string): vscode.SnippetString {
+  const styleIndex = resolveStyleIndex(MARKDOWN_IMAGE_IMPORT_OPTIONS, getAutoImportSetting<string>('markup', 'markdownImage'));
 
-  switch (idx) {
+  switch (styleIndex) {
     case 0:
       return new vscode.SnippetString(`![alt-text](${relativePath} "Hover text")`);
     case 1:

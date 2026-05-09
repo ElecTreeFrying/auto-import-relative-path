@@ -2,7 +2,7 @@
  * JavaScript import-snippet generator. Nine styles selectable via
  * `auto-import.importStatement.script.javascriptImportStyle`.
  *
- * `getJavaScriptImportSnippet` is exported (not just internal) because
+ * `buildJavaScriptImportSnippet` is exported (not just internal) because
  * `snippets/_shared.ts` consumes it on behalf of `jsx.ts` (JSX uses JS
  * snippets) and `tsx.ts` (TSX falls back to JS snippets for `.js` sources).
  */
@@ -19,13 +19,13 @@ import { JAVASCRIPT_IMPORT_OPTIONS, resolveStyleIndex } from './_styles';
  *
  * @returns The JavaScript import `SnippetString` for the current source.
  */
-export async function snippet(): Promise<vscode.SnippetString> {
+export async function buildSnippet(): Promise<vscode.SnippetString> {
   const { sourceFilePath, relativePath } = await getFilePathInfo();
 
-  const preserve = getAutoImportSetting('script', 'preserveScriptFileExtension');
-  const fileExtension = preserve ? extractFileExtension(sourceFilePath) : '';
+  const shouldPreserveExtension = getAutoImportSetting('script', 'preserveScriptFileExtension');
+  const fileExtension = shouldPreserveExtension ? extractFileExtension(sourceFilePath) : '';
 
-  return getJavaScriptImportSnippet(relativePath + fileExtension);
+  return buildJavaScriptImportSnippet(relativePath + fileExtension);
 }
 
 /**
@@ -36,10 +36,10 @@ export async function snippet(): Promise<vscode.SnippetString> {
  * @param relativePath - The already-computed import path (with or without extension).
  * @returns The `SnippetString` for the matched style, or the default-import shape.
  */
-export function getJavaScriptImportSnippet(relativePath: string): vscode.SnippetString {
-  const idx = resolveStyleIndex(JAVASCRIPT_IMPORT_OPTIONS, getAutoImportSetting<string>('script', 'javascript'));
+export function buildJavaScriptImportSnippet(relativePath: string): vscode.SnippetString {
+  const styleIndex = resolveStyleIndex(JAVASCRIPT_IMPORT_OPTIONS, getAutoImportSetting<string>('script', 'javascript'));
 
-  switch (idx) {
+  switch (styleIndex) {
     case 0:
       return new vscode.SnippetString(`import $1 from '${relativePath}';`);
     case 1:

@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { executeCopyFilePathCommand, executePasteImportCommand, executeCopyPasteCommand } from './commands';
+import { executeCopyFilePath, executePasteImport, executeCopyPaste } from './commands';
 
 /**
  * Activates the extension by registering import commands with VS Code.
@@ -13,9 +13,9 @@ import { executeCopyFilePathCommand, executePasteImportCommand, executeCopyPaste
  */
 export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
-    vscode.commands.registerCommand('extension.copyFilePath', () => executeCopyFilePathCommand()),
-    vscode.commands.registerCommand('extension.pasteImport', () => executePasteImportCommand()),
-    vscode.commands.registerCommand('extension.copyPaste', () => executeCopyPasteCommand())
+    vscode.commands.registerCommand('extension.copyFilePath', () => executeCopyFilePath()),
+    vscode.commands.registerCommand('extension.pasteImport', () => executePasteImport()),
+    vscode.commands.registerCommand('extension.copyPaste', () => executeCopyPaste())
   );
 }
 

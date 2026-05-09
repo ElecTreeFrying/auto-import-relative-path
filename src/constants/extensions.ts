@@ -20,10 +20,10 @@
  *   in `commands/paste-import.ts`. Adding an entry there is half the work
  *   — the corresponding snippet handler in `snippets/{html,markdown,css,
  *   scss}.ts` must also know how to produce a snippet for that source.
- * - {@link CROSS_IMPORT_EXTENSIONS} lists destinations that may import a
+ * - {@link CROSS_IMPORT_DESTINATIONS} lists destinations that may import a
  *   *different* extension. Destinations *not* in this list (currently
  *   `.js`, `.ts`) require source extension to equal destination extension.
- * - {@link SCRIPT_EXTENSIONS} and {@link STYLESHEET_EXTENSIONS} are
+ * - {@link SCRIPT_FILE_EXTENSIONS} and {@link STYLESHEET_FILE_EXTENSIONS} are
  *   consumed only by `editor/insert-snippet.ts:determineInsertionColumn`,
  *   which forces column-0 insertion for these destination types. Hidden
  *   coupling — touch with care.
@@ -66,7 +66,7 @@ export const SCSS_SUPPORTED_EXTENSIONS: FileExtension[] = [
 ];
 
 /** Destinations whose insertion column is forced to 0. Consumed only by `editor/insert-snippet.ts:determineInsertionColumn`. */
-export const SCRIPT_EXTENSIONS: string[] = [
+export const SCRIPT_FILE_EXTENSIONS: FileExtension[] = [
   '.ts',
   '.tsx',
   '.js',
@@ -74,13 +74,13 @@ export const SCRIPT_EXTENSIONS: string[] = [
 ];
 
 /** Destinations whose insertion column is forced to 0. Consumed only by `editor/insert-snippet.ts:determineInsertionColumn`. */
-export const STYLESHEET_EXTENSIONS: string[] = [
+export const STYLESHEET_FILE_EXTENSIONS: FileExtension[] = [
   '.scss',
   '.css',
 ];
 
 /** Destinations allowed to import a *different* extension. Destinations not listed here require source extension to equal destination extension. */
-export const CROSS_IMPORT_EXTENSIONS: FileExtension[] = [
+export const CROSS_IMPORT_DESTINATIONS: FileExtension[] = [
   '.html',
   '.md',
   '.css',

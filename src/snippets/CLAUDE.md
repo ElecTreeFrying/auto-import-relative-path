@@ -1,12 +1,12 @@
 # src/snippets/CLAUDE.md
 
-Per-language snippet builders + the destination-extension dispatch in `dispatch.ts`. The public surface of this directory is `dispatch.ts:generateImportSnippet()`.
+Per-language snippet builders + the destination-extension dispatch in `dispatch.ts`. The public surface of this directory is `dispatch.ts:buildImportSnippet()`.
 
 ## Files
 
 - `dispatch.ts` — single-level destination-extension switch.
 - `javascript.ts`, `typescript.ts`, `jsx.ts`, `tsx.ts`, `css.ts`, `scss.ts`, `html.ts`, `markdown.ts` — one module per destination language.
-- `_shared.ts` — internal: `renderReactImport` shared by JSX/TSX.
+- `_shared.ts` — internal: `buildReactImport` shared by JSX/TSX.
 - `_styles.ts` — internal: `ImportStyle[]` tables + `resolveStyleIndex`.
 
 The `_`-prefixed files are directory-internal — importing them from outside `snippets/` is a smell.
@@ -19,14 +19,16 @@ Every `ImportStyle.description` string is a **byte-exact contract** with `packag
 
 ### "Currently unused" tables
 
-`CSS_IMAGE_IMPORT_OPTIONS`, `SCSS_IMAGE_IMPORT_OPTIONS`, the three `HTML_*_IMPORT_OPTIONS`, and `MARKDOWN_IMPORT_OPTIONS` declare a single entry each, purely for `package.json` UI parity. The consuming snippet builder hardcodes that single shape and never calls `resolveStyleIndex`. They are flagged "Currently unused" in the table TSDoc — kept for parity. Safe to delete only **with** the matching `package.json` setting.
+`CSS_IMAGE_IMPORT_OPTIONS`, the three `HTML_*_IMPORT_OPTIONS`, and `MARKDOWN_IMPORT_OPTIONS` declare a single entry each, purely for `package.json` UI parity. The consuming snippet builder hardcodes that single shape and never calls `resolveStyleIndex`. They are flagged "Currently unused" in the table TSDoc — kept for parity. Safe to delete only **with** the matching `package.json` setting.
 
-## JSX/TSX share `_shared.ts:renderReactImport`
+Note: there is no `SCSS_IMAGE_IMPORT_OPTIONS` — SCSS image sources reuse `buildCssImageImportSnippet` from `css.ts`, since the `url('…')` syntax is identical between the two languages. The `auto-import.importStatement.styleSheet.scssImageImportStyle` setting still exists in `package.json` for UI parity but is consumed via the CSS table at lookup time.
 
-Parameterised by `primaryExts` / `primarySnippet` (and optional `fallbackExts` / `fallbackSnippet`):
+## JSX/TSX share `_shared.ts:buildReactImport`
 
-- **JSX**: `primaryExts: ['.js', '.jsx']` → `getJavaScriptImportSnippet`. No fallback.
-- **TSX**: `primaryExts: ['.ts', '.tsx']` → `getTypeScriptImportSnippet`. `fallbackExts: ['.js']` → `getJavaScriptImportSnippet` (a `.js` source dropped into a TSX file should emit a JS-shaped import, not TS).
+Parameterised by `primaryExtensions` / `primarySnippet` (and optional `fallbackExtensions` / `fallbackSnippet`):
+
+- **JSX**: `primaryExtensions: ['.js', '.jsx']` → `buildJavaScriptImportSnippet`. No fallback.
+- **TSX**: `primaryExtensions: ['.ts', '.tsx']` → `buildTypeScriptImportSnippet`. `fallbackExtensions: ['.js']` → `buildJavaScriptImportSnippet` (a `.js` source dropped into a TSX file should emit a JS-shaped import, not TS).
 
 Non-script sources fall through to a hardcoded `switch`:
 
@@ -44,13 +46,13 @@ Index 1 is `import { name } from '_relativePath_';`. When the path contains `.co
 app-root.component.ts → import { AppRootComponent } from '...';
 ```
 
-Every other index uses `$1` unconditionally. Don't break this when refactoring `getTypeScriptImportSnippet()`.
+Every other index uses `$1` unconditionally. Don't break this when refactoring `buildTypeScriptImportSnippet()`.
 
 ### SCSS — partial filename + `.css` always preserved
 
 - `normalizePartialFilename(relativePath)` strips a leading `_` from the *last* path segment: `_partial.scss` → `partial`. Sass resolves underscored partials against the bare name in `@import`/`@use`.
 - `determineScssExtension(sourceFilePath)` always preserves `.css` on the import path **regardless** of the user's `preserveStylesheetFileExtension` setting (Sass needs the extension to recognise foreign-language imports). Other source types respect the setting.
-- SCSS image sources reuse `getCssImageImportSnippet` from `css.ts` — the `url('…')` syntax is identical between the two languages, so no SCSS-specific image variant exists.
+- SCSS image sources reuse `buildCssImageImportSnippet` from `css.ts` — the `url('…')` syntax is identical between the two languages, so no SCSS-specific image variant exists.
 
 ### HTML / Markdown — fixed shapes, full extension preserved
 
@@ -59,7 +61,7 @@ HTML emits `<script type="text/javascript" src="…"></script>`, `<img src="…"
 ## Adding a new destination language
 
 1. New file here, named after the language.
-2. New `case` in `dispatch.ts:generateImportSnippet`.
+2. New `case` in `dispatch.ts:buildImportSnippet`.
 3. New `case` in `types/file-extension.ts:ScriptFileExtension` (if scripty) or the relevant category type.
 4. New gating table or entry in `constants/extensions.ts`.
 5. New `*_IMPORT_OPTIONS` table in `_styles.ts` and matching `package.json` enum (three-site sync).

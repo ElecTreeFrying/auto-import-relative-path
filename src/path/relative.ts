@@ -60,6 +60,6 @@ function toUnixPath(filePath: string): string {
  */
 function areFilesInSameDirectory(sourceFilePath: string, destinationFilePath: string): boolean {
   const sourceDir = path.parse(sourceFilePath).dir.toLowerCase().trim();
-  const targetDir = path.parse(destinationFilePath).dir.toLowerCase().trim();
-  return sourceDir === targetDir;
+  const destinationDir = path.parse(destinationFilePath).dir.toLowerCase().trim();
+  return sourceDir === destinationDir;
 }

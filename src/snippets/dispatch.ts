@@ -26,26 +26,26 @@ import * as markdown from './markdown';
  *   destination extension doesn't match any `case` (must stay in sync with
  *   `constants/extensions.ts`).
  */
-export async function generateImportSnippet(): Promise<vscode.SnippetString> {
+export async function buildImportSnippet(): Promise<vscode.SnippetString> {
   const { destinationFilePath } = await getFilePathInfo();
 
   switch (extractFileExtension(destinationFilePath)) {
     case '.js':
-      return javascript.snippet();
+      return javascript.buildSnippet();
     case '.jsx':
-      return jsx.snippet();
+      return jsx.buildSnippet();
     case '.ts':
-      return typescript.snippet();
+      return typescript.buildSnippet();
     case '.tsx':
-      return tsx.snippet();
+      return tsx.buildSnippet();
     case '.css':
-      return css.snippet();
+      return css.buildSnippet();
     case '.scss':
-      return scss.snippet();
+      return scss.buildSnippet();
     case '.html':
-      return html.snippet();
+      return html.buildSnippet();
     case '.md':
-      return markdown.snippet();
+      return markdown.buildSnippet();
     default:
       return new vscode.SnippetString('');
   }

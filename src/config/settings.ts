@@ -57,7 +57,7 @@ const AUTO_IMPORT_CONFIG = freeze({
     namespace: 'auto-import.importStatement.markup',
     htmlScript: 'htmlScriptImportStyle',
     htmlImage: 'htmlImageImportStyle',
-    htmlStylesheet: 'htmlStyleSheetImportStyle',
+    htmlStyleSheet: 'htmlStyleSheetImportStyle',
     markdown: 'markdownImportStyle',
     markdownImage: 'markdownImageImportStyle',
   }),
@@ -109,7 +109,7 @@ type AutoImportSettingKey =
   /** Selected HTML `<img>` shape (currently unused; fixed shape). Pair with `'markup'`. */
   | 'htmlImage'
   /** Selected HTML `<link>` shape (currently unused; fixed shape). Pair with `'markup'`. */
-  | 'htmlStylesheet'
+  | 'htmlStyleSheet'
   /** Selected Markdown inline-link shape (currently unused; fixed shape). Pair with `'markup'`. */
   | 'markdown'
   /** Selected Markdown image shape (one of two entries in `MARKDOWN_IMAGE_IMPORT_OPTIONS`). Pair with `'markup'`. */

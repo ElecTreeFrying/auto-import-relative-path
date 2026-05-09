@@ -11,9 +11,9 @@
  * `AppRootComponent`. Other paths still emit a plain `$1` placeholder. The
  * special case is **only active for index 1**; every other index uses
  * `$1` unconditionally. Don't break this when refactoring
- * {@link getTypeScriptImportSnippet}.
+ * {@link buildTypeScriptImportSnippet}.
  *
- * **`getTypeScriptImportSnippet` is exported.** `snippets/_shared.ts`
+ * **`buildTypeScriptImportSnippet` is exported.** `snippets/_shared.ts`
  * imports it on behalf of `tsx.ts` (TSX uses TypeScript snippets for
  * `.ts`/`.tsx` sources).
  */
@@ -31,13 +31,13 @@ import { TYPESCRIPT_IMPORT_OPTIONS, resolveStyleIndex } from './_styles';
  *
  * @returns The TypeScript import `SnippetString` for the current source.
  */
-export async function snippet(): Promise<vscode.SnippetString> {
+export async function buildSnippet(): Promise<vscode.SnippetString> {
   const { sourceFilePath, relativePath } = await getFilePathInfo();
 
-  const preserve = getAutoImportSetting('script', 'preserveScriptFileExtension');
-  const fileExtension = preserve ? extractFileExtension(sourceFilePath) : '';
+  const shouldPreserveExtension = getAutoImportSetting('script', 'preserveScriptFileExtension');
+  const fileExtension = shouldPreserveExtension ? extractFileExtension(sourceFilePath) : '';
 
-  return getTypeScriptImportSnippet(relativePath + fileExtension);
+  return buildTypeScriptImportSnippet(relativePath + fileExtension);
 }
 
 /**
@@ -48,10 +48,10 @@ export async function snippet(): Promise<vscode.SnippetString> {
  * @param relativePath - The already-computed import path (with or without extension).
  * @returns The `SnippetString` for the matched style, or the named-import shape.
  */
-export function getTypeScriptImportSnippet(relativePath: string): vscode.SnippetString {
-  const idx = resolveStyleIndex(TYPESCRIPT_IMPORT_OPTIONS, getAutoImportSetting<string>('script', 'typescript'));
+export function buildTypeScriptImportSnippet(relativePath: string): vscode.SnippetString {
+  const styleIndex = resolveStyleIndex(TYPESCRIPT_IMPORT_OPTIONS, getAutoImportSetting<string>('script', 'typescript'));
 
-  switch (idx) {
+  switch (styleIndex) {
     case 0:
       return new vscode.SnippetString(`import $1 from '${relativePath}';`);
     case 1:

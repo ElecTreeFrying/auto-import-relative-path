@@ -27,7 +27,7 @@
  *
  * **Column 0 for code, cursor for markup.** {@link determineInsertionColumn}
  * forces column 0 for destinations whose extension is in
- * `SCRIPT_EXTENSIONS` or `STYLESHEET_EXTENSIONS` (defined in
+ * `SCRIPT_FILE_EXTENSIONS` or `STYLESHEET_FILE_EXTENSIONS` (defined in
  * `constants/extensions.ts`); otherwise it inserts at the cursor's
  * column — important for HTML/Markdown where the user is typing inline.
  */
@@ -35,7 +35,8 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 
 import { getAutoImportSetting } from '../config/settings';
-import { SCRIPT_EXTENSIONS, STYLESHEET_EXTENSIONS } from '../constants/extensions';
+import { SCRIPT_FILE_EXTENSIONS, STYLESHEET_FILE_EXTENSIONS } from '../constants/extensions';
+import { FileExtension } from '../types/file-extension';
 import { getFilePathInfo } from './file-path-info';
 
 /**
@@ -76,13 +77,13 @@ export async function insertImportSnippet(snippet: vscode.SnippetString): Promis
  * @returns Whether to override `importStatementPlacement` for this source/destination pair.
  */
 async function shouldRepositionCursor(): Promise<boolean> {
-  const { sourceFileExt: sourceExt, destinationFileExt: destinationExt } = await getFilePathInfo();
+  const { sourceFileExt, destinationFileExt } = await getFilePathInfo();
 
   return (
-    (sourceExt !== '.css' && destinationExt === '.css') ||
-    (sourceExt !== '.scss' && destinationExt === '.scss') ||
-    destinationExt === '.html' ||
-    destinationExt === '.md'
+    (sourceFileExt !== '.css' && destinationFileExt === '.css') ||
+    (sourceFileExt !== '.scss' && destinationFileExt === '.scss') ||
+    destinationFileExt === '.html' ||
+    destinationFileExt === '.md'
   );
 }
 
@@ -155,10 +156,10 @@ function insertSnippetAtPosition(snippet: vscode.SnippetString, lineNumber: numb
  */
 function determineInsertionColumn(editor: vscode.TextEditor): number {
   const currentColumn = editor.selection.anchor.character;
-  const fileExtension = path.extname(editor.document.fileName);
+  const fileExtension = path.extname(editor.document.fileName) as FileExtension;
 
   const isScriptOrStylesheet =
-    SCRIPT_EXTENSIONS.includes(fileExtension) || STYLESHEET_EXTENSIONS.includes(fileExtension);
+    SCRIPT_FILE_EXTENSIONS.includes(fileExtension) || STYLESHEET_FILE_EXTENSIONS.includes(fileExtension);
 
   return isScriptOrStylesheet ? 0 : currentColumn;
 }

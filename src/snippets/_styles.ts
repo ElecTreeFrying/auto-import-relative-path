@@ -44,7 +44,7 @@ export function resolveStyleIndex(table: ImportStyle[], configValue: string | un
   return table.find(option => option.description === configValue)?.value;
 }
 
-/** Nine JS import shapes consumed by `javascript.ts:getJavaScriptImportSnippet` via the `auto-import.importStatement.script.javascriptImportStyle` setting. */
+/** Nine JS import shapes consumed by `javascript.ts:buildJavaScriptImportSnippet` via the `auto-import.importStatement.script.javascriptImportStyle` setting. */
 export const JAVASCRIPT_IMPORT_OPTIONS: ImportStyle[] = [
   { value: 0, description: "import name from '_relativePath_';" },
   { value: 1, description: "import { name } from '_relativePath_';" },
@@ -58,7 +58,7 @@ export const JAVASCRIPT_IMPORT_OPTIONS: ImportStyle[] = [
 ];
 
 /**
- * Five TS import shapes consumed by `typescript.ts:getTypeScriptImportSnippet`
+ * Five TS import shapes consumed by `typescript.ts:buildTypeScriptImportSnippet`
  * via the `auto-import.importStatement.script.typescriptImportStyle` setting.
  * Index 1 also triggers Angular PascalCase substitution — see
  * `typescript.ts:generateImportName`.
@@ -71,7 +71,7 @@ export const TYPESCRIPT_IMPORT_OPTIONS: ImportStyle[] = [
   { value: 4, description: "import '_relativePath_';" },
 ];
 
-/** Two CSS import shapes consumed by `css.ts:getCssImportSnippet` via the `auto-import.importStatement.styleSheet.cssImportStyle` setting. */
+/** Two CSS import shapes consumed by `css.ts:buildCssImportSnippet` via the `auto-import.importStatement.styleSheet.cssImportStyle` setting. */
 export const CSS_IMPORT_OPTIONS: ImportStyle[] = [
   { value: 0, description: "@import '_relativePath_';" },
   { value: 1, description: "@import url('_relativePath_');" },
@@ -80,7 +80,7 @@ export const CSS_IMPORT_OPTIONS: ImportStyle[] = [
 /**
  * Currently unused. The `auto-import.importStatement.styleSheet.cssImageImportStyle`
  * setting still appears in VS Code's UI because `package.json` declares it,
- * but `css.ts:getCssImageImportSnippet` always emits `url('…')` regardless
+ * but `css.ts:buildCssImageImportSnippet` always emits `url('…')` regardless
  * of the user's selection. Kept for `package.json` parity; safe to delete
  * if the setting is also removed.
  */
@@ -88,7 +88,7 @@ export const CSS_IMAGE_IMPORT_OPTIONS: ImportStyle[] = [
   { value: 0, description: "url('_relativePath_')" },
 ];
 
-/** Four SCSS import shapes consumed by `scss.ts:getScssImportSnippet` via the `auto-import.importStatement.styleSheet.scssImportStyle` setting. */
+/** Four SCSS import shapes consumed by `scss.ts:buildScssImportSnippet` via the `auto-import.importStatement.styleSheet.scssImportStyle` setting. */
 export const SCSS_IMPORT_OPTIONS: ImportStyle[] = [
   { value: 0, description: "@import '_relativePath_';" },
   { value: 1, description: "@import url('_relativePath_');" },
@@ -97,7 +97,7 @@ export const SCSS_IMPORT_OPTIONS: ImportStyle[] = [
 ];
 
 /**
- * Currently unused. `html.ts:getHtmlScriptImportSnippet` always emits
+ * Currently unused. `html.ts:buildHtmlScriptImportSnippet` always emits
  * `<script type="text/javascript" src="…"></script>`. The matching
  * `package.json` setting (`htmlScriptImportStyle`) exists for UI parity
  * only.
@@ -107,7 +107,7 @@ export const HTML_SCRIPT_IMPORT_OPTIONS: ImportStyle[] = [
 ];
 
 /**
- * Currently unused. `html.ts:getHtmlImageImportSnippet` always emits
+ * Currently unused. `html.ts:buildHtmlImageImportSnippet` always emits
  * `<img src="…" alt="sample">`. The matching `package.json` setting
  * (`htmlImageImportStyle`) exists for UI parity only.
  */
@@ -116,7 +116,7 @@ export const HTML_IMAGE_IMPORT_OPTIONS: ImportStyle[] = [
 ];
 
 /**
- * Currently unused. `html.ts:getHtmlStylesheetImportSnippet` always emits
+ * Currently unused. `html.ts:buildHtmlStylesheetImportSnippet` always emits
  * `<link href="…" rel="stylesheet">`. The matching `package.json` setting
  * (`htmlStyleSheetImportStyle`) exists for UI parity only.
  */
@@ -125,7 +125,7 @@ export const HTML_STYLESHEET_IMPORT_OPTIONS: ImportStyle[] = [
 ];
 
 /**
- * Currently unused. `markdown.ts:getMarkdownImportSnippet` always emits
+ * Currently unused. `markdown.ts:buildMarkdownImportSnippet` always emits
  * `![text](path)`. The matching `package.json` setting (`markdownImportStyle`)
  * exists for UI parity only.
  */
@@ -133,7 +133,7 @@ export const MARKDOWN_IMPORT_OPTIONS: ImportStyle[] = [
   { value: 0, description: '![text](_relativePath_)' },
 ];
 
-/** Two Markdown image shapes consumed by `markdown.ts:getMarkdownImageImportSnippet` via the `auto-import.importStatement.markup.markdownImage` setting. */
+/** Two Markdown image shapes consumed by `markdown.ts:buildMarkdownImageImportSnippet` via the `auto-import.importStatement.markup.markdownImage` setting. */
 export const MARKDOWN_IMAGE_IMPORT_OPTIONS: ImportStyle[] = [
   { value: 0, description: '![alt-text](_relativePath_ "Hover text")' },
   { value: 1, description: '![alt-text][image] / [image]: _relativePath_ "Hover text"' },

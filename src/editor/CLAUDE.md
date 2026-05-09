@@ -6,14 +6,14 @@ Helpers that touch the `vscode` API on behalf of `commands/` and `snippets/`. Th
 
 - `file-path-info.ts` — single source of truth for `{ relativePath, sourceFilePath, destinationFilePath, sourceFileExt, destinationFileExt }`.
 - `insert-snippet.ts` — placement logic (Top/Bottom/Cursor + forced overrides + column 0/cursor column).
-- `notify.ts` — single switch on `NotifyType`.
+- `notification.ts` — single switch on `NotificationType`.
 
 ## `file-path-info.ts:getFilePathInfo()`
 
 - Reads source from clipboard, destination from `vscode.window.activeTextEditor.document.uri.fsPath`.
 - **Caller is responsible for the active-editor null check** — this function dereferences `editor.document.uri.fsPath` unconditionally and will throw otherwise. The only producer (`commands/paste-import.ts`) does this check.
 - **Each call re-reads the clipboard.** Don't introduce branches that mutate the clipboard between calls. `paste-import.ts`'s `Promise.all` runs two such reads in parallel and relies on both seeing the same value.
-- Called from many sites: every per-language `snippet()`, `_shared.ts:renderReactImport`, `dispatch.ts`, and `insert-snippet.ts:shouldRepositionCursor`.
+- Called from many sites: every per-language `buildSnippet()`, `_shared.ts:buildReactImport`, `dispatch.ts`, and `insert-snippet.ts:shouldRepositionCursor`.
 
 ## `insert-snippet.ts` — placement rules
 
@@ -37,10 +37,10 @@ Falls through to line 0 when no marker matches. **New import-syntax markers must
 
 ### Insertion column
 
-`determineInsertionColumn(editor)` returns `0` for destinations whose extension is in `constants/extensions.ts:SCRIPT_EXTENSIONS` or `STYLESHEET_EXTENSIONS`; otherwise the cursor's column (important for HTML/Markdown where the user is typing inline).
+`determineInsertionColumn(editor)` returns `0` for destinations whose extension is in `constants/extensions.ts:SCRIPT_FILE_EXTENSIONS` or `STYLESHEET_FILE_EXTENSIONS`; otherwise the cursor's column (important for HTML/Markdown where the user is typing inline).
 
-## `notify.ts:showNotification(notifyType)`
+## `notification.ts:showNotification(notificationType)`
 
-- Single `switch` on `NotifyType` (string-literal union from `types/notification.ts`).
+- Single `switch` on `NotificationType` (string-literal union from `types/notification.ts`).
 - Two cases: `'same-file-path'` and `'not-supported'`. Both messages are warning toasts prefixed with `Auto Import Relative Path:`.
 - Both variants are raised exclusively from `commands/paste-import.ts`.

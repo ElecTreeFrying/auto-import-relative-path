@@ -1,14 +1,14 @@
 import * as vscode from 'vscode';
 
-import { NotifyType } from '../types/notification';
+import { NotificationType } from '../types/notification';
 
 /**
  * Shows the warning toast that matches the given notification kind.
  *
- * @param notifyType - Which user-visible warning to surface.
+ * @param notificationType - Which user-visible warning to surface.
  */
-export function showNotification(notifyType: NotifyType): void {
-  switch (notifyType) {
+export function showNotification(notificationType: NotificationType): void {
+  switch (notificationType) {
     case 'same-file-path':
       vscode.window.showWarningMessage('Auto Import Relative Path: Same file path.');
       break;

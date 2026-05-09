@@ -6,7 +6,7 @@ Cross-cutting type unions used across the codebase. **String-literal unions, not
 
 - `file-extension.ts` — `FileExtension` union (the only export from this file).
 - `import-type.ts` — `ImportType` four-way classifier.
-- `notification.ts` — `NotifyType` two-way warning kind.
+- `notification.ts` — `NotificationType` two-way warning kind.
 
 ## `file-extension.ts` — only `FileExtension` is exported
 
@@ -31,6 +31,6 @@ Four buckets: `'script' | 'stylesheet' | 'markdown' | 'image'`.
 
 The `'image'` value is the catch-all default for unrecognised extensions — *not* a guarantee that the source is image-like. Gating in `commands/paste-import.ts` is what makes the catch-all safe.
 
-## `notification.ts` — `NotifyType`
+## `notification.ts` — `NotificationType`
 
-Two variants: `'same-file-path' | 'not-supported'`. Both raised exclusively from `commands/paste-import.ts`; messages live in `editor/notify.ts`.
+Two variants: `'same-file-path' | 'not-supported'`. Both raised exclusively from `commands/paste-import.ts`; messages live in `editor/notification.ts`.

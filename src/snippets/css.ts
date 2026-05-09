@@ -3,7 +3,7 @@
  * `@import url('path');`) selectable via
  * `auto-import.importStatement.styleSheet.cssImportStyle`.
  *
- * `getCssImageImportSnippet` is exported (not just internal) because
+ * `buildCssImageImportSnippet` is exported (not just internal) because
  * `snippets/scss.ts` reuses it for the SCSS image branch — the `url(...)`
  * syntax is identical in both languages, so there is no SCSS-specific
  * variant.
@@ -17,20 +17,20 @@ import { getFilePathInfo } from '../editor/file-path-info';
 import { CSS_IMPORT_OPTIONS, resolveStyleIndex } from './_styles';
 
 /**
- * Routes image sources to `getCssImageImportSnippet` and everything else to
- * `getCssImportSnippet`.
+ * Routes image sources to `buildCssImageImportSnippet` and everything else
+ * to `buildCssImportSnippet`.
  *
  * @returns The CSS import `SnippetString` for the current source.
  */
-export async function snippet(): Promise<vscode.SnippetString> {
+export async function buildSnippet(): Promise<vscode.SnippetString> {
   const { sourceFilePath, relativePath } = await getFilePathInfo();
   const fullPath = relativePath + extractFileExtension(sourceFilePath);
 
   switch (determineImportType(sourceFilePath)) {
     case 'image':
-      return getCssImageImportSnippet(fullPath);
+      return buildCssImageImportSnippet(fullPath);
     default:
-      return getCssImportSnippet(fullPath);
+      return buildCssImportSnippet(fullPath);
   }
 }
 
@@ -41,10 +41,10 @@ export async function snippet(): Promise<vscode.SnippetString> {
  * @param relativePath - The already-computed import path.
  * @returns The `SnippetString` for the matched style.
  */
-export function getCssImportSnippet(relativePath: string): vscode.SnippetString {
-  const idx = resolveStyleIndex(CSS_IMPORT_OPTIONS, getAutoImportSetting<string>('stylesheet', 'css'));
+export function buildCssImportSnippet(relativePath: string): vscode.SnippetString {
+  const styleIndex = resolveStyleIndex(CSS_IMPORT_OPTIONS, getAutoImportSetting<string>('stylesheet', 'css'));
 
-  switch (idx) {
+  switch (styleIndex) {
     case 0:
       return new vscode.SnippetString(`@import '${relativePath}';`);
     case 1:
@@ -61,6 +61,6 @@ export function getCssImportSnippet(relativePath: string): vscode.SnippetString 
  * @param relativePath - The already-computed image path.
  * @returns A `SnippetString` of the form `url('relativePath')`.
  */
-export function getCssImageImportSnippet(relativePath: string): vscode.SnippetString {
+export function buildCssImageImportSnippet(relativePath: string): vscode.SnippetString {
   return new vscode.SnippetString(`url('${relativePath}')`);
 }

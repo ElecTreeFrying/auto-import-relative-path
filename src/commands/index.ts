@@ -1,3 +1,3 @@
-export { executeCopyFilePathCommand } from './copy-file-path';
-export { executePasteImportCommand } from './paste-import';
-export { executeCopyPasteCommand } from './copy-paste';
+export { executeCopyFilePath } from './copy-file-path';
+export { executePasteImport } from './paste-import';
+export { executeCopyPaste } from './copy-paste';

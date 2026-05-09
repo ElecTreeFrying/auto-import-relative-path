@@ -8,7 +8,7 @@
  * rejected source/destination pairs. Each clause cross-references a table
  * in `constants/extensions.ts`:
  *
- * - `CROSS_IMPORT_EXTENSIONS` — destinations allowed to import a different
+ * - `CROSS_IMPORT_DESTINATIONS` — destinations allowed to import a different
  *   extension. For destinations *not* in this list (currently `.js`, `.ts`),
  *   source and destination extensions must match.
  * - `HTML_SUPPORTED_EXTENSIONS`, `MARKDOWN_SUPPORTED_EXTENSIONS`,
@@ -22,14 +22,14 @@
  * Changing any gating table requires updating the matching clause here in
  * lock-step.
  *
- * **Parallel fetch.** `getFilePathInfo()` and `generateImportSnippet()` are
+ * **Parallel fetch.** `getFilePathInfo()` and `buildImportSnippet()` are
  * resolved together via `Promise.all` because both internally read the
  * clipboard and the active editor — running them concurrently halves the
  * latency. Neither depends on the other's result.
  *
  * **Silent rejection.** Every failure path returns void without throwing.
  * The user-visible signal is the warning toast raised via
- * `showNotification` (see `types/notification.ts:NotifyType`).
+ * `showNotification` (see `types/notification.ts:NotificationType`).
  */
 import * as vscode from 'vscode';
 
@@ -37,16 +37,16 @@ import {
   CSS_SUPPORTED_EXTENSIONS,
   HTML_SUPPORTED_EXTENSIONS,
   MARKDOWN_SUPPORTED_EXTENSIONS,
-  CROSS_IMPORT_EXTENSIONS,
+  CROSS_IMPORT_DESTINATIONS,
   SCSS_SUPPORTED_EXTENSIONS,
 } from '../constants/extensions';
 import { getFilePathInfo } from '../editor/file-path-info';
 import { insertImportSnippet } from '../editor/insert-snippet';
-import { showNotification } from '../editor/notify';
-import { generateImportSnippet } from '../snippets/dispatch';
+import { showNotification } from '../editor/notification';
+import { buildImportSnippet } from '../snippets/dispatch';
 
 /** Generates and inserts a relative-path import snippet for the clipboard's source path into the active editor, toasting the user on rejection. */
-export async function executePasteImportCommand(): Promise<void> {
+export async function executePasteImport(): Promise<void> {
   vscode.commands.executeCommand('notifications.clearAll');
 
   const editor = vscode.window.activeTextEditor;
@@ -55,14 +55,14 @@ export async function executePasteImportCommand(): Promise<void> {
   }
 
   const [{ sourceFilePath, destinationFilePath, sourceFileExt, destinationFileExt }, snippet] =
-    await Promise.all([getFilePathInfo(), generateImportSnippet()]);
+    await Promise.all([getFilePathInfo(), buildImportSnippet()]);
 
   if (sourceFilePath.toLowerCase() === destinationFilePath.toLowerCase()) {
     return showNotification('same-file-path');
   }
 
   if (
-    (!CROSS_IMPORT_EXTENSIONS.includes(destinationFileExt) && sourceFileExt !== destinationFileExt)
+    (!CROSS_IMPORT_DESTINATIONS.includes(destinationFileExt) && sourceFileExt !== destinationFileExt)
     || (sourceFileExt === '.html' && destinationFileExt === '.html')
     || (!HTML_SUPPORTED_EXTENSIONS.includes(sourceFileExt) && destinationFileExt === '.html')
     || (!MARKDOWN_SUPPORTED_EXTENSIONS.includes(sourceFileExt) && destinationFileExt === '.md')

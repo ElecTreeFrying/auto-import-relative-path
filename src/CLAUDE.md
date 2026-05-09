@@ -7,7 +7,7 @@ Source root for the extension. The codebase is layered by responsibility, with s
 ```
 extension.ts                 # entry: activate/deactivate
 ├── commands/                # public command surface (3 commands)
-├── editor/                  # vscode-API helpers (clipboard, snippets, notify)
+├── editor/                  # vscode-API helpers (clipboard, snippets, notification)
 ├── snippets/                # per-language snippet builders + dispatch
 ├── path/                    # pure path math (no `vscode` import)
 ├── config/                  # workspace-config access

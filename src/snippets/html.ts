@@ -16,17 +16,17 @@ import { getFilePathInfo } from '../editor/file-path-info';
  *
  * @returns The HTML tag `SnippetString` for the current source, or empty.
  */
-export async function snippet(): Promise<vscode.SnippetString> {
+export async function buildSnippet(): Promise<vscode.SnippetString> {
   const { sourceFilePath, relativePath } = await getFilePathInfo();
   const fullPath = relativePath + extractFileExtension(sourceFilePath);
 
   switch (determineImportType(sourceFilePath)) {
     case 'script':
-      return getHtmlScriptImportSnippet(fullPath);
+      return buildHtmlScriptImportSnippet(fullPath);
     case 'image':
-      return getHtmlImageImportSnippet(fullPath);
+      return buildHtmlImageImportSnippet(fullPath);
     case 'stylesheet':
-      return getHtmlStylesheetImportSnippet(fullPath);
+      return buildHtmlStylesheetImportSnippet(fullPath);
     default:
       return new vscode.SnippetString('');
   }
@@ -38,7 +38,7 @@ export async function snippet(): Promise<vscode.SnippetString> {
  * @param relativePath - The script's import path.
  * @returns The corresponding `<script>` tag as a `SnippetString`.
  */
-function getHtmlScriptImportSnippet(relativePath: string): vscode.SnippetString {
+function buildHtmlScriptImportSnippet(relativePath: string): vscode.SnippetString {
   return new vscode.SnippetString(`<script type="text/javascript" src="${relativePath}"></script>`);
 }
 
@@ -48,7 +48,7 @@ function getHtmlScriptImportSnippet(relativePath: string): vscode.SnippetString 
  * @param relativePath - The image's import path.
  * @returns The corresponding `<img>` tag as a `SnippetString`.
  */
-function getHtmlImageImportSnippet(relativePath: string): vscode.SnippetString {
+function buildHtmlImageImportSnippet(relativePath: string): vscode.SnippetString {
   return new vscode.SnippetString(`<img src="${relativePath}" alt="sample">`);
 }
 
@@ -58,6 +58,6 @@ function getHtmlImageImportSnippet(relativePath: string): vscode.SnippetString {
  * @param relativePath - The stylesheet's import path.
  * @returns The corresponding `<link>` tag as a `SnippetString`.
  */
-function getHtmlStylesheetImportSnippet(relativePath: string): vscode.SnippetString {
+function buildHtmlStylesheetImportSnippet(relativePath: string): vscode.SnippetString {
   return new vscode.SnippetString(`<link href="${relativePath}" rel="stylesheet">`);
 }

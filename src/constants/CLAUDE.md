@@ -15,9 +15,9 @@ Runtime gating tables for source/destination extension pairs.
 | `MARKDOWN_SUPPORTED_EXTENSIONS` | `commands/paste-import.ts` clause 4 | Sources accepted for `.md` destinations |
 | `CSS_SUPPORTED_EXTENSIONS` | `commands/paste-import.ts` clause 5 | Sources accepted for `.css` destinations |
 | `SCSS_SUPPORTED_EXTENSIONS` | `commands/paste-import.ts` clause 6 | Sources accepted for `.scss` destinations |
-| `CROSS_IMPORT_EXTENSIONS` | `commands/paste-import.ts` clause 1 | Destinations allowed to import a *different* extension |
-| `SCRIPT_EXTENSIONS` | `editor/insert-snippet.ts:determineInsertionColumn` | Force column-0 placement |
-| `STYLESHEET_EXTENSIONS` | `editor/insert-snippet.ts:determineInsertionColumn` | Force column-0 placement |
+| `CROSS_IMPORT_DESTINATIONS` | `commands/paste-import.ts` clause 1 | Destinations allowed to import a *different* extension |
+| `SCRIPT_FILE_EXTENSIONS` | `editor/insert-snippet.ts:determineInsertionColumn` | Force column-0 placement |
+| `STYLESHEET_FILE_EXTENSIONS` | `editor/insert-snippet.ts:determineInsertionColumn` | Force column-0 placement |
 
 ## Why both a runtime table and a compile-time type union exist
 
@@ -27,7 +27,7 @@ Runtime: these tables are the runtime safety net. Keep them in sync with `types/
 
 ## Hidden coupling — touch with care
 
-`SCRIPT_EXTENSIONS` and `STYLESHEET_EXTENSIONS` are consumed *only* by `editor/insert-snippet.ts:determineInsertionColumn`. They look like generic categorisation but their sole purpose is forcing column 0 for those destinations. Renaming or repurposing them silently changes insertion behaviour.
+`SCRIPT_FILE_EXTENSIONS` and `STYLESHEET_FILE_EXTENSIONS` are consumed *only* by `editor/insert-snippet.ts:determineInsertionColumn`. They look like generic categorisation but their sole purpose is forcing column 0 for those destinations. Renaming or repurposing them silently changes insertion behaviour.
 
 ## Adding a new accepted source/destination pair
 

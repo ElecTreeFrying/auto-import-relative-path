@@ -1,17 +1,17 @@
 import * as vscode from 'vscode';
 
-import { getJavaScriptImportSnippet } from './javascript';
-import { renderReactImport } from './_shared';
+import { buildJavaScriptImportSnippet } from './javascript';
+import { buildReactImport } from './_shared';
 
 /**
- * Delegates to `renderReactImport` with JavaScript snippets as the primary
+ * Delegates to `buildReactImport` with JavaScript snippets as the primary
  * script-source builder; no fallback.
  *
  * @returns The JSX import `SnippetString` for the current source.
  */
-export function snippet(): Promise<vscode.SnippetString> {
-  return renderReactImport({
-    primaryExts: ['.js', '.jsx'],
-    primarySnippet: getJavaScriptImportSnippet,
+export function buildSnippet(): Promise<vscode.SnippetString> {
+  return buildReactImport({
+    primaryExtensions: ['.js', '.jsx'],
+    primarySnippet: buildJavaScriptImportSnippet,
   });
 }
