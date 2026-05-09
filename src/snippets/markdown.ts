@@ -1,6 +1,6 @@
 /**
  * Markdown import-snippet generator. Markdown sources emit a fixed inline
- * link (`![text](path)`); image sources have two configurable styles via
+ * link (`[text](path)`); image sources have two configurable styles via
  * `MARKDOWN_IMAGE_IMPORT_OPTIONS` — inline `![alt-text](path "Hover")` or
  * reference-style `![alt-text][image] / [image]: path "Hover"`. Full
  * extension is preserved on the path.
@@ -35,13 +35,13 @@ export async function buildSnippet(): Promise<vscode.SnippetString> {
 }
 
 /**
- * Returns the Markdown inline-link shape `![text](relativePath)`.
+ * Returns the Markdown inline-link shape `[text](relativePath)`.
  *
  * @param relativePath - The import path.
  * @returns The Markdown inline link as a `SnippetString`.
  */
 function buildMarkdownImportSnippet(relativePath: string): vscode.SnippetString {
-  return new vscode.SnippetString(`![text](${relativePath})`);
+  return new vscode.SnippetString(`[\${1:text}](${relativePath})`);
 }
 
 /**

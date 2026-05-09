@@ -126,11 +126,11 @@ export const HTML_STYLESHEET_IMPORT_OPTIONS: ImportStyle[] = [
 
 /**
  * Currently unused. `markdown.ts:buildMarkdownImportSnippet` always emits
- * `![text](path)`. The matching `package.json` setting (`markdownImportStyle`)
+ * `[text](path)`. The matching `package.json` setting (`markdownImportStyle`)
  * exists for UI parity only.
  */
 export const MARKDOWN_IMPORT_OPTIONS: ImportStyle[] = [
-  { value: 0, description: '![text](_relativePath_)' },
+  { value: 0, description: '[text](_relativePath_)' },
 ];
 
 /** Two Markdown image shapes consumed by `markdown.ts:buildMarkdownImageImportSnippet` via the `auto-import.importStatement.markup.markdownImage` setting. */

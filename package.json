@@ -255,9 +255,9 @@
             "title": "Markdown import style",
             "description": "Defines how Markdown files are referenced in other Markdown files. Use '_relativePath_' as the placeholder for the file path.",
             "type": "string",
-            "default": "![text](_relativePath_)",
+            "default": "[text](_relativePath_)",
             "enum": [
-              "![text](_relativePath_)"
+              "[text](_relativePath_)"
             ]
           },
           "auto-import.importStatement.markup.markdownImageImportStyle": {
