@@ -13,11 +13,14 @@
  *   a TSX file should still emit a JS-shaped import, not a TS-shaped one.
  *
  * **Non-script sources fall through to a hardcoded switch.** Image, data,
- * markup, and YAML extensions emit `import name$1 from '${path}';`; fonts
- * and stylesheets emit a side-effect `import '${path}';`. The switch
- * intentionally hardcodes the source list — duplicating it as a constant
- * would just create two places to update. Reaching the `default:` branch
- * means an unsupported extension slipped through gating in
+ * markup, and YAML extensions emit `import ${1:name} from '${path}';`;
+ * fonts and stylesheets emit a side-effect `import '${path}';`. The
+ * `${1:name}` placeholder pre-selects the default identifier so typing
+ * replaces it cleanly (the older `name$1` shape positioned the cursor
+ * *after* literal "name", which forced users to backspace before retyping).
+ * The switch intentionally hardcodes the source list — duplicating it as a
+ * constant would just create two places to update. Reaching the `default:`
+ * branch means an unsupported extension slipped through gating in
  * `commands/paste-import.ts`; the empty `SnippetString` is then caught by
  * that file's `snippet.value === ''` check.
  *
@@ -85,7 +88,7 @@ export async function buildReactImport(opts: ReactImportOptions): Promise<vscode
     case '.yml':
     case '.yaml':
     case '.md':
-      return new vscode.SnippetString(`import name$1 from '${fullPath}';`);
+      return new vscode.SnippetString(`import \${1:name} from '${fullPath}';`);
     case '.woff':
     case '.woff2':
     case '.ttf':
