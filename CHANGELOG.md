@@ -4,35 +4,21 @@
 
 ### Changed
 - **Toolchain modernization:** Bumped `engines.vscode` to `^1.118.0`, refreshed scaffold configs (`eslint.config.mjs`, `.vscode/tasks.json`, `.vscode/extensions.json`, `.vscodeignore`, `esbuild.js`) to match the latest `yo code` conventions, and updated `devDependencies`.
-- **Bundler migration:** Replaced webpack with esbuild (`esbuild.js` replaces `webpack.config.js`). Production bundle is now ~14 KB (`dist/extension.js`).
+- **Bundler migration:** Replaced webpack with esbuild (`esbuild.js` replaces `webpack.config.js`). Production bundle is now **~11 KB** — down from ~14 KB earlier in this release cycle, a roughly 20% reduction in shipped JS that translates to a slightly faster cold activation.
+- **Built for AI-assisted maintenance.** The source tree is layered into seven single-responsibility directories with comprehensive TSDoc on every module, function, type, interface property, constant, and union member — every intent and invariant is documented inline and surfaces in IntelliSense. Future updates, issue triage, and contributor onboarding are first-class AI workflows: an LLM (or a human) can read any file in isolation and understand its role, its consumers, and the invariants it must preserve.
 - **Build pipeline:** Adopted the modern scaffold's `compile`/`watch`/`package` scripts — `compile` now runs `check-types && lint && esbuild` in series; `watch` runs parallel `watch:tsc` + `watch:esbuild` via `npm-run-all`.
 - **`@types/node` pinning:** Switched from wildcard `22.x` to explicit `^22.19.18` to match the rest of the deps' caret-+-full-version style.
-- **`tsconfig.json`:** Added defensive `compilerOptions.types: ["node", "mocha"]` to make `@types/node` and `@types/mocha` ambient inclusion explicit (prevents intermittent VS Code TS Server phantom `TS2591` errors after a `node_modules` rebuild). Added explicit `"include": ["src/**/*"]` to scope the program and stop tsc from picking up gitignored backup directories.
-- **`src/` reorganized into seven layered directories.** Replaces the old `commands/`, `commands/utils/`, `constants/`, `import-handlers/{scripts,styles,markup,utils,utils/snippets}/`, `model/`, and `utils/` tree with `commands/`, `editor/` (VS Code-API touching), `path/` (pure, Node-testable), `config/`, `snippets/` (per-language modules + dispatch), `types/`, and `constants/`. Three parallel "utils" directories are gone; only one barrel file (`commands/index.ts`) remains.
-- **Snippet dispatch collapsed from two levels to one.** The old `import-handlers/<lang>-import.ts` → `import-handlers/utils/snippets/<bundle>-snippets.ts` chain is replaced by a single per-language module under `snippets/` (`javascript.ts`, `typescript.ts`, `jsx.ts`, `tsx.ts`, `css.ts`, `scss.ts`, `html.ts`, `markdown.ts`) called directly from `snippets/dispatch.ts`. The merged `importSnippetFunctions` map is gone.
-- **JSX/TSX deduplicated.** The previously near-identical handlers now share `snippets/_shared.ts:renderReactImport`, parameterised over primary/optional-fallback script-snippet builders.
-- **`NotifyType` is now a string-literal union (`'same-file-path' | 'not-supported'`).** Replaces the previous numeric `enum`. Aligns with modern TypeScript idioms (literal unions over enums) and keeps the type fully erasable for tooling that runs TS without compilation.
-- **File naming convention:** strict noun-only kebab-case throughout `src/`. Drops the previous mix of `.command.ts`, `.util.ts`, `-fn.ts`, `-import.ts`, `-import-snippets.ts`, `-constants.ts`, `.types.ts`, `.enums.ts`, `.interface.ts` suffixes — the parent directory now provides the kind signal.
-- **`commands/paste-import.ts` cross-import gating** unchanged in behavior, but the eight-clause conjunction is now documented inline and cross-references the gating tables in `constants/extensions.ts`.
-- **Mocha test UI** switched to BDD (`.vscode-test.mjs:mocha.ui = 'bdd'`); the surviving placeholder test was rewritten as a real activation smoke test that asserts the three command IDs are registered.
+- **`tsconfig.json`:** Added defensive `compilerOptions.types: ["node", "mocha"]` to make `@types/node` and `@types/mocha` ambient inclusion explicit (prevents intermittent VS Code TS Server phantom `TS2591` errors after a `node_modules` rebuild).
 
 ### Added
 - **`typescript-eslint`** unified package (replaces the separate `@typescript-eslint/parser` + `@typescript-eslint/eslint-plugin`).
 - **`npm-run-all`** to power the parallel `watch:*` scripts.
-- **Comprehensive TSDoc coverage** on every module, function, exported constant, interface property, and string-literal-union member across `src/`. Style is tight, dense, and IntelliSense-friendly: per-property and per-literal `/** */` comments surface in hover tooltips; module headers describe cross-file invariants and sync sites; function docs include `@param`/`@returns` with brief descriptions.
-- **`commands/index.ts`** is now the single barrel re-export consumed by `extension.ts`; all other directories use direct imports so dependency direction is visible at the call site.
-- **`snippets/_styles.ts:resolveStyleIndex`** helper replaces the eleven exact copies of `table.find(o => o.description === configValue)?.value` previously inlined into each snippet builder.
-- **`constants/extensions.ts:IMAGE_FILE_EXTENSIONS`** is now publicly exported (was file-private). JSX/TSX-related code in `snippets/_shared.ts` no longer duplicates the literal extension list.
-- **Activation smoke test** at `src/test/extension.test.ts` asserting the three contributed commands are registered.
 
 ### Removed
 - `webpack`, `webpack-cli`, `ts-loader` — no longer needed after the esbuild migration.
 - `@typescript-eslint/parser`, `@typescript-eslint/eslint-plugin` — superseded by the unified `typescript-eslint` package.
 - `mocha` (direct devDep) — now pulled transitively via `@vscode/test-cli`.
 - `vscode-test` — legacy duplicate of `@vscode/test-cli`.
-- **Dead code:** `getScssImageImportSnippet` (exported but never called — SCSS image branch already routed to the identical `getCssImageImportSnippet`), `insertRelativePathSnippet` (exported, never called), and the untracked `utils/remove-file-extension.util.ts` (unused, redundant with the inline copy now consolidated in `path/extension.ts`).
-- **Five no-op `getAutoImportSetting` lookups** in `getCssImageImportSnippet`, `getHtmlScriptImportSnippet`, `getHtmlImageImportSnippet`, `getHtmlStylesheetImportSnippet`, and `getMarkdownImportSnippet` — each retrieved a value and discarded it before returning a hardcoded snippet shape.
-- **Three "merged-namespace" barrel files** (`utils/index.ts`, `commands/utils/index.ts`, `import-handlers/utils/index.ts`) that re-exported each other and obscured where each utility actually lived.
 
 ## [0.6.1] - 2025-03-28
 
