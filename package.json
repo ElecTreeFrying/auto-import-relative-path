@@ -91,15 +91,15 @@
     "commands": [
       {
         "command": "extension.pasteImport",
-        "title": "Auto Import: Paste"
+        "title": "Auto Import: Paste as Import"
       },
       {
         "command": "extension.copyFilePath",
-        "title": "Auto Import: Copy"
+        "title": "Auto Import: Copy File Path"
       },
       {
         "command": "extension.copyPaste",
-        "title": "Auto Import: Auto"
+        "title": "Auto Import: Insert Import from Selected File"
       }
     ],
     "keybindings": [
