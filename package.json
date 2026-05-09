@@ -127,7 +127,7 @@
         "properties": {
           "auto-import.preferences.importStatementPlacement": {
             "title": "Import statement placement",
-            "description": "Choose where new import statements are placed in your code: 'Top' inserts at the start of your imports, 'Bottom' appends at the end, and 'Cursor' places it at the current cursor location.",
+            "description": "Where to insert generated import statements in the destination file. Forced to 'Cursor' for HTML, Markdown, and when importing a non-stylesheet into a stylesheet — those contexts only make sense at the cursor and the user setting is ignored. Default: Bottom.",
             "type": "string",
             "default": "Bottom",
             "enum": [
@@ -136,20 +136,20 @@
               "Cursor"
             ],
             "enumDescriptions": [
-              "Insert at the start of the existing import list.",
-              "Append at the end of the existing import list.",
-              "Insert at the current cursor location."
+              "Insert before the first line of the file.",
+              "Append after the last recognised import / require / @import / @use line. Falls back to line 0 if no import is found.",
+              "Insert at the current cursor position."
             ]
           },
           "auto-import.importStatement.script.preserveScriptFileExtension": {
-            "title": "Preserve script file extension",
-            "description": "When enabled, retains the .js or .ts file extension in import paths.",
+            "title": "Preserve script file extension in imports",
+            "description": "Keep the source .js / .ts / .jsx / .tsx extension on the generated import path. Most module systems (Node, bundlers, TypeScript) omit it by convention, which is why this is off by default.",
             "type": "boolean",
             "default": false
           },
           "auto-import.importStatement.script.javascriptImportStyle": {
-            "title": "JavaScript (JS/JSX) import style",
-            "description": "Select a default import style for JavaScript or JSX files. Use '_relativePath_' to represent the path and 'name' for the import variable.",
+            "title": "JavaScript / JSX import style",
+            "description": "Template used for .js destinations, and for .js / .jsx sources imported into .jsx or .tsx files. '_relativePath_' is replaced with the computed relative path; 'name' becomes a snippet placeholder so your cursor lands on it after insertion.",
             "type": "string",
             "default": "import name from '_relativePath_';",
             "enum": [
@@ -162,11 +162,22 @@
               "const name = require('_relativePath_');",
               "var name = import('_relativePath_');",
               "const name = import('_relativePath_');"
+            ],
+            "enumDescriptions": [
+              "ES module: default import",
+              "ES module: named import (destructured)",
+              "ES module: aliased default import",
+              "ES module: namespace import (every export bound under one name)",
+              "ES module: side-effect import (no binding)",
+              "CommonJS: var require()",
+              "CommonJS: const require()",
+              "Dynamic import(): var",
+              "Dynamic import(): const"
             ]
           },
           "auto-import.importStatement.script.typescriptImportStyle": {
-            "title": "TypeScript (TS/TSX) import style",
-            "description": "Select a default import style for TypeScript or TSX files. Use '_relativePath_' to represent the path and 'name' for the import variable.",
+            "title": "TypeScript / TSX import style",
+            "description": "Template used for .ts destinations, and for .ts / .tsx sources imported into .tsx files. '_relativePath_' is replaced with the computed relative path; 'name' becomes a snippet placeholder. With the 'import { name }' shape, Angular file conventions (.component, .directive, .pipe, .service, .module) auto-fill 'name' with a PascalCase identifier derived from the basename — for example, app-root.component.ts becomes { AppRootComponent }.",
             "type": "string",
             "default": "import { name } from '_relativePath_';",
             "enum": [
@@ -175,36 +186,50 @@
               "import { default as name } from '_relativePath_';",
               "import * as name from '_relativePath_';",
               "import '_relativePath_';"
+            ],
+            "enumDescriptions": [
+              "ES module: default import",
+              "ES module: named import — Angular files (.component / .directive / .pipe / .service / .module) auto-fill PascalCase identifiers",
+              "ES module: aliased default import",
+              "ES module: namespace import (every export bound under one name)",
+              "ES module: side-effect import (no binding)"
             ]
           },
           "auto-import.importStatement.styleSheet.preserveStylesheetFileExtension": {
-            "title": "Preserve stylesheet file extension",
-            "description": "When enabled, retains the .css or .scss file extension in import paths.",
+            "title": "Preserve stylesheet file extension in imports",
+            "description": "Keep the source .css / .scss extension on the generated import path. Exception: .css extensions are always preserved inside .scss imports — Sass requires the extension to recognise a foreign-language import, and this setting has no effect there.",
             "type": "boolean",
             "default": false
           },
           "auto-import.importStatement.styleSheet.cssImportStyle": {
-            "title": "CSS import style",
-            "description": "Choose how CSS files are imported (e.g., '@import' or '@import url').",
+            "title": "CSS @import style",
+            "description": "Template used when a .css source is imported into a .css destination. '_relativePath_' is replaced with the computed relative path.",
             "type": "string",
             "default": "@import '_relativePath_';",
             "enum": [
               "@import '_relativePath_';",
               "@import url('_relativePath_');"
+            ],
+            "enumDescriptions": [
+              "@import with quoted path",
+              "@import with url() function"
             ]
           },
           "auto-import.importStatement.styleSheet.cssImageImportStyle": {
-            "title": "CSS image import style",
-            "description": "Choose how images are referenced in CSS (e.g., 'url(...)').",
+            "title": "CSS image reference style",
+            "description": "Snippet used when an image source is imported into a .css destination — typically for background-image, content, mask-image, and similar properties. '_relativePath_' is replaced with the computed relative path.",
             "type": "string",
             "default": "url('_relativePath_')",
             "enum": [
               "url('_relativePath_')"
+            ],
+            "enumDescriptions": [
+              "Standard url() function"
             ]
           },
           "auto-import.importStatement.styleSheet.scssImportStyle": {
-            "title": "SCSS import style",
-            "description": "Choose how SCSS files are imported (e.g., '@import', '@use').",
+            "title": "SCSS @import / @use style",
+            "description": "Template used when a .scss or .css source is imported into a .scss destination. Modern Sass uses @use for a true module system; legacy Sass uses @import. Leading underscores on partial filenames (e.g. _variables.scss) are stripped automatically to match Sass's partial-resolution convention.",
             "type": "string",
             "default": "@import '_relativePath_';",
             "enum": [
@@ -212,61 +237,86 @@
               "@import url('_relativePath_');",
               "@use '_relativePath_';",
               "@use '_relativePath_' as *;"
+            ],
+            "enumDescriptions": [
+              "Legacy @import — quoted path",
+              "Legacy @import — url() function",
+              "Modern @use — Sass module system (recommended)",
+              "Modern @use with wildcard alias — no namespace prefix required"
             ]
           },
           "auto-import.importStatement.styleSheet.scssImageImportStyle": {
-            "title": "SCSS image import style",
-            "description": "Choose how images are referenced in SCSS (e.g., 'url(...)').",
+            "title": "SCSS image reference style",
+            "description": "Snippet used when an image source is imported into a .scss destination. Reuses the CSS image template — the url() syntax is identical between the two languages.",
             "type": "string",
             "default": "url('_relativePath_')",
             "enum": [
               "url('_relativePath_')"
+            ],
+            "enumDescriptions": [
+              "Standard url() function (shared with CSS)"
             ]
           },
           "auto-import.importStatement.markup.htmlScriptImportStyle": {
-            "title": "HTML script import style",
-            "description": "Defines how JavaScript files are referenced in HTML. Use '_relativePath_' as the placeholder for the file path.",
+            "title": "HTML <script> tag style",
+            "description": "Tag inserted at the cursor when a .js source is imported into a .html destination. '_relativePath_' is replaced with the computed relative path.",
             "type": "string",
             "default": "<script type=\"text/javascript\" src=\"_relativePath_\"></script>",
             "enum": [
               "<script type=\"text/javascript\" src=\"_relativePath_\"></script>"
+            ],
+            "enumDescriptions": [
+              "Standard <script type=\"text/javascript\" src=\"...\"></script> tag"
             ]
           },
           "auto-import.importStatement.markup.htmlImageImportStyle": {
-            "title": "HTML image import style",
-            "description": "Defines how images are referenced in HTML. Use '_relativePath_' as the placeholder for the file path.",
+            "title": "HTML <img> tag style",
+            "description": "Tag inserted at the cursor when an image source is imported into a .html destination. '_relativePath_' is replaced with the computed relative path.",
             "type": "string",
             "default": "<img src=\"_relativePath_\" alt=\"sample\">",
             "enum": [
               "<img src=\"_relativePath_\" alt=\"sample\">"
+            ],
+            "enumDescriptions": [
+              "Standard <img> tag with placeholder alt text"
             ]
           },
           "auto-import.importStatement.markup.htmlStyleSheetImportStyle": {
-            "title": "HTML stylesheet import style",
-            "description": "Defines how stylesheets are referenced in HTML. Use '_relativePath_' as the placeholder for the file path.",
+            "title": "HTML <link> stylesheet style",
+            "description": "Tag inserted at the cursor when a .css source is imported into a .html destination. '_relativePath_' is replaced with the computed relative path.",
             "type": "string",
             "default": "<link href=\"_relativePath_\" rel=\"stylesheet\">",
             "enum": [
               "<link href=\"_relativePath_\" rel=\"stylesheet\">"
+            ],
+            "enumDescriptions": [
+              "Standard <link href=\"...\" rel=\"stylesheet\"> tag"
             ]
           },
           "auto-import.importStatement.markup.markdownImportStyle": {
-            "title": "Markdown import style",
-            "description": "Defines how Markdown files are referenced in other Markdown files. Use '_relativePath_' as the placeholder for the file path.",
+            "title": "Markdown link style",
+            "description": "Snippet inserted at the cursor when a .md source is imported into a .md destination. '_relativePath_' is replaced with the computed relative path; 'text' becomes a snippet placeholder for the link's display text.",
             "type": "string",
             "default": "[text](_relativePath_)",
             "enum": [
               "[text](_relativePath_)"
+            ],
+            "enumDescriptions": [
+              "Inline link with display-text placeholder"
             ]
           },
           "auto-import.importStatement.markup.markdownImageImportStyle": {
-            "title": "Markdown image import style",
-            "description": "Defines how images are referenced in Markdown (inline or reference-style). Use '_relativePath_' as the placeholder for the file path.",
+            "title": "Markdown image style",
+            "description": "Snippet inserted at the cursor when an image source is imported into a .md destination. Choose between inline syntax — ![alt](path \"title\") — or reference-style — ![alt][ref] / [ref]: path \"title\". '_relativePath_' is replaced with the computed relative path.",
             "type": "string",
             "default": "![alt-text](_relativePath_ \"Hover text\")",
             "enum": [
               "![alt-text](_relativePath_ \"Hover text\")",
               "![alt-text][image] / [image]: _relativePath_ \"Hover text\""
+            ],
+            "enumDescriptions": [
+              "Inline image syntax with hover-text title",
+              "Reference-style — define [ref] once, reuse it elsewhere in the document"
             ]
           }
         }
