@@ -1,0 +1,36 @@
+# src/
+
+Source root for the Auto Import Relative Path VS Code extension.
+
+## Layout
+
+| Path | Purpose |
+|------|---------|
+| `extension.ts` | Entry point. `activate` registers the three commands; `deactivate` is a no-op. |
+| `commands/` | Public command surface — one file per command (copy / paste / auto). |
+| `editor/` | VS Code-API helpers (clipboard, snippet insertion, notifications). |
+| `snippets/` | Per-language snippet builders + dispatch. |
+| `path/` | Pure path math. No `vscode` import — Node-testable. |
+| `config/` | Workspace-config access. |
+| `constants/` | Runtime gating tables for source/destination pairs. |
+| `types/` | Cross-cutting type unions (no enums). |
+| `test/` | Mocha BDD tests. |
+
+## Where to add new code
+
+| What | Where |
+|------|-------|
+| New command | `commands/` (new file + register in `extension.ts` + `package.json`) |
+| New language snippet | `snippets/` (new file + `case` in `dispatch.ts`) |
+| New pure helper | `path/` |
+| New `vscode` API helper | `editor/` |
+| New cross-cutting type | `types/` |
+| New gating table | `constants/` |
+| New user setting | `config/` (settings.ts) + `package.json` + `_styles.ts` |
+
+Match the layered dependency direction: `commands → editor, snippets → path → types`. Lower layers never import from higher layers.
+
+## See also
+
+- Project root `README.md` and `CLAUDE.md` for cross-cutting docs (commands, build, test, publish).
+- Each subdirectory has its own `README.md` (overview + file map) and `CLAUDE.md` (invariants and gotchas).

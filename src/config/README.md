@@ -1,0 +1,24 @@
+# src/config/
+
+Reads user settings from VS Code's workspace configuration.
+
+## Files
+
+| File | Public function | Purpose |
+|------|-----------------|---------|
+| `settings.ts` | `getAutoImportSetting<T>(namespaceKey, settingKey): T \| undefined` | Single accessor over the frozen `AUTO_IMPORT_CONFIG` map. |
+
+## Namespaces
+
+The map has four top-level groups:
+
+- `preferences` — UX-level settings (e.g. import-statement placement).
+- `script` — JS/TS import-shape settings.
+- `stylesheet` — CSS/SCSS import-shape settings.
+- `markup` — HTML/Markdown import-shape settings.
+
+Each maps to a `vscode.workspace.getConfiguration(...)` namespace and a set of property aliases (e.g. `'javascript'` → `'javascriptImportStyle'`).
+
+## Where to add a new setting
+
+See the three-site sync rule in `CLAUDE.md` (this directory) — adding a setting requires synchronised changes in `package.json`, `src/snippets/_styles.ts`, and the relevant per-language module under `src/snippets/`.
