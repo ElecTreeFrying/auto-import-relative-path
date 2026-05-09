@@ -1,297 +1,460 @@
-# Auto Import Relative Path (DEMO)
+# Auto Import Relative Path — Demo Gallery
 
 [![Version][version svg]][package] [![Installs][installs svg]][package] [![Downloads][downloads svg]][package] [![Ratings][ratings svg]][package]
 
-**Auto Import Relative Path** is a [Visual Studio Code][VS Code] extension that simplifies how you import files in your projects. No more memorizing or typing out long relative paths — let this extension do the heavy lifting for you. Whether you’re building a small side project or a complex application with hundreds of files, Auto Import Relative Path will help you streamline your workflow and keep your code clean.
-
-[VS Code]: https://code.visualstudio.com/
-
-[VS Code]: https://code.visualstudio.com/
-[extension]: https://marketplace.visualstudio.com/VSCode
 [version svg]: https://vsmarketplacebadges.dev/version-short/electreefrying.auto-import.png
 [installs svg]: https://vsmarketplacebadges.dev/installs/electreefrying.auto-import.png
 [downloads svg]: https://vsmarketplacebadges.dev/downloads/electreefrying.auto-import.png
 [ratings svg]: https://vsmarketplacebadges.dev/rating-short/ElecTreeFrying.auto-import.png
 [package]: https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import
 
+A visual tour of every workflow, every placement mode, and every supported source / destination pair. For commands, configuration, and troubleshooting see the [README][README].
+
+[README]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/README.md
+
 ---
 
 ## Table of Contents
 
-- [Auto Import Relative Path (DEMO)](#auto-import-relative-path-demo)
-  - [Table of Contents](#table-of-contents)
-  - [Features](#features)
-  - [Supported File Extensions](#supported-file-extensions)
-  - [Commands](#commands)
-  - [Import Statement Position](#import-statement-position)
-    - [Append to Cursor](#append-to-cursor)
-    - [Append to the Bottom of the Import List](#append-to-the-bottom-of-the-import-list)
-    - [Append to the Top of the Import List](#append-to-the-top-of-the-import-list)
-  - [Keybindings](#keybindings)
-    - [Auto Import from Explorer](#auto-import-from-explorer)
-    - [Single Keybinding Import](#single-keybinding-import)
-    - [Auto Import Across Active Tabs](#auto-import-across-active-tabs)
-  - [HTML Support](#html-support)
-    - [Import Script and Stylesheet](#import-script-and-stylesheet)
-  - [Markdown Support](#markdown-support)
-    - [Import Image to Markdown](#import-image-to-markdown)
-    - [Import Markdown](#import-markdown)
-  - [Changelog](#changelog)
-  - [Contributing](#contributing)
-  - [Support](#support)
-  - [Support the Project](#support-the-project)
-  - [Related](#related)
+- [At a Glance](#at-a-glance)
+- [Workflows](#workflows)
+  - [One-step Auto](#one-step-auto)
+  - [Two-step Copy + Paste](#two-step-copy--paste)
+  - [Copy once, paste across tabs](#copy-once-paste-across-tabs)
+- [Placement Modes](#placement-modes)
+  - [Cursor](#cursor)
+  - [Bottom (default)](#bottom-default)
+  - [Top](#top)
+- [Per-language Output](#per-language-output)
+  - [JavaScript](#javascript)
+  - [TypeScript (Angular-aware)](#typescript-angular-aware)
+  - [JSX](#jsx)
+  - [TSX](#tsx)
+  - [CSS](#css)
+  - [SCSS](#scss)
+  - [HTML](#html)
+  - [Markdown](#markdown)
+- [Configuration Showcase](#configuration-showcase)
 
 ---
 
-## Features
+## At a Glance
 
-- **Instant Relative Path Imports**: Quickly copy and paste a file’s path in your editor, or auto-import it in a single command.  
-- **Flexible Placement**: Place new import statements at the top, the bottom, or even at your cursor’s current position.  
-- **Highly Customizable**: Configure the style of import statements for JavaScript, TypeScript, React, CSS, SCSS, HTML, and Markdown.  
-- **Time-Saving**: Ideal for large projects with complex directory structures.  
-- **Keyboard Friendly**: Offers intuitive default shortcuts so you can keep your hands on the keyboard and stay in the flow.
+| Command                | Windows / Linux           | macOS                    | What it does                                                                                       |
+|------------------------|---------------------------|--------------------------|----------------------------------------------------------------------------------------------------|
+| **Auto Import: Copy**  | <kbd>Ctrl+Shift+A</kbd>   | <kbd>Cmd+Shift+A</kbd>   | Copy the relative path of the selected Explorer file to the clipboard.                             |
+| **Auto Import: Paste** | <kbd>Ctrl+I</kbd>         | <kbd>Cmd+I</kbd>         | Read the clipboard path and insert the import statement into the active editor.                    |
+| **Auto Import: Auto**  | <kbd>Alt+D</kbd>          | <kbd>Option+D</kbd>      | Copy + Paste in one step — select a file in Explorer and import it without switching focus.        |
 
----
-
-## Supported File Extensions
-
-| File Type       | File Extension               |
-| --------------- | ---------------------------- |
-| **Programming** | `.js`, `.jsx`, `.ts`, `.tsx` |
-| **Markup**      | `.html`, `.md`               |
-| **Stylesheet**  | `.css`, `.scss`              |
+> All three commands also appear in the command palette (<kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>, search `Auto Import`) and are rebindable from VS Code's keyboard shortcuts editor.
 
 ---
 
-## Commands
+## Workflows
 
+### One-step Auto
 
-| Command               | Windows/Linux        | macOS               | Description                                                                                                           | Demo                  |
-|-----------------------|----------------------|---------------------|-----------------------------------------------------------------------------------------------------------------------|-----------------------|
-| **Auto Import: Copy** | <kbd>Ctrl+Shift+A</kbd> | <kbd>Cmd+Shift+A</kbd> | **Copy** the relative path of the selected file in Explorer.                                                          | [See it in action](#auto-import-from-explorer) |
-| **Auto Import: Paste**| <kbd>Ctrl+I</kbd>       | <kbd>Cmd+I</kbd>       | **Paste** the import statement into your active text editor.                                                          | [See it in action](#auto-import-from-explorer) |
-| **Auto Import: Auto** | <kbd>Alt+D</kbd>        | <kbd>Option+D</kbd>    | **Auto** copy and paste the import statement from Explorer to your active text editor in one step (copy + paste).     | [Single keybinding import](#single-keybinding-import) |
+Focus an editor (the destination), pick a source file in the Explorer, then press <kbd>Alt</kbd>/<kbd>Option</kbd>+<kbd>D</kbd>. Copy and Paste run sequentially in a single command — your active editor never loses focus.
 
----
+![Single-keystroke import demo][keybinding-single]
 
-## Import Statement Position
+[keybinding-single]: https://res.cloudinary.com/october7/image/upload/v1679982581/github/auto-import-relative-path/keybinding-single.gif "Auto import in one keystroke"
 
-You can configure where the import statement goes in your code. Choose any of the following placement options:
+**When to use:** the most common case. You know the destination is open and you want one file imported into it.
 
 ---
 
-### Append to Cursor
+### Two-step Copy + Paste
 
-**Windows/Linux:**
-1. Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> on a file in Explorer.
-2. Switch to your active text editor and press <kbd>Ctrl</kbd>+<kbd>I</kbd> to paste.
-3. Or use <kbd>Alt</kbd>+<kbd>D</kbd> to do both in one step (copy + paste).
+Press <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> on a file in the Explorer to copy its path. Switch tabs as much as you like, then press <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>I</kbd> in the destination editor to paste the import.
 
-**macOS:**
-1. Press <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> on a file in Explorer.
-2. Switch to your active text editor and press <kbd>Cmd</kbd>+<kbd>I</kbd> to paste.
-3. Or use <kbd>Option</kbd>+<kbd>D</kbd> to do both in one step (copy + paste).
+![Copy + Paste workflow demo][keybinding-copy-and-paste]
 
-![Cursor Demo][cursor]
+[keybinding-copy-and-paste]: https://res.cloudinary.com/october7/image/upload/v1679982581/github/auto-import-relative-path/keybinding-copy-and-paste.gif "Copy then paste workflow"
 
-[cursor]: https://res.cloudinary.com/october7/image/upload/v1679982363/github/auto-import-relative-path/cursor.gif "import to cursor using ctrl+i command"
+**When to use:** when the destination isn't open yet, or you want to navigate / preview before committing.
 
 ---
 
-### Append to the Bottom of the Import List
+### Copy once, paste across tabs
 
-**Windows/Linux:**
-1. Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> on a file in Explorer.
-2. Press <kbd>Ctrl</kbd>+<kbd>I</kbd> in your code editor to paste at the bottom.
-3. Or use <kbd>Alt</kbd>+<kbd>D</kbd> to copy and paste in one step.
+Because the path lives in your clipboard until you copy something else, you can paste the same import into many destination files in a row. Useful for fanning out a single new module across consumers.
 
-**macOS:**
-1. Press <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> on a file in Explorer.
-2. Press <kbd>Cmd</kbd>+<kbd>I</kbd> in your code editor to paste at the bottom.
-3. Or use <kbd>Option</kbd>+<kbd>D</kbd> to copy and paste in one step.
+![Paste-across-tabs workflow demo][keybinding-feature]
 
-![Bottom Demo][bottom]
+[keybinding-feature]: https://res.cloudinary.com/october7/image/upload/v1679982581/github/auto-import-relative-path/keybinding-feature.gif "Copy once, paste across multiple tabs"
 
-[bottom]: https://res.cloudinary.com/october7/image/upload/v1679982363/github/auto-import-relative-path/bottom.gif "import to bottom using ctrl+i command"
+**When to use:** when you've just added a new utility / component / type and need to import it into N consumers. One copy, N pastes.
 
 ---
 
-### Append to the Top of the Import List
+## Placement Modes
 
-**Windows/Linux:**
-1. Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> on a file in Explorer.
-2. Press <kbd>Ctrl</kbd>+<kbd>I</kbd> in your code editor to paste at the top.
-3. Or use <kbd>Alt</kbd>+<kbd>D</kbd> to copy and paste in one step.
+Where the import lands is controlled by `auto-import.preferences.importStatementPlacement` (default: `Bottom`).
 
-**macOS:**
-1. Press <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> on a file in Explorer.
-2. Press <kbd>Cmd</kbd>+<kbd>I</kbd> in your code editor to paste at the top.
-3. Or use <kbd>Option</kbd>+<kbd>D</kbd> to copy and paste in one step.
+> **Auto-override.** For `.html` and `.md` destinations, and when importing a non-stylesheet into a stylesheet, placement is **forced to `Cursor`** regardless of this setting — those contexts don't have an "import block" to attach to.
 
-![Top Demo][top]
+### Cursor
 
-[top]: https://res.cloudinary.com/october7/image/upload/v1679982367/github/auto-import-relative-path/top.gif "import to top using ctrl+i command"
+Set `importStatementPlacement` to `Cursor`. The import inserts at the current cursor position.
 
----
+![Cursor placement demo][cursor]
 
-## Keybindings
+[cursor]: https://res.cloudinary.com/october7/image/upload/v1679982363/github/auto-import-relative-path/cursor.gif "Import inserted at cursor position"
 
-### Auto Import from Explorer
+```ts
+function MyComponent() {
+  return <div />;            ← cursor was here
+}                             ← caret position before paste
 
-**Windows/Linux**  
-1. In the Explorer, press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> on a file.  
-2. In the editor, press <kbd>Ctrl</kbd>+<kbd>I</kbd> to paste the import statement.
-
-**macOS**  
-1. In the Explorer, press <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> on a file.  
-2. In the editor, press <kbd>Cmd</kbd>+<kbd>I</kbd> to paste the import statement.
-
-![Auto import from explorer demo][keybinding-copy-and-paste]
-
-[keybinding-copy-and-paste]: https://res.cloudinary.com/october7/image/upload/v1679982581/github/auto-import-relative-path/keybinding-copy-and-paste.gif "Auto import from explorer demo"
+// after paste:
+function MyComponent() {
+  import { Button } from './Button';   ← inserted exactly where the cursor was
+  return <div />;
+}
+```
 
 ---
 
-### Single Keybinding Import
+### Bottom (default)
 
-**Windows/Linux**  
-1. Press <kbd>Alt</kbd>+<kbd>D</kbd> on a file in the Explorer.  
-2. The import statement is automatically inserted into your active editor.
+Set `importStatementPlacement` to `Bottom`. The import is appended after the **last recognised** import line.
 
-**macOS**  
-1. Press <kbd>Option</kbd>+<kbd>D</kbd> on a file in the Explorer.  
-2. The import statement is automatically inserted into your active editor.
+![Bottom placement demo][bottom]
 
-![Single keybinding import demo][keybinding-single]
+[bottom]: https://res.cloudinary.com/october7/image/upload/v1679982363/github/auto-import-relative-path/bottom.gif "Import inserted at bottom of imports"
 
-[keybinding-single]: https://res.cloudinary.com/october7/image/upload/v1679982581/github/auto-import-relative-path/keybinding-single.gif "Single keybinding import demo"
+```ts
+import { useState } from 'react';
+import { Button } from './Button';
+import { Header } from './Header';   ← inserted here, after the last import
 
----
+export function App() { ... }
+```
 
-### Auto Import Across Active Tabs
-
-**Windows/Linux**  
-1. Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> on a file in the Explorer.  
-2. Switch to any open tab and press <kbd>Ctrl</kbd>+<kbd>I</kbd>.  
-3. The relative path import will be pasted where your cursor is.
-
-**macOS**  
-1. Press <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> on a file in the Explorer.  
-2. Switch to any open tab and press <kbd>Cmd</kbd>+<kbd>I</kbd>.  
-3. The relative path import will be pasted where your cursor is.
-
-![Auto import from text editor demo][keybinding-feature]
-
-[keybinding-feature]: https://res.cloudinary.com/october7/image/upload/v1679982581/github/auto-import-relative-path/keybinding-feature.gif "Auto import from text editor demo"
+The detector recognises `import …`, `var/const x = require(…)`, `@import '…'`, `@import url(…)`, and `@use '…'`. If no recognisable import is found, it falls back to line 0.
 
 ---
 
-## HTML Support
+### Top
 
-### Import Script and Stylesheet
+Set `importStatementPlacement` to `Top`. The import is prepended before the first line of the file.
 
-**Windows/Linux**  
-1. Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> on a `.js` or `.css` file in the Explorer.  
-2. Press <kbd>Ctrl</kbd>+<kbd>I</kbd> in your HTML file, or use <kbd>Alt</kbd>+<kbd>D</kbd> for a single-step import.  
-3. The extension automatically creates the appropriate `<script>` or `<link>` tag.
+![Top placement demo][top]
 
-**macOS**  
-1. Press <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> on a `.js` or `.css` file in the Explorer.  
-2. Press <kbd>Cmd</kbd>+<kbd>I</kbd> in your HTML file, or use <kbd>Option</kbd>+<kbd>D</kbd> for a single-step import.  
-3. The extension automatically creates the appropriate `<script>` or `<link>` tag.
+[top]: https://res.cloudinary.com/october7/image/upload/v1679982367/github/auto-import-relative-path/top.gif "Import inserted at top of imports"
 
-![Import script and stylesheet][html]
+```ts
+import { Header } from './Header';   ← inserted at line 0, pushing everything down
+import { useState } from 'react';
+import { Button } from './Button';
 
-[html]: https://res.cloudinary.com/october7/image/upload/v1679982719/github/auto-import-relative-path/html.gif "Import script and stylesheet"
+export function App() { ... }
+```
 
 ---
 
-## Markdown Support
+## Per-language Output
 
-### Import Image to Markdown
+For each destination language, here's what gets generated. Each example shows the source, destination, the relevant setting, and the resulting snippet that lands in your editor.
 
-**Windows/Linux**  
-1. Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> on an image file (`.png`, `.jpg`, etc.) in the Explorer.  
-2. Press <kbd>Ctrl</kbd>+<kbd>I</kbd> or use <kbd>Alt</kbd>+<kbd>D</kbd> in your Markdown file.  
-3. The extension inserts the Markdown image syntax automatically.
+### JavaScript
 
-**macOS**  
-1. Press <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> on an image file (`.png`, `.jpg`, etc.) in the Explorer.  
-2. Press <kbd>Cmd</kbd>+<kbd>I</kbd> or use <kbd>Option</kbd>+<kbd>D</kbd> in your Markdown file.  
-3. The extension inserts the Markdown image syntax automatically.
+**Default style** — `import name from '_relativePath_';`
+
+```js
+// Source:      lib/util.js
+// Destination: src/app.js
+
+import util from './lib/util';
+//     └─ snippet placeholder; rename and tab out
+```
+
+**CommonJS** — `const name = require('_relativePath_');`
+
+```js
+const util = require('./lib/util');
+```
+
+**Side-effect** — `import '_relativePath_';`
+
+```js
+import './polyfills';   // runs the file for its side effects, no binding
+```
+
+> **Note:** `.js` destinations only accept `.js` sources. For cross-language imports (e.g., a `.json` or stylesheet), use a `.jsx` destination.
+
+---
+
+### TypeScript (Angular-aware)
+
+**Default style** — `import { name } from '_relativePath_';`
+
+```ts
+// Source:      src/app/app-root.component.ts
+// Destination: src/app/app.module.ts
+
+import { AppRootComponent } from './app-root.component';
+//        └─ derived from the basename, automatically
+```
+
+The auto-fill triggers on filenames containing `.component`, `.directive`, `.pipe`, `.service`, or `.module`. Other TypeScript files keep the `name` snippet placeholder:
+
+```ts
+// Source:      src/utils/format-date.ts
+// Destination: src/main.ts
+
+import { name } from './utils/format-date';
+//        └─ regular snippet placeholder; type the identifier
+```
+
+> Switch to `import name from '_relativePath_';` (the default-import shape) if you don't want the Angular auto-fill.
+
+---
+
+### JSX
+
+JSX accepts the widest source set: scripts, images, fonts, JSON, YAML, HTML, Markdown, CSS, SCSS.
+
+**Script source** — uses your `javascriptImportStyle` setting:
+
+```jsx
+// Source:      src/components/Button.jsx
+// Destination: src/pages/Home.jsx
+
+import Button from './components/Button';
+```
+
+**Image source** — fixed default-import shape:
+
+```jsx
+// Source:      assets/logo.png
+// Destination: src/components/Header.jsx
+
+import logo from '../assets/logo.png';
+```
+
+**Font / stylesheet source** — fixed side-effect shape:
+
+```jsx
+// Source:      assets/fonts/Inter.woff2
+import '../assets/fonts/Inter.woff2';
+
+// Source:      styles/global.css
+import '../styles/global.css';
+```
+
+**JSON / YAML / HTML / Markdown source** — fixed default-import shape:
+
+```jsx
+import config from '../config.json';
+import data from '../data.yaml';
+import doc from '../docs/intro.md';
+```
+
+---
+
+### TSX
+
+TSX behaves like JSX but uses your `typescriptImportStyle` setting for `.ts` / `.tsx` sources, with a special case: `.js` sources dropped into a `.tsx` file emit a **JavaScript** shape (not TypeScript), since the source is plain JS.
+
+```tsx
+// Source:      src/components/Button.tsx
+// Destination: src/pages/Home.tsx
+// Setting:     typescriptImportStyle = "import { name } from '_relativePath_';"
+
+import { Button } from './components/Button';
+
+// Source:      src/legacy/util.js   ← .js inside a .tsx project
+// Destination: src/pages/Home.tsx
+// Setting:     javascriptImportStyle = "import name from '_relativePath_';"
+
+import util from './legacy/util';   ← JS shape, not TS
+```
+
+Asset / stylesheet handling is identical to JSX.
+
+---
+
+### CSS
+
+**Default style** — `@import '_relativePath_';`
+
+```css
+/* Source:      vendor/normalize.css */
+/* Destination: styles/main.css */
+
+@import './vendor/normalize';
+```
+
+**`url()` style** — `@import url('_relativePath_');`
+
+```css
+@import url('./vendor/normalize');
+```
+
+**Image source** — fixed `url('…')` shape:
+
+```css
+/* Source:      assets/bg.png */
+/* Destination: styles/main.css */
+
+.hero {
+  background-image: url('../assets/bg.png');   ← inserted at cursor
+}
+```
+
+---
+
+### SCSS
+
+**Modern `@use`** — `@use '_relativePath_';`
+
+```scss
+// Source:      styles/_variables.scss
+// Destination: styles/main.scss
+
+@use './variables';
+//    └─ leading `_` stripped, matching Sass partial convention
+```
+
+**Modern `@use … as *`** — wildcard alias (no namespace prefix required):
+
+```scss
+@use './variables' as *;
+```
+
+**Legacy `@import`** — `@import '_relativePath_';`
+
+```scss
+@import './variables';
+```
+
+**Plain `.css` source** — extension always preserved (Sass requires it for foreign-language imports):
+
+```scss
+// Source:      vendor/normalize.css
+// Destination: styles/main.scss
+
+@use './vendor/normalize.css';
+//                       └─ .css preserved regardless of preserveStylesheetFileExtension
+```
+
+**Image source** — fixed `url('…')` shape (same as CSS):
+
+```scss
+.hero {
+  background-image: url('../assets/bg.png');
+}
+```
+
+---
+
+### HTML
+
+HTML always inserts at the cursor, with three fixed shapes selected automatically by source extension.
+
+![HTML import demo][html]
+
+[html]: https://res.cloudinary.com/october7/image/upload/v1679982719/github/auto-import-relative-path/html.gif "HTML script and stylesheet import"
+
+**Script source:**
+
+```html
+<!-- Source:      js/app.js -->
+<!-- Destination: index.html -->
+
+<script type="text/javascript" src="./js/app.js"></script>
+```
+
+**Stylesheet source:**
+
+```html
+<!-- Source:      styles/main.css -->
+<!-- Destination: index.html -->
+
+<link href="./styles/main.css" rel="stylesheet">
+```
+
+**Image source:**
+
+```html
+<!-- Source:      assets/logo.png -->
+<!-- Destination: index.html -->
+
+<img src="./assets/logo.png" alt="sample">
+```
+
+> **Note:** `.html` → `.html` is rejected — HTML has no relative-import syntax for embedding itself. The `.html` source can be imported into JSX / TSX as a default import.
+
+---
+
+### Markdown
+
+Markdown always inserts at the cursor.
+
+#### Markdown link to another `.md`
+
+![Markdown link import demo][markdown]
+
+[markdown]: https://res.cloudinary.com/october7/image/upload/v1679982718/github/auto-import-relative-path/markdown.gif "Markdown link import"
+
+```md
+<!-- Source:      docs/installation.md -->
+<!-- Destination: README.md -->
+
+[text](./docs/installation.md)
+```
+
+#### Markdown image — inline syntax
 
 ![Markdown image import demo][markdown-image]
 
-[markdown-image]: https://res.cloudinary.com/october7/image/upload/v1679982718/github/auto-import-relative-path/markdown-image.gif "Markdown image import demo"
+[markdown-image]: https://res.cloudinary.com/october7/image/upload/v1679982718/github/auto-import-relative-path/markdown-image.gif "Markdown image import"
+
+```md
+<!-- Source:      docs/diagram.png -->
+<!-- Destination: README.md -->
+
+![alt-text](./docs/diagram.png "Hover text")
+```
+
+#### Markdown image — reference-style syntax
+
+When `markdownImageImportStyle` is set to the reference-style shape, the image is inserted in two parts (inline reference plus link definition) at the cursor:
+
+```md
+![alt-text][image] / [image]: ./docs/diagram.png "Hover text"
+```
+
+> **Tip:** Reference-style is useful when the same image is referenced multiple times — define the path once and reuse the `[image]` reference.
 
 ---
 
-### Import Markdown
+## Configuration Showcase
 
-**Windows/Linux**  
-1. Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> on a `.md` file in the Explorer.  
-2. In another Markdown file, press <kbd>Ctrl</kbd>+<kbd>I</kbd> or use <kbd>Alt</kbd>+<kbd>D</kbd>.  
-3. The extension automatically inserts the relative link to your Markdown resource.
+Same source, same destination — different settings, different output.
 
-**macOS**  
-1. Press <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> on a `.md` file in the Explorer.  
-2. In another Markdown file, press <kbd>Cmd</kbd>+<kbd>I</kbd> or use <kbd>Option</kbd>+<kbd>D</kbd>.  
-3. The extension automatically inserts the relative link to your Markdown resource.
+| Setting and value                                                                            | Output                                                |
+|----------------------------------------------------------------------------------------------|-------------------------------------------------------|
+| `javascriptImportStyle = "import name from '_relativePath_';"`                                | `import util from './lib/util';`                      |
+| `javascriptImportStyle = "import { name } from '_relativePath_';"`                            | `import { util } from './lib/util';`                  |
+| `javascriptImportStyle = "import { default as name } from '_relativePath_';"`                 | `import { default as util } from './lib/util';`       |
+| `javascriptImportStyle = "import * as name from '_relativePath_';"`                           | `import * as util from './lib/util';`                 |
+| `javascriptImportStyle = "import '_relativePath_';"`                                          | `import './lib/util';`                                |
+| `javascriptImportStyle = "var name = require('_relativePath_');"`                             | `var util = require('./lib/util');`                   |
+| `javascriptImportStyle = "const name = require('_relativePath_');"`                           | `const util = require('./lib/util');`                 |
+| `javascriptImportStyle = "var name = import('_relativePath_');"`                              | `var util = import('./lib/util');`                    |
+| `javascriptImportStyle = "const name = import('_relativePath_');"`                            | `const util = import('./lib/util');`                  |
+| `preserveScriptFileExtension = true`                                                         | `import util from './lib/util.js';`                   |
+| `scssImportStyle = "@import '_relativePath_';"`                                              | `@import './variables';`                              |
+| `scssImportStyle = "@use '_relativePath_';"`                                                 | `@use './variables';`                                 |
+| `scssImportStyle = "@use '_relativePath_' as *;"`                                            | `@use './variables' as *;`                            |
+| `cssImportStyle = "@import url('_relativePath_');"`                                          | `@import url('./variables');`                         |
+| `markdownImageImportStyle = "![alt-text][image] / [image]: _relativePath_ \"Hover text\""`   | `![alt-text][image] / [image]: ./diagram.png "..."`   |
 
-![Markdown import demo][markdown]
-
-[markdown]: https://res.cloudinary.com/october7/image/upload/v1679982718/github/auto-import-relative-path/markdown.gif "Markdown import demo"
-
----
-
-## Changelog
-
-Check out the [CHANGELOG] for detailed release notes and version history.
-
-[CHANGELOG]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/CHANGELOG.md
-
----
-
-## Contributing
-
-Found a bug or have a feature request? Feel free to open an issue in [GitHub Issues]. You can also leave a star on GitHub or a review on the [Visual Studio Marketplace]. Your feedback is greatly appreciated and helps make this extension better!
-
-[GitHub Issues]: https://github.com/ElecTreeFrying/auto-import-relative-path/issues  
-[Visual Studio Marketplace]: https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import&ssr=false#review-details  
+> Source path is `lib/util.js` (or equivalent); destination is one folder above.
 
 ---
 
-## Support
-
-If you're running into issues or need help using **Auto Import Relative Path**, please check the resources below:
-
-- 🛠 **Troubleshooting**: Review the [SUPPORT.md](https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/SUPPORT.md) for known issues and helpful tips.
-- ❓ **Ask a Question**: If your question isn’t answered in the documentation or support page, feel free to [open an issue](https://github.com/ElecTreeFrying/auto-import-relative-path/issues).
-- 💬 **Discussions**: You can also participate in GitHub Discussions (if enabled) or reach out via comments on the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import#review-details).
-- 💡 **Feature Requests**: Use GitHub Issues to suggest improvements or new features.
-
----
-
-## Support the Project
-
-If this extension has helped you or saved you time, and you’d like to show your support, you can send a donation to any of the addresses below:
-
-- **Bitcoin**: `bc1q4j2uewfphjmca83905qv37vcl4jh8va5yupl7w`  
-- **Solana**: `EHtTGyRoDAK44KBGrEoypAWyPpResHUqwufKnuLs7Tyy`  
-- **Sui**: `0xcaf8ff4a65d7e35d961abd0203180013b7fe974d4fa0313e880c39c45ada2b09`  
-- **ERC20**: `0xd25f84Ed2F76dF2F0C8f1207402eF9e15b5d7855`  
-
-Thank you for your support—every bit helps us continue improving **Auto Import Relative Path**!
-
----
-
-## Related
-
-Check out more of my [extensions on the VS Code Marketplace].
-
-[extensions on the VS Code Marketplace]: https://marketplace.visualstudio.com/publishers/ElecTreeFrying
-
----
-
-Thank you for using **Auto Import Relative Path**! If you have any suggestions or feedback, don’t hesitate to reach out via [GitHub Issues]. Happy coding!
+For commands, full configuration reference, and troubleshooting see the [README][README].
