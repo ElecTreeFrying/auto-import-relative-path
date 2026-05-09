@@ -1,15 +1,17 @@
 import * as assert from 'assert';
-
-// You can import and use all API from the 'vscode' module
-// as well as import your extension to test it
 import * as vscode from 'vscode';
-// import * as myExtension from '../../extension';
 
-suite('Extension Test Suite', () => {
-	vscode.window.showInformationMessage('Start all tests.');
+describe('extension activation', () => {
+  before(async () => {
+    const extension = vscode.extensions.getExtension('ElecTreeFrying.auto-import');
+    await extension?.activate();
+  });
 
-	test('Sample test', () => {
-		assert.strictEqual(-1, [1, 2, 3].indexOf(5));
-		assert.strictEqual(-1, [1, 2, 3].indexOf(0));
-	});
+  it('registers the three auto-import commands', async () => {
+    const commands = await vscode.commands.getCommands(true);
+
+    assert.ok(commands.includes('extension.copyFilePath'), 'extension.copyFilePath not registered');
+    assert.ok(commands.includes('extension.pasteImport'), 'extension.pasteImport not registered');
+    assert.ok(commands.includes('extension.copyPaste'), 'extension.copyPaste not registered');
+  });
 });
