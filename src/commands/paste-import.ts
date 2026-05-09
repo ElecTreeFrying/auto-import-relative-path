@@ -32,6 +32,7 @@
  * `showNotification` (see `types/notification.ts:NotificationType`).
  */
 import * as vscode from 'vscode';
+import * as path from 'path';
 
 import {
   CSS_SUPPORTED_EXTENSIONS,
@@ -42,23 +43,34 @@ import {
 } from '../constants/extensions';
 import { getFilePathInfo } from '../editor/file-path-info';
 import { insertImportSnippet } from '../editor/insert-snippet';
-import { showNotification } from '../editor/notification';
+import { clearNotifications, showNotification } from '../editor/notification';
 import { buildImportSnippet } from '../snippets/dispatch';
 
 /** Generates and inserts a relative-path import snippet for the clipboard's source path into the active editor, toasting the user on rejection. */
 export async function executePasteImport(): Promise<void> {
-  vscode.commands.executeCommand('notifications.clearAll');
+  clearNotifications();
 
   const editor = vscode.window.activeTextEditor;
   if (!editor) {
-    return;
+    return showNotification('no-active-editor');
   }
 
   const [{ sourceFilePath, destinationFilePath, sourceFileExt, destinationFileExt }, snippet] =
     await Promise.all([getFilePathInfo(), buildImportSnippet()]);
 
+  const trimmedSource = sourceFilePath.trim();
+  if (trimmedSource === '' || !path.isAbsolute(trimmedSource) || path.extname(trimmedSource) === '') {
+    return showNotification('empty-clipboard');
+  }
+
   if (sourceFilePath.toLowerCase() === destinationFilePath.toLowerCase()) {
     return showNotification('same-file-path');
+  }
+
+  try {
+    await vscode.workspace.fs.stat(vscode.Uri.file(sourceFilePath));
+  } catch {
+    return showNotification('source-not-found', { basename: path.basename(sourceFilePath) });
   }
 
   if (
@@ -71,7 +83,7 @@ export async function executePasteImport(): Promise<void> {
     || snippet.value === '\n'
     || snippet.value === ''
   ) {
-    return showNotification('not-supported');
+    return showNotification('not-supported', { sourceExt: sourceFileExt, destinationExt: destinationFileExt });
   }
 
   insertImportSnippet(snippet);

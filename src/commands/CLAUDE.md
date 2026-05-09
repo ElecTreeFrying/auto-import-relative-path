@@ -13,13 +13,13 @@ The three commands registered in `src/extension.ts`. The clipboard is the data c
 
 - One file per command; one exported `executeX` per file (no `Command` suffix — the parent directory carries the kind signal).
 - All commands are `async`, return `Promise<void>`.
-- Every failure path returns void; **nothing throws**. User-visible signals are warning toasts via `editor/notification.ts`.
+- Every failure path returns void; **nothing throws**. User-visible signals are toasts (warning or info) via `editor/notification.ts:showNotification`. Commands never call `vscode.window.show*Message` or `vscode.commands.executeCommand('notifications.*')` directly — those go through `showNotification` / `clearNotifications`.
 
 ## `copy-file-path.ts` — clipboard round-trip
 
 Delegates to VS Code's built-in `copyFilePath`, then reads the clipboard and re-writes the same string. The round-trip is deliberate: the built-in command's clipboard write is timing/focus-sensitive — re-writing guarantees the next paste-import sees what we just announced.
 
-Also clears existing notifications and shows the "Copied <basename>" toast.
+Calls `clearNotifications()` first, then `showNotification('copy-success', { basename })` on success or `showNotification('no-file-to-copy')` on failure. Both helpers live in `editor/notification.ts`.
 
 ## `paste-import.ts` — the heart of the gating logic
 

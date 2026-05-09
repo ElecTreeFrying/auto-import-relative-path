@@ -6,7 +6,7 @@ Cross-cutting type unions used across the codebase. **String-literal unions, not
 
 - `file-extension.ts` — `FileExtension` union (the only export from this file).
 - `import-type.ts` — `ImportType` four-way classifier.
-- `notification.ts` — `NotificationType` two-way warning kind.
+- `notification.ts` — `NotificationType` seven-way notification kind (six warning, one info).
 
 ## `file-extension.ts` — only `FileExtension` is exported
 
@@ -33,4 +33,11 @@ The `'image'` value is the catch-all default for unrecognised extensions — *no
 
 ## `notification.ts` — `NotificationType`
 
-Two variants: `'same-file-path' | 'not-supported'`. Both raised exclusively from `commands/paste-import.ts`; messages live in `editor/notification.ts`.
+Seven variants: `'same-file-path' | 'not-supported' | 'no-active-editor' | 'no-file-to-copy' | 'empty-clipboard' | 'source-not-found' | 'copy-success'`. Five are raised from `commands/paste-import.ts`; `'no-file-to-copy'` and `'copy-success'` are raised from `commands/copy-file-path.ts`. Messages live in `editor/notification.ts`.
+
+Three variants are parameterized — see the overload signatures on `editor/notification.ts:showNotification`:
+- `'not-supported'` takes `{ sourceExt, destinationExt }` — interpolated as `Cannot import .X into .Y files.`
+- `'source-not-found'` takes `{ basename }` — interpolated as `Source file no longer exists: <basename>.`
+- `'copy-success'` takes `{ basename }` — interpolated as `Copied path — <basename>` (info toast).
+
+The remaining four take no payload. Six variants render as warning toasts; only `'copy-success'` renders as info.
