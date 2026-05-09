@@ -2,19 +2,39 @@
 
 ## [0.7.0] - 2026-05-09
 
-### Changed
-- **Toolchain modernization:** Bumped `engines.vscode` to `^1.118.0`, refreshed scaffold configs (`eslint.config.mjs`, `.vscode/tasks.json`, `.vscode/extensions.json`, `.vscodeignore`, `esbuild.js`) to match the latest `yo code` conventions, and updated `devDependencies`.
-- **Bundler migration:** Replaced webpack with esbuild (`esbuild.js` replaces `webpack.config.js`). Production bundle is now **~11 KB** — down from ~14 KB earlier in this release cycle, a roughly 20% reduction in shipped JS that translates to a slightly faster cold activation.
-- **Built for AI-assisted maintenance.** The source tree is layered into seven single-responsibility directories with comprehensive TSDoc on every module, function, type, interface property, constant, and union member — every intent and invariant is documented inline and surfaces in IntelliSense. Future updates, issue triage, and contributor onboarding are first-class AI workflows: an LLM (or a human) can read any file in isolation and understand its role, its consumers, and the invariants it must preserve.
-- **Build pipeline:** Adopted the modern scaffold's `compile`/`watch`/`package` scripts — `compile` now runs `check-types && lint && esbuild` in series; `watch` runs parallel `watch:tsc` + `watch:esbuild` via `npm-run-all`.
-- **`@types/node` pinning:** Switched from wildcard `22.x` to explicit `^22.19.18` to match the rest of the deps' caret-+-full-version style.
-- **`tsconfig.json`:** Added defensive `compilerOptions.types: ["node", "mocha"]` to make `@types/node` and `@types/mocha` ambient inclusion explicit (prevents intermittent VS Code TS Server phantom `TS2591` errors after a `node_modules` rebuild).
-
 ### Added
+- **Specific, actionable error toasts.** Two generic warnings (`"Same file path"`, `"Not supported"`) are now **five distinct messages** that tell you what to do next instead of leaving you to guess:
+  - *"A file cannot import itself."* — source equals destination.
+  - *"This file type can't be imported into the current file."* — source/destination pair rejected by gating.
+  - *"Open a file to paste an import."* — paste invoked without an active editor.
+  - *"No file selected to copy."* — copy invoked without a focused file.
+  - *"Clipboard does not contain a file path. Use Auto Import: Copy File Path on a source file first."* — paste invoked before any path was copied.
 - **`typescript-eslint`** unified package (replaces the separate `@typescript-eslint/parser` + `@typescript-eslint/eslint-plugin`).
 - **`npm-run-all`** to power the parallel `watch:*` scripts.
 
+### Changed
+- **Self-describing command palette titles.** Each command now says what it does at a glance:
+  - `Auto Import: Paste` → **`Auto Import: Paste as Import`**
+  - `Auto Import: Copy` → **`Auto Import: Copy File Path`**
+  - `Auto Import: Auto` → **`Auto Import: Insert Import from Selected File`**
+- **Settings panel rewritten end-to-end.** Every setting under *Auto Import Relative Path* now has a precise top-level description **plus per-choice `enumDescriptions`** — pick the right import shape without leaving the Settings UI. Notables: the TypeScript named-import shape documents the Angular auto-fill behavior (`.component`, `.directive`, `.pipe`, `.service`, `.module` files get a PascalCase identifier auto-derived from the basename), and SCSS `@use` options are labelled *"modern (recommended)"* vs *"legacy"* so newcomers know which one to pick.
+- **TypeScript "aliased default" shape simplified.** `import { $1 as $2 } from '…'` → **`import { default as $1 } from '…'`**. One tab stop instead of two, and the snippet now reflects the actual ES-module semantics for aliasing the default export.
+- **Markdown link default is now a link.** `markdownImportStyle` defaults to **`[text](_relativePath_)`** (was `![text](…)` — image syntax). Image embeds remain available via the dedicated `markdownImageImportStyle` setting where they belong.
+- **Copy toast wording.** `Copied <basename>` → **`Copied path — <basename>`** so it's clear the *path* was copied, not the file.
+- **Marketplace description and keywords overhauled.** New one-line value prop calls out the supported targets explicitly (JS, TS, JSX, TSX, CSS, SCSS, HTML, Markdown), Angular-aware naming, SCSS partial support, and 20+ configurable styles. Keywords expanded to cover JSX/TSX, SCSS/Sass, ESM, CommonJS, React, Angular, snippet, and productivity.
+- **Documentation overhauled.** `README.md`, `DEMO.md`, and `SUPPORT.md` rewritten end-to-end — README has a quick-start path, DEMO is a structured *Demo Gallery* organized by workflow → placement mode → per-language output, and SUPPORT walks the full triage path.
+- **Toolchain modernization.** Bumped `engines.vscode` to `^1.118.0`, refreshed scaffold configs (`eslint.config.mjs`, `.vscode/tasks.json`, `.vscode/extensions.json`, `.vscodeignore`, `esbuild.js`) to match the latest `yo code` conventions, and updated `devDependencies`.
+- **Bundler migration.** Replaced webpack with esbuild (`esbuild.js` replaces `webpack.config.js`). Production bundle is now **~11 KB** — down from ~14 KB earlier in this release cycle, a roughly 20% reduction in shipped JS that translates to a slightly faster cold activation.
+- **Built for AI-assisted maintenance.** The source tree is layered into seven single-responsibility directories with comprehensive TSDoc on every module, function, type, interface property, constant, and union member — every intent and invariant is documented inline and surfaces in IntelliSense. Future updates, issue triage, and contributor onboarding are first-class AI workflows: an LLM (or a human) can read any file in isolation and understand its role, its consumers, and the invariants it must preserve.
+- **Build pipeline.** Adopted the modern scaffold's `compile`/`watch`/`package` scripts — `compile` now runs `check-types && lint && esbuild` in series; `watch` runs parallel `watch:tsc` + `watch:esbuild` via `npm-run-all`.
+- **`@types/node` pinning.** Switched from wildcard `22.x` to explicit `^22.19.18` to match the rest of the deps' caret-+-full-version style.
+- **`tsconfig.json`.** Added defensive `compilerOptions.types: ["node", "mocha"]` to make `@types/node` and `@types/mocha` ambient inclusion explicit (prevents intermittent VS Code TS Server phantom `TS2591` errors after a `node_modules` rebuild).
+
+### Fixed
+- **Angular auto-naming with `preserveScriptFileExtension: true`.** `app-root.component.ts` with the preservation flag on previously produced `{ AppRootComponentTs }` because the `.ts` was folded into the PascalCase conversion. The script extension is now stripped before naming, so the identifier is always `{ AppRootComponent }` regardless of the preservation setting.
+
 ### Removed
+- `vsc-extension-quickstart.md` — `yo code` scaffold artifact, not relevant to users of the published extension.
 - `webpack`, `webpack-cli`, `ts-loader` — no longer needed after the esbuild migration.
 - `@typescript-eslint/parser`, `@typescript-eslint/eslint-plugin` — superseded by the unified `typescript-eslint` package.
 - `mocha` (direct devDep) — now pulled transitively via `@vscode/test-cli`.
