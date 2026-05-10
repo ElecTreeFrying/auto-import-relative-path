@@ -99,6 +99,10 @@
       {
         "command": "extension.copyPaste",
         "title": "Auto Import: Insert Import from Selected File"
+      },
+      {
+        "command": "extension.pasteImportWithStyle",
+        "title": "Auto Import: Paste as Import (Pick Style)"
       }
     ],
     "keybindings": [

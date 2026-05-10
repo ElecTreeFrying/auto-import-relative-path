@@ -1,12 +1,13 @@
 # src/commands/CLAUDE.md
 
-The three commands registered in `src/extension.ts`. The clipboard is the data channel between copy and paste.
+The four commands registered in `src/extension.ts`. The clipboard is the data channel between copy and paste.
 
 ## Files
 
 - `copy-file-path.ts` — `executeCopyFilePath`
 - `paste-import.ts` — `executePasteImport`
 - `copy-paste.ts` — `executeCopyPaste`
+- `paste-import-with-style.ts` — `executePasteImportWithStyle`
 - `index.ts` — barrel re-export (the only barrel in the project)
 
 ## Conventions
@@ -40,6 +41,16 @@ Calls `clearNotifications()` first, then `showNotification('copy-success', { bas
 ## `copy-paste.ts` — sequential composition
 
 `await executeCopyFilePath(); await executePasteImport();`. **Must remain sequential** — paste reads what copy wrote.
+
+## `paste-import-with-style.ts` — pick-style variant of paste-import
+
+Mirrors `paste-import.ts` step-by-step (clearNotifications → null-check editor → parallel fetch → clipboard sanity → same-file check → file-exists stat → 8-clause gating), but swaps `buildImportSnippet()` for `snippets/variants.ts:buildImportSnippetVariants()`. Branches on `variants.length` after gating:
+
+- **0** → `'not-supported'` toast (defensive — gating already caught this).
+- **1** → insert directly via `insertImportSnippet(new vscode.SnippetString(variants[0].snippetText))`. Single-shape destinations (HTML, Markdown text, CSS image, SCSS image, JSX/TSX non-script source) take this path so the user gets the same silent-insert UX as `cmd+i`.
+- **≥2** → `vscode.window.showQuickPick` with `matchOnDescription: true`. Cancellation (Esc) returns silently — no toast.
+
+The eight-clause gating is reused verbatim except clauses 7/8 (the `snippet.value === ''` / `'\n'` checks) collapse to `variants.length === 0` plus a defensive check on `variants[0].snippetText`. **Persisted style settings are not consulted**; the picker is a one-shot override.
 
 ## Adding a new command
 

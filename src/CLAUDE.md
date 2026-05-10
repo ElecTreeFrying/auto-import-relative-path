@@ -6,7 +6,7 @@ Source root for the extension. The codebase is layered by responsibility, with s
 
 ```
 extension.ts                 # entry: activate/deactivate
-├── commands/                # public command surface (3 commands)
+├── commands/                # public command surface (4 commands)
 ├── editor/                  # vscode-API helpers (clipboard, snippets, notification)
 ├── snippets/                # per-language snippet builders + dispatch
 ├── path/                    # pure path math (no `vscode` import)
@@ -40,7 +40,7 @@ See each directory's `CLAUDE.md` for the deep rules:
 
 | Directory | What it owns | Key invariant |
 |-----------|--------------|---------------|
-| `commands/` | The three registered commands | Clipboard is the data channel; failure paths return void, never throw |
+| `commands/` | The four registered commands | Clipboard is the data channel; failure paths return void, never throw |
 | `editor/` | vscode-API helpers | Forced-cursor placement overrides the user setting for HTML/MD/non-stylesheet → stylesheet |
 | `snippets/` | Per-language builders + dispatch | Style `description` strings are byte-exact contracts with `package.json` enums |
 | `path/` | Pure path math | No `vscode` import; `./` prefix rule is regression-tested |

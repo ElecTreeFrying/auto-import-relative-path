@@ -42,15 +42,38 @@ export async function buildSnippet(): Promise<vscode.SnippetString> {
 
 /**
  * Returns one of five TypeScript import shapes selected by the user's
- * `typescriptImportStyle` setting. Index 1 routes through
- * {@link generateImportName} for the Angular substitution (see module header).
+ * `typescriptImportStyle` setting. Thin wrapper over
+ * {@link buildTypeScriptImportSnippetByStyle} that reads the user's setting
+ * and delegates.
  *
  * @param relativePath - The already-computed import path (with or without extension).
  * @returns The `SnippetString` for the matched style, or the named-import shape.
  */
 export function buildTypeScriptImportSnippet(relativePath: string): vscode.SnippetString {
   const styleIndex = resolveStyleIndex(TYPESCRIPT_IMPORT_OPTIONS, getAutoImportSetting<string>('script', 'typescript'));
+  return buildTypeScriptImportSnippetByStyle(styleIndex, relativePath);
+}
 
+/**
+ * Pure switch on `styleIndex` that emits the matching TypeScript import
+ * `SnippetString`. Reused by the QuickPick aggregator (`snippets/variants.ts`)
+ * to render every variant for a given paste without consulting the user's
+ * setting.
+ *
+ * Index 1 routes through {@link generateImportName} for the Angular
+ * PascalCase substitution — keep the call inside the index-1 branch when
+ * editing this function (see module header).
+ *
+ * @param styleIndex - The style key (matches `TYPESCRIPT_IMPORT_OPTIONS[i].value`).
+ *   `undefined` falls through to the named-import shape, mirroring the
+ *   existing `default:` branch when `resolveStyleIndex` doesn't match.
+ * @param relativePath - The already-computed import path (with or without extension).
+ * @returns The `SnippetString` for the matched style.
+ */
+export function buildTypeScriptImportSnippetByStyle(
+  styleIndex: number | undefined,
+  relativePath: string,
+): vscode.SnippetString {
   switch (styleIndex) {
     case 0:
       return new vscode.SnippetString(`import $1 from '${relativePath}';`);

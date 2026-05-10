@@ -28,6 +28,17 @@ export interface ImportStyle {
   value: number;
   /** Human-readable snippet shape (with `_relativePath_` placeholder); matched byte-exact against the user's `package.json` enum selection. */
   description: string;
+  /**
+   * Short human label used by the QuickPick rendered in
+   * `commands/paste-import-with-style.ts`. Free-form — no byte-exact contract.
+   * Drift between `tag` and `package.json:enumDescriptions` is cosmetic
+   * (worse QuickPick subtitle), not broken (no `undefined` fall-through).
+   * Only populated on the five tables actually consumed by the QuickPick
+   * (`JAVASCRIPT_IMPORT_OPTIONS`, `TYPESCRIPT_IMPORT_OPTIONS`,
+   * `CSS_IMPORT_OPTIONS`, `SCSS_IMPORT_OPTIONS`,
+   * `MARKDOWN_IMAGE_IMPORT_OPTIONS`); the "Currently unused" tables omit it.
+   */
+  tag?: string;
 }
 
 /**
@@ -46,15 +57,15 @@ export function resolveStyleIndex(table: ImportStyle[], configValue: string | un
 
 /** Nine JS import shapes consumed by `javascript.ts:buildJavaScriptImportSnippet` via the `auto-import.importStatement.script.javascriptImportStyle` setting. */
 export const JAVASCRIPT_IMPORT_OPTIONS: ImportStyle[] = [
-  { value: 0, description: "import name from '_relativePath_';" },
-  { value: 1, description: "import { name } from '_relativePath_';" },
-  { value: 2, description: "import { default as name } from '_relativePath_';" },
-  { value: 3, description: "import * as name from '_relativePath_';" },
-  { value: 4, description: "import '_relativePath_';" },
-  { value: 5, description: "var name = require('_relativePath_');" },
-  { value: 6, description: "const name = require('_relativePath_');" },
-  { value: 7, description: "var name = import('_relativePath_');" },
-  { value: 8, description: "const name = import('_relativePath_');" },
+  { value: 0, description: "import name from '_relativePath_';", tag: 'ES module: default import' },
+  { value: 1, description: "import { name } from '_relativePath_';", tag: 'ES module: named import (destructured)' },
+  { value: 2, description: "import { default as name } from '_relativePath_';", tag: 'ES module: aliased default import' },
+  { value: 3, description: "import * as name from '_relativePath_';", tag: 'ES module: namespace import (every export bound under one name)' },
+  { value: 4, description: "import '_relativePath_';", tag: 'ES module: side-effect import (no binding)' },
+  { value: 5, description: "var name = require('_relativePath_');", tag: 'CommonJS: var require()' },
+  { value: 6, description: "const name = require('_relativePath_');", tag: 'CommonJS: const require()' },
+  { value: 7, description: "var name = import('_relativePath_');", tag: 'Dynamic import(): var' },
+  { value: 8, description: "const name = import('_relativePath_');", tag: 'Dynamic import(): const' },
 ];
 
 /**
@@ -64,17 +75,17 @@ export const JAVASCRIPT_IMPORT_OPTIONS: ImportStyle[] = [
  * `typescript.ts:generateImportName`.
  */
 export const TYPESCRIPT_IMPORT_OPTIONS: ImportStyle[] = [
-  { value: 0, description: "import name from '_relativePath_';" },
-  { value: 1, description: "import { name } from '_relativePath_';" },
-  { value: 2, description: "import { default as name } from '_relativePath_';" },
-  { value: 3, description: "import * as name from '_relativePath_';" },
-  { value: 4, description: "import '_relativePath_';" },
+  { value: 0, description: "import name from '_relativePath_';", tag: 'ES module: default import' },
+  { value: 1, description: "import { name } from '_relativePath_';", tag: 'ES module: named import — Angular files (.component / .directive / .pipe / .service / .module) auto-fill PascalCase identifiers' },
+  { value: 2, description: "import { default as name } from '_relativePath_';", tag: 'ES module: aliased default import' },
+  { value: 3, description: "import * as name from '_relativePath_';", tag: 'ES module: namespace import (every export bound under one name)' },
+  { value: 4, description: "import '_relativePath_';", tag: 'ES module: side-effect import (no binding)' },
 ];
 
 /** Two CSS import shapes consumed by `css.ts:buildCssImportSnippet` via the `auto-import.importStatement.styleSheet.cssImportStyle` setting. */
 export const CSS_IMPORT_OPTIONS: ImportStyle[] = [
-  { value: 0, description: "@import '_relativePath_';" },
-  { value: 1, description: "@import url('_relativePath_');" },
+  { value: 0, description: "@import '_relativePath_';", tag: '@import with quoted path' },
+  { value: 1, description: "@import url('_relativePath_');", tag: '@import with url() function' },
 ];
 
 /**
@@ -90,10 +101,10 @@ export const CSS_IMAGE_IMPORT_OPTIONS: ImportStyle[] = [
 
 /** Four SCSS import shapes consumed by `scss.ts:buildScssImportSnippet` via the `auto-import.importStatement.styleSheet.scssImportStyle` setting. */
 export const SCSS_IMPORT_OPTIONS: ImportStyle[] = [
-  { value: 0, description: "@import '_relativePath_';" },
-  { value: 1, description: "@import url('_relativePath_');" },
-  { value: 2, description: "@use '_relativePath_';" },
-  { value: 3, description: "@use '_relativePath_' as *;" },
+  { value: 0, description: "@import '_relativePath_';", tag: 'Legacy @import — quoted path' },
+  { value: 1, description: "@import url('_relativePath_');", tag: 'Legacy @import — url() function' },
+  { value: 2, description: "@use '_relativePath_';", tag: 'Modern @use — Sass module system (recommended)' },
+  { value: 3, description: "@use '_relativePath_' as *;", tag: 'Modern @use with wildcard alias — no namespace prefix required' },
 ];
 
 /**
@@ -135,6 +146,6 @@ export const MARKDOWN_IMPORT_OPTIONS: ImportStyle[] = [
 
 /** Two Markdown image shapes consumed by `markdown.ts:buildMarkdownImageImportSnippet` via the `auto-import.importStatement.markup.markdownImage` setting. */
 export const MARKDOWN_IMAGE_IMPORT_OPTIONS: ImportStyle[] = [
-  { value: 0, description: '![alt-text](_relativePath_ "Hover text")' },
-  { value: 1, description: '![alt-text][image] / [image]: _relativePath_ "Hover text"' },
+  { value: 0, description: '![alt-text](_relativePath_ "Hover text")', tag: 'Inline image syntax with hover-text title' },
+  { value: 1, description: '![alt-text][image] / [image]: _relativePath_ "Hover text"', tag: 'Reference-style — define [ref] once, reuse it elsewhere in the document' },
 ];

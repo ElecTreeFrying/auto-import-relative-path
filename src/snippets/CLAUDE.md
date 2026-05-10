@@ -1,13 +1,14 @@
 # src/snippets/CLAUDE.md
 
-Per-language snippet builders + the destination-extension dispatch in `dispatch.ts`. The public surface of this directory is `dispatch.ts:buildImportSnippet()`.
+Per-language snippet builders + the destination-extension dispatch in `dispatch.ts`. The public surface of this directory is `dispatch.ts:buildImportSnippet()` (used by the default paste flow) and `variants.ts:buildImportSnippetVariants()` (used by the pick-style command).
 
 ## Files
 
-- `dispatch.ts` — single-level destination-extension switch.
-- `javascript.ts`, `typescript.ts`, `jsx.ts`, `tsx.ts`, `css.ts`, `scss.ts`, `html.ts`, `markdown.ts` — one module per destination language.
+- `dispatch.ts` — single-level destination-extension switch consumed by `extension.pasteImport`.
+- `variants.ts` — parallel aggregator that enumerates every applicable style for the current paste, consumed by `extension.pasteImportWithStyle`. Mirrors `dispatch.ts`'s destination switch and the per-language source classification, but calls each language's `buildXImportSnippetByStyle` once per `*_IMPORT_OPTIONS` entry.
+- `javascript.ts`, `typescript.ts`, `jsx.ts`, `tsx.ts`, `css.ts`, `scss.ts`, `html.ts`, `markdown.ts` — one module per destination language. The five styled languages (JS, TS, CSS, SCSS, MD-image) export both a config-reading `buildXImportSnippet` and a pure `buildXImportSnippetByStyle(styleIndex, relativePath)`. The hardcoded shape builders in `html.ts` and `markdown.ts` are exported for reuse by `variants.ts`.
 - `_shared.ts` — internal: `buildReactImport` shared by JSX/TSX.
-- `_styles.ts` — internal: `ImportStyle[]` tables + `resolveStyleIndex`.
+- `_styles.ts` — internal: `ImportStyle[]` tables + `resolveStyleIndex`. Each entry on the five active tables also carries an optional `tag` (free-form short label) used by the QuickPick rendered in `paste-import-with-style.ts`.
 
 The `_`-prefixed files are directory-internal — importing them from outside `snippets/` is a smell.
 

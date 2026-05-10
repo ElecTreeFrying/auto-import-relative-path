@@ -7,11 +7,12 @@ describe('extension activation', () => {
     await extension?.activate();
   });
 
-  it('registers the three auto-import commands', async () => {
+  it('registers the four auto-import commands', async () => {
     const commands = await vscode.commands.getCommands(true);
 
     assert.ok(commands.includes('extension.copyFilePath'), 'extension.copyFilePath not registered');
     assert.ok(commands.includes('extension.pasteImport'), 'extension.pasteImport not registered');
     assert.ok(commands.includes('extension.copyPaste'), 'extension.copyPaste not registered');
+    assert.ok(commands.includes('extension.pasteImportWithStyle'), 'extension.pasteImportWithStyle not registered');
   });
 });

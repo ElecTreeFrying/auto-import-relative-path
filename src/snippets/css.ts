@@ -36,14 +36,33 @@ export async function buildSnippet(): Promise<vscode.SnippetString> {
 
 /**
  * Returns one of two CSS import shapes (`@import '…';` / `@import url('…');`)
- * selected by the user's `cssImportStyle` setting.
+ * selected by the user's `cssImportStyle` setting. Thin wrapper over
+ * {@link buildCssImportSnippetByStyle} that reads the user's setting and
+ * delegates.
  *
  * @param relativePath - The already-computed import path.
  * @returns The `SnippetString` for the matched style.
  */
 export function buildCssImportSnippet(relativePath: string): vscode.SnippetString {
   const styleIndex = resolveStyleIndex(CSS_IMPORT_OPTIONS, getAutoImportSetting<string>('stylesheet', 'css'));
+  return buildCssImportSnippetByStyle(styleIndex, relativePath);
+}
 
+/**
+ * Pure switch on `styleIndex` that emits the matching CSS import
+ * `SnippetString`. Reused by the QuickPick aggregator (`snippets/variants.ts`)
+ * to render every variant for a given paste without consulting the user's
+ * setting.
+ *
+ * @param styleIndex - The style key (matches `CSS_IMPORT_OPTIONS[i].value`).
+ *   `undefined` falls through to the quoted-`@import` shape.
+ * @param relativePath - The already-computed import path.
+ * @returns The `SnippetString` for the matched style.
+ */
+export function buildCssImportSnippetByStyle(
+  styleIndex: number | undefined,
+  relativePath: string,
+): vscode.SnippetString {
   switch (styleIndex) {
     case 0:
       return new vscode.SnippetString(`@import '${relativePath}';`);

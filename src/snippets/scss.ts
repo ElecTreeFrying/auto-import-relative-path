@@ -33,7 +33,8 @@ import { buildCssImageImportSnippet } from './css';
 
 /**
  * Routes image sources to CSS's `url(...)` snippet and everything else to
- * `buildScssImportSnippet` with extension handled by `determineScssExtension`.
+ * the SCSS by-style switch with extension and partial-filename handling
+ * applied by {@link prepareScssImportPath}.
  *
  * @returns The SCSS import `SnippetString` for the current source.
  */
@@ -43,23 +44,32 @@ export async function buildSnippet(): Promise<vscode.SnippetString> {
   switch (determineImportType(sourceFilePath)) {
     case 'image':
       return buildCssImageImportSnippet(relativePath + extractFileExtension(sourceFilePath));
-    default:
-      return buildScssImportSnippet(relativePath + determineScssExtension(sourceFilePath));
+    default: {
+      const preparedPath = prepareScssImportPath(sourceFilePath, relativePath);
+      const styleIndex = resolveStyleIndex(SCSS_IMPORT_OPTIONS, getAutoImportSetting<string>('stylesheet', 'scss'));
+      return buildScssImportSnippetByStyle(styleIndex, preparedPath);
+    }
   }
 }
 
 /**
- * Returns one of four SCSS import shapes (`@import`, `@import url(…)`,
- * `@use`, `@use … as *`) selected by the user's `scssImportStyle`, with the
- * partial-filename underscore stripped.
+ * Pure switch on `styleIndex` that emits the matching SCSS import
+ * `SnippetString`. The path passed in **must already be extension-suffixed
+ * and partial-normalized** — call {@link prepareScssImportPath} first.
+ * Reused by the QuickPick aggregator (`snippets/variants.ts`) to render
+ * every variant for a given paste without consulting the user's setting.
  *
- * @param relativePath - The already-computed import path.
+ * @param styleIndex - The style key (matches `SCSS_IMPORT_OPTIONS[i].value`).
+ *   `undefined` falls through to the quoted-`@import` shape.
+ * @param relativePath - The already-prepared import path (extension-suffixed
+ *   per {@link determineScssExtension}, partial leading-underscore stripped
+ *   per {@link normalizePartialFilename}).
  * @returns The `SnippetString` for the matched style.
  */
-function buildScssImportSnippet(relativePath: string): vscode.SnippetString {
-  relativePath = normalizePartialFilename(relativePath);
-  const styleIndex = resolveStyleIndex(SCSS_IMPORT_OPTIONS, getAutoImportSetting<string>('stylesheet', 'scss'));
-
+export function buildScssImportSnippetByStyle(
+  styleIndex: number | undefined,
+  relativePath: string,
+): vscode.SnippetString {
   switch (styleIndex) {
     case 0:
       return new vscode.SnippetString(`@import '${relativePath}';`);
@@ -72,6 +82,20 @@ function buildScssImportSnippet(relativePath: string): vscode.SnippetString {
     default:
       return new vscode.SnippetString(`@import '${relativePath}';`);
   }
+}
+
+/**
+ * Combines the SCSS-specific extension rule and partial-filename
+ * normalization into a single path-prep step. Centralizes the two SCSS
+ * invariants so the QuickPick aggregator doesn't have to reimplement them.
+ *
+ * @param sourceFilePath - Absolute path of the source file being imported.
+ * @param relativePath - The relative-path string from `computeRelative`
+ *   (extension stripped, no leading-underscore handling yet).
+ * @returns The path ready to drop into a SCSS `@import`/`@use` statement.
+ */
+export function prepareScssImportPath(sourceFilePath: string, relativePath: string): string {
+  return normalizePartialFilename(relativePath + determineScssExtension(sourceFilePath));
 }
 
 /**

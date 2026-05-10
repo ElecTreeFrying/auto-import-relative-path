@@ -33,31 +33,33 @@ export async function buildSnippet(): Promise<vscode.SnippetString> {
 }
 
 /**
- * Returns `<script type="text/javascript" src="…"></script>`.
+ * Returns `<script type="text/javascript" src="…"></script>`. Exported so
+ * the QuickPick aggregator (`snippets/variants.ts`) can reuse the same
+ * hardcoded shape without re-entering `getFilePathInfo()`.
  *
  * @param relativePath - The script's import path.
  * @returns The corresponding `<script>` tag as a `SnippetString`.
  */
-function buildHtmlScriptImportSnippet(relativePath: string): vscode.SnippetString {
+export function buildHtmlScriptImportSnippet(relativePath: string): vscode.SnippetString {
   return new vscode.SnippetString(`<script type="text/javascript" src="${relativePath}"></script>`);
 }
 
 /**
- * Returns `<img src="…" alt="sample">`.
+ * Returns `<img src="…" alt="sample">`. Exported for the QuickPick aggregator.
  *
  * @param relativePath - The image's import path.
  * @returns The corresponding `<img>` tag as a `SnippetString`.
  */
-function buildHtmlImageImportSnippet(relativePath: string): vscode.SnippetString {
+export function buildHtmlImageImportSnippet(relativePath: string): vscode.SnippetString {
   return new vscode.SnippetString(`<img src="${relativePath}" alt="sample">`);
 }
 
 /**
- * Returns `<link href="…" rel="stylesheet">`.
+ * Returns `<link href="…" rel="stylesheet">`. Exported for the QuickPick aggregator.
  *
  * @param relativePath - The stylesheet's import path.
  * @returns The corresponding `<link>` tag as a `SnippetString`.
  */
-function buildHtmlStylesheetImportSnippet(relativePath: string): vscode.SnippetString {
+export function buildHtmlStylesheetImportSnippet(relativePath: string): vscode.SnippetString {
   return new vscode.SnippetString(`<link href="${relativePath}" rel="stylesheet">`);
 }
