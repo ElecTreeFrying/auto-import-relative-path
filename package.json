@@ -103,6 +103,10 @@
       {
         "command": "extension.pasteImportWithStyle",
         "title": "Auto Import: Paste as Import (Pick Style)"
+      },
+      {
+        "command": "extension.setDefaultImportStyle",
+        "title": "Auto Import: Set Default Import Style"
       }
     ],
     "keybindings": [
