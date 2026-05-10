@@ -14,8 +14,8 @@ import { getFilePathInfo } from '../editor/file-path-info';
 import { JAVASCRIPT_IMPORT_OPTIONS, resolveStyleIndex } from './_styles';
 
 /**
- * Builds the relative path (optionally extension-suffixed per
- * `preserveScriptFileExtension`) and emits the JavaScript snippet.
+ * Builds the relative path (optionally extension-suffixed per the user's
+ * `preserveScriptFileExtension` setting) and emits the JavaScript snippet.
  *
  * @returns The JavaScript import `SnippetString` for the current source.
  */

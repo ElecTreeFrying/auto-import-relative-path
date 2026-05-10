@@ -26,8 +26,8 @@ import { getFilePathInfo } from '../editor/file-path-info';
 import { TYPESCRIPT_IMPORT_OPTIONS, resolveStyleIndex } from './_styles';
 
 /**
- * Builds the relative path (optionally extension-suffixed per
- * `preserveScriptFileExtension`) and emits the TypeScript snippet.
+ * Builds the relative path (optionally extension-suffixed per the user's
+ * `preserveScriptFileExtension` setting) and emits the TypeScript snippet.
  *
  * @returns The TypeScript import `SnippetString` for the current source.
  */
