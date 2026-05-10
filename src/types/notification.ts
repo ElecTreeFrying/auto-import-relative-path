@@ -11,7 +11,7 @@
  * variants take no payload.
  *
  * One variant (`'copy-success'`) renders as an information toast; the other
- * five render as warning toasts.
+ * six render as warning toasts.
  */
 export type NotificationType =
   /** Source path resolved (case-insensitively) to the same file as the destination. Surfaced as `'Auto Import: A file cannot import itself.'`. Raised from `commands/paste-import.ts`. */
