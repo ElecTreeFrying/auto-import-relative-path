@@ -18,26 +18,35 @@
 
 ## Table of Contents
 
-- [Why this extension?](#why-this-extension)
-- [Highlights](#highlights)
-- [Quick Start](#quick-start)
-- [Commands & Keybindings](#commands--keybindings)
-- [Supported source → destination pairs](#supported-source--destination-pairs)
-- [Examples](#examples)
-- [Configuration](#configuration)
-  - [Placement](#placement)
-  - [Scripts — JS, JSX, TS, TSX](#scripts--js-jsx-ts-tsx)
-  - [Stylesheets — CSS, SCSS](#stylesheets--css-scss)
-  - [Markup — HTML, Markdown](#markup--html-markdown)
-- [Tips & Tricks](#tips--tricks)
-- [Installation](#installation)
-- [Compatibility](#compatibility)
-- [Troubleshooting](#troubleshooting)
-- [Changelog](#changelog)
-- [Contributing](#contributing)
-- [Support the project](#support-the-project)
-- [Related](#related)
-- [License](#license)
+- [Auto Import Relative Path](#auto-import-relative-path)
+  - [Table of Contents](#table-of-contents)
+  - [Why this extension?](#why-this-extension)
+  - [Highlights](#highlights)
+  - [Quick Start](#quick-start)
+  - [Commands \& Keybindings](#commands--keybindings)
+  - [Supported source → destination pairs](#supported-source--destination-pairs)
+  - [Examples](#examples)
+    - [TypeScript with Angular auto-fill](#typescript-with-angular-auto-fill)
+    - [JSX importing an image](#jsx-importing-an-image)
+    - [SCSS importing a partial via `@use`](#scss-importing-a-partial-via-use)
+    - [SCSS importing a `.css` file](#scss-importing-a-css-file)
+    - [HTML embedding a script](#html-embedding-a-script)
+    - [Markdown referencing an image](#markdown-referencing-an-image)
+    - [CommonJS require](#commonjs-require)
+  - [Configuration](#configuration)
+    - [Placement](#placement)
+    - [Scripts — JS, JSX, TS, TSX](#scripts--js-jsx-ts-tsx)
+    - [Stylesheets — CSS, SCSS](#stylesheets--css-scss)
+    - [Markup — HTML, Markdown](#markup--html-markdown)
+  - [Tips \& Tricks](#tips--tricks)
+  - [Installation](#installation)
+  - [Compatibility](#compatibility)
+  - [Troubleshooting](#troubleshooting)
+  - [Changelog](#changelog)
+  - [Contributing](#contributing)
+  - [Support the project](#support-the-project)
+  - [Related](#related)
+  - [License](#license)
 
 ---
 
@@ -375,12 +384,12 @@ If this extension saves you time, consider:
 
 [reviews]: https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import&ssr=false#review-details
 
-| Network     | Address                                                              |
-|-------------|----------------------------------------------------------------------|
-| **Bitcoin** | `bc1q4j2uewfphjmca83905qv37vcl4jh8va5yupl7w`                         |
-| **Solana**  | `EHtTGyRoDAK44KBGrEoypAWyPpResHUqwufKnuLs7Tyy`                       |
-| **Sui**     | `0xcaf8ff4a65d7e35d961abd0203180013b7fe974d4fa0313e880c39c45ada2b09` |
-| **ERC-20**  | `0xd25f84Ed2F76dF2F0C8f1207402eF9e15b5d7855`                         |
+| Network                                                  | Address                                                              |
+| -------------------------------------------------------- | -------------------------------------------------------------------- |
+| **Bitcoin**                                              | `bc1q4j2uewfphjmca83905qv37vcl4jh8va5yupl7w`                         |
+| **Solana**                                               | `EHtTGyRoDAK44KBGrEoypAWyPpResHUqwufKnuLs7Tyy`                       |
+| **Sui**                                                  | `0xcaf8ff4a65d7e35d961abd0203180013b7fe974d4fa0313e880c39c45ada2b09` |
+| **ERC-20: Ethereum / Base / Monad / Polygon / HyperEVM** | `0xd25f84Ed2F76dF2F0C8f1207402eF9e15b5d7855`                         |
 
 ---
 
