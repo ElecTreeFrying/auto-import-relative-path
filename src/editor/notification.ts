@@ -18,13 +18,15 @@ const SUPPORTED_PAIRS_URL = 'https://github.com/ElecTreeFrying/auto-import-relat
  * Six variants render as warning toasts (`showWarningMessage`); only
  * `'copy-success'` renders as an info toast (`showInformationMessage`).
  *
- * Two variants surface an action button:
+ * Two variants surface action buttons:
  * - `'not-supported'` adds **View Supported Files** which opens the README's
  *   supported-pairs section on GitHub. The click handler is self-contained
  *   (fire-and-forget) so this overload still returns `void`.
- * - `'copy-success'` adds **Paste Now**. This overload returns the underlying
- *   `Thenable<string | undefined>` so the caller can run the paste-import
- *   command on click without `editor/` reaching into `commands/`.
+ * - `'copy-success'` adds **Paste Now** (runs the default paste-import) and
+ *   **Paste with Style** (runs the style-picker variant for ad-hoc style override).
+ *   This overload returns the underlying `Thenable<string | undefined>` so
+ *   the caller can dispatch on the chosen action without `editor/` reaching
+ *   into `commands/`.
  *
  * @param type - Which user-visible toast to surface.
  * @param payload - Values interpolated into the message for parameterized variants.
@@ -64,7 +66,11 @@ export function showNotification(
       vscode.window.showWarningMessage(`Auto Import: Source file no longer exists: ${payload!.basename}.`);
       break;
     case 'copy-success':
-      return vscode.window.showInformationMessage(`Auto Import: Copied path — ${payload!.basename}`, 'Paste Now');
+      return vscode.window.showInformationMessage(
+        `Auto Import: Copied path — ${payload!.basename}`,
+        'Paste with Style',
+        'Paste Now',
+      );
   }
 }
 

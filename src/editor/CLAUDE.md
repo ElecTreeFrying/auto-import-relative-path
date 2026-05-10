@@ -50,6 +50,9 @@ Falls through to line 0 when no marker matches. **New import-syntax markers must
   - `'copy-success'` takes `{ basename }` — emits `Auto Import: Copied path — <basename>` (info toast, not warning)
 - TypeScript overload resolution enforces the right payload (or no payload) at every call site. The implementation signature uses a wide payload type and `!` non-null assertions because the overloads are the type-safety boundary.
 - Six variants render via `showWarningMessage`; only `'copy-success'` renders via `showInformationMessage`. The level is hardcoded per-variant inside the `switch`.
+- Two variants surface action buttons:
+  - `'not-supported'` adds **View Supported Files** — click handler is self-contained (`vscode.env.openExternal` to the README's supported-pairs anchor); overload still returns `void`.
+  - `'copy-success'` adds **Paste Now** (default paste-import) and **Paste with Style** (style-picker variant). The overload returns `Thenable<string | undefined>` so `commands/copy-file-path.ts` can dispatch on the chosen action — keeps `editor/` from reaching into `commands/`.
 - Producers: `commands/paste-import.ts` raises five (`'same-file-path'`, `'not-supported'`, `'no-active-editor'`, `'empty-clipboard'`, `'source-not-found'`); `commands/copy-file-path.ts` raises two (`'no-file-to-copy'`, `'copy-success'`).
 - All messages share the `Auto Import:` prefix — matches the command titles in `package.json`.
 
