@@ -29,7 +29,7 @@
 import * as vscode from 'vscode';
 
 import { FileExtension } from '../types/file-extension';
-import { getAutoImportSetting } from '../config/settings';
+import { AutoImportConfigNamespace, AutoImportSettingKey, getAutoImportSetting } from '../config/settings';
 import { determineImportType } from '../path/import-type';
 import { getFilePathInfo } from '../editor/file-path-info';
 
@@ -54,7 +54,8 @@ import { buildMarkdownImportSnippet, buildMarkdownImageImportSnippetByStyle } fr
 
 /**
  * One pickable item in the `vscode.window.showQuickPick` rendered by
- * `commands/paste-import-with-style.ts`.
+ * `commands/paste-import-with-style.ts` and
+ * `commands/set-default-import-style.ts`.
  */
 export interface ImportSnippetVariant {
   /** Primary text shown in the QuickPick (rendered snippet with `$1`/`${1:x}` placeholders substituted to plain words for readability). */
@@ -63,6 +64,20 @@ export interface ImportSnippetVariant {
   description: string;
   /** The raw snippet text — used to reconstruct `new vscode.SnippetString(snippetText)` immediately before insertion. Stored as string to avoid leaking `appendText('\n')` mutations across renders. */
   snippetText: string;
+  /**
+   * Identifies the `package.json` setting that backs this variant. Populated
+   * only on **styled** variants (those derived from a `*_IMPORT_OPTIONS`
+   * table); `undefined` on hardcoded single-shape variants
+   * (HTML/Markdown-text/CSS-image/SCSS-image/JSX-non-script/TSX-non-script),
+   * which have no user-configurable style. Consumed by
+   * `commands/set-default-import-style.ts` to call `setAutoImportSetting`.
+   * `value` is byte-exact against the matching `package.json:enum` entry.
+   */
+  setting?: {
+    namespace: AutoImportConfigNamespace;
+    key: AutoImportSettingKey;
+    value: string;
+  };
 }
 
 /**
@@ -89,10 +104,10 @@ export async function buildImportSnippetVariants(): Promise<ImportSnippetVariant
   switch (destinationFileExt) {
     case '.js':
       return JAVASCRIPT_IMPORT_OPTIONS.map(opt =>
-        toStyledVariant(opt, buildJavaScriptImportSnippetByStyle(opt.value, scriptPath)));
+        toStyledVariant(opt, buildJavaScriptImportSnippetByStyle(opt.value, scriptPath), 'script', 'javascript'));
     case '.ts':
       return TYPESCRIPT_IMPORT_OPTIONS.map(opt =>
-        toStyledVariant(opt, buildTypeScriptImportSnippetByStyle(opt.value, scriptPath)));
+        toStyledVariant(opt, buildTypeScriptImportSnippetByStyle(opt.value, scriptPath), 'script', 'typescript'));
     case '.jsx':
       return buildJsxVariants(sourceFileExt, scriptPath, fullPath);
     case '.tsx':
@@ -121,7 +136,7 @@ function buildJsxVariants(
 ): ImportSnippetVariant[] {
   if (sourceFileExt === '.js' || sourceFileExt === '.jsx') {
     return JAVASCRIPT_IMPORT_OPTIONS.map(opt =>
-      toStyledVariant(opt, buildJavaScriptImportSnippetByStyle(opt.value, scriptPath)));
+      toStyledVariant(opt, buildJavaScriptImportSnippetByStyle(opt.value, scriptPath), 'script', 'javascript'));
   }
   const variant = buildReactNonScriptVariant(sourceFileExt, fullPath);
   return variant ? [variant] : [];
@@ -140,11 +155,11 @@ function buildTsxVariants(
 ): ImportSnippetVariant[] {
   if (sourceFileExt === '.ts' || sourceFileExt === '.tsx') {
     return TYPESCRIPT_IMPORT_OPTIONS.map(opt =>
-      toStyledVariant(opt, buildTypeScriptImportSnippetByStyle(opt.value, scriptPath)));
+      toStyledVariant(opt, buildTypeScriptImportSnippetByStyle(opt.value, scriptPath), 'script', 'typescript'));
   }
   if (sourceFileExt === '.js') {
     return JAVASCRIPT_IMPORT_OPTIONS.map(opt =>
-      toStyledVariant(opt, buildJavaScriptImportSnippetByStyle(opt.value, scriptPath)));
+      toStyledVariant(opt, buildJavaScriptImportSnippetByStyle(opt.value, scriptPath), 'script', 'javascript'));
   }
   const variant = buildReactNonScriptVariant(sourceFileExt, fullPath);
   return variant ? [variant] : [];
@@ -187,7 +202,7 @@ function buildCssVariants(sourceFilePath: string, fullPath: string): ImportSnipp
     return [toHardcodedVariant(buildCssImageImportSnippet(fullPath))];
   }
   return CSS_IMPORT_OPTIONS.map(opt =>
-    toStyledVariant(opt, buildCssImportSnippetByStyle(opt.value, fullPath)));
+    toStyledVariant(opt, buildCssImportSnippetByStyle(opt.value, fullPath), 'stylesheet', 'css'));
 }
 
 /**
@@ -205,7 +220,7 @@ function buildScssVariants(
   }
   const scssPath = prepareScssImportPath(sourceFilePath, relativePath);
   return SCSS_IMPORT_OPTIONS.map(opt =>
-    toStyledVariant(opt, buildScssImportSnippetByStyle(opt.value, scssPath)));
+    toStyledVariant(opt, buildScssImportSnippetByStyle(opt.value, scssPath), 'stylesheet', 'scss'));
 }
 
 /** HTML destination — every branch is hardcoded; classification picks `<script>`/`<img>`/`<link>`. */
@@ -229,18 +244,24 @@ function buildMarkdownVariants(sourceFilePath: string, fullPath: string): Import
       return [toHardcodedVariant(buildMarkdownImportSnippet(fullPath))];
     case 'image':
       return MARKDOWN_IMAGE_IMPORT_OPTIONS.map(opt =>
-        toStyledVariant(opt, buildMarkdownImageImportSnippetByStyle(opt.value, fullPath)));
+        toStyledVariant(opt, buildMarkdownImageImportSnippetByStyle(opt.value, fullPath), 'markup', 'markdownImage'));
     default:
       return [];
   }
 }
 
-/** Wraps a styled (table-driven) snippet result with its `tag` (or `description` fallback). */
-function toStyledVariant(opt: ImportStyle, snippet: vscode.SnippetString): ImportSnippetVariant {
+/** Wraps a styled (table-driven) snippet result with its `tag` (or `description` fallback) and the `(namespace, key)` of the backing `package.json` setting. */
+function toStyledVariant(
+  opt: ImportStyle,
+  snippet: vscode.SnippetString,
+  namespace: AutoImportConfigNamespace,
+  key: AutoImportSettingKey,
+): ImportSnippetVariant {
   return {
     label: renderLabel(snippet.value),
     description: opt.tag ?? opt.description,
     snippetText: snippet.value,
+    setting: { namespace, key, value: opt.description },
   };
 }
 
