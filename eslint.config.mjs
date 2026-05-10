@@ -1,6 +1,8 @@
 import typescriptEslint from "typescript-eslint";
 
 export default [{
+    ignores: ["src/test/manual-qa-workspace/**"],
+}, {
     files: ["**/*.ts"],
 }, {
     plugins: {

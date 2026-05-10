@@ -1,0 +1,6 @@
+{
+  "appName": "Auto Import Demo",
+  "version": "1.2.0",
+  "apiUrl": "https://api.example.com",
+  "theme": "light"
+}

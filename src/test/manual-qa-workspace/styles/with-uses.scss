@@ -1,0 +1,8 @@
+@use './variables' as vars;
+@use './mixins' as mix;
+@import './tokens';
+@import "./theme.scss";
+
+.section {
+  padding: vars.$spacing-md;
+}

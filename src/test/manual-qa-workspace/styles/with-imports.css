@@ -1,0 +1,7 @@
+@import './reset.css';
+@import url('./normalize.css');
+@import "./design-tokens.css";
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+}

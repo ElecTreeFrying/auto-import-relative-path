@@ -1,0 +1,4 @@
+app_name: Auto Import Demo
+version: 1.2.0
+api_url: https://api.example.com
+theme: light
