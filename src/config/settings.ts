@@ -1,8 +1,8 @@
 /**
- * Workspace-configuration access for the extension. `getAutoImportSetting`
- * is the only public surface; the `AUTO_IMPORT_CONFIG` map is its
- * private translation table from short aliases (`'javascript'`) to fully
- * qualified VS Code setting paths (`auto-import.importStatement.script
+ * Workspace-configuration access for the extension. `getAutoImportSetting` and
+ * `setAutoImportSetting` are the public surface; the `AUTO_IMPORT_CONFIG` map
+ * is their private translation table from short aliases (`'javascript'`) to
+ * fully qualified VS Code setting paths (`auto-import.importStatement.script
  * .javascriptImportStyle`).
  *
  * @remarks
@@ -22,6 +22,11 @@
  * through to its default branch. There is no warning — the user just
  * gets the default style instead of their chosen one. Keep the strings
  * identical.
+ *
+ * **Writer target.** `setAutoImportSetting` defaults to
+ * `vscode.ConfigurationTarget.Global` because no `package.json` setting
+ * declares a `scope` field — the user-visible defaults are global for every
+ * setting in this extension.
  */
 import * as vscode from 'vscode';
 
@@ -75,7 +80,7 @@ const AUTO_IMPORT_CONFIG = freeze({
 });
 
 /** Top-level keys of {@link AUTO_IMPORT_CONFIG}. */
-type AutoImportConfigNamespace =
+export type AutoImportConfigNamespace =
   /** UX-level settings (e.g. `importStatementPlacement`). Maps to `auto-import.preferences.*`. */
   | 'preferences'
   /** JS/TS import-shape settings. Maps to `auto-import.importStatement.script.*`. */
@@ -96,7 +101,7 @@ type AutoImportConfigNamespace =
  * alias. An invalid pair returns `undefined` at runtime via
  * `vscode.workspace.getConfiguration().get(...)`.
  */
-type AutoImportSettingKey =
+export type AutoImportSettingKey =
   /** Top/Bottom/Cursor placement of the inserted import. Pair with namespace `'preferences'`. */
   | 'placement'
   /**
@@ -146,4 +151,31 @@ export function getAutoImportSetting<T = unknown>(
   const configuration = vscode.workspace.getConfiguration(namespace);
   const settingProperty = (settings as Record<AutoImportSettingKey, string>)[settingKey];
   return configuration.get<T>(settingProperty);
+}
+
+/**
+ * Persists one extension setting to the workspace configuration via the
+ * `AUTO_IMPORT_CONFIG` alias map. The mirror of {@link getAutoImportSetting}.
+ *
+ * @param namespaceKey - Top-level config group (`'preferences'`, `'script'`,
+ *   `'stylesheet'`, or `'markup'`).
+ * @param settingKey - Short alias for the setting within the namespace.
+ * @param value - The value to persist. For style settings, must be byte-exact
+ *   against the matching `package.json:enum` entry — drift causes the next
+ *   `getAutoImportSetting` read to fall through to the default style.
+ * @param target - Configuration scope. Defaults to `Global` because no
+ *   `package.json` setting declares a `scope` field.
+ * @returns A `Thenable<void>` that resolves once VS Code has written the
+ *   value to disk.
+ */
+export function setAutoImportSetting<T = unknown>(
+  namespaceKey: AutoImportConfigNamespace,
+  settingKey: AutoImportSettingKey,
+  value: T,
+  target: vscode.ConfigurationTarget = vscode.ConfigurationTarget.Global,
+): Thenable<void> {
+  const { namespace, settings } = AUTO_IMPORT_CONFIG[namespaceKey];
+  const configuration = vscode.workspace.getConfiguration(namespace);
+  const settingProperty = (settings as Record<AutoImportSettingKey, string>)[settingKey];
+  return configuration.update(settingProperty, value, target);
 }
