@@ -25,8 +25,20 @@
  * string; the consuming command reconstructs `new vscode.SnippetString
  * (picked.snippetText)` at insertion time so the mutation never leaks back
  * into a QuickPick label.
+ *
+ * **Dual render — full path for insertion, basename for label.** Each
+ * variant carries two strings: `snippetText` is the snippet that gets
+ * inserted (full relative path: `'./foo'`, `'../utils/widget'`), and
+ * `label` is the picker preview built from the same snippet shape but with
+ * the path collapsed to its basename (`'foo'`, `'widget'`). This keeps the
+ * picker labels short and width-stable regardless of source nesting depth.
+ * Mechanically, every per-language `buildXImportSnippetByStyle` is called
+ * twice per variant — once with the full path, once with the basename. The
+ * basename is computed with Node `path.basename` (Unix-style separators
+ * per `computeRelative`'s contract).
  */
 import * as vscode from 'vscode';
+import * as path from 'path';
 
 import { FileExtension } from '../types/file-extension';
 import { AutoImportConfigNamespace, AutoImportSettingKey, getAutoImportSetting } from '../config/settings';
@@ -100,26 +112,38 @@ export async function buildImportSnippetVariants(): Promise<ImportSnippetVariant
   const shouldPreserveScriptExtension = getAutoImportSetting<boolean>('script', 'preserve');
   const scriptPath = relativePath + (shouldPreserveScriptExtension ? sourceFileExt : '');
   const fullPath = relativePath + sourceFileExt;
+  const labelScriptPath = path.basename(scriptPath);
+  const labelFullPath = path.basename(fullPath);
 
   switch (destinationFileExt) {
     case '.js':
       return JAVASCRIPT_IMPORT_OPTIONS.map(opt =>
-        toStyledVariant(opt, buildJavaScriptImportSnippetByStyle(opt.value, scriptPath), 'script', 'javascript'));
+        toStyledVariant(
+          opt,
+          buildJavaScriptImportSnippetByStyle(opt.value, scriptPath),
+          buildJavaScriptImportSnippetByStyle(opt.value, labelScriptPath),
+          'script', 'javascript',
+        ));
     case '.ts':
       return TYPESCRIPT_IMPORT_OPTIONS.map(opt =>
-        toStyledVariant(opt, buildTypeScriptImportSnippetByStyle(opt.value, scriptPath), 'script', 'typescript'));
+        toStyledVariant(
+          opt,
+          buildTypeScriptImportSnippetByStyle(opt.value, scriptPath),
+          buildTypeScriptImportSnippetByStyle(opt.value, labelScriptPath),
+          'script', 'typescript',
+        ));
     case '.jsx':
-      return buildJsxVariants(sourceFileExt, scriptPath, fullPath);
+      return buildJsxVariants(sourceFileExt, scriptPath, labelScriptPath, fullPath, labelFullPath);
     case '.tsx':
-      return buildTsxVariants(sourceFileExt, scriptPath, fullPath);
+      return buildTsxVariants(sourceFileExt, scriptPath, labelScriptPath, fullPath, labelFullPath);
     case '.css':
-      return buildCssVariants(sourceFilePath, fullPath);
+      return buildCssVariants(sourceFilePath, fullPath, labelFullPath);
     case '.scss':
-      return buildScssVariants(sourceFilePath, relativePath, fullPath);
+      return buildScssVariants(sourceFilePath, relativePath, fullPath, labelFullPath);
     case '.html':
-      return buildHtmlVariants(sourceFilePath, fullPath);
+      return buildHtmlVariants(sourceFilePath, fullPath, labelFullPath);
     case '.md':
-      return buildMarkdownVariants(sourceFilePath, fullPath);
+      return buildMarkdownVariants(sourceFilePath, fullPath, labelFullPath);
     default:
       return [];
   }
@@ -132,13 +156,20 @@ export async function buildImportSnippetVariants(): Promise<ImportSnippetVariant
 function buildJsxVariants(
   sourceFileExt: FileExtension,
   scriptPath: string,
+  labelScriptPath: string,
   fullPath: string,
+  labelFullPath: string,
 ): ImportSnippetVariant[] {
   if (sourceFileExt === '.js' || sourceFileExt === '.jsx') {
     return JAVASCRIPT_IMPORT_OPTIONS.map(opt =>
-      toStyledVariant(opt, buildJavaScriptImportSnippetByStyle(opt.value, scriptPath), 'script', 'javascript'));
+      toStyledVariant(
+        opt,
+        buildJavaScriptImportSnippetByStyle(opt.value, scriptPath),
+        buildJavaScriptImportSnippetByStyle(opt.value, labelScriptPath),
+        'script', 'javascript',
+      ));
   }
-  const variant = buildReactNonScriptVariant(sourceFileExt, fullPath);
+  const variant = buildReactNonScriptVariant(sourceFileExt, fullPath, labelFullPath);
   return variant ? [variant] : [];
 }
 
@@ -151,17 +182,29 @@ function buildJsxVariants(
 function buildTsxVariants(
   sourceFileExt: FileExtension,
   scriptPath: string,
+  labelScriptPath: string,
   fullPath: string,
+  labelFullPath: string,
 ): ImportSnippetVariant[] {
   if (sourceFileExt === '.ts' || sourceFileExt === '.tsx') {
     return TYPESCRIPT_IMPORT_OPTIONS.map(opt =>
-      toStyledVariant(opt, buildTypeScriptImportSnippetByStyle(opt.value, scriptPath), 'script', 'typescript'));
+      toStyledVariant(
+        opt,
+        buildTypeScriptImportSnippetByStyle(opt.value, scriptPath),
+        buildTypeScriptImportSnippetByStyle(opt.value, labelScriptPath),
+        'script', 'typescript',
+      ));
   }
   if (sourceFileExt === '.js') {
     return JAVASCRIPT_IMPORT_OPTIONS.map(opt =>
-      toStyledVariant(opt, buildJavaScriptImportSnippetByStyle(opt.value, scriptPath), 'script', 'javascript'));
+      toStyledVariant(
+        opt,
+        buildJavaScriptImportSnippetByStyle(opt.value, scriptPath),
+        buildJavaScriptImportSnippetByStyle(opt.value, labelScriptPath),
+        'script', 'javascript',
+      ));
   }
-  const variant = buildReactNonScriptVariant(sourceFileExt, fullPath);
+  const variant = buildReactNonScriptVariant(sourceFileExt, fullPath, labelFullPath);
   return variant ? [variant] : [];
 }
 
@@ -171,7 +214,11 @@ function buildTsxVariants(
  * isn't one the JSX/TSX non-script branch handles — gating in
  * `commands/paste-import.ts` will toast `'not-supported'`.
  */
-function buildReactNonScriptVariant(sourceFileExt: FileExtension, fullPath: string): ImportSnippetVariant | null {
+function buildReactNonScriptVariant(
+  sourceFileExt: FileExtension,
+  fullPath: string,
+  labelFullPath: string,
+): ImportSnippetVariant | null {
   switch (sourceFileExt) {
     case '.gif':
     case '.jpeg':
@@ -183,26 +230,40 @@ function buildReactNonScriptVariant(sourceFileExt: FileExtension, fullPath: stri
     case '.yml':
     case '.yaml':
     case '.md':
-      return toHardcodedVariant(new vscode.SnippetString(`import \${1:name} from '${fullPath}';`));
+      return toHardcodedVariant(
+        new vscode.SnippetString(`import \${1:name} from '${fullPath}';`),
+        new vscode.SnippetString(`import \${1:name} from '${labelFullPath}';`),
+      );
     case '.woff':
     case '.woff2':
     case '.ttf':
     case '.eot':
     case '.css':
     case '.scss':
-      return toHardcodedVariant(new vscode.SnippetString(`import '${fullPath}';`));
+      return toHardcodedVariant(
+        new vscode.SnippetString(`import '${fullPath}';`),
+        new vscode.SnippetString(`import '${labelFullPath}';`),
+      );
     default:
       return null;
   }
 }
 
 /** CSS destination — image source is hardcoded `url(...)`; everything else iterates CSS options. */
-function buildCssVariants(sourceFilePath: string, fullPath: string): ImportSnippetVariant[] {
+function buildCssVariants(sourceFilePath: string, fullPath: string, labelFullPath: string): ImportSnippetVariant[] {
   if (determineImportType(sourceFilePath) === 'image') {
-    return [toHardcodedVariant(buildCssImageImportSnippet(fullPath))];
+    return [toHardcodedVariant(
+      buildCssImageImportSnippet(fullPath),
+      buildCssImageImportSnippet(labelFullPath),
+    )];
   }
   return CSS_IMPORT_OPTIONS.map(opt =>
-    toStyledVariant(opt, buildCssImportSnippetByStyle(opt.value, fullPath), 'stylesheet', 'css'));
+    toStyledVariant(
+      opt,
+      buildCssImportSnippetByStyle(opt.value, fullPath),
+      buildCssImportSnippetByStyle(opt.value, labelFullPath),
+      'stylesheet', 'css',
+    ));
 }
 
 /**
@@ -214,63 +275,94 @@ function buildScssVariants(
   sourceFilePath: string,
   relativePath: string,
   fullPath: string,
+  labelFullPath: string,
 ): ImportSnippetVariant[] {
   if (determineImportType(sourceFilePath) === 'image') {
-    return [toHardcodedVariant(buildCssImageImportSnippet(fullPath))];
+    return [toHardcodedVariant(
+      buildCssImageImportSnippet(fullPath),
+      buildCssImageImportSnippet(labelFullPath),
+    )];
   }
   const scssPath = prepareScssImportPath(sourceFilePath, relativePath);
+  const labelScssPath = path.basename(scssPath);
   return SCSS_IMPORT_OPTIONS.map(opt =>
-    toStyledVariant(opt, buildScssImportSnippetByStyle(opt.value, scssPath), 'stylesheet', 'scss'));
+    toStyledVariant(
+      opt,
+      buildScssImportSnippetByStyle(opt.value, scssPath),
+      buildScssImportSnippetByStyle(opt.value, labelScssPath),
+      'stylesheet', 'scss',
+    ));
 }
 
 /** HTML destination — every branch is hardcoded; classification picks `<script>`/`<img>`/`<link>`. */
-function buildHtmlVariants(sourceFilePath: string, fullPath: string): ImportSnippetVariant[] {
+function buildHtmlVariants(sourceFilePath: string, fullPath: string, labelFullPath: string): ImportSnippetVariant[] {
   switch (determineImportType(sourceFilePath)) {
     case 'script':
-      return [toHardcodedVariant(buildHtmlScriptImportSnippet(fullPath))];
+      return [toHardcodedVariant(
+        buildHtmlScriptImportSnippet(fullPath),
+        buildHtmlScriptImportSnippet(labelFullPath),
+      )];
     case 'image':
-      return [toHardcodedVariant(buildHtmlImageImportSnippet(fullPath))];
+      return [toHardcodedVariant(
+        buildHtmlImageImportSnippet(fullPath),
+        buildHtmlImageImportSnippet(labelFullPath),
+      )];
     case 'stylesheet':
-      return [toHardcodedVariant(buildHtmlStylesheetImportSnippet(fullPath))];
+      return [toHardcodedVariant(
+        buildHtmlStylesheetImportSnippet(fullPath),
+        buildHtmlStylesheetImportSnippet(labelFullPath),
+      )];
     default:
       return [];
   }
 }
 
 /** Markdown destination — text source is the hardcoded inline-link shape; image source iterates the two image options. */
-function buildMarkdownVariants(sourceFilePath: string, fullPath: string): ImportSnippetVariant[] {
+function buildMarkdownVariants(sourceFilePath: string, fullPath: string, labelFullPath: string): ImportSnippetVariant[] {
   switch (determineImportType(sourceFilePath)) {
     case 'markdown':
-      return [toHardcodedVariant(buildMarkdownImportSnippet(fullPath))];
+      return [toHardcodedVariant(
+        buildMarkdownImportSnippet(fullPath),
+        buildMarkdownImportSnippet(labelFullPath),
+      )];
     case 'image':
       return MARKDOWN_IMAGE_IMPORT_OPTIONS.map(opt =>
-        toStyledVariant(opt, buildMarkdownImageImportSnippetByStyle(opt.value, fullPath), 'markup', 'markdownImage'));
+        toStyledVariant(
+          opt,
+          buildMarkdownImageImportSnippetByStyle(opt.value, fullPath),
+          buildMarkdownImageImportSnippetByStyle(opt.value, labelFullPath),
+          'markup', 'markdownImage',
+        ));
     default:
       return [];
   }
 }
 
-/** Wraps a styled (table-driven) snippet result with its `tag` (or `description` fallback) and the `(namespace, key)` of the backing `package.json` setting. */
+/** Wraps a styled (table-driven) snippet result with its `tag` (or `description` fallback) and the `(namespace, key)` of the backing `package.json` setting. The `insertSnippet` carries the full relative path; `labelSnippet` carries the basename-only path used for the picker preview. */
 function toStyledVariant(
   opt: ImportStyle,
-  snippet: vscode.SnippetString,
+  insertSnippet: vscode.SnippetString,
+  labelSnippet: vscode.SnippetString,
   namespace: AutoImportConfigNamespace,
   key: AutoImportSettingKey,
 ): ImportSnippetVariant {
   return {
-    label: renderLabel(snippet.value),
+    label: renderLabel(labelSnippet.value),
     description: opt.tag ?? opt.description,
-    snippetText: snippet.value,
+    snippetText: insertSnippet.value,
     setting: { namespace, key, value: opt.description },
   };
 }
 
-/** Wraps a hardcoded single-shape snippet — `description` is empty since the picker short-circuits at length === 1. */
-function toHardcodedVariant(snippet: vscode.SnippetString): ImportSnippetVariant {
+/** Wraps a hardcoded single-shape snippet — `description` is empty since the picker short-circuits at length === 1. The `insertSnippet` carries the full relative path; `labelSnippet` is the basename-only preview (only relevant if the variant ever reaches the picker, which today it doesn't — kept symmetric with `toStyledVariant`). */
+function toHardcodedVariant(
+  insertSnippet: vscode.SnippetString,
+  labelSnippet: vscode.SnippetString,
+): ImportSnippetVariant {
   return {
-    label: renderLabel(snippet.value),
+    label: renderLabel(labelSnippet.value),
     description: '',
-    snippetText: snippet.value,
+    snippetText: insertSnippet.value,
   };
 }
 

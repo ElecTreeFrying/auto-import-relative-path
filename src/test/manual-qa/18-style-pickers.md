@@ -23,6 +23,10 @@ Validates the two QuickPick-driven commands. Both share the gating in 15 and the
 
 Reset all five styled settings to their defaults before this file. Tests below mutate `*ImportStyle` settings — restore defaults at the end so 19-… (if any) starts clean.
 
+### Label vs insertion convention
+
+The picker shows the path as a **basename** (`'foo'`, `'widget'`, `'logo.png'`) — never the full relative path — to keep labels short and width-stable across nesting depth. The actual *inserted* snippet uses the real relative path (`'./foo'`, `'../components/widget'`, `'../assets/logo.png'`), regardless of what the label showed. So when a test below says "pick `import name from 'foo';`", the user sees that label in the picker but `import { name } from './foo';` (or whatever the real path is) gets inserted. The persisted-setting value (used by `setDefaultImportStyle`) is the byte-exact template from `package.json:enum` — `import name from '_relativePath_';` etc. — independent of label rendering.
+
 ## Discovery
 
 - [ ] **Command Palette — `pasteImportWithStyle`.** Open `src/bar.ts`. Copy `src/foo.ts`. `Cmd/Ctrl+Shift+P` → type `Auto Import` → confirm `Auto Import: Paste as Import (Pick Style)` is listed. Run it. **Expect:** QuickPick opens.
@@ -33,35 +37,36 @@ Reset all five styled settings to their defaults before this file. Tests below m
 
 For each pair below, run **both** commands back-to-back without changing the source/destination, and confirm the QuickPick lists are identical (same labels, same `description` tags, same order). Cancel with Esc each time so settings don't drift.
 
-- [ ] `.ts → .ts`: copy `src/foo.ts`, focus `src/bar.ts`. **Expect:** 5 items, top entry `import name from './foo';` (TS default-import shape).
-- [ ] `.js → .js`: copy `src/sibling.js`, focus `src/badge.jsx` then a `.js` file (`with-requires.js`). **Expect:** 9 items, top entry `import name from '<path>';`.
-- [ ] `.css → .css`: copy `styles/_partial.scss` is wrong here (different ext); copy `styles/global.css`, focus `styles/main.css` (or another `.css`). **Expect:** 2 items: `@import '<path>';` and `@import url('<path>');`.
-- [ ] `.scss → .scss`: copy `styles/_partial.scss`, focus `styles/main.scss`. **Expect:** 4 items: two `@import` shapes + two `@use` shapes (`as *` variant included).
-- [ ] `.png → .md`: copy `assets/logo.png`, focus `docs/README.md` (Markdown image branch). **Expect:** 2 items — inline `![alt-text](…)` and reference-style.
+- [ ] `.ts → .ts`: copy `src/foo.ts`, focus `src/bar.ts`. **Expect:** 5 items, top entry `import name from 'foo';` (TS default-import shape — note basename, not `'./foo'`).
+- [ ] `.js → .js`: copy `src/sibling.js`, focus a `.js` file (`with-requires.js`). **Expect:** 9 items, top entry `import name from 'sibling';` (basename only).
+- [ ] `.css → .css`: copy `styles/global.css`, focus `styles/main.css` (or another `.css`). **Expect:** 2 items: `@import 'global.css';` and `@import url('global.css');` (basename includes `.css` since stylesheets always preserve the extension on the path).
+- [ ] `.scss → .scss`: copy `styles/_partial.scss`, focus `styles/main.scss`. **Expect:** 4 items, all rendering the partial as `'partial'` (leading `_` stripped *and* basename collapsed): `@import 'partial';`, `@import url('partial');`, `@use 'partial';`, `@use 'partial' as *;`.
+- [ ] `.png → .md`: copy `assets/logo.png`, focus `docs/README.md` (Markdown image branch). **Expect:** 2 items — inline `![alt-text](logo.png "Hover text")` and reference-style `![alt-text][image] / [image]: logo.png "Hover text"`.
 - [ ] **Same picker, same items.** For one of the pairs above, run `pasteImportWithStyle`, scroll the items, then Esc. Immediately run `setDefaultImportStyle`. **Expect:** the lists scroll identically.
 
 ## `setDefaultImportStyle` — current-default indicator
 
 The `setDefaultImportStyle` picker reorders the variant matching the persisted setting to position 0 and appends `$(check) Current default` to its description (VS Code renders `$(check)` as a checkmark icon). `pasteImportWithStyle` does **not** reorder or mark — it always renders variants in their natural table order.
 
-- [ ] **Default TS shape is first and marked.** Reset `typescriptImportStyle` to `import { name } from '_relativePath_';` (the package.json default). `.ts → .ts` setup. Run `setDefaultImportStyle`. **Expect:**
-  - Top item (position 0) has label `import { name } from './foo';`.
+- [ ] **Default TS shape is first and marked.** Reset `typescriptImportStyle` to `import { name } from '_relativePath_';` (the package.json default). `.ts → .ts` setup (copy `src/foo.ts`, focus `src/bar.ts`). Run `setDefaultImportStyle`. **Expect:**
+  - Top item (position 0) has label `import { name } from 'foo';` (basename).
   - Top item's description ends with a checkmark icon and the text `Current default`.
   - The other 4 TS variants follow in their natural `_styles.ts` order.
   - Esc to close — no setting change.
-- [ ] **Default JS shape is first and marked.** Reset `javascriptImportStyle` to `import name from '_relativePath_';`. `.js → .js` setup. Run. **Expect:** top item label `import name from './foo';` with the checkmark indicator on its description; remaining 8 JS variants follow.
-- [ ] **Indicator follows the persisted value.** With `.ts → .ts` setup, run `setDefaultImportStyle`, pick `import * as name from '_relativePath_';` (namespace import). The toast confirms the save. Run `setDefaultImportStyle` again. **Expect:** the namespace shape (`import * as name from './foo';`) is now at position 0 with the `$(check) Current default` indicator. The previous default (`import { name } from '_relativePath_';`) drops back into its natural-order slot without an indicator. Esc to close.
-- [ ] **`pasteImportWithStyle` does NOT reorder.** With the namespace shape persisted (from the previous test), `.ts → .ts` setup. Run `pasteImportWithStyle`. **Expect:** items render in their natural order — top item is the default-import shape (`import name from './foo';`), not the namespace shape. **No** `$(check) Current default` indicator on any item. The pick-style command is style-agnostic about the persisted setting.
-- [ ] **Indicator survives across destination kinds.** With CSS default `@import '_relativePath_';` set, `.css → .css` setup. Run `setDefaultImportStyle`. **Expect:** top item is the quoted-path `@import` with the indicator; the `url()` variant is second without indicator.
+- [ ] **Default JS shape is first and marked.** Reset `javascriptImportStyle` to `import name from '_relativePath_';`. `.js → .js` setup. Run. **Expect:** top item label `import name from 'sibling';` (basename) with the checkmark indicator on its description; remaining 8 JS variants follow.
+- [ ] **Indicator follows the persisted value.** With `.ts → .ts` setup, run `setDefaultImportStyle`, pick the entry labeled `import * as name from 'foo';` (namespace import). The toast confirms save with `import * as name from '_relativePath_';` (the *template*, not the basename). Run `setDefaultImportStyle` again. **Expect:** the namespace shape (`import * as name from 'foo';`) is now at position 0 with the `$(check) Current default` indicator. The previous default (`import { name } from 'foo';`) drops back into its natural-order slot without an indicator. Esc to close.
+- [ ] **`pasteImportWithStyle` does NOT reorder.** With the namespace shape persisted (from the previous test), `.ts → .ts` setup. Run `pasteImportWithStyle`. **Expect:** items render in their natural order — top item is the default-import shape (`import name from 'foo';`), not the namespace shape. **No** `$(check) Current default` indicator on any item. The pick-style command is style-agnostic about the persisted setting.
+- [ ] **Indicator survives across destination kinds.** With CSS default `@import '_relativePath_';` set, `.css → .css` setup. Run `setDefaultImportStyle`. **Expect:** top item is the quoted-path `@import 'global.css';` with the indicator; the `url()` variant `@import url('global.css');` is second without indicator.
 - [ ] **No-match graceful fallback.** Open `settings.json` directly and set `auto-import.importStatement.script.typescriptImportStyle` to a typo'd value (e.g. `import name from'_relativePath_'` — missing space). `.ts → .ts` setup. Run `setDefaultImportStyle`. **Expect:** picker opens in natural order, no `$(check) Current default` indicator on any item. Picking any valid entry restores the setting to a known shape. Restore the default after.
 
 After this section: restore `typescriptImportStyle`, `javascriptImportStyle`, `cssImportStyle` to their package.json defaults before continuing.
 
 ## `pasteImportWithStyle` — one-shot insert
 
-- [ ] **Pick the destructured shape.** `.ts → .ts` setup (copy `src/foo.ts`, focus `src/bar.ts`). Run `pasteImportWithStyle`, pick `import { name } from './foo';`. **Expect:** that exact shape is inserted. **The persisted `typescriptImportStyle` setting is unchanged** (verify via `Cmd/Ctrl+,` → search `typescriptImportStyle` → still default).
-- [ ] **Pick the namespace shape.** Same setup. Run again, pick `import * as name from './foo';`. **Expect:** that shape inserted. Setting still unchanged.
-- [ ] **Pick a CommonJS shape (JS).** `.js → .js` setup. Run, pick `const name = require('<path>');`. **Expect:** that shape inserted; `javascriptImportStyle` setting still the default.
+- [ ] **Pick the destructured shape.** `.ts → .ts` setup (copy `src/foo.ts`, focus `src/bar.ts`). Run `pasteImportWithStyle`, pick the entry labeled `import { name } from 'foo';`. **Expect:** `import { name } from './foo';` inserted (full relative path, not basename). **The persisted `typescriptImportStyle` setting is unchanged** (verify via `Cmd/Ctrl+,` → search `typescriptImportStyle` → still default).
+- [ ] **Pick the namespace shape.** Same setup. Run again, pick the entry labeled `import * as name from 'foo';`. **Expect:** `import * as name from './foo';` inserted. Setting still unchanged.
+- [ ] **Pick a CommonJS shape (JS).** `.js → .js` setup. Run, pick the entry labeled `const name = require('sibling');`. **Expect:** `const name = require('./sibling');` inserted; `javascriptImportStyle` setting still the default.
+- [ ] **Deeply nested source.** Open `src/widget.tsx`, copy `deeply/nested/components/widgets/deep-widget.tsx`. Run `pasteImportWithStyle`. **Expect:** picker labels read `import name from 'deep-widget';` (basename, not `'../../deeply/nested/components/widgets/deep-widget'`) — confirms width stays bounded. Pick any shape; the inserted snippet uses the full relative path.
 - [ ] **Cancel with Esc.** Run, scroll a couple of items, press Esc. **Expect:** no insertion, no toast, settings unchanged.
 
 ### Single-variant fast path (no picker shown)
