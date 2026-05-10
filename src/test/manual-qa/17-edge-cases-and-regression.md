@@ -140,7 +140,7 @@ A quick final smoke pass to confirm nothing broke:
 - [ ] In the project root, run `npm run check-types`. **Expect:** no errors.
 - [ ] Run `npm run lint`. **Expect:** no errors.
 - [ ] Run `npm run compile`. **Expect:** clean build, `dist/extension.js` produced.
-- [ ] Run `npm test` (Mocha smoke). **Expect:** the single existing test (`extension activation registers the three auto-import commands`) passes.
+- [ ] Run `npm test` (Mocha smoke). **Expect:** the activation test (`extension activation registers the five auto-import commands`) passes alongside the per-language `buildXImportSnippetByStyle` suites.
 
 ## Sign-off
 

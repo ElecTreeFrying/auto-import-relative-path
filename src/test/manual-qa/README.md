@@ -41,6 +41,7 @@ If a checkbox fails, do not proceed past that file. Reproduce the failure, captu
 | 15 | `15-gating-and-rejection.md` | All 8 gating clauses isolated |
 | 16 | `16-path-computation.md` | `./`, `../`, partials, spaces/unicode |
 | 17 | `17-edge-cases-and-regression.md` | Empty file, untitled, multi-root, stress, 0.6.1 regression |
+| 18 | `18-style-pickers.md` | `pasteImportWithStyle` + `setDefaultImportStyle` — picker UX, persistence, hardcoded-destination rejection |
 
 ## Fixtures
 
@@ -119,6 +120,7 @@ Tick when each file is fully passed.
 - [ ] 15 — Gating & rejection
 - [ ] 16 — Path computation
 - [ ] 17 — Edge cases & regression
+- [ ] 18 — Style pickers (paste-with-style + set-default-style)
 
 **Tester:** ____________________
 **Date:** ____________________
