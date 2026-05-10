@@ -17,11 +17,11 @@ Final checklist. Validates uncommon scenarios, stress conditions, and explicit r
 - [ ] **Comments-only destination, placement = Bottom.** Open `comments-only.ts`. Set `placement = Bottom`. Paste.
   **Expect:** snippet lands AFTER the line containing `// I want to import bar later` (heuristic false-positive — documented).
 
-- [ ] **Whitespace-only file.** Create `printf "\n\n\n" > test-workspace/whitespace.ts`. Open it. Paste with `placement = Top`.
-  **Expect:** snippet at line 0, displacing the existing newlines. Cleanup.
+- [ ] **Whitespace-only file.** Open `whitespace-only.ts` (3 newlines, ships in workspace). Paste with `placement = Top`.
+  **Expect:** snippet at line 0, displacing the existing newlines.
 
-- [ ] **Single character file.** `echo "x" > test-workspace/single.ts`. Open. Paste with `placement = Cursor`, cursor at end.
-  **Expect:** snippet inserted at the cursor's line. Cleanup.
+- [ ] **Single character file.** Open `single-char.ts` (1 byte: `x\n`, ships in workspace). Paste with `placement = Cursor`, cursor at end.
+  **Expect:** snippet inserted at the cursor's line.
 
 ## Untitled (unsaved) destination
 
@@ -40,20 +40,21 @@ Final checklist. Validates uncommon scenarios, stress conditions, and explicit r
 
 ## Read-only file
 
-- [ ] Make a file read-only: `chmod 444 src/readonly.ts; echo "" > src/readonly.ts`. Open. Paste.
-  **Expect:** VS Code prevents the insertion (read-only error). Extension itself shouldn't crash. Cleanup: `chmod 644 src/readonly.ts; rm src/readonly.ts`.
+- [ ] **Construct a read-only file** at the workspace root: `touch src/readonly.ts; chmod 444 src/readonly.ts`. Open it. Paste.
+  **Expect:** VS Code prevents the insertion (read-only error). Extension itself shouldn't crash. **Cleanup:** `chmod 644 src/readonly.ts; rm src/readonly.ts`.
 
 ## Multi-root workspace
 
-- [ ] Create a second folder: `mkdir -p ~/test-workspace-2/src; echo "" > ~/test-workspace-2/src/extern.ts`.
-- [ ] In the Extension Development Host, **File → Add Folder to Workspace…** → add `~/test-workspace-2/`.
-- [ ] Save the multi-root workspace as `multi.code-workspace`.
-- [ ] Copy `extern.ts` from the second root → paste into `test-workspace/src/foo.ts`.
-  **Expect:** absolute path computation works across root boundaries. Path likely is `'../../test-workspace-2/src/extern'` (or however the OS-level relative path resolves).
+This needs a *second* folder unrelated to `manual-qa-workspace/`. Construct it outside the repo so it doesn't clutter the fixture tree:
 
-- [ ] Verify cross-root same-file rejection: copy `test-workspace-2/src/extern.ts` from the second root, paste into the same file. **Expect:** "Same file path."
+- [ ] Create a second folder: `mkdir -p ~/multi-root-test/src; touch ~/multi-root-test/src/extern.ts`.
+- [ ] In the EDH, **File → Add Folder to Workspace…** → add `~/multi-root-test/`. (Both `manual-qa-workspace/` and `multi-root-test/` are now top-level roots.)
+- [ ] Save the multi-root workspace as `~/multi-root-test/multi.code-workspace` (or anywhere — VS Code will prompt).
+- [ ] Copy `extern.ts` from the second root → paste into `src/foo.ts` of the *first* root (the fixture workspace). **Expect:** absolute path computation works across root boundaries; the resulting path resolves up out of `manual-qa-workspace/` and back down into `multi-root-test/` (exact form depends on where each root lives on disk).
 
-- [ ] Cleanup: remove the second folder from workspace and delete `~/test-workspace-2/`.
+- [ ] **Cross-root same-file rejection:** copy `~/multi-root-test/src/extern.ts`, paste into the same file. **Expect:** warning toast `Auto Import: A file cannot import itself.`.
+
+- [ ] **Cleanup:** remove the second folder from the workspace and `rm -rf ~/multi-root-test`.
 
 ## Multi-cursor mode in destination
 
@@ -73,8 +74,11 @@ Final checklist. Validates uncommon scenarios, stress conditions, and explicit r
 - [ ] **Setting toggle mid-flight.** With `placement = Top`, paste once. Immediately change to `Bottom` (without reload). Paste again.
   **Expect:** second paste at Bottom. No reload required.
 
-- [ ] **Source file deleted between copy and paste.** Copy `src/foo.ts` → delete `foo.ts` → paste.
-  **Expect:** path computation still produces something (the path is just text — the source file's existence isn't checked at paste time). The inserted import will reference a non-existent file, but that's a user concern.
+- [ ] **Source file deleted between copy and paste.** Copy `src/foo.ts` (clipboard now holds its absolute path). Delete the file from a terminal: `rm src/test/manual-qa-workspace/src/foo.ts` (run from the repo root). Back in the EDH, paste into `src/bar.ts`.
+  **Expect:** warning toast `Auto Import: Source file no longer exists: foo.ts.` — `paste-import.ts:70-74` runs `vscode.workspace.fs.stat` after the same-file check and fires the `'source-not-found'` notification when the file is gone. Editor unchanged. **Cleanup:** `git checkout src/test/manual-qa-workspace/src/foo.ts` (also from the repo root).
+
+- [ ] **Extreme-depth path stress.** Open `very-deep/level-01/level-02/level-03/level-04/level-05/level-06/level-07/level-08/level-09/extreme-leaf.ts`. Copy `src/foo.ts`. Paste.
+  **Expect:** snippet inserted with a 9-level relative path (`'../../../../../../../../../src/foo'`). Verifies the path-math layer doesn't choke on extreme traversal depth.
 
 ## Workspace events
 
@@ -114,7 +118,7 @@ Re-verify (this is duplicated from `02-bug-fix-verification.md` as a final regre
 - [ ] **Bug #1.** SCSS style 3 → `@use './partial' as ${1:*};` with `*` default and `;`. (Pick one case.)
 - [ ] **Bug #2.** TS style 1, preserveScriptFileExtension=true, `app-root.component.ts` → `import { AppRootComponent } from './components/app-root.component.ts';` (NOT `AppRootComponentTs`).
 - [ ] **Bug #3.** TS style 2 → `import { default as $1 } from './foo';` (literal `default`, single placeholder).
-- [ ] **Bug #4.** Auto command on `src/foo.ts` into `src/bar.ts` works deterministically across 10 rapid invocations.
+- [ ] **Bug #4.** Auto command on `src/foo.ts` into `src/bar.ts` works deterministically across 10 rapid invocations. Additionally verify: with no Explorer selection, `Alt+D` fires only the `'no-file-to-copy'` toast and `paste-import` is not invoked (`copy-paste.ts:6-8` short-circuit).
 
 ## Manual smoke test of all 8 destination types
 
@@ -140,11 +144,11 @@ A quick final smoke pass to confirm nothing broke:
 
 ## Sign-off
 
-- [ ] Empty/degenerate destinations (4 cases)
+- [ ] Empty/degenerate destinations (4 cases via `empty-file.ts`, `comments-only.ts`, `whitespace-only.ts`, `single-char.ts`)
 - [ ] Untitled / Diff editor / Read-only (3 cases)
 - [ ] Multi-root workspace (3 cases)
 - [ ] Multi-cursor mode
-- [ ] Stress / rapid-fire (4 cases)
+- [ ] Stress / rapid-fire (5 cases incl. extreme-depth via `very-deep/.../extreme-leaf.ts`)
 - [ ] Workspace events (2 cases)
 - [ ] Setting persistence
 - [ ] CHANGELOG 0.6.1 regression (3 cases)

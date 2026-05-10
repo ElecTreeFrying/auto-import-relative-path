@@ -30,15 +30,15 @@ Validates SCSS-snippet generation. SCSS supports four shapes (`@import`, `@impor
 | `assets/photo.jpeg` | ✅ `url(...)` |
 | `assets/photo.jpg` | ✅ `url(...)` |
 | `assets/thumb.webp` | ✅ `url(...)` |
-| `src/foo.ts` | ❌ Not supported |
-| `src/sibling.js` | ❌ Not supported |
-| `pages/index.html` | ❌ Not supported |
-| `docs/README.md` | ❌ Not supported |
-| `data/config.json` | ❌ Not supported |
-| `assets/font.woff2` | ❌ Not supported |
-| `assets/icon.svg` | ❌ Not supported |
+| `src/foo.ts` | ❌ `Auto Import: Cannot import .ts into .scss files.` |
+| `src/sibling.js` | ❌ `Auto Import: Cannot import .js into .scss files.` |
+| `pages/index.html` | ❌ `Auto Import: Cannot import .html into .scss files.` |
+| `docs/README.md` | ❌ `Auto Import: Cannot import .md into .scss files.` |
+| `data/config.json` | ❌ `Auto Import: Cannot import .json into .scss files.` |
+| `assets/font.woff2` | ❌ `Auto Import: Cannot import .woff2 into .scss files.` |
+| `assets/icon.svg` | ❌ `Auto Import: Cannot import .svg into .scss files.` |
 
-- [ ] All 17 cases match.
+- [ ] All 17 cases match — both extensions appear verbatim in the parameterized toast.
 
 ## Style options — all 4 SCSS shapes
 
@@ -123,7 +123,7 @@ Wait — re-check: the rule is `sourceFileExt !== '.scss' && destinationFileExt 
 
 ## Edge cases
 
-- [ ] **Self-import.** Copy `styles/main.scss`, paste into itself → "Same file path."
+- [ ] **Self-import.** Copy `styles/main.scss`, paste into itself → `Auto Import: A file cannot import itself.`
 - [ ] **Empty SCSS file.** Snippet at line 0.
 - [ ] **`@use` with custom prefix retained on Tab.** Set style 3, copy `_partial.scss`, paste, type `vars`, Tab → result: `@use './partial' as vars;`
 

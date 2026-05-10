@@ -18,7 +18,7 @@ Validates `executeCopyPaste` — the sequential `await executeCopyFilePath(); aw
 
 - [ ] **Single Auto.** Open `src/bar.ts` (active editor). In Explorer, click `src/foo.ts` (single click — selected, not opened). Press `Alt+D`.
   **Expect:**
-  - Toast: `Auto Import: Copied foo.ts`
+  - Info toast: `Auto Import: Copied path — foo.ts`
   - `src/bar.ts` now contains `import { $1 } from './foo';`
   - Clipboard contains the absolute path of `foo.ts`
 
@@ -50,28 +50,43 @@ The fix awaits `executeCommand('copyFilePath')` and `clipboard.writeText` so pas
 - [ ] **`alt+d` from Explorer triggers.** Click in the Explorer pane. Press `Alt+D`.
   **Expect:** Auto runs.
 
-- [ ] **Palette invocation works regardless of focus.** `Cmd/Ctrl+Shift+P` → `Auto Import: Auto`. With editor focused. Verify it runs.
+- [ ] **Palette invocation works regardless of focus.** `Cmd/Ctrl+Shift+P` → `Auto Import: Insert Import from Selected File`. With editor focused. Verify it runs.
 
-## Behavior when paste rejects
+## Behavior when paste rejects (copy still succeeds)
 
-`executeCopyPaste` runs paste even if paste would produce a "Not supported" toast. The copy phase still updates the clipboard.
+`executeCopyPaste` only runs paste when copy succeeds (`copy-paste.ts:6-8` short-circuits on `false`). When copy succeeds but paste's gating rejects, you get the copy-success toast first, then the paste-side warning. Clipboard is updated either way.
 
 - [ ] **Mismatched pair.** `src/bar.ts` open. In Explorer, click `pages/index.html` → `Alt+D`.
   **Expect:**
-  - Copy succeeds (toast: `Copied index.html`).
-  - Paste fails (toast: `Not supported.`) because `.ts` destination requires `.ts` source.
+  - Copy: info toast `Auto Import: Copied path — index.html`.
+  - Paste: warning toast `Auto Import: Cannot import .html into .ts files.` because `.ts` destination is not in `CROSS_IMPORT_DESTINATIONS` and source ext (`.html`) ≠ `.ts`.
   - Clipboard now has `index.html`'s path (next paste will use this).
 
 - [ ] **Self-target.** `src/foo.ts` open. Click `src/foo.ts` in Explorer → `Alt+D`.
   **Expect:**
-  - Copy: `Copied foo.ts`.
-  - Paste: `Same file path.` toast (same-file rejection).
+  - Copy: info toast `Auto Import: Copied path — foo.ts`.
+  - Paste: warning toast `Auto Import: A file cannot import itself.` (same-file rejection — fires before gating).
   - Editor unchanged.
 
 ## No-active-editor scenario
 
 - [ ] **Close all editors, then Auto from Explorer.** Close all open editor tabs. Click `src/foo.ts` in Explorer → `Alt+D`.
-  **Expect:** Copy succeeds (toast); paste returns silently (no "Not supported" toast — it just exits when there's no `activeTextEditor`). Clipboard updated.
+  **Expect:**
+  - Copy succeeds (info toast `Auto Import: Copied path — foo.ts`); clipboard updated.
+  - Paste fires the warning toast `Auto Import: Open a file to paste an import.` — the `'no-active-editor'` notification was previously a silent return; it now toasts so the user knows why nothing was inserted.
+
+## Copy fails → paste short-circuits
+
+When copy can't produce a usable path, `executeCopyFilePath` returns `false` and `copy-paste.ts:6-8` bails before paste runs. Verifies the new contract introduced alongside the `'no-file-to-copy'` notification.
+
+- [ ] **No Explorer selection.** Close all editors. Click an empty area of the Explorer (no file selected). Press `Alt+D`.
+  **Expect:**
+  - Single warning toast `Auto Import: No file selected to copy.`
+  - **No** subsequent "no active editor" or "not supported" toast — paste was never invoked.
+  - Clipboard untouched.
+
+- [ ] **Selection in Explorer but a non-file (e.g., a folder).** Click `src/components/` (a folder) in Explorer → `Alt+D`.
+  **Expect:** same — `'no-file-to-copy'` toast (the round-tripped clipboard fails the absolute-path-with-extension guard in `copy-file-path.ts:31-34`); paste short-circuited.
 
 ## Multiple files selected in Explorer
 
@@ -90,8 +105,9 @@ The fix awaits `executeCommand('copyFilePath')` and `clipboard.writeText` so pas
 - [ ] Sequential ordering (2 cases)
 - [ ] Race condition stress (3 cases) — Bug #4
 - [ ] Keybinding context (3 cases)
-- [ ] Paste rejection still updates clipboard (2 cases)
-- [ ] No-active-editor scenario
+- [ ] Paste rejection still updates clipboard (2 cases) — exact toast text matches the new parameterized format
+- [ ] No-active-editor toast fires (was silent — now warns)
+- [ ] Copy fails → paste short-circuits (2 cases) — `'no-file-to-copy'` only, no paste-side toast
 - [ ] Multi-select behavior documented
 - [ ] Auto vs manual sequence equivalence
 

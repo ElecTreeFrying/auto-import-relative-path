@@ -27,16 +27,16 @@ Validates CSS-snippet generation. CSS supports two `@import` shapes plus the `ur
 | `assets/photo.jpeg` | ✅ `url(...)` |
 | `assets/photo.jpg` | ✅ `url(...)` |
 | `assets/thumb.webp` | ✅ `url(...)` |
-| `styles/main.scss` | ❌ Not supported (`.scss` not in CSS_SUPPORTED) |
-| `src/foo.ts` | ❌ Not supported |
-| `src/sibling.js` | ❌ Not supported |
-| `pages/index.html` | ❌ Not supported |
-| `docs/README.md` | ❌ Not supported |
-| `data/config.json` | ❌ Not supported |
-| `assets/font.woff2` | ❌ Not supported |
-| `assets/icon.svg` | ❌ Not supported |
+| `styles/main.scss` | ❌ `Auto Import: Cannot import .scss into .css files.` (`.scss` not in CSS_SUPPORTED) |
+| `src/foo.ts` | ❌ `Auto Import: Cannot import .ts into .css files.` |
+| `src/sibling.js` | ❌ `Auto Import: Cannot import .js into .css files.` |
+| `pages/index.html` | ❌ `Auto Import: Cannot import .html into .css files.` |
+| `docs/README.md` | ❌ `Auto Import: Cannot import .md into .css files.` |
+| `data/config.json` | ❌ `Auto Import: Cannot import .json into .css files.` |
+| `assets/font.woff2` | ❌ `Auto Import: Cannot import .woff2 into .css files.` |
+| `assets/icon.svg` | ❌ `Auto Import: Cannot import .svg into .css files.` |
 
-- [ ] All 14 cases match.
+- [ ] All 14 cases match — both extensions appear verbatim in the parameterized toast.
 
 ## Style options — both CSS shapes
 
@@ -89,7 +89,7 @@ CSS destination + non-`.css` source forces cursor placement (see `editor/insert-
 
 ## Edge cases
 
-- [ ] **Self-import.** Open `styles/global.css`, copy itself, paste → "Same file path."
+- [ ] **Self-import.** Open `styles/global.css`, copy itself, paste → `Auto Import: A file cannot import itself.`
 - [ ] **Empty CSS file.** Create `touch styles/empty.css`. Paste into it. Snippet at line 0. Cleanup.
 
 ## Sign-off

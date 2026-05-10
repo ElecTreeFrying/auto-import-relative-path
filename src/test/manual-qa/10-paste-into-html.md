@@ -27,18 +27,18 @@ Validates HTML-snippet generation. HTML emits one of three fixed shapes (`<scrip
 | `assets/photo.jpeg` | ✅ `<img>` |
 | `assets/photo.jpg` | ✅ `<img>` |
 | `assets/thumb.webp` | ✅ `<img>` |
-| `pages/about.html` | ❌ Not supported (clause 2: html→html) |
-| `src/foo.ts` | ❌ Not supported |
-| `src/widget.tsx` | ❌ Not supported |
-| `src/badge.jsx` | ❌ Not supported |
-| `styles/main.scss` | ❌ Not supported |
-| `docs/README.md` | ❌ Not supported |
-| `data/config.json` | ❌ Not supported |
-| `data/config.yaml` | ❌ Not supported |
-| `assets/font.woff2` | ❌ Not supported |
-| `assets/icon.svg` | ❌ Not supported |
+| `pages/about.html` | ❌ `Auto Import: Cannot import .html into .html files.` (clause 2: html→html) |
+| `src/foo.ts` | ❌ `Auto Import: Cannot import .ts into .html files.` |
+| `src/widget.tsx` | ❌ `Auto Import: Cannot import .tsx into .html files.` |
+| `src/badge.jsx` | ❌ `Auto Import: Cannot import .jsx into .html files.` |
+| `styles/main.scss` | ❌ `Auto Import: Cannot import .scss into .html files.` |
+| `docs/README.md` | ❌ `Auto Import: Cannot import .md into .html files.` |
+| `data/config.json` | ❌ `Auto Import: Cannot import .json into .html files.` |
+| `data/config.yaml` | ❌ `Auto Import: Cannot import .yaml into .html files.` |
+| `assets/font.woff2` | ❌ `Auto Import: Cannot import .woff2 into .html files.` |
+| `assets/icon.svg` | ❌ `Auto Import: Cannot import .svg into .html files.` |
 
-- [ ] All 17 cases match.
+- [ ] All 17 cases match — both extensions appear verbatim in the parameterized toast.
 
 ## Snippet shapes — fixed (no configurable styles)
 
@@ -97,9 +97,9 @@ The `htmlScriptImportStyle` / `htmlImageImportStyle` / `htmlStyleSheetImportStyl
 ## Edge cases
 
 - [ ] **Self-import (html→html).** Copy `pages/index.html`, paste into itself.
-  **Expect:** "Same file path." (same-file check fires before clause 2).
+  **Expect:** `Auto Import: A file cannot import itself.` (same-file check fires before clause 2).
 - [ ] **Different `.html` source.** Copy `pages/about.html`, paste into `pages/index.html`.
-  **Expect:** "Not supported." (clause 2: `.html → .html` regardless of basenames).
+  **Expect:** `Auto Import: Cannot import .html into .html files.` (clause 2 — same extension on both sides, distinct files; same-file check did not match).
 - [ ] **Empty `.html` file.** Create `touch pages/empty.html`. Paste `.js` source.
   **Expect:** snippet at cursor (which is line 0, column 0). Cleanup.
 - [ ] **Inside a tag, mid-line.** Position cursor inside `<body>|</body>` (between the tags). Paste `.png`.

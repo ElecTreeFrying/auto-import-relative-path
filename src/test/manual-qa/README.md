@@ -6,15 +6,16 @@ A complete, sequential manual-QA pass for every code path in the extension. Walk
 
 Four real bugs were fixed in `src/snippets/scss.ts`, `src/snippets/typescript.ts`, `src/snippets/javascript.ts`, and `src/commands/copy-file-path.ts`. Before shipping, every code path is verified end-to-end — both the four fixes and every adjacent behavior they could have touched.
 
+0.7.0 also replaced the two generic warning toasts (`Same file path.`, `Not supported.`) with **seven specific, parameterized notifications** (six warning + one info) — see `src/editor/notification.ts` for the canonical text. Every test below quotes the *exact* expected toast string; testers should compare strings byte-for-byte, not just toast presence.
+
 ## How to run this
 
 1. **Install:** `npm install` (root of the project).
 2. **Compile:** `npm run compile` (must succeed before testing).
-3. **Build the fixture workspace:** follow `00-setup.md` exactly.
-4. **Launch the Extension Development Host:** press **F5** in the main project's VS Code window. A second VS Code window opens with the extension loaded from `dist/extension.js`.
-5. **Open the fixture workspace** in the Extension Development Host.
-6. **Walk files `01-…` → `17-…` in order.** Each file is self-contained: setup, tests, expected outcomes, optional "known limitations" callouts, and a per-file sign-off.
-7. **Sign off** in the master matrix at the bottom of this README.
+3. **Launch the Extension Development Host:** press **F5** in the main project's VS Code window. A second VS Code window opens with the extension loaded from `dist/extension.js`.
+4. **Open the fixture workspace:** in the EDH window, **File → Open Folder…** → `<this-repo>/src/test/manual-qa-workspace/`. (Step-by-step in `00-setup.md`.) The fixtures are pre-built — you don't construct anything.
+5. **Walk files `01-…` → `17-…` in order.** Each file is self-contained: setup, tests, expected outcomes, optional "known limitations" callouts, and a per-file sign-off. Every path quoted in a checklist is **relative to the workspace root** (`src/foo.ts` means `manual-qa-workspace/src/foo.ts`).
+6. **Sign off** in the master matrix at the bottom of this README.
 
 If a checkbox fails, do not proceed past that file. Reproduce the failure, capture the steps, then triage.
 
@@ -22,7 +23,7 @@ If a checkbox fails, do not proceed past that file. Reproduce the failure, captu
 
 | # | File | Why |
 |---|------|-----|
-| — | `00-setup.md` | Build the fixture workspace once before anything else |
+| — | `00-setup.md` | Open the pre-built fixture workspace in the EDH |
 | 01 | `01-sanity-and-keybindings.md` | If activation/keybindings are broken, nothing downstream is meaningful |
 | 02 | `02-bug-fix-verification.md` | Priority 1 — verify the 4 fixes from this session |
 | 03 | `03-copy-command.md` | Copy is the prerequisite for every Paste test |
@@ -41,40 +42,31 @@ If a checkbox fails, do not proceed past that file. Reproduce the failure, captu
 | 16 | `16-path-computation.md` | `./`, `../`, partials, spaces/unicode |
 | 17 | `17-edge-cases-and-regression.md` | Empty file, untitled, multi-root, stress, 0.6.1 regression |
 
-## Fixture map (built in `00-setup.md`)
+## Fixtures
 
-```
-test-workspace/
-├── src/
-│   ├── foo.ts, bar.ts, helpers.ts
-│   ├── sibling.js, other.js
-│   ├── widget.tsx, badge.jsx
-│   └── components/
-│       ├── app-root.component.ts
-│       ├── auth.module.ts
-│       ├── highlight.directive.ts
-│       ├── trim.pipe.ts
-│       └── user.service.ts
-├── styles/
-│   ├── main.scss, secondary.scss
-│   ├── _partial.scss, _variables.scss
-│   ├── global.css, reset.css
-│   └── _partials/
-│       └── _nested.scss
-├── pages/
-│   ├── index.html, about.html
-├── docs/
-│   ├── README.md, guide.md
-├── assets/
-│   ├── logo.png, icon.gif, photo.jpeg, photo.jpg, thumb.webp
-│   └── font.woff2, regular.ttf
-├── data/
-│   ├── config.json, config.yaml, locale.yml
-├── empty-file.ts                (0 bytes)
-├── comments-only.ts             (only `//` and `/* */`)
-└── my files/                    (directory with a space)
-    └── spaced.ts
-```
+Live in [`../manual-qa-workspace/`](../manual-qa-workspace/) — see that folder's `README.md` for the full layout (158 files across `src/`, `styles/`, `pages/`, `docs/`, `assets/`, `data/`, plus edge-case roots `empty-file.ts`, `whitespace-only.ts`, `single-char.ts`, `comments-only.ts`, `with-imports.ts`, `with-requires.js`, `my files/spaced.ts`, `unicode-paths/`, `deeply/...`, `very-deep/...`, `unsupported/`).
+
+The checklists below name files relative to that workspace root: when 04 says "copy `src/foo.ts`", it means `manual-qa-workspace/src/foo.ts`. The 36 *baseline* filenames the checklists rely on are listed in the workspace README's "Maintenance notes" section — renaming any of those breaks a test.
+
+### Files purpose-built for specific tests
+
+| Fixture | Used by | What it tests |
+|---------|---------|---------------|
+| `with-imports.ts` | 13 | Bottom-placement landing after `import …` (script indicator) |
+| `with-requires.js` | 13 | Bottom-placement landing after the three `require(…)` shapes |
+| `styles/with-imports.css` | 13 | Bottom-placement landing after `@import '…'` (all 4 SCSS/CSS forms) |
+| `styles/with-uses.scss` | 13 | Bottom-placement landing after `@use '…'` |
+| `pages/with-resources.html` | 13 | Bottom-placement landing after existing `<script>`/`<link>`/`<img>` |
+| `unsupported/Main.java` | 15 | Clause 1 — arbitrary unsupported-extension source |
+| `unsupported/styles.less` | 15 | Clause 6 — close-to-supported but not in `SCSS_SUPPORTED_EXTENSIONS` |
+| `unsupported/animation.mov`, `archive.zip` | 15 | Binary unsupported sources |
+| `assets/icon.svg` | 06, 07, 15 | Unsupported in JSX/TSX `_shared.ts:default:` branch |
+| `whitespace-only.ts`, `single-char.ts` | 17 | Degenerate file destinations |
+| `empty-file.ts`, `comments-only.ts` | 13, 17 | Bottom-placement edge cases |
+| `unicode-paths/日本語.ts`, `unicode-paths/café-menu.tsx` | 16 | Unicode in path computation |
+| `deeply/nested/components/widgets/{deep-widget.tsx, deep-styles.scss}` | 16 | 4-level relative-path traversal |
+| `very-deep/level-01/.../level-09/extreme-leaf.ts` | 17 | 9-level path stress |
+| `my files/spaced.ts` | 03, 16 | Path containing a literal space |
 
 ## Settings under test (set/unset in the Extension Development Host)
 
@@ -103,7 +95,7 @@ These appear suspicious during testing but are documented intentional behaviour.
 - **Comments containing `import ` cause Bottom placement to land after the comment.** Heuristic, documented in `src/editor/insert-snippet.ts` module header.
 - **Same-file rejection is case-insensitive on Linux.** Aligns with macOS/Windows behavior. (`src/commands/paste-import.ts:60`)
 - **`removeFileExtension('foo')` returns `''`** (no-extension input). Unreachable in production; the `./` prefix regression test (CHANGELOG 0.6.1) was written against this behavior.
-- **Empty clipboard reads as `''` and matches `''`** in same-file check → "Same file path." toast. The catch-all is acceptable.
+- **Empty/garbage clipboards fire the dedicated `empty-clipboard` toast** (`Auto Import: Clipboard does not contain a file path. Use Auto Import: Copy File Path on a source file first.`) — short-circuits before the same-file check via the absolute-path/has-extension guard in `src/commands/paste-import.ts:62`. Plain text, URLs, and numeric strings all land here, not on `not-supported`.
 - **JSX→TSX cross-import asymmetry:** `.jsx` source does NOT have a fallback in TSX (only `.js` does). This is intentional — a `.jsx` source is a JavaScript-with-JSX file, and forcing a TSX import shape would be wrong.
 
 ## Master sign-off

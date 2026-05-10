@@ -17,25 +17,25 @@ Validates JS-snippet generation and `.js`-as-destination gating.
 
 `.js` is **not** in `CROSS_IMPORT_DESTINATIONS` → source extension MUST equal `.js`.
 
-For each row, copy the source then paste into `src/other.js`:
+For each row, copy the source then paste into `src/other.js`. The rejection toast is parameterized via `'not-supported'` — both extensions appear verbatim in the message.
 
 | Source | Expected outcome |
 |--------|------------------|
 | `src/sibling.js` | ✅ JS-shape import inserted |
-| `src/foo.ts` | ❌ "Auto Import Relative Path: Not supported." |
-| `src/widget.tsx` | ❌ Not supported |
-| `src/badge.jsx` | ❌ Not supported |
-| `styles/global.css` | ❌ Not supported |
-| `styles/main.scss` | ❌ Not supported |
-| `pages/index.html` | ❌ Not supported |
-| `docs/README.md` | ❌ Not supported |
-| `assets/logo.png` | ❌ Not supported |
-| `data/config.json` | ❌ Not supported |
-| `data/config.yaml` | ❌ Not supported |
-| `assets/font.woff2` | ❌ Not supported |
-| `assets/icon.svg` | ❌ Not supported (unsupported extension) |
+| `src/foo.ts` | ❌ `Auto Import: Cannot import .ts into .js files.` |
+| `src/widget.tsx` | ❌ `Auto Import: Cannot import .tsx into .js files.` |
+| `src/badge.jsx` | ❌ `Auto Import: Cannot import .jsx into .js files.` |
+| `styles/global.css` | ❌ `Auto Import: Cannot import .css into .js files.` |
+| `styles/main.scss` | ❌ `Auto Import: Cannot import .scss into .js files.` |
+| `pages/index.html` | ❌ `Auto Import: Cannot import .html into .js files.` |
+| `docs/README.md` | ❌ `Auto Import: Cannot import .md into .js files.` |
+| `assets/logo.png` | ❌ `Auto Import: Cannot import .png into .js files.` |
+| `data/config.json` | ❌ `Auto Import: Cannot import .json into .js files.` |
+| `data/config.yaml` | ❌ `Auto Import: Cannot import .yaml into .js files.` |
+| `assets/font.woff2` | ❌ `Auto Import: Cannot import .woff2 into .js files.` |
+| `assets/icon.svg` | ❌ `Auto Import: Cannot import .svg into .js files.` (unsupported extension) |
 
-- [ ] All 13 cases match the expected outcome.
+- [ ] All 13 cases match the expected outcome — the source extension in the toast must match the row's source.
 
 ## Style options — all 9 JS shapes
 

@@ -26,18 +26,18 @@ For each source, copy → paste into `src/badge.jsx`. Verify the snippet shape A
 | Source | Expected snippet (style 0 default) |
 |--------|-------------------------------------|
 | `src/sibling.js` | `import $1 from './sibling';` |
-| `src/badge.jsx` | (same-file → "Same file path.") — pick another `.jsx` if available, else accept the same-file rejection here |
-| Create one: `echo "" > src/another.jsx`. Then `src/another.jsx` → | `import $1 from './another';` |
+| `src/badge.jsx` | (same-file → `Auto Import: A file cannot import itself.`) — covered by the self-import edge case at the bottom |
+| `src/components/Layout.jsx` | `import $1 from './components/Layout';` |
 
 - [ ] `.js` source → JS snippet (style 0)
 - [ ] `.jsx` source → JS snippet (style 0)
 
 ### TypeScript sources → REJECTED
 
-JSX has no TS handling. `.ts`/`.tsx` sources fall through to `_shared.ts` switch's `default:` branch → empty snippet → `paste-import.ts` clauses 7/8 → "Not supported".
+JSX has no TS handling. `.ts`/`.tsx` sources fall through to `_shared.ts` switch's `default:` branch → empty snippet → `paste-import.ts` clauses 7/8 → `'not-supported'` toast (parameterized with the actual extensions).
 
-- [ ] `src/foo.ts` source → "Not supported."
-- [ ] `src/widget.tsx` source → "Not supported."
+- [ ] `src/foo.ts` source → `Auto Import: Cannot import .ts into .jsx files.`
+- [ ] `src/widget.tsx` source → `Auto Import: Cannot import .tsx into .jsx files.`
 
 ### Non-script sources → hardcoded switch
 
@@ -71,23 +71,23 @@ JSX has no TS handling. `.ts`/`.tsx` sources fall through to `_shared.ts` switch
 
 ### Unsupported sources → REJECTED
 
-- [ ] `assets/icon.svg` → "Not supported." (`.svg` not in any list, falls through `_shared.ts` `default:` → empty snippet)
+- [ ] `assets/icon.svg` → `Auto Import: Cannot import .svg into .jsx files.` (`.svg` not in any list, falls through `_shared.ts` `default:` → empty snippet → clause 8)
 
 ## Style propagation from `javascriptImportStyle`
 
 JSX's `.js`/`.jsx` source delegates to `buildJavaScriptImportSnippet`. Verify all 9 JS styles propagate:
 
-For each, set `javascriptImportStyle`, then copy `src/another.jsx` → paste into `src/badge.jsx`:
+For each, set `javascriptImportStyle`, then copy `src/components/Layout.jsx` → paste into `src/badge.jsx`:
 
-- [ ] Style 0 → `import $1 from './another';`
-- [ ] Style 1 → `import { $1 } from './another';`
-- [ ] Style 2 → `import { default as $1 } from './another';` ⚡ FIXED
-- [ ] Style 3 → `import * as $1 from './another';`
-- [ ] Style 4 → `import './another';`
-- [ ] Style 5 → `var $1 = require('./another');`
-- [ ] Style 6 → `const $1 = require('./another');`
-- [ ] Style 7 → `var $1 = import('./another');`
-- [ ] Style 8 → `const $1 = import('./another');`
+- [ ] Style 0 → `import $1 from './components/Layout';`
+- [ ] Style 1 → `import { $1 } from './components/Layout';`
+- [ ] Style 2 → `import { default as $1 } from './components/Layout';` ⚡ FIXED
+- [ ] Style 3 → `import * as $1 from './components/Layout';`
+- [ ] Style 4 → `import './components/Layout';`
+- [ ] Style 5 → `var $1 = require('./components/Layout');`
+- [ ] Style 6 → `const $1 = require('./components/Layout');`
+- [ ] Style 7 → `var $1 = import('./components/Layout');`
+- [ ] Style 8 → `const $1 = import('./components/Layout');`
 
 ## `preserveScriptFileExtension` propagation
 
@@ -103,14 +103,12 @@ For non-script sources (image/data/font/markup), the extension is **always** pre
 
 ## Edge cases
 
-- [ ] **Empty file destination.** Create `src/empty.jsx` (or use existing). Snippet at line 0.
-- [ ] **Self-import.** Open `src/badge.jsx`, copy itself, paste → "Same file path."
+- [ ] **Empty file destination.** Create a temporary empty JSX: `touch src/empty.jsx` at the workspace root, open it, paste a JSX import → snippet at line 0. **Cleanup:** `rm src/empty.jsx`.
+- [ ] **Self-import.** Open `src/badge.jsx`, copy itself, paste → `Auto Import: A file cannot import itself.`
 
 ## Cleanup
 
-```bash
-rm -f src/another.jsx src/empty.jsx
-```
+No persistent fixtures to remove — the only construct-on-fly file (`src/empty.jsx`) is cleaned up inline above. Existing JSX fixtures (`src/badge.jsx`, `src/components/Layout.jsx`, etc.) stay in place for future runs.
 
 ## Sign-off
 

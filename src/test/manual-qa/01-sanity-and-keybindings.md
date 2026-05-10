@@ -5,7 +5,7 @@ Verify the extension loads and every entry point works. If any of these fail, st
 ## Setup
 
 - `00-setup.md` complete
-- Extension Development Host running with `test-workspace/` open
+- Extension Development Host running with `manual-qa-workspace/` open as the folder
 - No prior toasts on screen (close VS Code's notifications panel if needed)
 
 ## Tests
@@ -17,21 +17,21 @@ Verify the extension loads and every entry point works. If any of these fail, st
 ### Command Palette
 
 - [ ] **All 3 commands are listed.** `Cmd/Ctrl+Shift+P` → type `Auto Import`.
-  **Expect:** three entries:
-  - `Auto Import: Copy`
-  - `Auto Import: Paste`
-  - `Auto Import: Auto`
+  **Expect:** three entries (titles match `package.json:contributes.commands` byte-exactly):
+  - `Auto Import: Copy File Path`
+  - `Auto Import: Paste as Import`
+  - `Auto Import: Insert Import from Selected File`
 
 ### Keybinding — Copy (`cmd/ctrl+shift+a`)
 
 - [ ] **Editor focus.** Open `src/foo.ts` → press `Cmd/Ctrl+Shift+A`.
-  **Expect:** toast `Auto Import: Copied foo.ts`.
+  **Expect:** info toast `Auto Import: Copied path — foo.ts`.
 
 - [ ] **Explorer focus.** Click `src/bar.ts` in the Explorer (don't open it) → press `Cmd/Ctrl+Shift+A`.
-  **Expect:** toast `Auto Import: Copied bar.ts`. Clipboard now contains the absolute path of `bar.ts`.
+  **Expect:** info toast `Auto Import: Copied path — bar.ts`. Clipboard now contains the absolute path of `bar.ts`.
 
 - [ ] **Verify clipboard externally.** Paste in any non-VS-Code text field (browser URL bar, Terminal, Notes app, etc.).
-  **Expect:** absolute path string of `bar.ts` (e.g. `/Users/.../test-workspace/src/bar.ts`).
+  **Expect:** absolute path string of `bar.ts` (e.g. `/Users/<you>/<repo>/src/test/manual-qa-workspace/src/bar.ts`).
 
 ### Keybinding — Paste (`cmd/ctrl+i`)
 
@@ -44,21 +44,28 @@ Verify the extension loads and every entry point works. If any of these fail, st
 ### Keybinding — Auto (`alt+d`)
 
 - [ ] **Explorer focus.** In Explorer, single-click `src/foo.ts` (don't open) → with `src/bar.ts` already as the active editor → press `Alt+D`.
-  **Expect:** import for `foo` inserted into `bar.ts` AND toast `Auto Import: Copied foo.ts`.
+  **Expect:** import for `foo` inserted into `bar.ts` AND info toast `Auto Import: Copied path — foo.ts`.
 
 - [ ] **Editor focus does NOT trigger.** Open `src/foo.ts` (editor focused) → press `Alt+D`.
   **Expect:** nothing happens. Keybinding `when: filesExplorerFocus` blocks it.
 
 ### Command Palette can invoke any command without keybindings
 
-- [ ] **Run via Palette only.** `Cmd/Ctrl+Shift+P` → `Auto Import: Copy` → enter.
+- [ ] **Run via Palette only.** `Cmd/Ctrl+Shift+P` → `Auto Import: Copy File Path` → enter.
   **Expect:** behaves identically to keybinding.
 
-- [ ] **Same for Paste and Auto.**
+- [ ] **Same for `Auto Import: Paste as Import` and `Auto Import: Insert Import from Selected File`.**
+
+### Palette can surface the no-active-editor toast
+
+Paste's keybinding `when: editorTextFocus` blocks the keystroke when no editor is focused, but the Palette has no such guard.
+
+- [ ] **No editor open.** Close every editor tab (Cmd/Ctrl+W repeatedly until the welcome page is visible). `Cmd/Ctrl+Shift+P` → `Auto Import: Paste as Import` → enter.
+  **Expect:** warning toast `Auto Import: Open a file to paste an import.` (the `'no-active-editor'` notification — was previously a silent return).
 
 ## Known limitations / not bugs
 
-- The `Auto Import: Auto` palette entry runs from any focus (palette doesn't apply the keybinding `when` clause). This is VS Code's default behavior and intentional.
+- The `Auto Import: Insert Import from Selected File` palette entry runs from any focus (palette doesn't apply the keybinding `when` clause). This is VS Code's default behavior and intentional.
 
 ## Sign-off
 

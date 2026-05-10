@@ -1,182 +1,47 @@
-# 00 — Test workspace setup
+# 00 — Open the fixture workspace
 
-Build a fixture workspace **once**, then reuse it for every checklist (01 → 17). All subsequent files assume this exact layout.
+The fixtures already live at `../manual-qa-workspace/` (sibling of `manual-qa/`). You don't build anything — you just open that folder in the Extension Development Host. All subsequent checklists 01–17 use paths *relative to that workspace root*.
 
-## Goal
+## Steps
 
-Create a directory called `test-workspace/` somewhere outside this project (so the fixtures never get committed). Populate it with the file/directory tree below.
+1. **Open this project** (`auto-import-relative-path`) in VS Code.
+2. **Press F5.** A second VS Code window opens — this is the Extension Development Host with the extension loaded from `dist/extension.js`. (The default build task `npm: watch` runs automatically; if it fails, run `npm run compile` once and try again.)
+3. **In the EDH window: File → Open Folder…** and pick `<this-repo>/src/test/manual-qa-workspace/`.
+4. The window reloads with the fixture workspace open. Every checklist now references files inside this folder.
 
-## Step 1 — Create the directory tree
+> **Heads up**: when you copy a file from the Explorer with `Cmd/Ctrl+Shift+A`, the toast and clipboard contain the *absolute* path of the file inside `manual-qa-workspace/` — that's expected. The relative paths inside generated import snippets are computed from there.
 
-Run this in a terminal:
+## What's in the workspace
 
-```bash
-mkdir -p ~/test-workspace/src/components
-mkdir -p ~/test-workspace/styles/_partials
-mkdir -p ~/test-workspace/pages
-mkdir -p ~/test-workspace/docs
-mkdir -p ~/test-workspace/assets
-mkdir -p ~/test-workspace/data
-mkdir -p "~/test-workspace/my files"
-```
+The full layout and the rationale for every fixture is documented in [`../manual-qa-workspace/README.md`](../manual-qa-workspace/README.md). Key categories the checklists rely on:
 
-## Step 2 — Create the script fixtures
+| Area | Examples used by checklists |
+|------|------------------------------|
+| Script baseline | `src/foo.ts`, `bar.ts`, `helpers.ts`, `sibling.js`, `other.js`, `widget.tsx`, `badge.jsx` |
+| Angular convention | `src/components/{app-root.component, auth.module, highlight.directive, trim.pipe, user.service}.ts` |
+| Stylesheets | `styles/main.scss`, `_partial.scss`, `_variables.scss`, `global.css`, `reset.css`, `_partials/_nested.scss` |
+| Bottom-landing | `with-imports.ts`, `with-requires.js`, `styles/with-imports.css`, `styles/with-uses.scss`, `pages/with-resources.html` |
+| Markup / docs | `pages/index.html`, `pages/about.html`, `docs/README.md`, `docs/guide.md` |
+| Images / fonts / data | `assets/logo.png`, `icon.gif`, `photo.jpeg`, `photo.jpg`, `thumb.webp`, `font.woff2`, `regular.ttf`, `icon.svg`; `data/config.json`, `config.yaml`, `locale.yml` |
+| Edge cases | `empty-file.ts`, `whitespace-only.ts`, `single-char.ts`, `comments-only.ts`, `my files/spaced.ts` |
+| Unicode / deep paths | `unicode-paths/日本語.ts`, `unicode-paths/café-menu.tsx`, `deeply/nested/components/widgets/{deep-widget.tsx, deep-styles.scss}`, `very-deep/level-01/.../level-09/extreme-leaf.ts` |
+| Unsupported (rejection) | `unsupported/Main.java`, `unsupported/styles.less`, `unsupported/animation.mov`, `unsupported/archive.zip` |
 
-```bash
-cd ~/test-workspace
+`manual-qa-workspace/` is also stocked with rich exploratory siblings (`Button.tsx`, `Layout.jsx`, `legacy/*.js`, `hooks/`, `utils/`, etc.) — handy for ad-hoc QA but not required by any specific checklist.
 
-# src/ scripts (TS/JS/TSX/JSX)
-echo 'export const foo = 1;' > src/foo.ts
-echo 'export const bar = 2;' > src/bar.ts
-echo 'export function help() {}' > src/helpers.ts
-echo 'module.exports = {};' > src/sibling.js
-echo 'module.exports = {};' > src/other.js
-echo 'export const Widget = () => null;' > src/widget.tsx
-echo 'export const Badge = () => null;' > src/badge.jsx
+## A few tests still construct files on the fly
 
-# Angular convention fixtures (all 5 suffixes)
-echo 'export class AppRootComponent {}' > src/components/app-root.component.ts
-echo 'export class AuthModule {}' > src/components/auth.module.ts
-echo 'export class HighlightDirective {}' > src/components/highlight.directive.ts
-echo 'export class TrimPipe {}' > src/components/trim.pipe.ts
-echo 'export class UserService {}' > src/components/user.service.ts
-```
+Some scenarios are inherently transient (read-only files, multi-root workspaces, the unsupported-extension path, custom case-collision dirs). Those checklists call out the construction and cleanup commands inline. **Don't** check those temporary files into the workspace.
 
-## Step 3 — Create the stylesheet fixtures
+## Verify
 
-```bash
-# Stylesheets
-echo '.main {}' > styles/main.scss
-echo '.secondary {}' > styles/secondary.scss
-echo '$color: red;' > styles/_partial.scss
-echo '$primary: blue;' > styles/_variables.scss
-echo '.global {}' > styles/global.css
-echo '* {}' > styles/reset.css
-
-# Partial inside a directory (for path-computation tests)
-echo '$nested: green;' > styles/_partials/_nested.scss
-```
-
-## Step 4 — Create markup fixtures
-
-```bash
-# HTML
-cat > pages/index.html <<'EOF'
-<!DOCTYPE html>
-<html>
-<head><title>Index</title></head>
-<body></body>
-</html>
-EOF
-
-cat > pages/about.html <<'EOF'
-<!DOCTYPE html>
-<html>
-<head><title>About</title></head>
-<body></body>
-</html>
-EOF
-
-# Markdown
-echo '# README' > docs/README.md
-echo '# Guide' > docs/guide.md
-```
-
-## Step 5 — Create binary/asset fixtures
-
-The image fixtures don't need to be valid images — just files with the right extension.
-
-```bash
-# Images (5 supported types)
-touch assets/logo.png
-touch assets/icon.gif
-touch assets/photo.jpeg
-touch assets/photo.jpg
-touch assets/thumb.webp
-
-# Fonts (4 supported types — pick at least 2)
-touch assets/font.woff2
-touch assets/regular.ttf
-
-# Data
-echo '{}' > data/config.json
-echo 'key: value' > data/config.yaml
-echo 'k: v' > data/locale.yml
-```
-
-## Step 6 — Create edge-case fixtures
-
-```bash
-# Zero-byte file (for empty-file tests)
-touch empty-file.ts
-
-# Comments-only file (for Bottom placement tests)
-cat > comments-only.ts <<'EOF'
-// just a comment
-/* block comment */
-// I want to import bar later   <-- documented heuristic false-positive
-EOF
-
-# Path with a space (for path-computation tests)
-echo 'export const spaced = 1;' > "my files/spaced.ts"
-
-# An unsupported file extension (for rejection tests)
-touch assets/icon.svg
-```
-
-## Step 7 — Open in the Extension Development Host
-
-1. Open the `auto-import-relative-path` project in VS Code.
-2. Press **F5**. A second VS Code window opens — this is the Extension Development Host with the extension loaded from `dist/extension.js`.
-3. In the new window: **File → Open Folder…** → select `~/test-workspace/`.
-
-## Step 8 — Verify
-
-- [ ] All directories exist (run `find ~/test-workspace -type d`).
-- [ ] All files exist (run `find ~/test-workspace -type f | wc -l` → should be ≥ 26).
-- [ ] Extension Development Host has the `test-workspace` open.
-- [ ] You can open `src/foo.ts` and the editor renders normally.
-
-## Tree summary (final state)
-
-```
-test-workspace/
-├── src/
-│   ├── foo.ts, bar.ts, helpers.ts
-│   ├── sibling.js, other.js
-│   ├── widget.tsx, badge.jsx
-│   └── components/
-│       ├── app-root.component.ts
-│       ├── auth.module.ts
-│       ├── highlight.directive.ts
-│       ├── trim.pipe.ts
-│       └── user.service.ts
-├── styles/
-│   ├── main.scss, secondary.scss
-│   ├── _partial.scss, _variables.scss
-│   ├── global.css, reset.css
-│   └── _partials/
-│       └── _nested.scss
-├── pages/
-│   ├── index.html, about.html
-├── docs/
-│   ├── README.md, guide.md
-├── assets/
-│   ├── logo.png, icon.gif, photo.jpeg, photo.jpg, thumb.webp
-│   ├── font.woff2, regular.ttf
-│   └── icon.svg                (unsupported — for rejection tests)
-├── data/
-│   ├── config.json, config.yaml, locale.yml
-├── empty-file.ts                (0 bytes)
-├── comments-only.ts
-└── my files/
-    └── spaced.ts
-```
+- [ ] EDH window is open with `manual-qa-workspace/` as the folder.
+- [ ] You can open `src/foo.ts` from the Explorer and it renders normally.
+- [ ] `Cmd/Ctrl+Shift+P` → typing `Auto Import` shows the three commands (`Copy File Path`, `Paste as Import`, `Insert Import from Selected File`).
 
 ## Sign-off
 
-- [ ] Workspace built per Steps 1–6
-- [ ] Verified per Step 8
-- [ ] Extension Development Host running with the workspace open
+- [ ] Fixture workspace open in EDH
+- [ ] No files were modified to bootstrap (everything was already there)
 
 Tester / date: ___________________

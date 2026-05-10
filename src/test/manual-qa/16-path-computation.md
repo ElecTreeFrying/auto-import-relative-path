@@ -24,8 +24,8 @@ The `./` prefix is added when:
 
 - [ ] `src/foo.ts` → `src/bar.ts`: path is `'./foo'` (with `./`)
 - [ ] `styles/_partial.scss` → `styles/main.scss`: `'./partial'` (`./` + underscore stripped)
-- [ ] `assets/logo.png` → `assets/icon.gif` (paste-into-image — won't actually do anything; test the path computation only via `.css` destination): `cp assets/logo.png styles/local.png; copy styles/local.png; paste into styles/global.css` → `'./local.png'`. Cleanup.
-- [ ] `pages/index.html` → `pages/about.html`: rejected by clause 2, but the path that WOULD be computed is `'./index.html'`. Verify via a non-rejected pair (e.g. add `cp src/sibling.js pages/local.js; copy local.js; paste into pages/index.html` → `<script src="./local.js">`. Cleanup.)
+- [ ] **Same-dir image into a stylesheet.** Construct `cp assets/logo.png styles/local.png` (no equivalent ships pre-built — same-dir image-in-CSS is rare). Copy `styles/local.png`, paste into `styles/global.css`. **Expect:** `url('./local.png')`. **Cleanup:** `rm styles/local.png`.
+- [ ] `pages/index.html` → `pages/about.html`: rejected by clause 2, but the path that WOULD be computed is `'./index.html'`. Verify via a non-rejected pair: `cp src/sibling.js pages/local.js; copy local.js; paste into pages/index.html` → `<script src="./local.js">`. **Cleanup:** `rm pages/local.js`.
 
 ### Cross-directory cases (rule 2)
 
@@ -48,6 +48,12 @@ The `./` prefix is added when:
 - [ ] `data/config.json` → `src/badge.jsx`:
   - **Expect:** `'../data/config.json'`
 
+- [ ] **Moderate (4-level) traversal.** `src/foo.ts` → `deeply/nested/components/widgets/deep-widget.tsx`:
+  - **Expect:** `'../../../../src/foo'` (`.tsx` destination accepts `.ts` source via TS-snippet primary).
+- [ ] **Reverse 4-level.** `deeply/nested/components/widgets/deep-widget.tsx` → `src/widget.tsx`:
+  - **Expect:** `'../deeply/nested/components/widgets/deep-widget'`.
+- [ ] **Same-dir at depth.** `deeply/nested/components/widgets/deep-styles.scss` → … paste into a sibling SCSS by copying the `_partial.scss` first into that directory, OR test path computation indirectly: `deeply/nested/components/widgets/deep-styles.scss` → `styles/main.scss`. **Expect:** `'../deeply/nested/components/widgets/deep-styles'` (with `preserveStylesheetFileExtension = false`).
+
 ### Edge cases for the prefix rule
 
 - [ ] **Single-level same-dir.** `src/foo.ts` → `src/bar.ts` → `'./foo'`. Both files have `path.parse(...).dir = '<...>/src'` (case-insensitive equal). ✓
@@ -64,9 +70,9 @@ The `./` prefix is added when:
 - [ ] `styles/_partials/_nested.scss` → `styles/main.scss`: `'./_partials/nested'`
   - **Directory `_partials/` keeps its underscore** (only filename `_nested` stripped)
 
-- [ ] **Filename without underscore in underscore-dir.** Create `echo "" > styles/_partials/foo.scss`. Copy → paste into `styles/main.scss`: `'./_partials/foo'`. Cleanup.
+- [ ] **Filename without underscore in underscore-dir.** Construct `echo "" > styles/_partials/foo.scss` at the workspace root. Copy → paste into `styles/main.scss`: `'./_partials/foo'`. **Cleanup:** `rm styles/_partials/foo.scss`.
 
-- [ ] **Multi-segment underscore.** Create `mkdir -p styles/_dir/_subdir; echo "" > styles/_dir/_subdir/_leaf.scss`. Copy → paste into `styles/main.scss`: `'./_dir/_subdir/leaf'` (only `_leaf` stripped, both directories keep `_`). Cleanup.
+- [ ] **Multi-segment underscore.** Construct `mkdir -p styles/_dir/_subdir; touch styles/_dir/_subdir/_leaf.scss`. Copy → paste into `styles/main.scss`: `'./_dir/_subdir/leaf'` (only `_leaf` stripped, both directories keep `_`). **Cleanup:** `rm -rf styles/_dir`.
 
 ## Special characters in paths
 
@@ -78,9 +84,11 @@ The `./` prefix is added when:
 
 ### Unicode
 
-- [ ] Create `mkdir -p '日本'; echo "" > 日本/foo.ts`. Copy → paste into `src/bar.ts`:
-  - **Expect:** `'../日本/foo'` — unicode preserved.
-- [ ] Cleanup: `rm -rf 日本`.
+The workspace ships `unicode-paths/日本語.ts` and `unicode-paths/café-menu.tsx` for this — no construction needed.
+
+- [ ] **Japanese characters.** `unicode-paths/日本語.ts` → `src/bar.ts`. **Expect:** `'../unicode-paths/日本語'` — characters preserved verbatim, no normalization.
+- [ ] **Latin extended (accent).** `unicode-paths/café-menu.tsx` → `src/widget.tsx`. **Expect:** `'../unicode-paths/café-menu'`.
+- [ ] **Cmd+Click resolves the path.** Open the resulting destination, hover the inserted import path, Cmd+Click — VS Code should jump to the source file.
 
 ### Special filename characters
 
@@ -96,11 +104,11 @@ The `./` prefix is added when:
 
 ## Same-directory comparison is case-insensitive
 
-`areFilesInSameDirectory` compares `path.parse(...).dir.toLowerCase().trim()`.
+`areFilesInSameDirectory` compares `path.parse(...).dir.toLowerCase().trim()`. There's no pre-built fixture for this since case-only sibling directories aren't typical workspace structure — construct on the fly:
 
-On macOS (case-insensitive HFS/APFS): create `mkdir -p Src; echo "" > Src/upper.ts`. Both `src/foo.ts` and `Src/upper.ts` resolve to the same physical directory.
+On macOS (case-insensitive HFS/APFS): `mkdir -p Src; touch Src/upper.ts`. Both `src/foo.ts` and `Src/upper.ts` resolve to the same physical directory.
 - [ ] Copy `Src/upper.ts` → paste into `src/foo.ts`. Path should be `'./upper'` (same-directory rule fires due to case-insensitive comparison).
-- [ ] Cleanup: `rm -rf Src`.
+- [ ] **Cleanup:** `rm -rf Src`.
 
 (On Linux case-sensitive ext4: `Src/` and `src/` are genuinely different directories. The case-insensitive comparison there gives a false-positive — the path becomes `'./upper'` even though paths are different. This is documented intentional behavior aligned with macOS/Windows.)
 
@@ -120,11 +128,11 @@ On macOS (case-insensitive HFS/APFS): create `mkdir -p Src; echo "" > Src/upper.
 
 - [ ] Same-directory `./` (4 cases)
 - [ ] Cross-directory `./` (2 cases)
-- [ ] Multi-level traversal (3 cases)
+- [ ] Multi-level traversal (6 cases incl. `deeply/.../deep-widget.tsx`)
 - [ ] Edge cases for prefix (2 cases)
 - [ ] SCSS partial normalization (6 cases)
-- [ ] Spaces in paths
-- [ ] Unicode in paths
+- [ ] Spaces in paths (`my files/spaced.ts`)
+- [ ] Unicode in paths (3 cases via `unicode-paths/`)
 - [ ] Special filename chars (2 cases)
 - [ ] Forward slashes only
 - [ ] Case-insensitive same-directory (1 case)

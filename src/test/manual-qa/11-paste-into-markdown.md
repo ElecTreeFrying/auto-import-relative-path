@@ -26,19 +26,19 @@ Validates Markdown-snippet generation. Markdown emits one of two shapes: inline 
 | `assets/photo.jpeg` | ✅ Image |
 | `assets/photo.jpg` | ✅ Image |
 | `assets/thumb.webp` | ✅ Image |
-| `src/foo.ts` | ❌ Not supported |
-| `src/sibling.js` | ❌ Not supported |
-| `src/widget.tsx` | ❌ Not supported |
-| `src/badge.jsx` | ❌ Not supported |
-| `styles/global.css` | ❌ Not supported |
-| `styles/main.scss` | ❌ Not supported |
-| `pages/index.html` | ❌ Not supported |
-| `data/config.json` | ❌ Not supported |
-| `data/config.yaml` | ❌ Not supported |
-| `assets/font.woff2` | ❌ Not supported |
-| `assets/icon.svg` | ❌ Not supported |
+| `src/foo.ts` | ❌ `Auto Import: Cannot import .ts into .md files.` |
+| `src/sibling.js` | ❌ `Auto Import: Cannot import .js into .md files.` |
+| `src/widget.tsx` | ❌ `Auto Import: Cannot import .tsx into .md files.` |
+| `src/badge.jsx` | ❌ `Auto Import: Cannot import .jsx into .md files.` |
+| `styles/global.css` | ❌ `Auto Import: Cannot import .css into .md files.` |
+| `styles/main.scss` | ❌ `Auto Import: Cannot import .scss into .md files.` |
+| `pages/index.html` | ❌ `Auto Import: Cannot import .html into .md files.` |
+| `data/config.json` | ❌ `Auto Import: Cannot import .json into .md files.` |
+| `data/config.yaml` | ❌ `Auto Import: Cannot import .yaml into .md files.` |
+| `assets/font.woff2` | ❌ `Auto Import: Cannot import .woff2 into .md files.` |
+| `assets/icon.svg` | ❌ `Auto Import: Cannot import .svg into .md files.` |
 
-- [ ] All 17 cases match.
+- [ ] All 17 cases match — both extensions appear verbatim in the parameterized toast.
 
 ## Markdown-source shape (fixed inline link)
 
@@ -99,7 +99,7 @@ Set the setting to the second enum value.
 
 ## Edge cases
 
-- [ ] **Self-import.** Open `docs/README.md`, copy itself, paste → "Same file path."
+- [ ] **Self-import.** Open `docs/README.md`, copy itself, paste → `Auto Import: A file cannot import itself.`
 - [ ] **Empty `.md` file.** Create `touch docs/empty.md`. Paste an image. Snippet at line 0 column 0. Cleanup.
 - [ ] **`md → md` with different basenames.** `docs/guide.md` → `docs/README.md`. Works (only `.html → .html` is the special-case rejection, not `.md → .md`).
 

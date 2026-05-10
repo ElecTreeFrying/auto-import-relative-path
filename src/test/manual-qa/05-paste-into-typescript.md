@@ -20,20 +20,20 @@ Validates TS-snippet generation, `.ts`-as-destination gating, and the Angular Pa
 | Source | Expected |
 |--------|----------|
 | `src/foo.ts` | ✅ TS import |
-| `src/widget.tsx` | ❌ Not supported |
-| `src/sibling.js` | ❌ Not supported |
-| `src/badge.jsx` | ❌ Not supported |
-| `styles/global.css` | ❌ Not supported |
-| `styles/main.scss` | ❌ Not supported |
-| `pages/index.html` | ❌ Not supported |
-| `docs/README.md` | ❌ Not supported |
-| `assets/logo.png` | ❌ Not supported |
-| `data/config.json` | ❌ Not supported |
-| `data/config.yaml` | ❌ Not supported |
-| `assets/font.woff2` | ❌ Not supported |
-| `assets/icon.svg` | ❌ Not supported |
+| `src/widget.tsx` | ❌ `Auto Import: Cannot import .tsx into .ts files.` |
+| `src/sibling.js` | ❌ `Auto Import: Cannot import .js into .ts files.` |
+| `src/badge.jsx` | ❌ `Auto Import: Cannot import .jsx into .ts files.` |
+| `styles/global.css` | ❌ `Auto Import: Cannot import .css into .ts files.` |
+| `styles/main.scss` | ❌ `Auto Import: Cannot import .scss into .ts files.` |
+| `pages/index.html` | ❌ `Auto Import: Cannot import .html into .ts files.` |
+| `docs/README.md` | ❌ `Auto Import: Cannot import .md into .ts files.` |
+| `assets/logo.png` | ❌ `Auto Import: Cannot import .png into .ts files.` |
+| `data/config.json` | ❌ `Auto Import: Cannot import .json into .ts files.` |
+| `data/config.yaml` | ❌ `Auto Import: Cannot import .yaml into .ts files.` |
+| `assets/font.woff2` | ❌ `Auto Import: Cannot import .woff2 into .ts files.` |
+| `assets/icon.svg` | ❌ `Auto Import: Cannot import .svg into .ts files.` |
 
-- [ ] All 13 cases match.
+- [ ] All 13 cases match — both extensions appear verbatim in the parameterized toast.
 
 ## Style options — all 5 TS shapes
 
@@ -84,16 +84,12 @@ For each, copy → paste into `src/bar.ts`:
 - [ ] `src/foo.ts` → `import { $1 } from './foo';` — `$1` placeholder, NOT `Foo`
 - [ ] `src/helpers.ts` → `import { $1 } from './helpers';` — placeholder, NOT `Helpers`
 
-### Other Angular cases (in src/, no subdirectory)
+### Same-directory Angular naming (no path traversal)
 
-Create one quick test file:
-```bash
-echo 'export class TestComponent {}' > src/test.component.ts
-```
+Auto-naming is keyed off the basename, so it must work the same with `'./X'` as with `'./components/X'`. Verify by pasting two Angular components in the same directory:
 
-- [ ] `src/test.component.ts` → `import { TestComponent } from './test.component';` (no preserve) — basename in same directory
-
-(Cleanup: `rm src/test.component.ts` after.)
+- [ ] `src/components/auth.module.ts` → paste into `src/components/app-root.component.ts`. **Expect:** `import { AuthModule } from './auth.module';` — `'./auth.module'` (same dir, no `components/` segment), but identifier is still `AuthModule`.
+- [ ] `src/components/user.service.ts` → paste into `src/components/app-root.component.ts`. **Expect:** `import { UserService } from './user.service';`
 
 ## Path computation
 
@@ -110,7 +106,7 @@ echo 'export class TestComponent {}' > src/test.component.ts
 
 - [ ] **Empty `.ts` file.** Paste into `empty-file.ts`. Snippet inserted at line 0.
 
-- [ ] **Self-import (case-insensitive).** Open `src/foo.ts`, copy `src/foo.ts`, paste. **Expect:** "Same file path." toast.
+- [ ] **Self-import (case-insensitive).** Open `src/foo.ts`, copy `src/foo.ts`, paste. **Expect:** warning toast `Auto Import: A file cannot import itself.`.
 
 - [ ] **Comments-only file** (use `comments-only.ts`). Bottom placement → snippet lands AFTER the comment containing `import ` (heuristic limitation, not a bug).
 

@@ -22,7 +22,7 @@ Validates TSX-snippet generation. TSX uses `_shared.ts:buildReactImport` with **
 | Source | Expected (style 1, non-Angular) |
 |--------|----------------------------------|
 | `src/foo.ts` | `import { $1 } from './foo';` (TS shape) |
-| Create `echo "" > src/widget2.tsx` then `src/widget2.tsx` → | `import { $1 } from './widget2';` |
+| `src/components/Button.tsx` | `import { $1 } from './components/Button';` (TS shape — `Button` is non-Angular, so `$1` placeholder, not auto-derived) |
 
 - [ ] `.ts` source → TS snippet
 - [ ] `.tsx` source → TS snippet
@@ -35,9 +35,9 @@ This is the key TSX rule: a `.js` source dropped into a `.tsx` destination produ
 
 ## `.jsx` source → REJECTED
 
-`.jsx` is in neither primary nor fallback for TSX. Falls through `_shared.ts` switch default → empty → "Not supported".
+`.jsx` is in neither primary nor fallback for TSX. Falls through `_shared.ts` switch default → empty → `'not-supported'` toast (parameterized).
 
-- [ ] `src/badge.jsx` → "Not supported."
+- [ ] `src/badge.jsx` → `Auto Import: Cannot import .jsx into .tsx files.`
 
 ## Angular naming applies for `.ts`/`.tsx` sources
 
@@ -55,11 +55,11 @@ Style 1 with Angular conventions:
 - [ ] (Repeat for module/directive/pipe/service — verify no `Ts` suffix)
 
 ### .tsx source with Angular convention
-Create `echo 'export class TestComponent {}' > src/test.component.tsx` and verify:
 
-- [ ] `src/test.component.tsx` → `import { TestComponent } from './test.component';` (no preserve) or `import { TestComponent } from './test.component.tsx';` (preserve on)
+The workspace ships `src/components/test.component.tsx` (Angular-style class in a TSX file). Copy it → paste into `src/widget.tsx`:
 
-(Cleanup: `rm src/test.component.tsx`)
+- [ ] `src/components/test.component.tsx` → `import { TestComponent } from './components/test.component';` (preserve OFF) — Angular auto-naming applies because the basename matches `.component.*` regardless of source extension.
+- [ ] Toggle preserve ON, repeat: `import { TestComponent } from './components/test.component.tsx';`
 
 ## Non-script sources → hardcoded switch
 
@@ -88,7 +88,7 @@ Same as JSX (since `_shared.ts` is shared):
 - [ ] `styles/main.scss` → `import './styles/main.scss';`
 
 ### Unsupported → REJECTED
-- [ ] `assets/icon.svg` → "Not supported."
+- [ ] `assets/icon.svg` → `Auto Import: Cannot import .svg into .tsx files.`
 
 ## Style propagation
 
@@ -115,23 +115,21 @@ Same as JSX (since `_shared.ts` is shared):
 ## `preserveScriptFileExtension` propagation
 
 For script sources only:
-- [ ] `.ts` source: `'./foo'` off, `'./foo.ts'` on
-- [ ] `.tsx` source: `'./widget2'` off, `'./widget2.tsx'` on
-- [ ] `.js` source (fallback): `'./sibling'` off, `'./sibling.js'` on
+- [ ] `.ts` source (`src/foo.ts` → `src/widget.tsx`): `'./foo'` off, `'./foo.ts'` on
+- [ ] `.tsx` source (`src/components/Button.tsx` → `src/widget.tsx`): `'./components/Button'` off, `'./components/Button.tsx'` on
+- [ ] `.js` source (`src/sibling.js` → `src/widget.tsx`, fallback): `'./sibling'` off, `'./sibling.js'` on
 
 For non-script sources, extension always preserved regardless of setting:
-- [ ] `assets/logo.png` → always `'./assets/logo.png'`
+- [ ] `assets/logo.png` → `src/widget.tsx`: always `'./assets/logo.png'`
 
 ## Edge cases
 
-- [ ] **Self-import.** Open `src/widget.tsx`, copy itself, paste → "Same file path."
-- [ ] **Empty `.tsx` file.** Snippet at line 0.
+- [ ] **Self-import.** Open `src/widget.tsx`, copy itself, paste → `Auto Import: A file cannot import itself.`
+- [ ] **Empty `.tsx` file.** Construct on the fly: `touch src/empty.tsx` at the workspace root, open it, paste → snippet at line 0. Cleanup: `rm src/empty.tsx`.
 
 ## Cleanup
 
-```bash
-rm -f src/widget2.tsx src/test.component.tsx
-```
+No persistent fixtures to remove — `src/components/Button.tsx` and `src/components/test.component.tsx` are baseline workspace fixtures.
 
 ## Sign-off
 

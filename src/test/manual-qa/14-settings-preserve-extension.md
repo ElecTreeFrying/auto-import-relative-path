@@ -23,11 +23,11 @@ Validates the two boolean settings that control whether file extensions are pres
 
 - [ ] `src/foo.ts` → `src/bar.ts`: path is `'./foo'` (no `.ts`)
 - [ ] `src/sibling.js` → `src/other.js`: `'./sibling'`
-- [ ] `src/widget.tsx` → `src/widget2.tsx` (create the latter): `'./widget'`
-- [ ] `src/badge.jsx` → `src/badge2.jsx` (create): `'./badge'`
+- [ ] `src/components/Button.tsx` → `src/components/Card.tsx` (TSX → TSX, same dir): `'./Button'`
+- [ ] `src/components/Layout.jsx` → `src/components/NavBar.jsx` (JSX → JSX, same dir): `'./Layout'`
 - [ ] **JSX with .js source:** `src/sibling.js` → `src/badge.jsx`: `'./sibling'`
 - [ ] **TSX with .ts source:** `src/foo.ts` → `src/widget.tsx`: `'./foo'`
-- [ ] **TSX with .tsx source:** `src/widget.tsx` → `src/widget2.tsx`: `'./widget'`
+- [ ] **TSX with .tsx source:** `src/components/Button.tsx` → `src/widget.tsx`: `'./components/Button'`
 - [ ] **TSX fallback to .js:** `src/sibling.js` → `src/widget.tsx`: `'./sibling'` (path; the SHAPE is JS, not TS)
 
 ### Setting ON
@@ -36,11 +36,11 @@ Set `preserveScriptFileExtension = true`.
 
 - [ ] `src/foo.ts` → `src/bar.ts`: `'./foo.ts'`
 - [ ] `src/sibling.js` → `src/other.js`: `'./sibling.js'`
-- [ ] `src/widget.tsx` → `src/widget2.tsx`: `'./widget.tsx'`
-- [ ] `src/badge.jsx` → `src/badge2.jsx`: `'./badge.jsx'`
-- [ ] **TSX with .js source:** `'./sibling.js'`
-- [ ] **TSX with .ts source:** `'./foo.ts'`
-- [ ] **TSX with .tsx source:** `'./widget.tsx'`
+- [ ] `src/components/Button.tsx` → `src/components/Card.tsx`: `'./Button.tsx'`
+- [ ] `src/components/Layout.jsx` → `src/components/NavBar.jsx`: `'./Layout.jsx'`
+- [ ] **TSX with .js source:** `src/sibling.js` → `src/widget.tsx`: `'./sibling.js'`
+- [ ] **TSX with .ts source:** `src/foo.ts` → `src/widget.tsx`: `'./foo.ts'`
+- [ ] **TSX with .tsx source:** `src/components/Button.tsx` → `src/widget.tsx`: `'./components/Button.tsx'`
 
 ### Angular naming with preserve ON  ⚡ FIXED (Bug #2)
 
@@ -67,9 +67,7 @@ For non-script sources in JSX/TSX (image/data/font/markup), extension is **alway
 
 ### Cleanup
 
-```bash
-rm -f src/widget2.tsx src/other.js src/badge2.jsx
-```
+No cleanup needed — every fixture used above is part of the workspace baseline. (Earlier versions of this checklist asked you to construct `src/widget2.tsx`, `src/badge2.jsx`, etc.; those are now replaced by `src/components/Button.tsx`, `Card.tsx`, `Layout.jsx`, `NavBar.jsx`.)
 
 ## `preserveStylesheetFileExtension`
 

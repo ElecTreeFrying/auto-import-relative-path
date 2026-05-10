@@ -14,28 +14,38 @@ Validates `executeCopyFilePath` end-to-end. This is a prerequisite for every pas
 ### Toast format
 
 - [ ] **Basename in toast.** Open `src/foo.ts`. Press `Cmd/Ctrl+Shift+A`.
-  **Expect:** toast text is exactly `Auto Import: Copied foo.ts` (with the `.ts` extension).
+  **Expect:** toast text is exactly `Auto Import: Copied path — foo.ts` (with the `.ts` extension).
 
 - [ ] **Different basename.** Open `src/components/app-root.component.ts`. Copy.
-  **Expect:** toast is `Auto Import: Copied app-root.component.ts` (basename only — no directory).
+  **Expect:** toast is `Auto Import: Copied path — app-root.component.ts` (basename only — no directory).
 
 ### Clipboard population
 
 - [ ] **External paste check.** After copying `src/foo.ts`, paste into a non-VS-Code app (Terminal, Notes, browser).
-  **Expect:** the absolute path of `foo.ts` appears (e.g. `/Users/.../test-workspace/src/foo.ts`).
+  **Expect:** the absolute path of `foo.ts` appears (e.g. `/Users/<you>/<repo>/src/test/manual-qa-workspace/src/foo.ts`).
 
 - [ ] **Path is absolute.** Verify the pasted path begins with `/` (macOS/Linux) or a drive letter (Windows). **Expect:** absolute, never relative.
 
 ### `notifications.clearAll`
 
-- [ ] **Prior toast cleared.** Trigger any error toast (e.g., from VS Code's built-in: try Save with no editor → no toast). Or: run `Auto Import: Paste` with no clipboard → wait for the warning toast. Now run Copy.
-  **Expect:** the prior warning toast is dismissed before the new "Copied …" toast shows.
+- [ ] **Prior toast cleared.** First, copy plain text (`Hello world`) from any external app and run `Auto Import: Paste as Import` from the Palette in any open file → wait for the warning toast `Auto Import: Clipboard does not contain a file path. Use Auto Import: Copy File Path on a source file first.`. Without dismissing it, run Copy on any source file.
+  **Expect:** the prior warning toast is dismissed (`clearNotifications()` calls `notifications.clearAll`) before the new info toast `Auto Import: Copied path — <basename>` appears.
 
 ### Explorer focus (no active editor)
 
 - [ ] **Explorer-only copy.** Close all editors (Cmd/Ctrl+W until empty). In Explorer, click `src/bar.ts` (single click — file selected, not opened).
 - [ ] Press `Cmd/Ctrl+Shift+A`.
-  **Expect:** toast `Auto Import: Copied bar.ts`. Clipboard has `bar.ts`'s absolute path.
+  **Expect:** toast `Auto Import: Copied path — bar.ts`. Clipboard has `bar.ts`'s absolute path.
+
+### No file to copy — `'no-file-to-copy'` toast
+
+The post-condition guard in `commands/copy-file-path.ts:31-34` rejects any clipboard read that isn't an absolute path with an extension, fires `'no-file-to-copy'`, and returns `false`.
+
+- [ ] **No focus, no Explorer selection.** Close every editor tab. Click an empty area of the Explorer pane (or click the editor's welcome page) so no file is selected anywhere. Note the current clipboard contents (e.g., copy `pre-existing` from another app first). Run Palette → `Auto Import: Copy File Path`.
+  **Expect:** warning toast `Auto Import: No file selected to copy.` Clipboard is unchanged (still `pre-existing` — no overwrite happened, since the round-trip read was rejected before the writeText call).
+
+- [ ] **Alt+D short-circuits paste when copy fails.** Same setup as above (no Explorer selection). Open `src/bar.ts` as the active editor. Press `Alt+D`.
+  **Expect:** warning toast `Auto Import: No file selected to copy.` AND `bar.ts` is unchanged — paste was never invoked because `commands/copy-paste.ts:6-8` short-circuits when `executeCopyFilePath` returns `false`.
 
 ### Re-copy overwrites clipboard
 
@@ -45,24 +55,24 @@ Validates `executeCopyFilePath` end-to-end. This is a prerequisite for every pas
 ### Files with special characters
 
 - [ ] **Spaced path.** Open the file at `my files/spaced.ts`. Copy it.
-  **Expect:** toast `Auto Import: Copied spaced.ts`. Pasting clipboard externally yields a path containing `my files` (with the space).
+  **Expect:** toast `Auto Import: Copied path — spaced.ts`. Pasting clipboard externally yields a path containing `my files` (with the space).
 
 - [ ] **Angular convention basename in toast.** Copy `src/components/app-root.component.ts`.
-  **Expect:** toast is `Auto Import: Copied app-root.component.ts` (full basename including the `.component.ts` suffix is preserved as-is).
+  **Expect:** toast is `Auto Import: Copied path — app-root.component.ts` (full basename including the `.component.ts` suffix is preserved as-is).
 
 ### Files of different extensions
 
 For each of these, the toast should match the basename verbatim:
 
-- [ ] `src/widget.tsx` → `Auto Import: Copied widget.tsx`
-- [ ] `src/badge.jsx` → `Auto Import: Copied badge.jsx`
-- [ ] `styles/main.scss` → `Auto Import: Copied main.scss`
-- [ ] `styles/_partial.scss` → `Auto Import: Copied _partial.scss` (underscore preserved in toast — only stripped at snippet generation)
-- [ ] `styles/global.css` → `Auto Import: Copied global.css`
-- [ ] `pages/index.html` → `Auto Import: Copied index.html`
-- [ ] `docs/README.md` → `Auto Import: Copied README.md`
-- [ ] `assets/logo.png` → `Auto Import: Copied logo.png`
-- [ ] `data/config.json` → `Auto Import: Copied config.json`
+- [ ] `src/widget.tsx` → `Auto Import: Copied path — widget.tsx`
+- [ ] `src/badge.jsx` → `Auto Import: Copied path — badge.jsx`
+- [ ] `styles/main.scss` → `Auto Import: Copied path — main.scss`
+- [ ] `styles/_partial.scss` → `Auto Import: Copied path — _partial.scss` (underscore preserved in toast — only stripped at snippet generation)
+- [ ] `styles/global.css` → `Auto Import: Copied path — global.css`
+- [ ] `pages/index.html` → `Auto Import: Copied path — index.html`
+- [ ] `docs/README.md` → `Auto Import: Copied path — README.md`
+- [ ] `assets/logo.png` → `Auto Import: Copied path — logo.png`
+- [ ] `data/config.json` → `Auto Import: Copied path — config.json`
 
 ## Known limitations / not bugs
 
@@ -70,10 +80,11 @@ For each of these, the toast should match the basename verbatim:
 
 ## Sign-off
 
-- [ ] Toast format correct
+- [ ] Toast format correct (info-level, includes `Copied path — `)
 - [ ] Clipboard population correct
 - [ ] `clearAll` works
 - [ ] Explorer-only copy works
+- [ ] No-file-to-copy toast fires (2 cases: Palette and Alt+D short-circuit)
 - [ ] Re-copy overwrites
 - [ ] Special-character paths work
 - [ ] All extension types tested

@@ -107,55 +107,49 @@ The `importIndicators` array in `insertSnippetAtBottom`:
 "@import '", '@import "', '@import url(', '@import (', "@use '", '@use "'
 ```
 
-Set `placement = Bottom`. For each indicator, prepare a destination file containing that line, then paste a new import. Verify it lands AFTER the existing line.
+Set `placement = Bottom`. The workspace ships purpose-built fixtures whose first lines exercise every indicator — no editing needed.
 
-### Script indicators
+### Script indicators — `with-imports.ts` and `with-requires.js`
 
-Create test fixtures or reuse existing files. Insert these as the first line of `src/bar.ts` (overwriting), then paste `src/foo.ts`:
+`with-imports.ts` contains existing `import …` lines; `with-requires.js` contains `var name = require(…)`, `const name = require(…)`, and `require(…)` (side-effect) — covering all four script indicators in one file each.
 
-- [ ] `import foo from './foo';` → new import at line 1 ✓
-- [ ] `var name = require('./x');` → new import at line 1 ✓
-- [ ] `const name = require('./x');` → new import at line 1 ✓
-- [ ] `require('./side-effect');` → new import at line 1 ✓
+- [ ] **`with-imports.ts` (covers `import `).** Open `with-imports.ts`. Copy `src/foo.ts` from Explorer. Paste.
+  **Expect:** new import lands AFTER the file's last `import …` line.
+- [ ] **`with-requires.js` (covers `var require(`, `const require(`, and bare `require(`).** Open `with-requires.js`. Copy `src/sibling.js`. Paste.
+  **Expect:** new import lands AFTER the file's last require-style line (whichever comes last — Bottom picks the LAST match).
 
-### Stylesheet indicators
+### Stylesheet indicators — `styles/with-imports.css` and `styles/with-uses.scss`
 
-In `styles/main.scss`, place each as line 0:
+`with-imports.css` covers all four `@import …` shapes. `with-uses.scss` covers both `@use '…'` and `@use "…"` plus `@import` for completeness.
 
-- [ ] `@import 'foo';` (single quotes) → new import at line 1 ✓
-- [ ] `@import "foo";` (double quotes) → at line 1 ✓
-- [ ] `@import url(foo);` → at line 1 ✓
-- [ ] `@import (reference) "foo";` → at line 1 ✓ (matches `@import (` prefix)
-- [ ] `@use 'foo';` (single) → at line 1 ✓
-- [ ] `@use "foo";` (double) → at line 1 ✓
+- [ ] **`styles/with-imports.css` (covers `@import '`, `@import "`, `@import url(`, `@import (`).** Open it. Copy `styles/reset.css`. Paste.
+  **Expect:** new `@import` lands AFTER the file's last `@import …` line.
+- [ ] **`styles/with-uses.scss` (covers `@use '`, `@use "`, plus existing `@import`).** Open it. Copy `styles/_partial.scss`. Paste.
+  **Expect:** new `@use`/`@import` lands AFTER the file's last `@use`/`@import` line.
+
+### HTML — Bottom is overridden to Cursor
+
+`.html` destinations *always* force cursor placement, so Bottom is meaningless there. `pages/with-resources.html` exists for the cursor-placement-around-resources test, not Bottom:
+
+- [ ] **Cursor lands after existing resources.** Open `pages/with-resources.html`. Place cursor on a blank line below the existing `<script>`/`<link>`/`<img>` block. Copy `src/sibling.js`. Paste.
+  **Expect:** `<script type="text/javascript" src="…">` inserted at the cursor (the override fires regardless of `placement`).
 
 ### Multiple existing imports — picks the LAST
 
-- [ ] `bar.ts` content:
-  ```ts
-  import a from './a';
-  import b from './b';
-  // some other code
-  import c from './c';
-  ```
-  Paste a new import.
-  **Expect:** lands AFTER line 3 (the `import c` line, which is the last `import ` match), at line 4.
+`with-imports.ts` already has multiple `import …` lines plus a non-import line between them.
+
+- [ ] Verify the new import lands AFTER the *last* `import` line (not the first). Bottom matches the last marker, not the first.
 
 ### No markers → line 0
 
-- [ ] Empty `bar.ts`. Paste. **Expect:** line 0.
-- [ ] `bar.ts` with only non-import code (`const x = 1;`). Paste. **Expect:** line 0.
+- [ ] Empty destination: paste into `empty-file.ts`. **Expect:** line 0.
+- [ ] No-marker destination: paste into `single-char.ts` (one byte, no markers). **Expect:** line 0.
 
 ### Documented heuristic false-positive
 
-- [ ] `bar.ts` content:
-  ```ts
-  // I want to import bar later
-  const x = 1;
-  ```
-  Paste. **Expect:** new import lands AFTER the comment line (matches the substring `import `). This is **documented heuristic limitation, not a bug** — see `src/editor/insert-snippet.ts` module header.
+`comments-only.ts` is purpose-built for this: it contains a comment with the substring `import ` inside, plus pure block comments.
 
-- [ ] `bar.ts` with: `const msg = "please import this";` Paste. **Expect:** import lands after the string-literal line. Same heuristic limitation.
+- [ ] **`comments-only.ts` Bottom landing.** Open it. Paste any valid TS source. **Expect:** new import lands AFTER the line `// I want to import bar later` (the heuristic matches the literal substring inside the comment). **Documented heuristic limitation, not a bug** — see `src/editor/insert-snippet.ts` module header.
 
 ## Per-language snippet column behavior
 
@@ -178,10 +172,11 @@ When inserting at line N (any placement), the column is computed once for the wh
 - [ ] Override #3 (stylesheet + non-stylesheet source — 5 cases)
 - [ ] Insertion column for 4 script types + 2 stylesheet types
 - [ ] Insertion column for HTML + MD
-- [ ] All 10 Bottom-marker indicators
+- [ ] All 10 Bottom-marker indicators (verified via `with-imports.ts`, `with-requires.js`, `styles/with-imports.css`, `styles/with-uses.scss`)
+- [ ] HTML cursor override around existing resources (`pages/with-resources.html`)
 - [ ] Multiple imports → picks last
-- [ ] No markers → line 0 (2 cases)
-- [ ] Heuristic false-positives documented (2 cases)
+- [ ] No markers → line 0 (2 cases via `empty-file.ts`, `single-char.ts`)
+- [ ] Heuristic false-positive documented (`comments-only.ts`)
 - [ ] Mid-flight setting change
 
 Tester / date: ___________________
