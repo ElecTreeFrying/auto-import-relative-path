@@ -33,7 +33,11 @@ export async function executeCopyFilePath(): Promise<boolean> {
     return false;
   }
 
-  showNotification('copy-success', { basename: path.basename(filePath) });
   await vscode.env.clipboard.writeText(filePath);
+  showNotification('copy-success', { basename: path.basename(filePath) }).then(action => {
+    if (action === 'Paste Now') {
+      void vscode.commands.executeCommand('extension.pasteImport');
+    }
+  });
   return true;
 }

@@ -2,6 +2,8 @@ import * as vscode from 'vscode';
 
 import { NotificationType } from '../types/notification';
 
+const SUPPORTED_PAIRS_URL = 'https://github.com/ElecTreeFrying/auto-import-relative-path#supported-source--destination-pairs';
+
 /**
  * Shows the toast that matches the given notification kind.
  *
@@ -16,23 +18,38 @@ import { NotificationType } from '../types/notification';
  * Six variants render as warning toasts (`showWarningMessage`); only
  * `'copy-success'` renders as an info toast (`showInformationMessage`).
  *
+ * Two variants surface an action button:
+ * - `'not-supported'` adds **View Supported Files** which opens the README's
+ *   supported-pairs section on GitHub. The click handler is self-contained
+ *   (fire-and-forget) so this overload still returns `void`.
+ * - `'copy-success'` adds **Paste Now**. This overload returns the underlying
+ *   `Thenable<string | undefined>` so the caller can run the paste-import
+ *   command on click without `editor/` reaching into `commands/`.
+ *
  * @param type - Which user-visible toast to surface.
  * @param payload - Values interpolated into the message for parameterized variants.
  */
 export function showNotification(type: 'same-file-path' | 'no-active-editor' | 'no-file-to-copy' | 'empty-clipboard'): void;
 export function showNotification(type: 'not-supported', payload: { sourceExt: string; destinationExt: string }): void;
 export function showNotification(type: 'source-not-found', payload: { basename: string }): void;
-export function showNotification(type: 'copy-success', payload: { basename: string }): void;
+export function showNotification(type: 'copy-success', payload: { basename: string }): Thenable<string | undefined>;
 export function showNotification(
   type: NotificationType,
   payload?: { sourceExt?: string; destinationExt?: string; basename?: string },
-): void {
+): Thenable<string | undefined> | void {
   switch (type) {
     case 'same-file-path':
       vscode.window.showWarningMessage('Auto Import: A file cannot import itself.');
       break;
     case 'not-supported':
-      vscode.window.showWarningMessage(`Auto Import: Cannot import ${payload!.sourceExt} into ${payload!.destinationExt} files.`);
+      vscode.window.showWarningMessage(
+        `Auto Import: Cannot import ${payload!.sourceExt} into ${payload!.destinationExt} files.`,
+        'View Supported Files',
+      ).then(action => {
+        if (action === 'View Supported Files') {
+          vscode.env.openExternal(vscode.Uri.parse(SUPPORTED_PAIRS_URL));
+        }
+      });
       break;
     case 'no-active-editor':
       vscode.window.showWarningMessage('Auto Import: Open a file to paste an import.');
@@ -47,8 +64,7 @@ export function showNotification(
       vscode.window.showWarningMessage(`Auto Import: Source file no longer exists: ${payload!.basename}.`);
       break;
     case 'copy-success':
-      vscode.window.showInformationMessage(`Auto Import: Copied path — ${payload!.basename}`);
-      break;
+      return vscode.window.showInformationMessage(`Auto Import: Copied path — ${payload!.basename}`, 'Paste Now');
   }
 }
 
