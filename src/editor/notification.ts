@@ -7,16 +7,19 @@ const SUPPORTED_PAIRS_URL = 'https://github.com/ElecTreeFrying/auto-import-relat
 /**
  * Shows the toast that matches the given notification kind.
  *
- * Three variants accept a payload that gets interpolated into the rendered message:
+ * Five variants accept a payload that gets interpolated into the rendered message:
  * - `'not-supported'` takes `{ sourceExt, destinationExt }`
  * - `'source-not-found'` takes `{ basename }`
  * - `'copy-success'` takes `{ basename }`
+ * - `'no-configurable-style'` takes `{ sourceExt, destinationExt }`
+ * - `'default-style-saved'` takes `{ description }`
  *
  * The remaining four variants take no payload. TypeScript overload resolution
  * enforces that callers pass the right payload (or omit it) for each kind.
  *
- * Six variants render as warning toasts (`showWarningMessage`); only
- * `'copy-success'` renders as an info toast (`showInformationMessage`).
+ * Seven variants render as warning toasts (`showWarningMessage`);
+ * `'copy-success'` and `'default-style-saved'` render as info toasts
+ * (`showInformationMessage`).
  *
  * Two variants surface action buttons:
  * - `'not-supported'` adds **View Supported Files** which opens the README's
@@ -35,9 +38,11 @@ export function showNotification(type: 'same-file-path' | 'no-active-editor' | '
 export function showNotification(type: 'not-supported', payload: { sourceExt: string; destinationExt: string }): void;
 export function showNotification(type: 'source-not-found', payload: { basename: string }): void;
 export function showNotification(type: 'copy-success', payload: { basename: string }): Thenable<string | undefined>;
+export function showNotification(type: 'no-configurable-style', payload: { sourceExt: string; destinationExt: string }): void;
+export function showNotification(type: 'default-style-saved', payload: { description: string }): void;
 export function showNotification(
   type: NotificationType,
-  payload?: { sourceExt?: string; destinationExt?: string; basename?: string },
+  payload?: { sourceExt?: string; destinationExt?: string; basename?: string; description?: string },
 ): Thenable<string | undefined> | void {
   switch (type) {
     case 'same-file-path':
@@ -71,6 +76,12 @@ export function showNotification(
         'Paste with Style',
         'Paste Now',
       );
+    case 'no-configurable-style':
+      vscode.window.showWarningMessage(`Auto Import: No configurable style for ${payload!.sourceExt} → ${payload!.destinationExt} files.`,);
+      break;
+    case 'default-style-saved':
+      vscode.window.showInformationMessage(`Auto Import: Default style saved — ${payload!.description}`);
+      break;
   }
 }
 
