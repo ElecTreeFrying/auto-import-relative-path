@@ -4,7 +4,7 @@ Workspace-config access for the extension.
 
 ## File
 
-- `settings.ts` — the only file; `getAutoImportSetting(namespaceKey, settingKey)` is the only public function.
+- `settings.ts` — the only file; `getAutoImportSetting(namespaceKey, settingKey)` reads, `setAutoImportSetting(namespaceKey, settingKey, value, target?)` writes. Both consult the same `AUTO_IMPORT_CONFIG` alias map; the writer defaults to `vscode.ConfigurationTarget.Global` because no `package.json` setting declares a `scope` field. The two helpers and the `AutoImportConfigNamespace` / `AutoImportSettingKey` type aliases are the only exports.
 
 ## The frozen `AUTO_IMPORT_CONFIG` map
 

@@ -33,11 +33,13 @@ The `'image'` value is the catch-all default for unrecognised extensions — *no
 
 ## `notification.ts` — `NotificationType`
 
-Seven variants: `'same-file-path' | 'not-supported' | 'no-active-editor' | 'no-file-to-copy' | 'empty-clipboard' | 'source-not-found' | 'copy-success'`. Five are raised from `commands/paste-import.ts`; `'no-file-to-copy'` and `'copy-success'` are raised from `commands/copy-file-path.ts`. Messages live in `editor/notification.ts`.
+Nine variants: `'same-file-path' | 'not-supported' | 'no-active-editor' | 'no-file-to-copy' | 'empty-clipboard' | 'source-not-found' | 'copy-success' | 'no-configurable-style' | 'default-style-saved'`. Five are raised from `commands/paste-import.ts` (also re-raised from `commands/paste-import-with-style.ts` and `commands/set-default-import-style.ts` for shared gating); `'no-file-to-copy'` and `'copy-success'` are raised from `commands/copy-file-path.ts`; the last two are raised exclusively from `commands/set-default-import-style.ts`. Messages live in `editor/notification.ts`.
 
-Three variants are parameterized — see the overload signatures on `editor/notification.ts:showNotification`:
+Five variants are parameterized — see the overload signatures on `editor/notification.ts:showNotification`:
 - `'not-supported'` takes `{ sourceExt, destinationExt }` — interpolated as `Cannot import .X into .Y files.`
 - `'source-not-found'` takes `{ basename }` — interpolated as `Source file no longer exists: <basename>.`
 - `'copy-success'` takes `{ basename }` — interpolated as `Copied path — <basename>` (info toast).
+- `'no-configurable-style'` takes `{ sourceExt, destinationExt }` — interpolated as `No configurable style for .X → .Y files.`
+- `'default-style-saved'` takes `{ description }` — interpolated as `Default style saved — <description>` (info toast).
 
-The remaining four take no payload. Six variants render as warning toasts; only `'copy-success'` renders as info.
+The remaining four take no payload. Seven variants render as warning toasts; `'copy-success'` and `'default-style-saved'` render as info.

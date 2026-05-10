@@ -6,8 +6,8 @@ Source root for the Auto Import Relative Path VS Code extension.
 
 | Path | Purpose |
 |------|---------|
-| `extension.ts` | Entry point. `activate` registers the three commands; `deactivate` is a no-op. |
-| `commands/` | Public command surface — one file per command (copy / paste / auto). |
+| `extension.ts` | Entry point. `activate` registers the five commands; `deactivate` is a no-op. |
+| `commands/` | Public command surface — one file per command (copy / paste / auto / paste-with-style / set-default-style). |
 | `editor/` | VS Code-API helpers (clipboard, snippet insertion, notifications). |
 | `snippets/` | Per-language snippet builders + dispatch. |
 | `path/` | Pure path math. No `vscode` import — Node-testable. |

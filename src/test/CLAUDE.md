@@ -4,7 +4,7 @@ Mocha BDD tests plus two large sibling directories that are deliberately out of 
 
 ## File
 
-- `extension.test.ts` — `describe('extension activation', () => { it('registers the three auto-import commands', ...) })`.
+- `extension.test.ts` — `describe('extension activation', () => { it('registers the five auto-import commands', ...) })`.
 
 ## Sibling directories — DO NOT read into
 
