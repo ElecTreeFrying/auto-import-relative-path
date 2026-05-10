@@ -85,7 +85,7 @@ function determineScssExtension(sourceFilePath: string): string {
   if (extractFileExtension(sourceFilePath) === '.css') {
     return extractFileExtension(sourceFilePath);
   }
-  const shouldPreserveExtension = getAutoImportSetting('stylesheet', 'preserveStylesheetFileExtension');
+  const shouldPreserveExtension = getAutoImportSetting('stylesheet', 'preserve');
   return shouldPreserveExtension ? extractFileExtension(sourceFilePath) : '';
 }
 

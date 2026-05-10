@@ -22,7 +22,7 @@ import { JAVASCRIPT_IMPORT_OPTIONS, resolveStyleIndex } from './_styles';
 export async function buildSnippet(): Promise<vscode.SnippetString> {
   const { sourceFilePath, relativePath } = await getFilePathInfo();
 
-  const shouldPreserveExtension = getAutoImportSetting('script', 'preserveScriptFileExtension');
+  const shouldPreserveExtension = getAutoImportSetting('script', 'preserve');
   const fileExtension = shouldPreserveExtension ? extractFileExtension(sourceFilePath) : '';
 
   return buildJavaScriptImportSnippet(relativePath + fileExtension);

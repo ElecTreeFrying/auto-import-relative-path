@@ -8,7 +8,7 @@ Workspace-config access for the extension.
 
 ## The frozen `AUTO_IMPORT_CONFIG` map
 
-Two-level alias map: top-level group → property aliases ↔ fully qualified VS Code paths.
+Top-level group → `{ namespace, settings }`. `namespace` is the fully qualified VS Code config path; `settings` is a sub-object that maps short aliases ↔ property names. Splitting metadata (`namespace`) out of the alias space means an alias can never collide with a metadata key.
 
 Four namespaces:
 
@@ -37,7 +37,7 @@ Adding or renaming a setting requires changes in three places that must stay byt
 
 ## Adding a new setting key
 
-1. New entry in the relevant `AUTO_IMPORT_CONFIG[namespaceKey]` object.
+1. New entry in the relevant `AUTO_IMPORT_CONFIG[namespaceKey].settings` object.
 2. Add the alias as a literal in the `AutoImportSettingKey` union type.
 3. Then complete the three-site sync above.
 

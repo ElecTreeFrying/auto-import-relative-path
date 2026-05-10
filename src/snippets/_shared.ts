@@ -64,7 +64,7 @@ export interface ReactImportOptions {
 export async function buildReactImport(opts: ReactImportOptions): Promise<vscode.SnippetString> {
   const { sourceFilePath, relativePath } = await getFilePathInfo();
 
-  const shouldPreserveExtension = getAutoImportSetting('script', 'preserveScriptFileExtension');
+  const shouldPreserveExtension = getAutoImportSetting('script', 'preserve');
   const fileExtension = shouldPreserveExtension ? extractFileExtension(sourceFilePath) : '';
   const sourceFileExt = extractFileExtension(sourceFilePath) as FileExtension;
 

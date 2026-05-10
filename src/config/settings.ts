@@ -28,38 +28,49 @@ import * as vscode from 'vscode';
 const { freeze } = Object;
 
 /**
- * Two-level alias map: top-level group (`preferences` / `script` /
- * `stylesheet` / `markup`) → property aliases ↔ fully qualified VS Code
- * setting paths. Frozen so mutations throw at runtime; consumed only by
- * {@link getAutoImportSetting}. See the file header for the three-site
- * sync requirement with `package.json` and `snippets/_styles.ts`.
+ * Top-level group (`preferences` / `script` / `stylesheet` / `markup`) →
+ * `{ namespace, settings }`, where `namespace` is the fully qualified VS
+ * Code config path and `settings` maps short aliases ↔ property names.
+ * The two-slot shape keeps group metadata (`namespace`) out of the alias
+ * space so an alias can never collide with a metadata key. Frozen so
+ * mutations throw at runtime; consumed only by {@link getAutoImportSetting}.
+ * See the file header for the three-site sync requirement with
+ * `package.json` and `snippets/_styles.ts`.
  */
 const AUTO_IMPORT_CONFIG = freeze({
   preferences: freeze({
     namespace: 'auto-import.preferences',
-    placement: 'importStatementPlacement',
+    settings: freeze({
+      placement: 'importStatementPlacement',
+    }),
   }),
   script: freeze({
     namespace: 'auto-import.importStatement.script',
-    preserve: 'preserveScriptFileExtension',
-    javascript: 'javascriptImportStyle',
-    typescript: 'typescriptImportStyle',
+    settings: freeze({
+      preserve: 'preserveScriptFileExtension',
+      javascript: 'javascriptImportStyle',
+      typescript: 'typescriptImportStyle',
+    }),
   }),
   stylesheet: freeze({
     namespace: 'auto-import.importStatement.styleSheet',
-    preserve: 'preserveStylesheetFileExtension',
-    css: 'cssImportStyle',
-    cssImage: 'cssImageImportStyle',
-    scss: 'scssImportStyle',
-    scssImage: 'scssImageImportStyle',
+    settings: freeze({
+      preserve: 'preserveStylesheetFileExtension',
+      css: 'cssImportStyle',
+      cssImage: 'cssImageImportStyle',
+      scss: 'scssImportStyle',
+      scssImage: 'scssImageImportStyle',
+    }),
   }),
   markup: freeze({
     namespace: 'auto-import.importStatement.markup',
-    htmlScript: 'htmlScriptImportStyle',
-    htmlImage: 'htmlImageImportStyle',
-    htmlStyleSheet: 'htmlStyleSheetImportStyle',
-    markdown: 'markdownImportStyle',
-    markdownImage: 'markdownImageImportStyle',
+    settings: freeze({
+      htmlScript: 'htmlScriptImportStyle',
+      htmlImage: 'htmlImageImportStyle',
+      htmlStyleSheet: 'htmlStyleSheetImportStyle',
+      markdown: 'markdownImportStyle',
+      markdownImage: 'markdownImageImportStyle',
+    }),
   }),
 });
 
@@ -88,14 +99,17 @@ type AutoImportConfigNamespace =
 type AutoImportSettingKey =
   /** Top/Bottom/Cursor placement of the inserted import. Pair with namespace `'preferences'`. */
   | 'placement'
-  /** Whether `.ts`/`.js`/etc. is preserved in the JS-style import path. Pair with `'script'`. */
-  | 'preserveScriptFileExtension'
+  /**
+   * Whether the source file extension is preserved on the import path.
+   * Pair with `'script'` (resolves to `preserveScriptFileExtension`) or
+   * `'stylesheet'` (resolves to `preserveStylesheetFileExtension`); the
+   * namespace disambiguates which package.json setting is read.
+   */
+  | 'preserve'
   /** Selected JavaScript import shape (one of nine entries in `JAVASCRIPT_IMPORT_OPTIONS`). Pair with `'script'`. */
   | 'javascript'
   /** Selected TypeScript import shape (one of five entries in `TYPESCRIPT_IMPORT_OPTIONS`). Pair with `'script'`. */
   | 'typescript'
-  /** Whether `.css`/`.scss` is preserved in stylesheet import paths. Pair with `'stylesheet'`. */
-  | 'preserveStylesheetFileExtension'
   /** Selected CSS import shape. Pair with `'stylesheet'`. */
   | 'css'
   /** Selected CSS image-reference shape (currently unused; see `_styles.ts:CSS_IMAGE_IMPORT_OPTIONS`). Pair with `'stylesheet'`. */
@@ -128,7 +142,8 @@ export function getAutoImportSetting<T = unknown>(
   namespaceKey: AutoImportConfigNamespace,
   settingKey: AutoImportSettingKey
 ): T | undefined {
-  const configuration = vscode.workspace.getConfiguration(AUTO_IMPORT_CONFIG[namespaceKey].namespace);
-  const settingProperty = AUTO_IMPORT_CONFIG[namespaceKey][settingKey];
+  const { namespace, settings } = AUTO_IMPORT_CONFIG[namespaceKey];
+  const configuration = vscode.workspace.getConfiguration(namespace);
+  const settingProperty = (settings as Record<AutoImportSettingKey, string>)[settingKey];
   return configuration.get<T>(settingProperty);
 }
