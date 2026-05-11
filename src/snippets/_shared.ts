@@ -16,8 +16,7 @@
  * markup, and YAML extensions emit `import ${1:name} from '${path}';`;
  * fonts and stylesheets emit a side-effect `import '${path}';`. The
  * `${1:name}` placeholder pre-selects the default identifier so typing
- * replaces it cleanly (the older `name$1` shape positioned the cursor
- * *after* literal "name", which forced users to backspace before retyping).
+ * replaces it cleanly instead of appending after a literal "name".
  * The switch intentionally hardcodes the source list — duplicating it as a
  * constant would just create two places to update. Reaching the `default:`
  * branch means an unsupported extension slipped through gating in

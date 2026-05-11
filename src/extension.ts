@@ -33,8 +33,6 @@ export function activate(context: vscode.ExtensionContext): void {
   );
 }
 
-/**
- * Deactivates the extension.
- */
+/** No-op — the extension holds no resources to release. */
 export function deactivate(): void {
 }

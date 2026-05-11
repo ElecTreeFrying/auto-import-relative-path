@@ -65,7 +65,7 @@ export const SCSS_SUPPORTED_EXTENSIONS: FileExtension[] = [
   ...IMAGE_FILE_EXTENSIONS,
 ];
 
-/** Destinations whose insertion column is forced to 0. Consumed only by `editor/insert-snippet.ts:determineInsertionColumn`. */
+/** Script destinations (`.ts`/`.tsx`/`.js`/`.jsx`) whose insertion column is forced to 0. Consumed only by `editor/insert-snippet.ts:determineInsertionColumn`. */
 export const SCRIPT_FILE_EXTENSIONS: FileExtension[] = [
   '.ts',
   '.tsx',
@@ -73,7 +73,7 @@ export const SCRIPT_FILE_EXTENSIONS: FileExtension[] = [
   '.jsx',
 ];
 
-/** Destinations whose insertion column is forced to 0. Consumed only by `editor/insert-snippet.ts:determineInsertionColumn`. */
+/** Stylesheet destinations (`.css`/`.scss`) whose insertion column is forced to 0. Consumed only by `editor/insert-snippet.ts:determineInsertionColumn`. */
 export const STYLESHEET_FILE_EXTENSIONS: FileExtension[] = [
   '.scss',
   '.css',

@@ -1,3 +1,9 @@
+/**
+ * TSX destination — thin wrapper that invokes the shared React algorithm
+ * (`_shared.ts:buildReactImport`) with TS snippets as the primary builder
+ * and JS as the fallback for `.js` sources. See `_shared.ts` for the
+ * source-extension dispatch and non-script hardcoded branch.
+ */
 import * as vscode from 'vscode';
 
 import { buildJavaScriptImportSnippet } from './javascript';
