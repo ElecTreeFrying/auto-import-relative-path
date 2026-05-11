@@ -89,6 +89,7 @@ Every cell of the source-extension × destination-extension matrix is reachable 
 | Capability | Where to look |
 |------------|---------------|
 | All 8 destination snippet builders (`.ts/.tsx/.js/.jsx/.css/.scss/.html/.md`) | every directory above contains at least one destination of each kind |
+| Style-picker variants for `pasteImportWithStyle` + `setDefaultImportStyle` (every applicable shape per source/destination pair) | same fixtures as the row above — both pickers reuse the destination switch in `snippets/variants.ts:buildImportSnippetVariants` |
 | All 5 Angular auto-naming suffixes (`.component`, `.module`, `.directive`, `.pipe`, `.service`) | `src/components/` |
 | Non-Angular TS file (negative auto-name case) | `src/helpers.ts`, `src/utils/*.ts`, `src/lib-style modules` |
 | ES modules vs CommonJS (`module.exports`, `exports.x`, `var require`, `const require`) | `src/legacy/*.js`, `with-requires.js`, `src/sibling.js`, `src/other.js` |
@@ -108,6 +109,8 @@ Every cell of the source-extension × destination-extension matrix is reachable 
 
 ## Maintenance notes
 
-- The baseline filenames (`foo.ts`, `bar.ts`, `helpers.ts`, `sibling.js`, `other.js`, `widget.tsx`, `badge.jsx`, `app-root.component.ts`, `auth.module.ts`, `highlight.directive.ts`, `trim.pipe.ts`, `user.service.ts`, `_partial.scss`, `_variables.scss`, `main.scss`, `secondary.scss`, `global.css`, `reset.css`, `_partials/_nested.scss`, `index.html`, `about.html`, `README.md`, `guide.md`, `logo.png`, `icon.gif`, `photo.jpeg`, `photo.jpg`, `thumb.webp`, `font.woff2`, `regular.ttf`, `icon.svg`, `config.json`, `config.yaml`, `locale.yml`, `empty-file.ts`, `comments-only.ts`, `my files/spaced.ts`) are **referenced by checklists 01–17** under `../manual-qa/`. Renaming them breaks the checklists.
+- The baseline filenames (`foo.ts`, `bar.ts`, `helpers.ts`, `sibling.js`, `other.js`, `widget.tsx`, `badge.jsx`, `app-root.component.ts`, `auth.module.ts`, `highlight.directive.ts`, `trim.pipe.ts`, `user.service.ts`, `_partial.scss`, `_variables.scss`, `main.scss`, `secondary.scss`, `global.css`, `reset.css`, `_partials/_nested.scss`, `index.html`, `about.html`, `README.md`, `guide.md`, `logo.png`, `icon.gif`, `photo.jpeg`, `photo.jpg`, `thumb.webp`, `font.woff2`, `regular.ttf`, `icon.svg`, `config.json`, `config.yaml`, `locale.yml`, `empty-file.ts`, `comments-only.ts`, `my files/spaced.ts`) are **referenced by every checklist in `../manual-qa/`** (`01-sanity-and-keybindings.md` through `18-style-pickers.md`). Renaming them silently breaks the checklists — the tester will be told to copy a file that no longer exists at that path.
 - Realistic siblings (`api-client.ts`, the `Button.tsx` family, `_mixins.scss`, etc.) are free to rename — they're for ad-hoc exploratory QA.
 - Image and font files are zero-byte placeholders. The extension only inspects file extensions, so real binary content is unnecessary.
+
+See `CLAUDE.md` in this directory for fixture-role mappings (which code path each fixture group exercises) and the "baselines are immutable" invariant. See `../manual-qa/README.md` for the checklist run-order and master sign-off.
