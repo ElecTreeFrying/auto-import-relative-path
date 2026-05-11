@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.7.0] - 2026-05-09
+## [0.7.0] - 2026-05-11
 
 ### Added
 - **Specific, actionable error toasts.** Two generic warnings (`"Same file path"`, `"Not supported"`) are now **five distinct messages** that tell you what to do next instead of leaving you to guess:
@@ -9,6 +9,21 @@
   - *"Open a file to paste an import."* — paste invoked without an active editor.
   - *"No file selected to copy."* — copy invoked without a focused file.
   - *"Clipboard does not contain a file path. Use Auto Import: Copy File Path on a source file first."* — paste invoked before any path was copied.
+- **Pick the import shape on the fly with two new commands.** The command surface grows from 3 to 5; the new entries focus on style choice without round-tripping through Settings:
+  - **`Auto Import: Paste as Import (Pick Style)`** (`extension.pasteImportWithStyle`) — opens a QuickPick of every applicable import shape for the current source → destination pair and inserts the one you choose. Reachable from the Command Palette and from the new **"Paste with Style"** button on the *Copied path — &lt;basename&gt;* toast (so the picker is one click away from copy). Single-shape destinations (HTML, Markdown text, CSS image, SCSS image, JSX/TSX non-script source) skip the picker and insert directly — no UI noise where there is only one valid shape.
+  - **`Auto Import: Set Default Import Style`** (`extension.setDefaultImportStyle`) — same picker, but persists your choice to **User (Global) settings** instead of inserting a snippet. The currently-selected default is hoisted to the top of the list and tagged with a `$(check) Current default` icon, so you always know which shape is active before you change it.
+- **Three new toast actions.** Existing toasts gain actionable buttons so common follow-ups are one click away:
+  - **"Paste with Style"** on the *Copied path — &lt;basename&gt;* toast → invokes `Auto Import: Paste as Import (Pick Style)`.
+  - **"Paste Now"** on the same toast → invokes `Auto Import: Paste as Import` for users who would rather click than reach for the keybinding.
+  - **"View Supported Files"** on the *can't be imported* toast → opens the README's supported source/destination pairs section on GitHub.
+- **Two new style-flow toasts.** The `NotificationType` union grows from 7 to 9 to cover the Set Default Import Style flow:
+  - *"Auto Import: No configurable style for `<sourceExt>` → `<destinationExt>` files."* — raised when the destination has only a single hardcoded shape (HTML, Markdown text, CSS image, SCSS image, JSX/TSX non-script source) and there is nothing for the user to pick.
+  - *"Auto Import: Default style saved — `<style>`."* — info toast confirming the new default landed in User settings.
+- **Picker labels render as basename.** QuickPick rows now show a tight basename identifier (`widget`, `utils`) instead of the full relative path — easier to scan when picking among 5+ shapes. The inserted snippet is unchanged and still uses the full relative path (e.g., `import { Widget } from '../../components/widget'`).
+- **`setAutoImportSetting(namespace, key, value, target?)` writer** in `src/config/settings.ts` — symmetric counterpart to the existing `getAutoImportSetting` reader, used by `Auto Import: Set Default Import Style` to persist the chosen shape. Defaults to `vscode.ConfigurationTarget.Global` (User scope) since every extension setting is global by design.
+- **Style metadata on `ImportSnippetVariant`.** Variants derived from a `*_IMPORT_OPTIONS` table now carry a `setting: { namespace, key, value }` reference (byte-exact against `package.json:enum`) so the Set-Default picker can persist the user's choice without re-deriving the destination → settings-table mapping at write time.
+- **Five-command registration test** in `src/test/extension.test.ts` — iterates `vscode.commands.getCommands(true)` and asserts all five commands are registered, guarding against accidental registration drift after refactors.
+- **Pre-built manual-QA fixture workspace** at `src/test/manual-qa-workspace/` — ~158 source/destination fixture files covering every supported pair, gating-rejection cases, Angular suffix conventions, and edge cases (whitespace/Unicode/deep paths). Opened in the Extension Development Host during manual-QA walks; intentionally excluded from the Mocha runner so it remains a static paste-source/destination fixture rather than an automated suite.
 - **`typescript-eslint`** unified package (replaces the separate `@typescript-eslint/parser` + `@typescript-eslint/eslint-plugin`).
 - **`npm-run-all`** to power the parallel `watch:*` scripts.
 
@@ -26,6 +41,7 @@
 - **Toolchain modernization.** Bumped `engines.vscode` to `^1.118.0`, refreshed scaffold configs (`eslint.config.mjs`, `.vscode/tasks.json`, `.vscode/extensions.json`, `.vscodeignore`, `esbuild.js`) to match the latest `yo code` conventions, and updated `devDependencies`.
 - **Bundler migration.** Replaced webpack with esbuild (`esbuild.js` replaces `webpack.config.js`). Production bundle is now **~11 KB** — down from ~14 KB earlier in this release cycle, a roughly 20% reduction in shipped JS that translates to a slightly faster cold activation.
 - **Built for AI-assisted maintenance.** The source tree is layered into seven single-responsibility directories with comprehensive TSDoc on every module, function, type, interface property, constant, and union member — every intent and invariant is documented inline and surfaces in IntelliSense. Future updates, issue triage, and contributor onboarding are first-class AI workflows: an LLM (or a human) can read any file in isolation and understand its role, its consumers, and the invariants it must preserve.
+- **`AUTO_IMPORT_CONFIG` internal restructure.** The internal config map went from `{ namespace: { settingKey: propertyName } }` to `{ namespace: { namespace, settings: { settingKey: propertyName } } }` so the namespace string can live alongside the alias map without colliding. Both `script` and `stylesheet` namespaces now expose the same alias `'preserve'` — the namespace disambiguates which `preserve*FileExtension` setting it resolves to. **No `package.json` setting names changed** — public configuration paths (`auto-import.importStatement.script.*`, `auto-import.importStatement.styleSheet.*`) remain identical, so existing user settings carry over without migration.
 - **Build pipeline.** Adopted the modern scaffold's `compile`/`watch`/`package` scripts — `compile` now runs `check-types && lint && esbuild` in series; `watch` runs parallel `watch:tsc` + `watch:esbuild` via `npm-run-all`.
 - **`@types/node` pinning.** Switched from wildcard `22.x` to explicit `^22.19.18` to match the rest of the deps' caret-+-full-version style.
 - **`tsconfig.json`.** Added defensive `compilerOptions.types: ["node", "mocha"]` to make `@types/node` and `@types/mocha` ambient inclusion explicit (prevents intermittent VS Code TS Server phantom `TS2591` errors after a `node_modules` rebuild).
