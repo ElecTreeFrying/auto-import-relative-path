@@ -60,20 +60,20 @@ You know the file you want. You know it's somewhere two folders up and one over.
 - **Picks the right import shape** for your destination — ES module `import`, CommonJS `require`, dynamic `import()`, SCSS `@use`, HTML `<script>` / `<link>` / `<img>`, Markdown `![](…)`, and more.
 - **Drops it in the right place** — top of your imports, bottom of your imports, or at the cursor (HTML and Markdown automatically use the cursor).
 
-It's a 100% local extension. **No telemetry, no network calls, no AI.** ~11 KB bundle. Activates on demand.
+It's a 100% local extension. **No telemetry, no network calls, no AI.** ~11 KB gzipped. Activates on demand.
 
 ---
 
 ## Highlights
 
-- **Three commands, three keystrokes** — Copy a path, Paste an import, or Auto (do both in one step).
+- **Five commands, three keystrokes** — Copy / Paste / Auto on the keyboard, plus *Paste (Pick Style)* and *Set Default Import Style* from the Command Palette.
 - **Eight destination languages** — JavaScript, TypeScript, JSX, TSX, CSS, SCSS, HTML, Markdown.
 - **22 configurable import styles** — ES modules, CommonJS, dynamic, `@use`, `@import`, side-effect-only, and more.
 - **Angular-aware naming** — `app-root.component.ts` automatically becomes `import { AppRootComponent } from '...'`.
 - **SCSS partial-aware** — `_variables.scss` becomes `variables` in the import path, matching Sass conventions.
 - **Smart placement** — Top, Bottom (after the last import line), or Cursor — with sensible auto-overrides for HTML / Markdown / non-stylesheet → stylesheet destinations.
 - **Cross-language assets** — Image, font, JSON, YAML, HTML, and Markdown sources can be imported into JSX / TSX as default or side-effect imports.
-- **~11 KB bundle, zero runtime dependencies** — Activates on first command, vanishes the rest of the time.
+- **~11 KB gzipped, zero runtime dependencies** — Activates on first command, vanishes the rest of the time.
 
 ---
 
@@ -81,11 +81,13 @@ It's a 100% local extension. **No telemetry, no network calls, no AI.** ~11 KB b
 
 1. **Install** the extension (see [Installation](#installation)).
 2. **Open** your project and any source file in the editor.
-3. **Right-click** a file in the Explorer panel and pick **Auto Import: Auto** — or press <kbd>Alt</kbd>+<kbd>D</kbd> / <kbd>Option</kbd>+<kbd>D</kbd>.
+3. **Right-click** a file in the Explorer panel and pick **Auto Import: Insert Import from Selected File** — or press <kbd>Alt</kbd>+<kbd>D</kbd> / <kbd>Option</kbd>+<kbd>D</kbd>.
 
 That's it. The import lands in your editor and your cursor is positioned at the identifier so you can name it.
 
 > **Two-step workflow:** Press <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> on a source file to copy its path, then <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>I</kbd> in any editor to paste the import. The clipboard holds the path until you copy something else, so you can paste the same import into many files in a row.
+
+> **Pick a style on the fly:** Press <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> and run *Auto Import: Paste as Import (Pick Style)* — or click *Paste with Style* on the "Copied …" toast — to choose an import shape for one paste without changing your default.
 
 → [**See the full demo gallery**][DEMO]
 
@@ -95,13 +97,17 @@ That's it. The import lands in your editor and your cursor is positioned at the 
 
 ## Commands & Keybindings
 
-| Command                | Windows / Linux           | macOS                    | What it does                                                                                       |
-|------------------------|---------------------------|--------------------------|----------------------------------------------------------------------------------------------------|
-| **Auto Import: Copy**  | <kbd>Ctrl+Shift+A</kbd>   | <kbd>Cmd+Shift+A</kbd>   | Copies the selected Explorer file's path to the clipboard. Shows a `Copied <basename>` toast.      |
-| **Auto Import: Paste** | <kbd>Ctrl+I</kbd>         | <kbd>Cmd+I</kbd>         | Reads the clipboard path and inserts the language-appropriate import into the active editor.       |
-| **Auto Import: Auto**  | <kbd>Alt+D</kbd>          | <kbd>Option+D</kbd>      | Copy + Paste in one step from the Explorer. Active editor must be open in the background.          |
+The first three commands are bound to keystrokes; the last two live in the Command Palette (one is also reachable from a button on the "Copied …" toast).
 
-All three commands are also available from the command palette (<kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>, search `Auto Import`) and are rebindable from VS Code's keyboard shortcuts editor.
+| Command (palette title)                              | Windows / Linux             | macOS                       | What it does                                                                                                                                       |
+|------------------------------------------------------|-----------------------------|-----------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Auto Import: Copy File Path**                      | <kbd>Ctrl+Shift+A</kbd>     | <kbd>Cmd+Shift+A</kbd>      | Copies the selected Explorer file's path to the clipboard. Shows a "Copied &lt;basename&gt;" toast with two action buttons: *Paste Now* and *Paste with Style*. |
+| **Auto Import: Paste as Import**                     | <kbd>Ctrl+I</kbd>           | <kbd>Cmd+I</kbd>            | Reads the clipboard path and inserts the language-appropriate import into the active editor.                                                       |
+| **Auto Import: Insert Import from Selected File**    | <kbd>Alt+D</kbd>            | <kbd>Option+D</kbd>         | Copy + Paste in one step from the Explorer. Active editor must be open in the background.                                                          |
+| **Auto Import: Paste as Import (Pick Style)**        | — (Command Palette / toast) | — (Command Palette / toast) | Like Paste, but opens a QuickPick of every import style accepted for the current source/destination pair. Inserts once; does **not** change your default. |
+| **Auto Import: Set Default Import Style**            | — (Command Palette)         | — (Command Palette)         | Opens a QuickPick of styles for the current source/destination pair and writes the chosen one to your global User settings as the new default. The current default is marked with a check and pinned to the top. |
+
+All five commands are available from the command palette (<kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>, search `Auto Import`). The three keyboard commands are rebindable from VS Code's keyboard shortcuts editor.
 
 [Demo — two-step Copy + Paste][demo-twostep] · [Demo — one-step Auto][demo-onestep] · [Demo — copy once, paste many][demo-many]
 
@@ -324,7 +330,7 @@ import '_relativePath_';                           ← ES module side-effect (no
 - **Same-directory clarity.** A leading `./` is always added for same-directory imports (`./Button`, never `Button`). Required for ES modules and matches what bundlers expect.
 - **Mixing CSS into SCSS just works.** The `.css` extension is preserved on the import path even when `preserveStylesheetFileExtension` is off — Sass needs it to recognise a plain-CSS import.
 - **HTML / Markdown ignore your placement preference.** Insertion is always at the cursor for these languages, so you can leave `importStatementPlacement` set to `Bottom` for your scripts and HTML / Markdown still inserts inline.
-- **Rebind the keys.** `extension.copyFilePath`, `extension.pasteImport`, and `extension.copyPaste` are rebindable from VS Code's keyboard shortcuts editor — useful if `Cmd+I` clashes with another extension you use.
+- **Rebind the keys.** `extension.copyFilePath`, `extension.pasteImport`, and `extension.copyPaste` are rebindable from VS Code's keyboard shortcuts editor — useful if `Cmd+I` clashes with another extension you use. The two palette-only commands (`extension.pasteImportWithStyle` and `extension.setDefaultImportStyle`) have no default keybinding; assign one from the same editor if you reach for them often.
 
 ---
 
@@ -343,7 +349,7 @@ import '_relativePath_';                           ← ES module side-effect (no
 - **VS Code:** v1.118.0 or later.
 - **VS Code-compatible hosts:** Cursor, VSCodium, Code Server, and other forks that implement the public VS Code API at the same engine version are supported. The extension uses no proprietary APIs.
 - **Operating systems:** macOS, Windows, Linux. Paths are normalised to forward slashes regardless of platform.
-- **Bundle:** ~11 KB minified. No runtime dependencies.
+- **Bundle:** ~11 KB gzipped (~41 KB on disk). No runtime dependencies.
 - **Telemetry / network:** None. Everything happens locally.
 
 ---

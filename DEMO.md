@@ -21,6 +21,9 @@ A visual tour of every workflow, every placement mode, and every supported sourc
   - [One-step Auto](#one-step-auto)
   - [Two-step Copy + Paste](#two-step-copy--paste)
   - [Copy once, paste across tabs](#copy-once-paste-across-tabs)
+- [Style Pickers](#style-pickers)
+  - [Pick a style on the fly](#pick-a-style-on-the-fly)
+  - [Change your default without opening Settings](#change-your-default-without-opening-settings)
 - [Placement Modes](#placement-modes)
   - [Cursor](#cursor)
   - [Bottom (default)](#bottom-default)
@@ -40,13 +43,15 @@ A visual tour of every workflow, every placement mode, and every supported sourc
 
 ## At a Glance
 
-| Command                | Windows / Linux           | macOS                    | What it does                                                                                       |
-|------------------------|---------------------------|--------------------------|----------------------------------------------------------------------------------------------------|
-| **Auto Import: Copy**  | <kbd>Ctrl+Shift+A</kbd>   | <kbd>Cmd+Shift+A</kbd>   | Copy the relative path of the selected Explorer file to the clipboard.                             |
-| **Auto Import: Paste** | <kbd>Ctrl+I</kbd>         | <kbd>Cmd+I</kbd>         | Read the clipboard path and insert the import statement into the active editor.                    |
-| **Auto Import: Auto**  | <kbd>Alt+D</kbd>          | <kbd>Option+D</kbd>      | Copy + Paste in one step — select a file in Explorer and import it without switching focus.        |
+| Command (palette title)                              | Windows / Linux             | macOS                       | What it does                                                                                              |
+|------------------------------------------------------|-----------------------------|-----------------------------|-----------------------------------------------------------------------------------------------------------|
+| **Auto Import: Copy File Path**                      | <kbd>Ctrl+Shift+A</kbd>     | <kbd>Cmd+Shift+A</kbd>      | Copy the relative path of the selected Explorer file to the clipboard. Toast shows *Paste Now* and *Paste with Style* buttons. |
+| **Auto Import: Paste as Import**                     | <kbd>Ctrl+I</kbd>           | <kbd>Cmd+I</kbd>            | Read the clipboard path and insert the import statement into the active editor.                           |
+| **Auto Import: Insert Import from Selected File**    | <kbd>Alt+D</kbd>            | <kbd>Option+D</kbd>         | Copy + Paste in one step — select a file in Explorer and import it without switching focus.               |
+| **Auto Import: Paste as Import (Pick Style)**        | — (Command Palette / toast) | — (Command Palette / toast) | Open a QuickPick of every import shape accepted for the current pair. Inserts once; default unchanged.    |
+| **Auto Import: Set Default Import Style**            | — (Command Palette)         | — (Command Palette)         | Open a QuickPick of styles for the current pair and persist the choice to your global User settings.      |
 
-> All three commands also appear in the command palette (<kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>, search `Auto Import`) and are rebindable from VS Code's keyboard shortcuts editor.
+> All five commands appear in the command palette (<kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>, search `Auto Import`); the three with default keybindings are rebindable from VS Code's keyboard shortcuts editor.
 
 ---
 
@@ -88,6 +93,26 @@ Because the path lives in your clipboard until you copy something else, you can 
 
 ---
 
+## Style Pickers
+
+The keystroke commands always emit your *default* import shape for each language. Two palette commands — `extension.pasteImportWithStyle` and `extension.setDefaultImportStyle` — let you pick a different shape, either for one paste or as the new default, without leaving the editor.
+
+### Pick a style on the fly
+
+Press <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> → *Auto Import: Paste as Import (Pick Style)*, or click *Paste with Style* on the "Copied …" toast that appears after Copy. A QuickPick opens with every import shape accepted for the current source/destination pair (e.g. `.ts` → `.ts` shows the five TypeScript shapes; `.png` → `.tsx` shows the single default-import shape and inserts immediately). The chosen style is inserted once; your `*ImportStyle` settings are not touched.
+
+**When to use:** when you usually want the default but this one paste needs a different shape — a side-effect import, a `@use … as *`, or a CommonJS `require` in an otherwise-ESM file.
+
+### Change your default without opening Settings
+
+Press <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> → *Auto Import: Set Default Import Style*. The QuickPick lists every style for the source/destination pair you have in front of you, with your current default marked `$(check) Current default` and pinned to the top. Pick a new one and it's persisted to your global VS Code User settings.
+
+**When to use:** when you've decided you want a different default but don't want to navigate Settings UI to find the right key.
+
+> **Some destinations don't have a configurable default** — HTML, Markdown links, and CSS/SCSS image references all use a single hardcoded shape. *Set Default Import Style* shows a "no configurable style" notice in those cases.
+
+---
+
 ## Placement Modes
 
 Where the import lands is controlled by `auto-import.preferences.importStatementPlacement` (default: `Bottom`).
@@ -103,16 +128,25 @@ Set `importStatementPlacement` to `Cursor`. The import inserts at the current cu
 [cursor]: https://res.cloudinary.com/october7/image/upload/v1679982363/github/auto-import-relative-path/cursor.gif "Import inserted at cursor position"
 
 ```ts
-function MyComponent() {
-  return <div />;            ← cursor was here
-}                             ← caret position before paste
+import { useState } from 'react';
+import { Header } from './Header';
+                                              ← cursor on the blank line here
+
+export function App() {
+  return <div />;
+}
 
 // after paste:
-function MyComponent() {
-  import { Button } from './Button';   ← inserted exactly where the cursor was
+import { useState } from 'react';
+import { Header } from './Header';
+import { Button } from './Button';            ← inserted at the cursor's row (column auto-snapped to 0 for scripts)
+
+export function App() {
   return <div />;
 }
 ```
+
+For HTML and Markdown destinations, the column is **not** snapped — the snippet inserts inline at the exact cursor column. That makes the auto-override (`shouldRepositionCursor`) feel natural for those languages: you type around the inserted `<script>` / `![](…)` mid-line.
 
 ---
 

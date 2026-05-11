@@ -69,6 +69,18 @@ Because the **destination decides the syntax**. Pasting into `.scss` produces `@
 
 **Yes.** Open VS Code's keyboard shortcuts editor (<kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>K</kbd> <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>S</kbd>), search for `extension.copyFilePath`, `extension.pasteImport`, or `extension.copyPaste`, and rebind. Useful if `Cmd+I` clashes with another extension you use.
 
+The two palette-only commands — `extension.pasteImportWithStyle` and `extension.setDefaultImportStyle` — have no default keybinding; assign one from the same editor if you use them often.
+
+### How do I pick an import style without changing my default?
+
+Run **Auto Import: Paste as Import (Pick Style)** from the Command Palette (<kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>) — or click *Paste with Style* on the "Copied …" toast that appears after Copy. A QuickPick opens with every import shape accepted for the current source/destination pair. Pick one and it's inserted once; your `*ImportStyle` settings are not modified.
+
+### How do I change my default import style without opening Settings?
+
+Run **Auto Import: Set Default Import Style** from the Command Palette. The QuickPick lists every style for the current source/destination pair (e.g. open a `.ts` file with a `.ts` source on the clipboard to set your TypeScript default). Your current default is marked with a check and pinned to the top. The chosen style is written to your global VS Code User settings.
+
+Some destinations don't have a configurable default — HTML, Markdown links, and CSS/SCSS image references all use a single hardcoded shape. The command shows a "no configurable style" notice in those cases.
+
 ### Can I import a folder (barrel) instead of a file?
 
 **Not directly.** The extension targets individual files. If you have an `index.ts` barrel, copy that file specifically. There is no `dir → import './dir';` shortcut yet — [open an issue][issues] if you'd like one.
@@ -183,7 +195,7 @@ Each section below is **symptom → cause → fix**. If your issue isn't here, [
 
 **Cause:** Another extension or keymap binds the same combo (`Ctrl+I`, `Ctrl+Shift+A`, or `Alt+D`).
 
-**Fix:** Rebind from VS Code's keyboard shortcuts editor (<kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>K</kbd> <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>S</kbd>). The command IDs to search for are `extension.copyFilePath`, `extension.pasteImport`, and `extension.copyPaste`.
+**Fix:** Rebind from VS Code's keyboard shortcuts editor (<kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>K</kbd> <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>S</kbd>). The command IDs to search for are `extension.copyFilePath`, `extension.pasteImport`, and `extension.copyPaste` — the only three with default keybindings. The palette-only commands (`extension.pasteImportWithStyle`, `extension.setDefaultImportStyle`) accept assignments from the same editor if you want to give them a key.
 
 ---
 
@@ -252,7 +264,7 @@ The source tree is **layered by responsibility**, with strict directional depend
 ```
 src/
 ├── extension.ts             ← entry point: activate / deactivate
-├── commands/                ← public command surface (3 commands)
+├── commands/                ← public command surface (5 commands)
 ├── editor/                  ← VS Code-API helpers (clipboard, snippets, notifications)
 ├── snippets/                ← per-language snippet builders + dispatch
 ├── path/                    ← pure path math (no `vscode` import; Node-testable)
