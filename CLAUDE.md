@@ -53,7 +53,7 @@ The source tree is layered by responsibility, with strict directional dependenci
 
 ```
 src/
-├── extension.ts                # activate/deactivate; registers the 3 commands
+├── extension.ts                # activate/deactivate; registers the 5 commands
 ├── commands/                   # public command surface (one file per command)
 ├── editor/                     # VS Code-API touching helpers (clipboard, snippets, notifications)
 ├── snippets/                   # per-language snippet builders + dispatch

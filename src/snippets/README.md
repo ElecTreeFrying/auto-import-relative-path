@@ -1,12 +1,13 @@
 # src/snippets/
 
-Per-language snippet builders and the destination-extension dispatch. The public surface of this directory is `dispatch.ts:buildImportSnippet()`.
+Per-language snippet builders and the destination-extension dispatch. The public surface of this directory is `dispatch.ts:buildImportSnippet()` (default paste flow) and `variants.ts:buildImportSnippetVariants()` (pick-style + set-default flows).
 
 ## Files
 
 | File | Purpose |
 |------|---------|
-| `dispatch.ts` | `buildImportSnippet()` — switches on `destinationFileExt` and delegates. The public entry point. |
+| `dispatch.ts` | `buildImportSnippet()` — switches on `destinationFileExt` and delegates. The public entry point for the default paste flow. |
+| `variants.ts` | `buildImportSnippetVariants()` — enumerates every applicable style for the current source/destination pair. Consumed by `pasteImportWithStyle` and `setDefaultImportStyle`; renders full-path snippets for insertion and basename-only labels for the QuickPick in parallel. |
 | `javascript.ts` | JS shapes (9 styles) via `auto-import.importStatement.script.javascriptImportStyle`. |
 | `typescript.ts` | TS shapes (5 styles), with Angular PascalCase substitution at index 1. |
 | `jsx.ts` | JSX entry — delegates to `_shared.ts:buildReactImport` with JS as primary. |

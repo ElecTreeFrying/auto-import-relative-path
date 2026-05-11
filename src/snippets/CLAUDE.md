@@ -33,7 +33,7 @@ Parameterised by `primaryExtensions` / `primarySnippet` (and optional `fallbackE
 
 Non-script sources fall through to a hardcoded `switch`:
 
-- `.gif`/`.jpeg`/`.jpg`/`.png`/`.webp`/`.json`/`.html`/`.yml`/`.yaml`/`.md` → `import name$1 from '<path>';`
+- `.gif`/`.jpeg`/`.jpg`/`.png`/`.webp`/`.json`/`.html`/`.yml`/`.yaml`/`.md` → `import ${1:name} from '<path>';`
 - `.woff`/`.woff2`/`.ttf`/`.eot`/`.css`/`.scss` → `import '<path>';` (side-effect)
 - `default:` → empty `SnippetString` (means an unsupported extension slipped through gating in `commands/paste-import.ts`).
 

@@ -4,9 +4,9 @@ Reads user settings from VS Code's workspace configuration.
 
 ## Files
 
-| File | Public function | Purpose |
-|------|-----------------|---------|
-| `settings.ts` | `getAutoImportSetting<T>(namespaceKey, settingKey): T \| undefined` | Single accessor over the frozen `AUTO_IMPORT_CONFIG` map. |
+| File | Public functions | Purpose |
+|------|------------------|---------|
+| `settings.ts` | `getAutoImportSetting<T>(namespaceKey, settingKey): T \| undefined`, `setAutoImportSetting<T>(namespaceKey, settingKey, value, target?): Thenable<void>` | Reader/writer pair over the frozen `AUTO_IMPORT_CONFIG` map. Writer defaults to `ConfigurationTarget.Global` (no `scope` field on any `package.json` setting). |
 
 ## Namespaces
 

@@ -6,7 +6,7 @@ Mocha BDD tests run via `@vscode/test-cli` against the `out/` build (NOT the esb
 
 | File | Purpose |
 |------|---------|
-| `extension.test.ts` | Smoke test: asserts the three auto-import commands are registered after extension activation. |
+| `extension.test.ts` | Smoke test: asserts the five auto-import commands are registered after extension activation. |
 
 ## Subdirectories
 

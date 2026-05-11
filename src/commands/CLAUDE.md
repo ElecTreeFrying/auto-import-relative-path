@@ -23,7 +23,7 @@ Delegates to VS Code's built-in `copyFilePath`, then reads the clipboard and re-
 
 Calls `clearNotifications()` first, then `showNotification('copy-success', { basename })` on success or `showNotification('no-file-to-copy')` on failure. Both helpers live in `editor/notification.ts`.
 
-On success, the `copy-success` toast carries two action buttons — **Paste Now** and **Paste with Style** — and the post-toast `.then` handler dispatches `extension.pasteImport` / `extension.pasteImportWithStyle` based on which the user clicked. **Two-site byte-exact contract**: the button label string in `editor/notification.ts` and the `switch` case in this file must match character-for-character — `showInformationMessage` resolves with the literal clicked label, so any drift silently no-ops.
+On success, the `copy-success` toast carries two action buttons — **Paste with Style** and **Paste Now** (in that render order, leftmost first) — and the post-toast `.then` handler dispatches `extension.pasteImportWithStyle` / `extension.pasteImport` based on which the user clicked. **Two-site byte-exact contract**: the button label string in `editor/notification.ts` and the `switch` case in this file must match character-for-character — `showInformationMessage` resolves with the literal clicked label, so any drift silently no-ops.
 
 ## `paste-import.ts` — the heart of the gating logic
 
