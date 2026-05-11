@@ -24,7 +24,7 @@
   "pricing": "Free",
   "badges": [
     {
-      "url": "https://vsmarketplacebadge.apphb.com/version-short/Electreefrying.auto-import.png",
+      "url": "https://vsmarketplacebadges.dev/version-short/ElecTreeFrying.auto-import.png",
       "description": "Version badge",
       "href": "https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import"
     },
@@ -348,7 +348,7 @@
   "devDependencies": {
     "@types/vscode": "^1.118.0",
     "@types/mocha": "^10.0.10",
-    "@types/node": "22.x",
+    "@types/node": "^22.19.18",
     "esbuild": "^0.28.0",
     "eslint": "^9.39.3",
     "npm-run-all": "^4.1.5",
