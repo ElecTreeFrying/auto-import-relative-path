@@ -40,15 +40,15 @@ Non-script sources fall through to a hardcoded `switch`:
 
 ## Language quirks
 
-### TypeScript Angular substitution — **only at index 1**
+### TypeScript legacy-Angular substitution — **only at index 1**
 
-Index 1 is `import { name } from '_relativePath_';`. When the path contains `.component`, `.directive`, `.pipe`, `.service`, or `.module` (Angular filename conventions), `generateImportName(relativePath)` returns a PascalCase identifier derived from the basename:
+Index 1 is `import { name } from '_relativePath_';`. When the path matches a suffix in `LEGACY_ANGULAR_FILE_SUFFIXES` (`.component`, `.directive`, `.pipe`, `.service`, `.module` — the pre-standalone Angular filename convention), `generateAngularLegacyImportName(relativePath)` returns a PascalCase identifier derived from the basename:
 
 ```
 app-root.component.ts → import { AppRootComponent } from '...';
 ```
 
-Every other index uses `$1` unconditionally. Don't break this when refactoring `buildTypeScriptImportSnippet()`.
+This is back-compat support: kept because legacy Angular codebases (v2–v17, ~2016 onward) follow this convention; newer standalone-components-era Angular (v17+) generally does not — those paths just fall through to the `$1` placeholder. Every other index uses `$1` unconditionally. Don't break this when refactoring `buildTypeScriptImportSnippet()`.
 
 ### SCSS — partial filename + `.css` always preserved
 
