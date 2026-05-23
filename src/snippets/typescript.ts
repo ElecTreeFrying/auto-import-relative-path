@@ -48,25 +48,6 @@ export function buildTypeScriptImportSnippetByStyle(
   }
 }
 
-/**
- * Back-compat for the legacy Angular filename convention: returns a
- * PascalCase identifier derived from the basename when the path matches a
- * suffix in `LEGACY_ANGULAR_FILE_SUFFIXES` (`.component`, `.directive`,
- * `.pipe`, `.service`, `.module` — the pre-standalone Angular naming
- * convention); returns `'$1'` otherwise. Newer (v17+) Angular code that
- * doesn't use these suffixes falls through to the `$1` placeholder like
- * any other TS path.
- *
- * @remarks
- * Strips a trailing script extension (`.ts`/`.tsx`/`.js`/`.jsx`) first so
- * that `preserveScriptFileExtension: true` doesn't fold the extension into
- * the identifier (otherwise `app-root.component.ts` → `AppRootComponentTs`).
- * Then replaces every `.` with `-`, splits on `-`, capitalises each segment,
- * and joins. So `app-root.component` → `AppRootComponent`.
- *
- * @param relativePath - The import path being inserted into the snippet.
- * @returns The PascalCase identifier, or `'$1'` placeholder for non-legacy-Angular paths.
- */
 function generateAngularLegacyImportName(relativePath: string): string {
   if (LEGACY_ANGULAR_FILE_SUFFIXES.some(suffix => relativePath.includes(suffix))) {
     const ext = extractFileExtension(relativePath);

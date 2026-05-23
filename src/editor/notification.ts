@@ -55,14 +55,6 @@ export function showNotification(
   }
 }
 
-/**
- * Dismisses any lingering notification toasts so a fresh one isn't visually stacked on top.
- *
- * @remarks
- * Fire-and-forget — VS Code's `notifications.clearAll` returns a Thenable we
- * deliberately don't await. Centralized here so commands don't reach into
- * `vscode.commands.executeCommand` for notification-system side effects.
- */
 export function clearNotifications(): void {
   vscode.commands.executeCommand('notifications.clearAll');
 }
