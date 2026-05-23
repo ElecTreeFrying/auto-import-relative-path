@@ -2,7 +2,7 @@
 
 Rubric for what TSDoc, `CLAUDE.md` prose, and `README.md` narrative should say in this extension. **Living gate** — append to the decisions log (§8) when a new shape is settled; never frame as sealed.
 
-This file does **not** override `src/CLAUDE.md`'s standing rule that every module / exported function / type / interface property / constant has TSDoc. Coverage stays at 100%. What this file settles is *what those comments say*.
+This file sets both *what* the comments say and *where* they exist. The target shape: every file under `src/` has a module header; every exported function/type/interface property/constant with non-obvious WHY has TSDoc; private helpers and union-literal variants earn TSDoc only when they encode something the signature doesn't reveal. Pure-WHAT comments are absent — not deleted, but never written.
 
 ## §1 Scope
 
@@ -40,30 +40,30 @@ Principles the rubric draws from. No version-pinned URLs (link-rot).
 - **Name silent-failure modes.** The `package.json` ↔ `_styles.ts` ↔ per-language `switch` sync (a typo silently returns the default style); the `importIndicators` marker list in `editor/insert-snippet.ts` (a new `import` syntax form silently lands at line 0).
 - **Cite the test by name when defending a regression.** "Regression-tested by `<test-describe-string>`" — not by changelog version. Test names don't rot.
 - **Flag hidden coupling explicitly.** `SCRIPT_FILE_EXTENSIONS` and `STYLESHEET_FILE_EXTENSIONS` in `constants/extensions.ts` are consumed by exactly one site (`editor/insert-snippet.ts:determineInsertionColumn`); say so.
-- **Module-header TSDoc on every `src/` file** (existing rule).
-- **TSDoc on every exported function, type, interface property, and constant** (existing rule).
+- **Module-header TSDoc on every `src/` file** (blanket rule — see §6).
+- **TSDoc on every exported function, type, interface property, and constant when WHY isn't in the signature** (blanket rule — see §6).
 
 ## §5 Must not do
 
-- **Restate the function name in prose.** "Activates the extension" on a function named `activate` is the canonical case (`src/extension.ts:26`).
-- **`@param` descriptions that restate the type.** `context - The extension context provided by VS Code` on `context: vscode.ExtensionContext` is the canonical case (`src/extension.ts:24`).
+- **Restate the function name in prose.** A TSDoc opening line that says "Activates the extension" above `function activate(...)` — the name already says it.
+- **`@param` descriptions that restate the type.** `context - The extension context provided by VS Code` for `context: vscode.ExtensionContext` — the type already says it.
 - **Editorialize feature size.** "Registers five commands" / "the eight-clause conjunction" / "the ten-marker list" / "nine notifications" — counting things turns a list into a named mechanism it isn't.
-- **Cite changelog version numbers in source comments.** "Regression-tested per CHANGELOG 0.6.1" (currently in `path/relative.ts` and `path/extension.ts`) rots when CHANGELOG conventions change. Cite the test name.
-- **Triple-document the same fact** across TSDoc + nested `CLAUDE.md` + root `CLAUDE.md`. Pick the layer closest to the code. The Bottom-placement marker list is currently in `insert-snippet.ts` TSDoc, in `src/editor/CLAUDE.md`, and in root `CLAUDE.md`; three sites to update on every change.
+- **Cite changelog version numbers in source comments.** A TSDoc that says "Regression-tested per CHANGELOG 0.6.1" rots when CHANGELOG conventions change. Cite the test name.
+- **Triple-document the same fact** across TSDoc + nested `CLAUDE.md` + root `CLAUDE.md`. Pick the layer closest to the code.
 - **Use `{@link}` inside narrative prose.** Every rename forces a doc-only edit at every prose reference. Reserve `{@link}` for `@see` / `@returns` / `@param` where it's tool-aware.
 
 ## §6 House-style departures (kept deliberately)
 
-These stay even when they look pure-WHAT to the rubric in §2 — the file-level symmetry is the point:
+Blanket rules that stay even when the rubric in §2 would otherwise flag them:
 
-- Module-header TSDoc on every file
-- TSDoc on every exported function/type/interface property/constant
-- TSDoc on every private/internal helper (e.g. `path/relative.ts:toUnixPath`, `path/relative.ts:areFilesInSameDirectory`)
-- TSDoc on every union-literal variant (e.g. `types/notification.ts:NotificationType`'s nine variants)
+- Module-header TSDoc on every file under `src/`
+- TSDoc on every exported function/type/interface property/constant whose WHY isn't already in the signature
 - Nested `CLAUDE.md` + `README.md` per directory under `src/`
 - Block comments only — no `//` line comments under `src/`
 
-The rubric in §2 governs the *content* of these blocks, not their existence. A TSDoc on a private helper that says "Replaces every backslash with a forward slash" passes house style; one that says "Standardises path separators to ensure cross-platform compatibility for downstream consumers" fails §2(4) and gets trimmed.
+**Private helpers and union-literal variants are opt-in, not blanket.** A private helper earns TSDoc only when it encodes a non-obvious rule (`snippets/typescript.ts:generateImportName`'s Angular substitution, `snippets/scss.ts:normalizePartialFilename`'s partial-stripping). A union variant earns TSDoc only when it carries a hidden contract the type name and surrounding context don't reveal. A helper named `toUnixPath` whose body is `filePath.replace(/\\/g, '/')` does not earn one.
+
+The rubric in §2 governs the *content* of every block — including the blanket ones above. A module-header that says "Snippet builders for Markdown destinations" passes; one that says "This file contains the snippet builders for Markdown destinations and serves as the primary integration point for the Markdown language module" fails §2(4) and gets trimmed.
 
 ## §7 Vocabulary to retire
 
@@ -71,7 +71,7 @@ Concrete replacements for framework-voice phrases currently in the repo.
 
 | Replace | With | Rationale |
 |---|---|---|
-| "byte-exact contract" | "must match character-for-character" | Say it once at the canonical site (`config/settings.ts`), not in every consuming file |
+| "byte-exact contract" | "must match character-for-character" | Say it once at the canonical site (`src/config/CLAUDE.md`), not in every consuming file |
 | "the eight-clause conjunction" | "the gating check" | Counting clauses names an `\|\|`-chain into a mechanism it isn't |
 | "single source of truth" | name the function | Always a specific function — say which |
 | "canonical list" / "canonical rejection ledger" | (delete the adjective) | Carries no information |
@@ -90,9 +90,9 @@ Living table. Each row records a comment shape with a decision and a one-line ra
 | `@param X - The X provided by Y` | bar | Restates the type |
 | Restating the function name in TSDoc opening line | bar | Redundant with signature |
 | Citing changelog version in source | bar | Rots; cite test name |
-| Module-header TSDoc on every file | keep | Existing rule; onboarding |
-| TSDoc on private helpers | keep | Symmetry |
-| TSDoc on union-literal variants | keep | Symmetry |
+| Module-header TSDoc on every file | keep | Onboarding signal for visitors and contributors; mandated by §6 |
+| TSDoc on private helpers | opt-in | Only when the helper encodes a non-obvious rule (Angular substitution, SCSS partial-stripping) |
+| TSDoc on union-literal variants | opt-in | Only when a variant carries a hidden contract the type name doesn't reveal |
 | `{@link}` inside narrative prose | bar | Drift hazard on rename |
 | `{@link}` in `@see` / `@returns` / `@param` | allow | Tool-aware |
 | Counting clauses / sites / markers in prose | bar | Framework-voice tell |
@@ -108,40 +108,65 @@ Considered and rejected, recorded so contributors don't re-litigate:
 
 - **Auto-generated TSDoc from signatures** — captures WHAT, not WHY. WHY is the point of TSDoc here.
 - **ESLint rule enforcing comment shape** — too lax to matter or too strict to apply at this scale. Manual review is the gate.
-- **Stripping TSDoc from internal / private helpers** — breaks file-level symmetry. House-style departure stays.
+- **Blanket TSDoc on every private/internal helper** — produces pure-WHAT comments on mechanical helpers (`toUnixPath`, `areFilesInSameDirectory`) that fail §2(4). Opt-in per §6 instead — only helpers that encode a non-obvious rule earn TSDoc.
 - **Collapsing nested `CLAUDE.md` into a single root file** — per-directory invariants stay close to the code they govern.
 - **Removing all `{@link}` references** — allowed in tool-aware tags. Only barred from narrative prose.
 - **Single-line `//` comments for short remarks** — break the block-only house style. If a comment is short enough to fit on one line, write it as `/** ... */` anyway.
 
 ## §10 Worked examples
 
-Five existing-comment verdicts, applying the rubric.
+Five verdicts illustrating the policy in §§2 + 6.
 
-### Keep — `src/extension.ts:36`
+### Keep — model module header for a small file
+
+For `src/path/relative.ts` (currently has no header):
 
 ```ts
-/** No-op — the extension holds no resources to release. */
-export function deactivate(): void {
+/**
+ * Computes the import-ready relative path from `destination`'s directory to
+ * `source`. Returns a Unix-style path with the file extension stripped.
+ *
+ * Pure — no `vscode` import; Node-testable.
+ */
+```
+
+Three short lines. Names the role; flags the testability invariant. Passes §2 — every clause carries information a reader couldn't recover from a directory listing.
+
+### Keep — model exported-symbol TSDoc when WHY isn't in the signature
+
+For `computeRelative(sourceFilePath, destinationFilePath)`:
+
+```ts
+/**
+ * Adds `./` when the two files share a directory or when `path.relative`
+ * produced a result that doesn't already start with `.` (covers absolute →
+ * relative edges where the raw result would be `'foo'` not `'./foo'`).
+ *
+ * Regression-tested by `extension.test.ts > computeRelative > same-directory prefix`.
+ */
+```
+
+No `@param` lines — the signature is self-describing. The `./` prefix rule is the non-obvious WHY. Test cited by name (§4), not by changelog version (§5).
+
+### Keep — `snippets/typescript.ts:generateImportName` TSDoc (already in repo)
+
+The Angular `.component` / `.directive` / `.pipe` / `.service` / `.module` filename convention drives a PascalCase substitution that nothing else in the codebase signals. The TSDoc is the only mechanism that explains why `app-root.component.ts` becomes `{ AppRootComponent }`. §2(3) load-bearing — keep as-is when Pass-B runs.
+
+### Skip — private helper that does NOT earn TSDoc
+
+`src/path/relative.ts:toUnixPath`:
+
+```ts
+function toUnixPath(filePath: string): string {
+  return filePath.replace(/\\/g, '/');
 }
 ```
 
-§2(2) — removing it would let a reader wonder if cleanup was forgotten. Answers WHY for an empty body in six words. Model for the project.
+One-line body, mechanical, name says it. Adding TSDoc here would fail §2(4) — the tone would be disproportionate. Same call for `areFilesInSameDirectory` in the same file.
 
-### Keep — `src/snippets/typescript.ts:generateImportName` TSDoc
+### Skip — union-literal variants that do NOT each earn TSDoc
 
-The Angular `.component` / `.directive` / `.pipe` / `.service` / `.module` filename convention drives a PascalCase substitution that nothing else in the codebase signals. Removing the TSDoc would leave a string-includes chain that looks arbitrary. §2(3) load-bearing.
-
-### Fix — `src/extension.ts:10-25` (`activate` TSDoc)
-
-Fails §2(1) (restates the function name) and §2(4) (enumerates a command surface that's already visible in the six-line body). Tone-down or delete. The two genuinely-non-obvious commands (`pasteImportWithStyle`, `setDefaultImportStyle`) are already documented in their own files.
-
-### Fix — `src/commands/paste-import.ts:1-33` module header
-
-The "eight-clause conjunction" framing fails §5 (editorializing feature size). The clauses themselves are real and worth listing, but call the structure "the gating check" — counting clauses turns an `||`-chain into a Named Mechanism it doesn't need to be. Reduce to ~10 lines listing the gating tables referenced.
-
-### Mixed — `src/path/relative.ts:1-21` module header
-
-The `./` prefix rule explanation passes §2(3) — real edge case, real algorithm. **Keep that.** The "regression-tested per CHANGELOG 0.6.1" line fails §5 — replace with the test's `describe` string from `src/test/extension.test.ts`. The "Cross-platform" subhead is fine. The "Same-directory check is case-insensitive" subhead is also fine — both explain decisions a reader couldn't recover from the code.
+`src/types/notification.ts:NotificationType` has nine variants. The variant names are self-describing (`'same-file-path'`, `'no-active-editor'`, etc.); the per-variant message contracts live in `src/editor/notification.ts:showNotification`'s overload signatures and in `src/types/CLAUDE.md`'s "`notification.ts` — `NotificationType`" section. Per-variant TSDoc would triple-document and fail §5 ("Triple-document the same fact"). Skip.
 
 ## §11 Amending this file
 
@@ -155,4 +180,4 @@ This document is the gate, not the spec. The gate moves as decisions are made.
 
 ## §12 Retroactive application
 
-This file does not retroactively edit existing comments. A cleanup pass against existing TSDoc / `CLAUDE.md` / `README.md` content is a separate stepped effort — one commit per file or per logical group, plan-mode approval per step.
+Commit `02b8030` retroactively stripped pure-WHAT TSDoc from `src/` against an earlier draft of this criteria, leaving `src/` near-zero on TSDoc coverage pending a reapplication pass. Subsequent comment-shape passes follow the same stepped pattern: one commit per file or per logical group, plan-mode approval per step, with literal Before / After previews of every doc edit.
