@@ -38,7 +38,7 @@ Verify every fix from this session. **If any of these fails, the fix has regress
 
 ## Bug #2 — TypeScript Angular naming with `preserveScriptFileExtension`
 
-**File:** `src/snippets/typescript.ts:generateImportName`. Was producing `AppRootComponentTs` when extension preservation was on. Now correctly produces `AppRootComponent`.
+**File:** `src/snippets/typescript.ts:generateAngularLegacyImportName`. Was producing `AppRootComponentTs` when extension preservation was on. Now correctly produces `AppRootComponent`.
 
 ### Configure
 - `auto-import.importStatement.script.typescriptImportStyle` = `import { name } from '_relativePath_';`

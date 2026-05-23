@@ -29,7 +29,7 @@ This table is the unique value of this `CLAUDE.md` versus the sibling `README.md
 
 | Fixture group | Code site it exercises |
 |---------------|------------------------|
-| `src/components/*.{component,module,directive,pipe,service}.ts` | `src/snippets/typescript.ts:generateImportName` — Angular PascalCase substitution at style index 1 only |
+| `src/components/*.{component,module,directive,pipe,service}.ts` | `src/snippets/typescript.ts:generateAngularLegacyImportName` — Angular PascalCase substitution at style index 1 only |
 | `styles/_*.scss`, `styles/_partials/_nested.scss`, `styles/components/_*.scss` | `src/snippets/scss.ts:normalizePartialFilename` — leading-`_` strip on the *last* path segment |
 | `with-imports.ts`, `with-requires.js`, `styles/with-imports.css`, `styles/with-uses.scss`, `pages/with-resources.html` | `src/editor/insert-snippet.ts:importIndicators` — Bottom-placement landing across all 10 markers |
 | `unsupported/{Main.java, styles.less, animation.mov, archive.zip}`, `assets/icon.svg` | `src/commands/paste-import.ts` 8-clause gating conjunction; `assets/icon.svg` additionally hits the JSX/TSX/MDX `_shared.ts:default:` branch |

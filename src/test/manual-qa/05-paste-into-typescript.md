@@ -3,7 +3,7 @@
 Validates TS-snippet generation, `.ts`-as-destination gating, and the Angular PascalCase auto-naming at style index 1.
 
 **Sources:**
-- `src/snippets/typescript.ts` — snippet builder + `generateImportName`
+- `src/snippets/typescript.ts` — snippet builder + `generateAngularLegacyImportName`
 - `src/commands/paste-import.ts` — gating
 - `src/constants/extensions.ts` — `.ts` NOT in `CROSS_IMPORT_DESTINATIONS`
 
