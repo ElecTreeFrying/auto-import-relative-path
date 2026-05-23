@@ -6,6 +6,14 @@ import { extractFileExtension } from '../path/extension';
 import { getFilePathInfo } from '../editor/file-path-info';
 import { TYPESCRIPT_IMPORT_OPTIONS, resolveStyleIndex } from './_styles';
 
+const LEGACY_ANGULAR_FILE_SUFFIXES = [
+  '.component',
+  '.directive',
+  '.pipe',
+  '.service',
+  '.module',
+];
+
 export async function buildSnippet(): Promise<vscode.SnippetString> {
   const { sourceFilePath, relativePath } = await getFilePathInfo();
 
@@ -28,7 +36,7 @@ export function buildTypeScriptImportSnippetByStyle(
     case 0:
       return new vscode.SnippetString(`import $1 from '${relativePath}';`);
     case 1:
-      return new vscode.SnippetString(`import { ${generateImportName(relativePath)} } from '${relativePath}';`);
+      return new vscode.SnippetString(`import { ${generateAngularLegacyImportName(relativePath)} } from '${relativePath}';`);
     case 2:
       return new vscode.SnippetString(`import { default as $1 } from '${relativePath}';`);
     case 3:
@@ -41,9 +49,13 @@ export function buildTypeScriptImportSnippetByStyle(
 }
 
 /**
- * Returns a PascalCase identifier derived from the basename when the path
- * matches an Angular filename convention (`.component`, `.directive`,
- * `.pipe`, `.service`, `.module`); returns `'$1'` otherwise.
+ * Back-compat for the legacy Angular filename convention: returns a
+ * PascalCase identifier derived from the basename when the path matches a
+ * suffix in `LEGACY_ANGULAR_FILE_SUFFIXES` (`.component`, `.directive`,
+ * `.pipe`, `.service`, `.module` — the pre-standalone Angular naming
+ * convention); returns `'$1'` otherwise. Newer (v17+) Angular code that
+ * doesn't use these suffixes falls through to the `$1` placeholder like
+ * any other TS path.
  *
  * @remarks
  * Strips a trailing script extension (`.ts`/`.tsx`/`.js`/`.jsx`) first so
@@ -53,16 +65,10 @@ export function buildTypeScriptImportSnippetByStyle(
  * and joins. So `app-root.component` → `AppRootComponent`.
  *
  * @param relativePath - The import path being inserted into the snippet.
- * @returns The PascalCase identifier, or `'$1'` placeholder for non-Angular paths.
+ * @returns The PascalCase identifier, or `'$1'` placeholder for non-legacy-Angular paths.
  */
-function generateImportName(relativePath: string): string {
-  if (
-    relativePath.includes('.component') ||
-    relativePath.includes('.directive') ||
-    relativePath.includes('.pipe') ||
-    relativePath.includes('.service') ||
-    relativePath.includes('.module')
-  ) {
+function generateAngularLegacyImportName(relativePath: string): string {
+  if (LEGACY_ANGULAR_FILE_SUFFIXES.some(suffix => relativePath.includes(suffix))) {
     const ext = extractFileExtension(relativePath);
     const withoutExt = (ext === '.ts' || ext === '.tsx' || ext === '.js' || ext === '.jsx')
       ? relativePath.slice(0, -ext.length)

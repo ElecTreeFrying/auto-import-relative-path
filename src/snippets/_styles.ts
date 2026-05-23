@@ -22,7 +22,7 @@ export const JAVASCRIPT_IMPORT_OPTIONS: ImportStyle[] = [
 
 export const TYPESCRIPT_IMPORT_OPTIONS: ImportStyle[] = [
   { value: 0, description: "import name from '_relativePath_';", tag: 'ES module: default import' },
-  { value: 1, description: "import { name } from '_relativePath_';", tag: 'ES module: named import — Angular files (.component / .directive / .pipe / .service / .module) auto-fill PascalCase identifiers' },
+  { value: 1, description: "import { name } from '_relativePath_';", tag: 'ES module: named import — legacy Angular files (.component / .directive / .pipe / .service / .module) auto-fill PascalCase identifiers (back-compat)' },
   { value: 2, description: "import { default as name } from '_relativePath_';", tag: 'ES module: aliased default import' },
   { value: 3, description: "import * as name from '_relativePath_';", tag: 'ES module: namespace import (every export bound under one name)' },
   { value: 4, description: "import '_relativePath_';", tag: 'ES module: side-effect import (no binding)' },
