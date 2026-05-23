@@ -35,6 +35,7 @@ type WebFileExtension =
 type ScriptFileExtension =
   | '.ts'
   | '.tsx'
+  | '.mdx'
   | '.js'
   | '.jsx';
 

@@ -32,7 +32,7 @@ This table is the unique value of this `CLAUDE.md` versus the sibling `README.md
 | `src/components/*.{component,module,directive,pipe,service}.ts` | `src/snippets/typescript.ts:generateImportName` — Angular PascalCase substitution at style index 1 only |
 | `styles/_*.scss`, `styles/_partials/_nested.scss`, `styles/components/_*.scss` | `src/snippets/scss.ts:normalizePartialFilename` — leading-`_` strip on the *last* path segment |
 | `with-imports.ts`, `with-requires.js`, `styles/with-imports.css`, `styles/with-uses.scss`, `pages/with-resources.html` | `src/editor/insert-snippet.ts:importIndicators` — Bottom-placement landing across all 10 markers |
-| `unsupported/{Main.java, styles.less, animation.mov, archive.zip}`, `assets/icon.svg` | `src/commands/paste-import.ts` 8-clause gating conjunction; `assets/icon.svg` additionally hits the JSX/TSX `_shared.ts:default:` branch |
+| `unsupported/{Main.java, styles.less, animation.mov, archive.zip}`, `assets/icon.svg` | `src/commands/paste-import.ts` 8-clause gating conjunction; `assets/icon.svg` additionally hits the JSX/TSX/MDX `_shared.ts:default:` branch |
 | `empty-file.ts`, `whitespace-only.ts`, `single-char.ts`, `comments-only.ts` | Degenerate-document destinations; `comments-only.ts` specifically catches the Bottom-placement heuristic false-positive on the substring `import ` inside a comment |
 | `my files/spaced.ts`, `unicode-paths/{日本語.ts, café-menu.tsx}` | `src/path/relative.ts:computeRelative` — non-ASCII + space-containing path computation |
 | `deeply/nested/components/widgets/*`, `very-deep/level-01/.../level-09/extreme-leaf.ts` | `src/path/relative.ts` — multi-level `../` traversal (4 and 9 levels) |

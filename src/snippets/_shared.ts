@@ -41,6 +41,7 @@ export async function buildReactImport(opts: ReactImportOptions): Promise<vscode
     case '.yml':
     case '.yaml':
     case '.md':
+    case '.mdx':
       return new vscode.SnippetString(`import \${1:name} from '${fullPath}';`);
     case '.woff':
     case '.woff2':

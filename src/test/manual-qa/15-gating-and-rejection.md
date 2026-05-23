@@ -7,7 +7,7 @@ Validates every rejection path: no active editor, empty/garbage clipboard, same-
 - `src/commands/copy-file-path.ts` — post-condition guard fires `no-file-to-copy` and returns `false`; `commands/copy-paste.ts` short-circuits on that return
 - `src/constants/extensions.ts` — `CROSS_IMPORT_DESTINATIONS`, `HTML/MARKDOWN/CSS/SCSS_SUPPORTED_EXTENSIONS`
 - `src/snippets/dispatch.ts` — empty `SnippetString('')` for unhandled destination
-- `src/snippets/_shared.ts` — empty for unhandled JSX/TSX source
+- `src/snippets/_shared.ts` — empty for unhandled JSX/TSX/MDX source
 - `src/editor/notification.ts` — seven `NotificationType` variants (six warning + one info), each with verbatim text the toast must match
 - `src/types/notification.ts` — the string-literal union (no enum)
 
@@ -137,7 +137,7 @@ Empty snippet. Most direct path: a destination not handled by dispatch.
 
 - [ ] **Custom unsupported extension.** `touch foo.unknown` at the workspace root, open it. Copy `src/foo.ts`. Paste. **Expect:** `Auto Import: Cannot import .ts into .unknown files.`
 
-- [ ] **JSX/TSX with unsupported source.** `assets/icon.svg` → `src/badge.jsx`. **Expect:** `Auto Import: Cannot import .svg into .jsx files.` (`.svg` isn't in primary or fallback or the hardcoded switch → `_shared.ts` `default:` returns empty.)
+- [ ] **JSX/TSX/MDX with unsupported source.** `assets/icon.svg` → `src/badge.jsx`. **Expect:** `Auto Import: Cannot import .svg into .jsx files.` (`.svg` isn't in primary or fallback or the hardcoded switch → `_shared.ts` `default:` returns empty.)
 
 - [ ] **TSX with .jsx source.** `src/badge.jsx` → `src/widget.tsx`. **Expect:** `Auto Import: Cannot import .jsx into .tsx files.` (`.jsx` not in primary `[.ts,.tsx]` or fallback `[.js]`.)
 

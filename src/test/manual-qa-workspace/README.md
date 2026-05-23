@@ -88,7 +88,7 @@ Every cell of the source-extension × destination-extension matrix is reachable 
 
 | Capability | Where to look |
 |------------|---------------|
-| All 8 destination snippet builders (`.ts/.tsx/.js/.jsx/.css/.scss/.html/.md`) | every directory above contains at least one destination of each kind |
+| All 9 destination snippet builders (`.ts/.tsx/.js/.jsx/.mdx/.css/.scss/.html/.md`) | every directory above contains at least one destination of each kind except `.mdx` (fixture pending — code-supported, no fixture file yet) |
 | Style-picker variants for `pasteImportWithStyle` + `setDefaultImportStyle` (every applicable shape per source/destination pair) | same fixtures as the row above — both pickers reuse the destination switch in `snippets/variants.ts:buildImportSnippetVariants` |
 | All 5 Angular auto-naming suffixes (`.component`, `.module`, `.directive`, `.pipe`, `.service`) | `src/components/` |
 | Non-Angular TS file (negative auto-name case) | `src/helpers.ts`, `src/utils/*.ts`, `src/lib-style modules` |
@@ -97,11 +97,11 @@ Every cell of the source-extension × destination-extension matrix is reachable 
 | Nested-partial path (`_partials/` directory keeps underscore) | `styles/_partials/_nested.scss` |
 | All 5 image extensions (`.gif/.jpeg/.jpg/.png/.webp`) | `assets/`, `assets/images/`, `assets/icons/` |
 | All 4 font extensions (`.woff/.woff2/.ttf/.eot`) | `assets/fonts/` |
-| `.json/.yaml/.yml` data sources for JSX/TSX | `data/` |
+| `.json/.yaml/.yml` data sources for JSX/TSX/MDX | `data/` |
 | Bottom-placement landing across all 10 `importIndicators` | `with-imports.ts`, `with-requires.js`, `styles/with-imports.css`, `styles/with-uses.scss`, `pages/with-resources.html` |
 | Empty / whitespace / single-char / comments-only edge cases | root-level files |
 | Path with space, Unicode path, deep traversal | `my files/`, `unicode-paths/`, `deeply/...`, `very-deep/level-01/.../level-09/` |
-| Unsupported-extension rejection (clause 1, clause 3–6, JSX/TSX `default:`) | `unsupported/`, `assets/icon.svg` |
+| Unsupported-extension rejection (clause 1, clause 3–6, JSX/TSX/MDX `default:`) | `unsupported/`, `assets/icon.svg` |
 | TypeScript export shapes — `const`, `function`, `interface`, `type`, `enum`, `const enum`, `class`, `abstract class`, `namespace`, `default class`, `default function`, barrel re-export | `src/types/`, `src/lib/`, `src/server/`, `src/models/`, `src/utils/` |
 | JavaScript export shapes — `module.exports = {}`, `exports.x =`, `module.exports.x =`, ES-module `export class` / `export default`, IIFE, `var function` decl | `src/sibling.js`, `src/other.js`, `src/legacy/{analytics,feature-flags,tracker,iife,utils-old}.js`, `src/lib/{event-bus-modern,calculator}.js` |
 | JSX component shapes — function component, class component, HOC, forwardRef, `export default function` | `src/components/{Layout,NavBar,Footer,PageHeader,ClassComponent,withLogging,ForwardedInput,DefaultPage}.jsx` |

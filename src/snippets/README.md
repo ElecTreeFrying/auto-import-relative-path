@@ -12,11 +12,12 @@ Per-language snippet builders and the destination-extension dispatch. The public
 | `typescript.ts` | TS shapes (5 styles), with Angular PascalCase substitution at index 1. |
 | `jsx.ts` | JSX entry — delegates to `_shared.ts:buildReactImport` with JS as primary. |
 | `tsx.ts` | TSX entry — delegates to `_shared.ts:buildReactImport` with TS primary, JS fallback for `.js` sources. |
+| `mdx.ts` | MDX entry — same shape as `tsx.ts` (TS primary, JS fallback). |
 | `css.ts` | CSS shapes (2 styles); `buildCssImageImportSnippet` exported for SCSS reuse. |
 | `scss.ts` | SCSS shapes (4 styles), with partial-filename underscore stripping and asymmetric `.css` extension preservation. |
 | `html.ts` | HTML `<script>` / `<img>` / `<link>` (fixed shapes). |
 | `markdown.ts` | Markdown link (fixed) + image (2 configurable styles). |
-| `_shared.ts` | Internal: `buildReactImport` shared by JSX/TSX. |
+| `_shared.ts` | Internal: `buildReactImport` shared by JSX/TSX/MDX. |
 | `_styles.ts` | Internal: `ImportStyle[]` tables + `resolveStyleIndex` lookup. |
 
 `_`-prefixed files are directory-internal. Importing them from outside `snippets/` is a smell.

@@ -18,7 +18,7 @@ Category sub-types (`HtmlFileExtension`, `YamlFileExtension`, `StylesheetFileExt
 
 1. The relevant category sub-type here.
 2. Runtime gating tables in `src/constants/extensions.ts`.
-3. The matching `case` in `src/snippets/dispatch.ts` (destination dispatch) or `src/snippets/_shared.ts` (JSX/TSX source dispatch).
+3. The matching `case` in `src/snippets/dispatch.ts` (destination dispatch) or `src/snippets/_shared.ts` (JSX/TSX/MDX source dispatch).
 
 A missing entry in (2) produces a silent fall-through to a `default:` branch — the cast in (1) won't catch it. Gating is the runtime safety net.
 
@@ -27,7 +27,7 @@ A missing entry in (2) produces a silent fall-through to a `default:` branch —
 Four buckets: `'script' | 'stylesheet' | 'markdown' | 'image'`.
 
 - **Producer**: `path/import-type.ts:determineImportType` (which returns `ImportType | null` — see that file's CLAUDE.md for the two intentional `null` returns).
-- **Consumers**: `snippets/{css,scss,html,markdown}.ts`. JSX/TSX **do not** consult this — they branch on the raw source extension via `_shared.ts`.
+- **Consumers**: `snippets/{css,scss,html,markdown}.ts`. JSX/TSX/MDX **do not** consult this — they branch on the raw source extension via `_shared.ts`.
 
 The `'image'` value is the catch-all default for unrecognised extensions — *not* a guarantee that the source is image-like. Gating in `commands/paste-import.ts` is what makes the catch-all safe.
 

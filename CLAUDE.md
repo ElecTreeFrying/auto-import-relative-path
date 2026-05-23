@@ -8,7 +8,7 @@ Do NOT append a `Co-Authored-By: Claude ...` trailer (or any other Claude/AI att
 
 ## Project
 
-VS Code extension that generates relative-path import statements for JS/TS/JSX/TSX/CSS/SCSS/HTML/Markdown. Five commands (`extension.copyFilePath`, `extension.pasteImport`, `extension.copyPaste`, `extension.pasteImportWithStyle`, `extension.setDefaultImportStyle`) are registered in `src/extension.ts`. The first three are bound to keybindings in `package.json` (`cmd/ctrl+shift+a`, `cmd/ctrl+i`, and `alt+d` in the explorer respectively); the latter two are reachable via the Command Palette (and `pasteImportWithStyle` also via the `copy-success` toast button).
+VS Code extension that generates relative-path import statements for JS/TS/JSX/TSX/MDX/CSS/SCSS/HTML/Markdown. Five commands (`extension.copyFilePath`, `extension.pasteImport`, `extension.copyPaste`, `extension.pasteImportWithStyle`, `extension.setDefaultImportStyle`) are registered in `src/extension.ts`. The first three are bound to keybindings in `package.json` (`cmd/ctrl+shift+a`, `cmd/ctrl+i`, and `alt+d` in the explorer respectively); the latter two are reachable via the Command Palette (and `pasteImportWithStyle` also via the `copy-success` toast button).
 
 ## Subdirectory guides
 
@@ -19,7 +19,7 @@ Each directory under `src/` has its own pair of nested guides. Read the director
 | `src/` | Source-tree overview, dependency layering, naming conventions | [`src/README.md`](src/README.md), [`src/CLAUDE.md`](src/CLAUDE.md) |
 | `src/commands/` | The five commands; clipboard data channel, parallel fetch, eight-clause gating | [`src/commands/README.md`](src/commands/README.md), [`src/commands/CLAUDE.md`](src/commands/CLAUDE.md) |
 | `src/editor/` | VS Code-API helpers (clipboard, snippet insertion, notifications) | [`src/editor/README.md`](src/editor/README.md), [`src/editor/CLAUDE.md`](src/editor/CLAUDE.md) |
-| `src/snippets/` | Per-language snippet builders + dispatch; style sync rules; JSX/TSX shared algorithm | [`src/snippets/README.md`](src/snippets/README.md), [`src/snippets/CLAUDE.md`](src/snippets/CLAUDE.md) |
+| `src/snippets/` | Per-language snippet builders + dispatch; style sync rules; JSX/TSX/MDX shared algorithm | [`src/snippets/README.md`](src/snippets/README.md), [`src/snippets/CLAUDE.md`](src/snippets/CLAUDE.md) |
 | `src/path/` | Pure path math (no `vscode` import); `./` prefix rule | [`src/path/README.md`](src/path/README.md), [`src/path/CLAUDE.md`](src/path/CLAUDE.md) |
 | `src/config/` | Workspace-config access; three-site sync rule | [`src/config/README.md`](src/config/README.md), [`src/config/CLAUDE.md`](src/config/CLAUDE.md) |
 | `src/constants/` | Runtime gating tables; runtime mirror of `types/file-extension.ts` | [`src/constants/README.md`](src/constants/README.md), [`src/constants/CLAUDE.md`](src/constants/CLAUDE.md) |
@@ -82,13 +82,13 @@ The clipboard is the data channel between "copy" and "paste". The flow is:
 ```
 buildImportSnippet()                          ← src/snippets/dispatch.ts
   switch (destinationFileExt)
-    → src/snippets/{javascript,typescript,jsx,tsx,css,scss,html,markdown}.ts
+    → src/snippets/{javascript,typescript,jsx,tsx,mdx,css,scss,html,markdown}.ts
         each module's buildSnippet() reads file-path info + user setting
         → resolveStyleIndex(<TABLE>, configValue) from src/snippets/_styles.ts
           switch on the matched ImportStyle.value to emit the SnippetString
 ```
 
-JSX and TSX share their algorithm via `buildReactImport` in `src/snippets/_shared.ts`; the only difference is which script-snippet builder is "primary" (JS for JSX; TS for TSX, with JS as fallback for `.js` sources). Non-script sources (image/data/font/markup/stylesheet) fall through to a hardcoded `switch` inside `buildReactImport` — image/JSON/HTML/YAML/MD emit `import name$1 from '<path>';`, fonts and stylesheets emit a side-effect `import '<path>';`. Reaching the `default:` branch means an unsupported extension slipped through gating in `paste-import.ts`.
+JSX, TSX, and MDX share their algorithm via `buildReactImport` in `src/snippets/_shared.ts`; the only difference is which script-snippet builder is "primary" (JS for JSX; TS for TSX and MDX, with JS as fallback for `.js` sources in both). Non-script sources (image/data/font/markup/stylesheet) fall through to a hardcoded `switch` inside `buildReactImport` — image/JSON/HTML/YAML/MD/MDX emit `import name$1 from '<path>';`, fonts and stylesheets emit a side-effect `import '<path>';`. Reaching the `default:` branch means an unsupported extension slipped through gating in `paste-import.ts`.
 
 For HTML/SCSS/CSS/Markdown destinations, `determineImportType()` (`src/path/import-type.ts`) classifies the *source* into `'script' | 'stylesheet' | 'markdown' | 'image'`, with two `null` returns: `.html` (defensive — gating already rejects HTML→HTML before this runs) and `.scss` (so `snippets/scss.ts` falls through its `switch` to the SCSS-specific default that handles `@use` and partial filenames). The `'image'` branch is a `default:` catch-all, not a guarantee the source is image-like — the gating tables in `constants/extensions.ts` are what makes that safe.
 
@@ -103,7 +103,7 @@ For HTML/SCSS/CSS/Markdown destinations, `determineImportType()` (`src/path/impo
 
 `.html → .html` is rejected explicitly (no relative-import syntax for HTML embedding itself); an empty snippet (`''` or `'\n'`) is the catch-all signal that "no language module handled this destination" — see `snippets/dispatch.ts`'s `default:` branch. A separate same-file check (`sourceFilePath.toLowerCase() === destinationFilePath.toLowerCase()`) raises the `'same-file-path'` toast *before* the gating conjunction runs.
 
-When adding a new accepted pair, update the matching constant **and** make sure the relevant per-language module in `snippets/` can produce a snippet for that source extension. When adding a new file extension entirely, three sites must stay in sync: (1) the matching category type in `src/types/file-extension.ts`, (2) the runtime gating tables in `src/constants/extensions.ts`, and (3) the matching `case` in `snippets/dispatch.ts` (destination dispatch) or `snippets/_shared.ts` (JSX/TSX source dispatch). The runtime cast `as FileExtension` is erased, so a missing gating entry produces a silent fall-through rather than a type error — gating is the runtime safety net.
+When adding a new accepted pair, update the matching constant **and** make sure the relevant per-language module in `snippets/` can produce a snippet for that source extension. When adding a new file extension entirely, three sites must stay in sync: (1) the matching category type in `src/types/file-extension.ts`, (2) the runtime gating tables in `src/constants/extensions.ts`, and (3) the matching `case` in `snippets/dispatch.ts` (destination dispatch) or `snippets/_shared.ts` (JSX/TSX/MDX source dispatch). The runtime cast `as FileExtension` is erased, so a missing gating entry produces a silent fall-through rather than a type error — gating is the runtime safety net.
 
 ### Insertion placement
 

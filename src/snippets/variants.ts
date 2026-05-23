@@ -65,6 +65,7 @@ export async function buildImportSnippetVariants(): Promise<ImportSnippetVariant
     case '.jsx':
       return buildJsxVariants(sourceFileExt, scriptPath, labelScriptPath, fullPath, labelFullPath);
     case '.tsx':
+    case '.mdx':
       return buildTsxVariants(sourceFileExt, scriptPath, labelScriptPath, fullPath, labelFullPath);
     case '.css':
       return buildCssVariants(sourceFilePath, fullPath, labelFullPath);
@@ -144,6 +145,7 @@ function buildReactNonScriptVariant(
     case '.yml':
     case '.yaml':
     case '.md':
+    case '.mdx':
       return toHardcodedVariant(
         new vscode.SnippetString(`import \${1:name} from '${fullPath}';`),
         new vscode.SnippetString(`import \${1:name} from '${labelFullPath}';`),

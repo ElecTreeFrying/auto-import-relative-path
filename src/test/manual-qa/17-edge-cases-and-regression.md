@@ -120,7 +120,7 @@ Re-verify (this is duplicated from `02-bug-fix-verification.md` as a final regre
 - [ ] **Bug #3.** TS style 2 → `import { default as $1 } from './foo';` (literal `default`, single placeholder).
 - [ ] **Bug #4.** Auto command on `src/foo.ts` into `src/bar.ts` works deterministically across 10 rapid invocations. Additionally verify: with no Explorer selection, `Alt+D` fires only the `'no-file-to-copy'` toast and `paste-import` is not invoked (`copy-paste.ts:6-8` short-circuit).
 
-## Manual smoke test of all 8 destination types
+## Manual smoke test of all 9 destination types
 
 A quick final smoke pass to confirm nothing broke:
 
@@ -129,6 +129,8 @@ A quick final smoke pass to confirm nothing broke:
 - [ ] `.js` → `.jsx` works
 - [ ] `.ts` → `.tsx` works (TS shape)
 - [ ] `.js` → `.tsx` works (JS shape — fallback)
+- [ ] `.ts` → `.mdx` works (TS shape)
+- [ ] `.js` → `.mdx` works (JS shape — fallback)
 - [ ] `.css` → `.css` works
 - [ ] `.scss` → `.scss` works (partial stripped)
 - [ ] `.css` → `.scss` works (extension preserved)
@@ -153,7 +155,7 @@ A quick final smoke pass to confirm nothing broke:
 - [ ] Setting persistence
 - [ ] CHANGELOG 0.6.1 regression (3 cases)
 - [ ] All 4 session-fix regressions (4 cases)
-- [ ] Smoke test all destination types (10 cases)
+- [ ] Smoke test all destination types (12 cases)
 - [ ] Type-check / lint / build / test all pass
 
 ## Final master sign-off

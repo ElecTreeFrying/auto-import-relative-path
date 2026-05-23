@@ -55,7 +55,7 @@ Set `preserveScriptFileExtension = true`.
 
 ### Setting only affects script paths
 
-For non-script sources in JSX/TSX (image/data/font/markup), extension is **always** preserved regardless of this setting.
+For non-script sources in JSX/TSX/MDX (image/data/font/markup), extension is **always** preserved regardless of this setting.
 
 - [ ] With `preserveScriptFileExtension = true`: `assets/logo.png` → `src/widget.tsx`: path is `'./assets/logo.png'` (always)
 - [ ] With `preserveScriptFileExtension = false`: same path, `'./assets/logo.png'`. Setting has NO effect on non-script sources.

@@ -33,6 +33,7 @@ export const SCSS_SUPPORTED_EXTENSIONS: FileExtension[] = [
 export const SCRIPT_FILE_EXTENSIONS: FileExtension[] = [
   '.ts',
   '.tsx',
+  '.mdx',
   '.js',
   '.jsx',
 ];
@@ -48,5 +49,6 @@ export const CROSS_IMPORT_DESTINATIONS: FileExtension[] = [
   '.css',
   '.scss',
   '.tsx',
+  '.mdx',
   '.jsx',
 ];
