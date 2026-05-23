@@ -1,10 +1,3 @@
-/**
- * Markdown import-snippet generator. Markdown sources emit a fixed inline
- * link (`[text](path)`); image sources have two configurable styles via
- * `MARKDOWN_IMAGE_IMPORT_OPTIONS` — inline `![alt-text](path "Hover")` or
- * reference-style `![alt-text][image] / [image]: path "Hover"`. Full
- * extension is preserved on the path.
- */
 import * as vscode from 'vscode';
 
 import { getAutoImportSetting } from '../config/settings';
@@ -13,13 +6,6 @@ import { determineImportType } from '../path/import-type';
 import { getFilePathInfo } from '../editor/file-path-info';
 import { MARKDOWN_IMAGE_IMPORT_OPTIONS, resolveStyleIndex } from './_styles';
 
-/**
- * Routes Markdown sources to inline-link syntax and image sources to the
- * configured Markdown image style, returning empty for any other
- * classification.
- *
- * @returns The Markdown link/image `SnippetString` for the current source, or empty.
- */
 export async function buildSnippet(): Promise<vscode.SnippetString> {
   const { sourceFilePath, relativePath } = await getFilePathInfo();
   const fullPath = relativePath + extractFileExtension(sourceFilePath);
@@ -34,15 +20,6 @@ export async function buildSnippet(): Promise<vscode.SnippetString> {
   }
 }
 
-/**
- * Returns the Markdown inline-link shape `[text](relativePath)`. Exported
- * so the QuickPick aggregator (`snippets/variants.ts`) can reuse the same
- * hardcoded shape for the `'markdown'` source branch without re-entering
- * `getFilePathInfo()`.
- *
- * @param relativePath - The import path.
- * @returns The Markdown inline link as a `SnippetString`.
- */
 export function buildMarkdownImportSnippet(relativePath: string): vscode.SnippetString {
   return new vscode.SnippetString(`[\${1:text}](${relativePath})`);
 }

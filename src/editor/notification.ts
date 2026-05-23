@@ -4,36 +4,6 @@ import { NotificationType } from '../types/notification';
 
 const SUPPORTED_PAIRS_URL = 'https://github.com/ElecTreeFrying/auto-import-relative-path#supported-source--destination-pairs';
 
-/**
- * Shows the toast that matches the given notification kind.
- *
- * Five variants accept a payload that gets interpolated into the rendered message:
- * - `'not-supported'` takes `{ sourceExt, destinationExt }`
- * - `'source-not-found'` takes `{ basename }`
- * - `'copy-success'` takes `{ basename }`
- * - `'no-configurable-style'` takes `{ sourceExt, destinationExt }`
- * - `'default-style-saved'` takes `{ description }`
- *
- * The remaining four variants take no payload. TypeScript overload resolution
- * enforces that callers pass the right payload (or omit it) for each kind.
- *
- * Seven variants render as warning toasts (`showWarningMessage`);
- * `'copy-success'` and `'default-style-saved'` render as info toasts
- * (`showInformationMessage`).
- *
- * Two variants surface action buttons:
- * - `'not-supported'` adds **View Supported Files** which opens the README's
- *   supported-pairs section on GitHub. The click handler is self-contained
- *   (fire-and-forget) so this overload still returns `void`.
- * - `'copy-success'` adds **Paste Now** (runs the default paste-import) and
- *   **Paste with Style** (runs the style-picker variant for ad-hoc style override).
- *   This overload returns the underlying `Thenable<string | undefined>` so
- *   the caller can dispatch on the chosen action without `editor/` reaching
- *   into `commands/`.
- *
- * @param type - Which user-visible toast to surface.
- * @param payload - Values interpolated into the message for parameterized variants.
- */
 export function showNotification(type: 'same-file-path' | 'no-active-editor' | 'no-file-to-copy' | 'empty-clipboard'): void;
 export function showNotification(type: 'not-supported', payload: { sourceExt: string; destinationExt: string }): void;
 export function showNotification(type: 'source-not-found', payload: { basename: string }): void;
