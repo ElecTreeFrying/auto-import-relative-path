@@ -1,16 +1,16 @@
 import * as vscode from 'vscode';
 
-import { getAutoImportSetting } from '../config/settings';
-import { extractFileExtension } from '../path/extension';
-import { determineImportType } from '../path/import-type';
-import { getFilePathInfo } from '../editor/file-path-info';
+import { getAutoImportSetting } from '../../config/settings';
+import { extractFileExtension } from '../../path/extension';
+import { determineImportType } from '../../path/import-type';
+import { getFilePathInfo } from '../../editor/file-path-info';
 import {
   HTML_AUDIO_IMPORT_OPTIONS,
   HTML_IMAGE_IMPORT_OPTIONS,
   HTML_SCRIPT_IMPORT_OPTIONS,
   HTML_VIDEO_IMPORT_OPTIONS,
   resolveStyleIndex,
-} from './_styles';
+} from '../_styles';
 
 export async function buildSnippet(): Promise<vscode.SnippetString> {
   const { sourceFilePath, relativePath } = await getFilePathInfo();

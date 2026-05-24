@@ -1,10 +1,10 @@
 import * as assert from 'assert';
 
-import { buildJavaScriptImportSnippetByStyle } from '../snippets/javascript';
-import { buildTypeScriptImportSnippetByStyle } from '../snippets/typescript';
-import { buildCssImportSnippetByStyle } from '../snippets/css';
-import { buildScssImportSnippetByStyle } from '../snippets/scss';
-import { buildMarkdownImageImportSnippetByStyle } from '../snippets/markdown';
+import { buildJavaScriptImportSnippetByStyle } from '../snippets/languages/javascript';
+import { buildTypeScriptImportSnippetByStyle } from '../snippets/languages/typescript';
+import { buildCssImportSnippetByStyle } from '../snippets/languages/css';
+import { buildScssImportSnippetByStyle } from '../snippets/languages/scss';
+import { buildMarkdownImageImportSnippetByStyle } from '../snippets/languages/markdown';
 
 describe('buildJavaScriptImportSnippetByStyle', () => {
   const path = './foo';

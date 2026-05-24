@@ -3,15 +3,15 @@ import * as vscode from 'vscode';
 import { extractFileExtension } from '../path/extension';
 import { getFilePathInfo } from '../editor/file-path-info';
 
-import * as javascript from './javascript';
-import * as typescript from './typescript';
-import * as jsx from './jsx';
-import * as tsx from './tsx';
-import * as mdx from './mdx';
-import * as css from './css';
-import * as scss from './scss';
-import * as html from './html';
-import * as markdown from './markdown';
+import * as javascript from './languages/javascript';
+import * as typescript from './languages/typescript';
+import * as jsx from './languages/jsx';
+import * as tsx from './languages/tsx';
+import * as mdx from './languages/mdx';
+import * as css from './languages/css';
+import * as scss from './languages/scss';
+import * as html from './languages/html';
+import * as markdown from './languages/markdown';
 
 export async function buildImportSnippet(): Promise<vscode.SnippetString> {
   const { destinationFilePath } = await getFilePathInfo();

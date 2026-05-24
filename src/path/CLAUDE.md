@@ -38,7 +38,7 @@ Maps file extension to one of four buckets, with two `null` returns:
 | `.css` | `'stylesheet'` |
 | `.md` | `'markdown'` |
 | `.html` | `null` (defensive — gating already rejects HTML→HTML upstream) |
-| `.scss` | `null` (so `snippets/scss.ts` falls through its `switch` to its SCSS-specific default that handles `@use`/partial filenames) |
+| `.scss` | `null` (so `snippets/languages/scss.ts` falls through its `switch` to its SCSS-specific default that handles `@use`/partial filenames) |
 | anything else | `'image'` (`default:` catch-all) |
 
 The `'image'` branch is **not** a guarantee that the source is image-like — it's a default. The runtime gating in `commands/paste-import.ts` is what makes that safe.

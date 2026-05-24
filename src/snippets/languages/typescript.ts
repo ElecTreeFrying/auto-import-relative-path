@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 
-import { getAutoImportSetting } from '../config/settings';
-import { extractFileExtension } from '../path/extension';
-import { getFilePathInfo } from '../editor/file-path-info';
-import { TYPESCRIPT_IMPORT_OPTIONS, resolveStyleIndex } from './_styles';
+import { getAutoImportSetting } from '../../config/settings';
+import { extractFileExtension } from '../../path/extension';
+import { getFilePathInfo } from '../../editor/file-path-info';
+import { TYPESCRIPT_IMPORT_OPTIONS, resolveStyleIndex } from '../_styles';
 
 const LEGACY_ANGULAR_FILE_SUFFIXES = [
   '.component',

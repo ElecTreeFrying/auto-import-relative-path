@@ -18,10 +18,10 @@ import {
   HTML_VIDEO_IMPORT_OPTIONS,
   MARKDOWN_IMAGE_IMPORT_OPTIONS,
 } from './_styles';
-import { buildJavaScriptImportSnippetByStyle } from './javascript';
-import { buildTypeScriptImportSnippetByStyle } from './typescript';
-import { buildCssImportSnippetByStyle, buildCssImageImportSnippet } from './css';
-import { buildScssImportSnippetByStyle, prepareScssImportPath } from './scss';
+import { buildJavaScriptImportSnippetByStyle } from './languages/javascript';
+import { buildTypeScriptImportSnippetByStyle } from './languages/typescript';
+import { buildCssImportSnippetByStyle, buildCssImageImportSnippet } from './languages/css';
+import { buildScssImportSnippetByStyle, prepareScssImportPath } from './languages/scss';
 import {
   buildHtmlScriptImportSnippetByStyle,
   buildHtmlImageImportSnippetByStyle,
@@ -29,8 +29,8 @@ import {
   buildHtmlAudioImportSnippetByStyle,
   buildHtmlTextTrackImportSnippet,
   buildHtmlStylesheetImportSnippet,
-} from './html';
-import { buildMarkdownImportSnippet, buildMarkdownImageImportSnippetByStyle } from './markdown';
+} from './languages/html';
+import { buildMarkdownImportSnippet, buildMarkdownImageImportSnippetByStyle } from './languages/markdown';
 
 export interface ImportSnippetVariant {
   label: string;

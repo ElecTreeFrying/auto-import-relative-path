@@ -82,7 +82,7 @@ The clipboard is the data channel between "copy" and "paste". The flow is:
 ```
 buildImportSnippet()                          ← src/snippets/dispatch.ts
   switch (destinationFileExt)
-    → src/snippets/{javascript,typescript,jsx,tsx,mdx,css,scss,html,markdown}.ts
+    → src/snippets/languages/{javascript,typescript,jsx,tsx,mdx,css,scss,html,markdown}.ts
         each module's buildSnippet() reads file-path info + user setting
         → resolveStyleIndex(<TABLE>, configValue) from src/snippets/_styles.ts
           switch on the matched ImportStyle.value to emit the SnippetString
@@ -90,7 +90,7 @@ buildImportSnippet()                          ← src/snippets/dispatch.ts
 
 JSX, TSX, and MDX share their algorithm via `buildReactImport` in `src/snippets/_shared.ts`; the only difference is which script-snippet builder is "primary" (JS for JSX; TS for TSX and MDX, with JS as fallback for `.js` sources in both). Non-script sources (image/data/font/markup/stylesheet) fall through to a hardcoded `switch` inside `buildReactImport` — image/JSON/HTML/YAML/MD/MDX emit `import name$1 from '<path>';`, fonts and stylesheets emit a side-effect `import '<path>';`. Reaching the `default:` branch means an unsupported extension slipped through gating in `paste-import.ts`.
 
-For HTML/SCSS/CSS/Markdown destinations, `determineImportType()` (`src/path/import-type.ts`) classifies the *source* into `'script' | 'stylesheet' | 'markdown' | 'image'`, with two `null` returns: `.html` (defensive — gating already rejects HTML→HTML before this runs) and `.scss` (so `snippets/scss.ts` falls through its `switch` to the SCSS-specific default that handles `@use` and partial filenames). The `'image'` branch is a `default:` catch-all, not a guarantee the source is image-like — the gating tables in `constants/extensions.ts` are what makes that safe.
+For HTML/SCSS/CSS/Markdown destinations, `determineImportType()` (`src/path/import-type.ts`) classifies the *source* into `'script' | 'stylesheet' | 'markdown' | 'image'`, with two `null` returns: `.html` (defensive — gating already rejects HTML→HTML before this runs) and `.scss` (so `snippets/languages/scss.ts` falls through its `switch` to the SCSS-specific default that handles `@use` and partial filenames). The `'image'` branch is a `default:` catch-all, not a guarantee the source is image-like — the gating tables in `constants/extensions.ts` are what makes that safe.
 
 ### Cross-import gating
 
@@ -103,7 +103,7 @@ For HTML/SCSS/CSS/Markdown destinations, `determineImportType()` (`src/path/impo
 
 `.html → .html` is rejected explicitly (no relative-import syntax for HTML embedding itself); an empty snippet (`''` or `'\n'`) is the catch-all signal that "no language module handled this destination" — see `snippets/dispatch.ts`'s `default:` branch. A separate same-file check (`sourceFilePath.toLowerCase() === destinationFilePath.toLowerCase()`) raises the `'same-file-path'` toast *before* the gating conjunction runs.
 
-When adding a new accepted pair, update the matching constant **and** make sure the relevant per-language module in `snippets/` can produce a snippet for that source extension. When adding a new file extension entirely, three sites must stay in sync: (1) the matching category type in `src/types/file-extension.ts`, (2) the runtime gating tables in `src/constants/extensions.ts`, and (3) the matching `case` in `snippets/dispatch.ts` (destination dispatch) or `snippets/_shared.ts` (JSX/TSX/MDX source dispatch). The runtime cast `as FileExtension` is erased, so a missing gating entry produces a silent fall-through rather than a type error — gating is the runtime safety net.
+When adding a new accepted pair, update the matching constant **and** make sure the relevant per-language module in `snippets/languages/` can produce a snippet for that source extension. When adding a new file extension entirely, three sites must stay in sync: (1) the matching category type in `src/types/file-extension.ts`, (2) the runtime gating tables in `src/constants/extensions.ts`, and (3) the matching `case` in `snippets/dispatch.ts` (destination dispatch) or `snippets/_shared.ts` (JSX/TSX/MDX source dispatch). The runtime cast `as FileExtension` is erased, so a missing gating entry produces a silent fall-through rather than a type error — gating is the runtime safety net.
 
 ### Insertion placement
 
@@ -120,19 +120,19 @@ When adding a new accepted pair, update the matching constant **and** make sure 
 
 1. `package.json` → `contributes.configuration.properties` (the VS Code-visible setting + its `enum`).
 2. `src/snippets/_styles.ts` → an `ImportStyle[]` whose `description` strings match the `package.json` `enum` strings exactly (lookup is by string equality via `resolveStyleIndex`).
-3. The relevant per-language module under `src/snippets/` → a `switch` on the resolved numeric `value` to emit the snippet.
+3. The relevant per-language module under `src/snippets/languages/` → a `switch` on the resolved numeric `value` to emit the snippet.
 
-The `settingKey` is a short alias (e.g. `'javascript'`) that maps to the full configuration name (`auto-import.importStatement.script.javascriptImportStyle`) via the `(namespaceKey, settingKey)` pair. Several `*_IMPORT_OPTIONS` tables in `_styles.ts` (`CSS_IMAGE_IMPORT_OPTIONS`, the three `HTML_*_IMPORT_OPTIONS`, and `MARKDOWN_IMPORT_OPTIONS`) declare a single entry purely for `package.json` UI parity — the consuming snippet builder hardcodes that single shape and never calls `resolveStyleIndex`. They are flagged "Currently unused" in their TSDoc. (There is no `SCSS_IMAGE_IMPORT_OPTIONS`; SCSS images reuse `buildCssImageImportSnippet` from `css.ts`.)
+The `settingKey` is a short alias (e.g. `'javascript'`) that maps to the full configuration name (`auto-import.importStatement.script.javascriptImportStyle`) via the `(namespaceKey, settingKey)` pair. Several `*_IMPORT_OPTIONS` tables in `_styles.ts` (`CSS_IMAGE_IMPORT_OPTIONS`, the three `HTML_*_IMPORT_OPTIONS`, and `MARKDOWN_IMPORT_OPTIONS`) declare a single entry purely for `package.json` UI parity — the consuming snippet builder hardcodes that single shape and never calls `resolveStyleIndex`. They are flagged "Currently unused" in their TSDoc. (There is no `SCSS_IMAGE_IMPORT_OPTIONS`; SCSS images reuse `buildCssImageImportSnippet` from `languages/css.ts`.)
 
 ### Snippet placeholders and language-specific quirks
 
 Snippets use VS Code `SnippetString` placeholders (`$1`, `$2`).
 
-**TypeScript legacy-Angular substitution** (`src/snippets/typescript.ts`) — **only at index 1** (`import { name } from '_relativePath_';`), back-compat for the pre-standalone Angular filename convention: when the path contains a suffix in `LEGACY_ANGULAR_FILE_SUFFIXES` (`.component`, `.directive`, `.pipe`, `.service`, `.module`), `generateAngularLegacyImportName()` derives a PascalCase identifier from the basename (`app-root.component.ts` → `{ AppRootComponent }`) instead of leaving the `$1` placeholder. Every other index uses `$1` unconditionally. Don't break this when refactoring `buildTypeScriptImportSnippet()`.
+**TypeScript legacy-Angular substitution** (`src/snippets/languages/typescript.ts`) — **only at index 1** (`import { name } from '_relativePath_';`), back-compat for the pre-standalone Angular filename convention: when the path contains a suffix in `LEGACY_ANGULAR_FILE_SUFFIXES` (`.component`, `.directive`, `.pipe`, `.service`, `.module`), `generateAngularLegacyImportName()` derives a PascalCase identifier from the basename (`app-root.component.ts` → `{ AppRootComponent }`) instead of leaving the `$1` placeholder. Every other index uses `$1` unconditionally. Don't break this when refactoring `buildTypeScriptImportSnippet()`.
 
-**SCSS source-aware tweaks** (`src/snippets/scss.ts`) — `normalizePartialFilename()` strips a leading `_` from the *last* path segment (`_partial.scss` → `partial`, matching Sass's partial-resolution convention). `determineScssExtension()` always preserves `.css` on the import path regardless of the user's `preserveStylesheetFileExtension` setting (Sass needs the extension to recognise a foreign-language import); other source types respect the setting. SCSS image sources reuse `buildCssImageImportSnippet` from `snippets/css.ts` — the `url('…')` syntax is identical between the two languages, so there is no SCSS-specific image variant.
+**SCSS source-aware tweaks** (`src/snippets/languages/scss.ts`) — `normalizePartialFilename()` strips a leading `_` from the *last* path segment (`_partial.scss` → `partial`, matching Sass's partial-resolution convention). `determineScssExtension()` always preserves `.css` on the import path regardless of the user's `preserveStylesheetFileExtension` setting (Sass needs the extension to recognise a foreign-language import); other source types respect the setting. SCSS image sources reuse `buildCssImageImportSnippet` from `snippets/languages/css.ts` — the `url('…')` syntax is identical between the two languages, so there is no SCSS-specific image variant.
 
-**HTML and Markdown destinations** (`src/snippets/html.ts`, `src/snippets/markdown.ts`) emit fixed shapes (`<script>`/`<img>`/`<link>` for HTML; `![text](path)` for Markdown link, two configurable shapes for Markdown image). The full source extension is always preserved on the path — neither HTML nor Markdown has an extension-stripping convention like JS/TS modules do.
+**HTML and Markdown destinations** (`src/snippets/languages/html.ts`, `src/snippets/languages/markdown.ts`) emit fixed shapes (`<script>`/`<img>`/`<link>` for HTML; `![text](path)` for Markdown link, two configurable shapes for Markdown image). The full source extension is always preserved on the path — neither HTML nor Markdown has an extension-stripping convention like JS/TS modules do.
 
 ## Build/test layout quirks
 
@@ -144,5 +144,5 @@ Snippets use VS Code `SnippetString` placeholders (`$1`, `$2`).
 ## Naming conventions
 
 - Files use noun-only kebab-case: `relative-path.ts`, `file-path-info.ts`. Do not reintroduce suffixes like `.command.ts`, `.util.ts`, `-fn.ts`, `.types.ts`, `.enums.ts`, `.interface.ts` — the parent directory carries the kind signal.
-- Modules whose filename starts with `_` (e.g., `snippets/_styles.ts`, `snippets/_shared.ts`) are internal to their directory; importing them from outside that directory is a smell.
+- Modules whose filename starts with `_` (e.g., `snippets/_styles.ts`, `snippets/_shared.ts`) are internal to their parent subtree; importing them from outside `snippets/` is a smell. The `snippets/languages/` modules importing `../_styles` and `../_shared` is expected.
 - The only barrel file is `src/commands/index.ts`. Other directories use direct imports so dependency direction stays visible at the call site.

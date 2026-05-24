@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
 
-import { getAutoImportSetting } from '../config/settings';
-import { extractFileExtension } from '../path/extension';
-import { determineImportType } from '../path/import-type';
-import { getFilePathInfo } from '../editor/file-path-info';
-import { MARKDOWN_IMAGE_IMPORT_OPTIONS, resolveStyleIndex } from './_styles';
+import { getAutoImportSetting } from '../../config/settings';
+import { extractFileExtension } from '../../path/extension';
+import { determineImportType } from '../../path/import-type';
+import { getFilePathInfo } from '../../editor/file-path-info';
+import { MARKDOWN_IMAGE_IMPORT_OPTIONS, resolveStyleIndex } from '../_styles';
 
 export async function buildSnippet(): Promise<vscode.SnippetString> {
   const { sourceFilePath, relativePath } = await getFilePathInfo();
