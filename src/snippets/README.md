@@ -20,8 +20,7 @@ One module per destination language.
 | `javascript.ts` | JS shapes (7 styles) via `auto-import.importStatement.script.javascriptImportStyle`. |
 | `typescript.ts` | TS shapes (7 styles), with Angular PascalCase substitution at index 0. |
 | `jsx.ts` | JSX entry — delegates to `_shared.ts:buildReactImport` with JS as primary. |
-| `tsx.ts` | TSX entry — delegates to `_shared.ts:buildReactImport` with TS primary, JS fallback for `.js` sources. |
-| `mdx.ts` | MDX entry — same shape as `tsx.ts` (TS primary, JS fallback). |
+| `tsx.ts` | TSX/MDX entry — delegates to `_shared.ts:buildReactImport` with TS primary, JS fallback for `.js` sources. `.mdx` shares this builder via fall-through in `dispatch.ts`. |
 | `css.ts` | CSS shapes (2 styles); `buildCssImageImportSnippet` exported for SCSS reuse. |
 | `scss.ts` | SCSS shapes (5 styles), with partial-filename underscore stripping and asymmetric `.css` extension preservation. |
 | `html.ts` | HTML `<script>` (5 styles) / `<img>` (3) / `<video>` (4) / `<audio>` (2) configurable + `<link>` / `<track>` fixed. |

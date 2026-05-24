@@ -7,7 +7,6 @@ import * as javascript from './languages/javascript';
 import * as typescript from './languages/typescript';
 import * as jsx from './languages/jsx';
 import * as tsx from './languages/tsx';
-import * as mdx from './languages/mdx';
 import * as css from './languages/css';
 import * as scss from './languages/scss';
 import * as html from './languages/html';
@@ -27,9 +26,8 @@ export async function buildImportSnippet(): Promise<vscode.SnippetString> {
     case '.ts':
       return typescript.buildSnippet();
     case '.tsx':
-      return tsx.buildSnippet();
     case '.mdx':
-      return mdx.buildSnippet();
+      return tsx.buildSnippet();
     case '.css':
       return css.buildSnippet();
     case '.scss':
