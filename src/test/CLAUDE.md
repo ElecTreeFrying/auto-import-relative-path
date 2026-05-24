@@ -1,5 +1,7 @@
 # src/test/CLAUDE.md
 
+> **DRAFT — DEFERRED.** This entire directory (`src/test/`) is under active drafting by the user. Do not read, grep, edit, or write any file in this tree unless the user explicitly asks you to. Skip this directory in exploratory searches, audits, and refactors. No exceptions.
+
 Mocha BDD tests plus two large sibling directories that are deliberately out of scope for routine reads.
 
 ## File

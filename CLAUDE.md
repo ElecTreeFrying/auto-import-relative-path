@@ -97,7 +97,7 @@ For HTML/SCSS/CSS/Markdown destinations, `determineImportType()` (`src/path/impo
 `paste-import.ts` short-circuits with the `'not-supported'` toast (`NotificationType` is a string-literal union, not an enum — see `src/types/notification.ts`) when the source/destination pair is invalid. The eight-clause conjunction in that file is the canonical rejection list; each clause cross-references a table in `src/constants/extensions.ts`:
 
 - `HTML_SUPPORTED_EXTENSIONS`, `MARKDOWN_SUPPORTED_EXTENSIONS`, `CSS_SUPPORTED_EXTENSIONS`, `SCSS_SUPPORTED_EXTENSIONS` — what each markup/stylesheet destination accepts as a source.
-- `CROSS_IMPORT_DESTINATIONS` — destinations allowed to import a *different* extension (`.html`, `.md`, `.css`, `.scss`, `.tsx`, `.jsx`). For destinations *not* in this list (currently `.js`, `.ts`), source extension must equal destination extension.
+- `CROSS_IMPORT_DESTINATIONS` — destinations allowed to import a *different* extension (`.html`, `.md`, `.css`, `.scss`, `.tsx`, `.mdx`, `.jsx`). For destinations *not* in this list (currently `.js`, `.ts`), source extension must equal destination extension.
 - `IMAGE_FILE_EXTENSIONS` — base set spliced into the four supported-extension lists via `...IMAGE_FILE_EXTENSIONS`; reuse instead of inlining new image groups. Runtime mirror of `types/file-extension.ts:ImageFileExtension` — keep both in sync.
 - `SCRIPT_FILE_EXTENSIONS`, `STYLESHEET_FILE_EXTENSIONS` — consumed only by `editor/insert-snippet.ts:determineInsertionColumn` to force column-0 insertion for those destinations. Hidden coupling — touch with care.
 
