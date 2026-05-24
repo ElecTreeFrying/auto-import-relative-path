@@ -12,7 +12,7 @@ Mocha BDD tests run via `@vscode/test-cli` against the `out/` build (NOT the esb
 
 | Directory | What it is | Where to look |
 |-----------|------------|----------------|
-| `manual-qa/` | 17 sequential markdown checklists (`00-setup.md` → `17-…`) for the human manual-QA pass before each release. Pure documentation, no executable code. | `manual-qa/README.md` for the run order. |
+| `manual-qa/` | 18 sequential markdown checklists (`00-setup.md` → `18-…`) for the human manual-QA pass before each release. Pure documentation, no executable code. | `manual-qa/README.md` for the run order. |
 | `manual-qa-workspace/` | ~158 fixture files (every supported source/destination extension, deep-path stress fixtures, gating-rejection samples, all 5 Angular suffixes, full export-shape variety for TS/JS/JSX/TSX, plus binary placeholders for images and fonts). Opened as a folder in the Extension Development Host so testers paste imports between fixtures. | `manual-qa-workspace/README.md` for the layout and coverage matrix. |
 
 > **Token-budget guidance for AI assistants** — the two subdirectories above are large, static, and unsearchable for useful signal. Don't read individual files inside them; read only their internal `README.md` if context is genuinely needed. The fixture workspace is excluded from `tsc` and `eslint` (`tsconfig.json:exclude`, `eslint.config.mjs:ignores`).

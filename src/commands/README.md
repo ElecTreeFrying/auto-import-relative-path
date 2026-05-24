@@ -30,7 +30,7 @@ Keybindings live in `package.json:contributes.keybindings`.
 ## Adding a new command
 
 1. New file here, kebab-case noun (e.g. `clear-clipboard.ts`). No `.command.ts` suffix.
-2. Export `executeX: () => Promise<void>` (no `Command` suffix — the parent directory carries the kind signal).
+2. Export `executeX: () => Promise<void>` (exception: `executeCopyFilePath` returns `Promise<boolean>`). No `Command` suffix — the parent directory carries the kind signal.
 3. Add a re-export in `index.ts`.
 4. Register in `src/extension.ts`.
 5. Add to `package.json:contributes.commands` (and optionally `keybindings`).

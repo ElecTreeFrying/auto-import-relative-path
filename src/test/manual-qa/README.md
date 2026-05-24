@@ -6,7 +6,7 @@ A complete, sequential manual-QA pass for every code path in the extension. Walk
 
 Four real bugs were fixed in `src/snippets/scss.ts`, `src/snippets/typescript.ts`, `src/snippets/javascript.ts`, and `src/commands/copy-file-path.ts`. Before shipping, every code path is verified end-to-end — both the four fixes and every adjacent behavior they could have touched.
 
-0.7.0 also replaced the two generic warning toasts (`Same file path.`, `Not supported.`) with **seven specific, parameterized notifications** (six warning + one info) — see `src/editor/notification.ts` for the canonical text. Every test below quotes the *exact* expected toast string; testers should compare strings byte-for-byte, not just toast presence.
+0.7.0 also replaced the two generic warning toasts (`Same file path.`, `Not supported.`) with **nine specific, parameterized notifications** (seven warning + two info) — see `src/editor/notification.ts` for the canonical text. Every test below quotes the *exact* expected toast string; testers should compare strings byte-for-byte, not just toast presence.
 
 ## How to run this
 
@@ -14,7 +14,7 @@ Four real bugs were fixed in `src/snippets/scss.ts`, `src/snippets/typescript.ts
 2. **Compile:** `npm run compile` (must succeed before testing).
 3. **Launch the Extension Development Host:** press **F5** in the main project's VS Code window. A second VS Code window opens with the extension loaded from `dist/extension.js`.
 4. **Open the fixture workspace:** in the EDH window, **File → Open Folder…** → `<this-repo>/src/test/manual-qa-workspace/`. (Step-by-step in `00-setup.md`.) The fixtures are pre-built — you don't construct anything.
-5. **Walk files `01-…` → `17-…` in order.** Each file is self-contained: setup, tests, expected outcomes, optional "known limitations" callouts, and a per-file sign-off. Every path quoted in a checklist is **relative to the workspace root** (`src/foo.ts` means `manual-qa-workspace/src/foo.ts`).
+5. **Walk files `01-…` → `18-…` in order.** Each file is self-contained: setup, tests, expected outcomes, optional "known limitations" callouts, and a per-file sign-off. Every path quoted in a checklist is **relative to the workspace root** (`src/foo.ts` means `manual-qa-workspace/src/foo.ts`).
 6. **Sign off** in the master matrix at the bottom of this README.
 
 If a checkbox fails, do not proceed past that file. Reproduce the failure, capture the steps, then triage.
@@ -38,7 +38,7 @@ If a checkbox fails, do not proceed past that file. Reproduce the failure, captu
 | 12 | `12-auto-command.md` | Sequential copy+paste; verifies Bug #4 fix |
 | 13 | `13-settings-placement.md` | Top/Bottom/Cursor + 3 overrides + insertion column |
 | 14 | `14-settings-preserve-extension.md` | Both preserve flags + SCSS `.css` asymmetry |
-| 15 | `15-gating-and-rejection.md` | All 8 gating clauses isolated |
+| 15 | `15-gating-and-rejection.md` | All 11 gating clauses isolated |
 | 16 | `16-path-computation.md` | `./`, `../`, partials, spaces/unicode |
 | 17 | `17-edge-cases-and-regression.md` | Empty file, untitled, multi-root, stress, 0.6.1 regression |
 | 18 | `18-style-pickers.md` | `pasteImportWithStyle` + `setDefaultImportStyle` — picker UX, persistence, hardcoded-destination rejection |
@@ -47,7 +47,7 @@ If a checkbox fails, do not proceed past that file. Reproduce the failure, captu
 
 Live in [`../manual-qa-workspace/`](../manual-qa-workspace/) — see that folder's `README.md` for the full layout (158 files across `src/`, `styles/`, `pages/`, `docs/`, `assets/`, `data/`, plus edge-case roots `empty-file.ts`, `whitespace-only.ts`, `single-char.ts`, `comments-only.ts`, `with-imports.ts`, `with-requires.js`, `my files/spaced.ts`, `unicode-paths/`, `deeply/...`, `very-deep/...`, `unsupported/`).
 
-The checklists below name files relative to that workspace root: when 04 says "copy `src/foo.ts`", it means `manual-qa-workspace/src/foo.ts`. The 36 *baseline* filenames the checklists rely on are listed in the workspace README's "Maintenance notes" section — renaming any of those breaks a test.
+The checklists below name files relative to that workspace root: when 04 says "copy `src/foo.ts`", it means `manual-qa-workspace/src/foo.ts`. The 37 *baseline* filenames the checklists rely on are listed in the workspace README's "Maintenance notes" section — renaming any of those breaks a test.
 
 ### Files purpose-built for specific tests
 
@@ -75,18 +75,20 @@ All under `auto-import.*` (per `package.json:contributes.configuration`):
 
 - `preferences.importStatementPlacement` — `Top` / `Bottom` / `Cursor`
 - `importStatement.script.preserveScriptFileExtension` — bool
-- `importStatement.script.javascriptImportStyle` — 9 enum values
-- `importStatement.script.typescriptImportStyle` — 5 enum values
+- `importStatement.script.javascriptImportStyle` — 7 enum values
+- `importStatement.script.typescriptImportStyle` — 7 enum values
 - `importStatement.styleSheet.preserveStylesheetFileExtension` — bool
 - `importStatement.styleSheet.cssImportStyle` — 2 enum values
 - `importStatement.styleSheet.cssImageImportStyle` — 1 (UI parity only — single shape)
-- `importStatement.styleSheet.scssImportStyle` — 4 enum values
+- `importStatement.styleSheet.scssImportStyle` — 5 enum values
 - `importStatement.styleSheet.scssImageImportStyle` — 1 (UI parity only)
-- `importStatement.markup.htmlScriptImportStyle` — 1 (UI parity only)
-- `importStatement.markup.htmlImageImportStyle` — 1 (UI parity only)
+- `importStatement.markup.htmlScriptImportStyle` — 5 enum values
+- `importStatement.markup.htmlImageImportStyle` — 3 enum values
+- `importStatement.markup.htmlVideoImportStyle` — 4 enum values
+- `importStatement.markup.htmlAudioImportStyle` — 2 enum values
 - `importStatement.markup.htmlStyleSheetImportStyle` — 1 (UI parity only)
 - `importStatement.markup.markdownImportStyle` — 1 (UI parity only)
-- `importStatement.markup.markdownImageImportStyle` — 2 enum values
+- `importStatement.markup.markdownImageImportStyle` — 3 enum values
 
 ## Skip these — confirmed design decisions, not bugs
 

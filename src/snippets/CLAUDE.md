@@ -66,7 +66,7 @@ HTML dispatches on `determineImportType(sourceFilePath)` and emits six tag types
 
 ### Markdown — fixed link + configurable image, full extension preserved
 
-Markdown emits `![text](path)` for Markdown-to-Markdown links (fixed), with three configurable shapes for image sources (bare inline, inline with hover-text title, HTML `<img>` embed for sizing). **Full source extension is always preserved on the path** — neither HTML nor Markdown has an extension-stripping convention.
+Markdown emits `[text](path)` for Markdown-to-Markdown links (fixed), with three configurable shapes for image sources (bare inline, inline with hover-text title, HTML `<img>` embed for sizing). **Full source extension is always preserved on the path** — neither HTML nor Markdown has an extension-stripping convention.
 
 ## Adding a new destination language
 

@@ -88,7 +88,7 @@ Every cell of the source-extension × destination-extension matrix is reachable 
 
 | Capability | Where to look |
 |------------|---------------|
-| All 9 destination snippet builders (`.ts/.tsx/.js/.jsx/.mdx/.css/.scss/.html/.md`) | every directory above contains at least one destination of each kind except `.mdx` (fixture pending — code-supported, no fixture file yet) |
+| All 12 destination snippet builders (`.ts/.tsx/.js/.jsx/.mdx/.css/.scss/.html/.md/.vue/.svelte/.astro`) | every directory above contains at least one destination of each kind except `.mdx`, `.vue`, `.svelte`, `.astro` (fixtures pending — code-supported, no fixture files yet) |
 | Style-picker variants for `pasteImportWithStyle` + `setDefaultImportStyle` (every applicable shape per source/destination pair) | same fixtures as the row above — both pickers reuse the destination switch in `snippets/variants.ts:buildImportSnippetVariants` |
 | All 5 Angular auto-naming suffixes (`.component`, `.module`, `.directive`, `.pipe`, `.service`) | `src/components/` |
 | Non-Angular TS file (negative auto-name case) | `src/helpers.ts`, `src/utils/*.ts`, `src/lib-style modules` |

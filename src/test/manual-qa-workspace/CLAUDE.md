@@ -29,10 +29,10 @@ This table is the unique value of this `CLAUDE.md` versus the sibling `README.md
 
 | Fixture group | Code site it exercises |
 |---------------|------------------------|
-| `src/components/*.{component,module,directive,pipe,service}.ts` | `src/snippets/typescript.ts:generateAngularLegacyImportName` — Angular PascalCase substitution at style index 1 only |
+| `src/components/*.{component,module,directive,pipe,service}.ts` | `src/snippets/typescript.ts:generateAngularLegacyImportName` — Angular PascalCase substitution at style index 0 only |
 | `styles/_*.scss`, `styles/_partials/_nested.scss`, `styles/components/_*.scss` | `src/snippets/scss.ts:normalizePartialFilename` — leading-`_` strip on the *last* path segment |
-| `with-imports.ts`, `with-requires.js`, `styles/with-imports.css`, `styles/with-uses.scss`, `pages/with-resources.html` | `src/editor/insert-snippet.ts:importIndicators` — Bottom-placement landing across all 10 markers |
-| `unsupported/{Main.java, styles.less, animation.mov, archive.zip}`, `assets/icon.svg` | `src/commands/paste-import.ts` 8-clause gating conjunction; `assets/icon.svg` additionally hits the JSX/TSX/MDX `_shared.ts:default:` branch |
+| `with-imports.ts`, `with-requires.js`, `styles/with-imports.css`, `styles/with-uses.scss`, `pages/with-resources.html` | `src/editor/insert-snippet.ts:importIndicators` — Bottom-placement landing across all 12 markers |
+| `unsupported/{Main.java, styles.less, animation.mov, archive.zip}`, `assets/icon.svg` | `src/commands/paste-import.ts` 11-clause gating conjunction; `assets/icon.svg` additionally hits the JSX/TSX/MDX `_shared.ts:default:` branch |
 | `empty-file.ts`, `whitespace-only.ts`, `single-char.ts`, `comments-only.ts` | Degenerate-document destinations; `comments-only.ts` specifically catches the Bottom-placement heuristic false-positive on the substring `import ` inside a comment |
 | `my files/spaced.ts`, `unicode-paths/{日本語.ts, café-menu.tsx}` | `src/path/relative.ts:computeRelative` — non-ASCII + space-containing path computation |
 | `deeply/nested/components/widgets/*`, `very-deep/level-01/.../level-09/extreme-leaf.ts` | `src/path/relative.ts` — multi-level `../` traversal (4 and 9 levels) |
@@ -46,7 +46,7 @@ When refactoring any of the code sites above, run the matching manual-QA checkli
 
 ## Baseline filenames are immutable
 
-The ~36-name baseline list in `README.md:Maintenance notes` is referenced by every checklist in `../manual-qa/` (`01-sanity-and-keybindings.md` through `18-style-pickers.md`). Renaming a baseline produces a *silent* test break: the checklist will instruct the tester to copy a file that no longer exists at the named path, and nothing in the toolchain will warn.
+The ~37-name baseline list in `README.md:Maintenance notes` is referenced by every checklist in `../manual-qa/` (`01-sanity-and-keybindings.md` through `18-style-pickers.md`). Renaming a baseline produces a *silent* test break: the checklist will instruct the tester to copy a file that no longer exists at the named path, and nothing in the toolchain will warn.
 
 **Workflow when a baseline must change:**
 

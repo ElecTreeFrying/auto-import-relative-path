@@ -14,7 +14,7 @@ The five commands registered in `src/extension.ts`. The clipboard is the data ch
 ## Conventions
 
 - One file per command; one exported `executeX` per file (no `Command` suffix — the parent directory carries the kind signal).
-- All commands are `async`, return `Promise<void>`.
+- All commands are `async`, return `Promise<void>` except `executeCopyFilePath` which returns `Promise<boolean>` to signal success/failure to `copy-paste.ts`.
 - Every failure path returns void; **nothing throws**. User-visible signals are toasts (warning or info) via `editor/notification.ts:showNotification`. Commands never call `vscode.window.show*Message` or `vscode.commands.executeCommand('notifications.*')` directly — those go through `showNotification` / `clearNotifications`.
 
 ## `copy-file-path.ts` — clipboard round-trip

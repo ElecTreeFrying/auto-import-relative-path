@@ -15,9 +15,9 @@ Sequential markdown checklists driving the human manual-QA pass before each rele
 | `03-copy-command.md` | `extension.copyFilePath` round-trip + `copy-success` toast buttons |
 | `04-paste-into-javascript.md` … `11-paste-into-markdown.md` | One per destination extension (`.js`, `.ts`, `.jsx`, `.tsx`, `.css`, `.scss`, `.html`, `.md`) |
 | `12-auto-command.md` | `extension.copyPaste` (alt+d): sequential copy→paste, race stress, copy-fail short-circuit |
-| `13-settings-placement.md` | `importStatementPlacement` + the 4 forced-cursor overrides + the 10 Bottom-marker indicators |
+| `13-settings-placement.md` | `importStatementPlacement` + the 4 forced-cursor overrides + the 12 Bottom-marker indicators |
 | `14-settings-preserve-extension.md` | `preserve{Script,Stylesheet}FileExtension` + the `.css → .scss` asymmetry |
-| `15-gating-and-rejection.md` | 8-clause gating conjunction + 7 byte-exact notification variants |
+| `15-gating-and-rejection.md` | 11-clause gating conjunction + 9 byte-exact notification variants |
 | `16-path-computation.md` | `./` prefix rule (CHANGELOG 0.6.1), `../`, partial `_` stripping, spaces, unicode |
 | `17-edge-cases-and-regression.md` | Degenerate files, multi-root, multi-cursor, stress, regression re-checks |
 | `18-style-pickers.md` | `extension.pasteImportWithStyle` + `extension.setDefaultImportStyle` picker UX, persistence, hardcoded-destination rejection |
@@ -26,7 +26,7 @@ Sequential markdown checklists driving the human manual-QA pass before each rele
 
 Most edits here touch exactly one checklist. **Read `README.md` first** — its run-order and fixture-purpose tables identify the file you need with one read. Then read only that file. The other checklists are 1–2k lines of human-readable prose each; grepping or surveying the tree is a token sink with no machine-relevant signal.
 
-Sibling `manual-qa-workspace/` is also off-limits for routine reads — see `../CLAUDE.md` for the "DO NOT read into" warning. Both `../CLAUDE.md` and `../README.md` still describe "17 sequential checklists (`00` → `17`)"; the actual high-water mark is `18` since `18-style-pickers.md` was added. Refresh those counts when next editing the parent guides.
+Sibling `manual-qa-workspace/` is also off-limits for routine reads — see `../CLAUDE.md` for the "DO NOT read into" warning.
 
 ## Checklist anatomy — keep this shape when adding or editing
 

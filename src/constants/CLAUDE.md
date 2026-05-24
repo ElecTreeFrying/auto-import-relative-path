@@ -10,7 +10,7 @@ Runtime gating tables for source/destination extension pairs.
 
 | Constant | Consumed by | Purpose |
 |----------|-------------|---------|
-| `IMAGE_FILE_EXTENSIONS` | The four `*_SUPPORTED_EXTENSIONS` lists | Base set spread via `...IMAGE_FILE_EXTENSIONS` |
+| `IMAGE_FILE_EXTENSIONS` | The seven `*_SUPPORTED_EXTENSIONS` lists | Base set spread via `...IMAGE_FILE_EXTENSIONS` |
 | `MEDIA_FILE_EXTENSIONS` | `HTML_SUPPORTED_EXTENSIONS` | Video + audio extensions spread via `...MEDIA_FILE_EXTENSIONS` |
 | `TEXT_TRACK_FILE_EXTENSIONS` | `HTML_SUPPORTED_EXTENSIONS` | `.vtt` spread via `...TEXT_TRACK_FILE_EXTENSIONS` |
 | `HTML_SUPPORTED_EXTENSIONS` | `commands/paste-import.ts` clause 3 | Sources accepted for `.html` destinations |

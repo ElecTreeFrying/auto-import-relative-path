@@ -11,7 +11,7 @@ Helpers that touch the `vscode` API on behalf of `commands/` and `snippets/`. Th
 ## `file-path-info.ts:getFilePathInfo()`
 
 - Reads source from clipboard, destination from `vscode.window.activeTextEditor.document.uri.fsPath`.
-- **Caller is responsible for the active-editor null check** — this function dereferences `editor.document.uri.fsPath` unconditionally and will throw otherwise. The only producer (`commands/paste-import.ts`) does this check.
+- **Caller is responsible for the active-editor null check** — this function dereferences `editor.document.uri.fsPath` unconditionally and will throw otherwise. Every command that starts the calling chain (`commands/paste-import.ts`, `commands/paste-import-with-style.ts`, `commands/set-default-import-style.ts`) does this check.
 - **Each call re-reads the clipboard.** Don't introduce branches that mutate the clipboard between calls. `paste-import.ts`'s `Promise.all` runs two such reads in parallel and relies on both seeing the same value.
 - Called from many sites: every per-language `buildSnippet()`, `_shared.ts:buildReactImport`, `dispatch.ts`, and `insert-snippet.ts:shouldRepositionCursor`.
 

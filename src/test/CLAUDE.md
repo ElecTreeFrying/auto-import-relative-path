@@ -14,7 +14,7 @@ Two subdirectories under `src/test/` are large, static, and contain no signal yo
 
 | Directory | What's inside | If you need context, read… | Otherwise |
 |-----------|----------------|-----------------------------|-----------|
-| `manual-qa/` | 18 markdown files: 17 sequential checklists (`00-setup.md` → `17-edge-cases-and-regression.md`) plus a top-level `README.md` driving the manual-QA pass. Pure documentation; no code. | `manual-qa/README.md` only. | Skip the individual checklists. |
+| `manual-qa/` | 20 markdown files: 18 sequential checklists (`00-setup.md` → `18-style-pickers.md`) plus a top-level `README.md` and `CLAUDE.md`. Pure documentation; no code. | `manual-qa/README.md` only. | Skip the individual checklists. |
 | `manual-qa-workspace/` | ~158 fixture files (TS/JS/JSX/TSX/SCSS/CSS/HTML/MD/JSON/YAML plus zero-byte image and font placeholders) used as paste-import sources/destinations inside the Extension Development Host. | `manual-qa-workspace/README.md` only. | Skip every fixture file. The tree is a workspace, not test code. |
 
 The fixture workspace is excluded from both compilation surfaces — `tsconfig.json:exclude` and `eslint.config.mjs:ignores` list `src/test/manual-qa-workspace/**`. **Don't lift those exclusions.** A fixture is allowed to import from packages that aren't installed and to use DOM globals that aren't in `lib`.
