@@ -41,6 +41,10 @@ type AudioFileExtension =
 
 type TextTrackFileExtension = '.vtt';
 
+type VueFileExtension = '.vue';
+
+type FrameworkComponentFileExtension = VueFileExtension;
+
 type MediaFileExtension = VideoFileExtension | AudioFileExtension | TextTrackFileExtension;
 
 type WebFileExtension =
@@ -60,4 +64,4 @@ type ScriptFileExtension =
 
 type DataFileExtension = '.json';
 
-export type FileExtension = WebFileExtension | ScriptFileExtension | DataFileExtension | DocumentFileExtension | MediaFileExtension;
+export type FileExtension = WebFileExtension | ScriptFileExtension | DataFileExtension | DocumentFileExtension | MediaFileExtension | FrameworkComponentFileExtension;

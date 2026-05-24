@@ -675,7 +675,7 @@ Behavior change for existing users.
 
 #### Step 11 — Vue support (Phase 1)
 
-- [ ] **Done**
+- [x] **Done**
 
 **Read first:** [`IMPORT-FRAMEWORK-COMPONENTS.md`](IMPORT-FRAMEWORK-COMPONENTS.md) Phase 1 — Vue (proposal at a glance, locked decisions, implementation sketch, stepped execution plan) · [`decisions/framework-components.md`](decisions/framework-components.md) (rejection ledger)
 

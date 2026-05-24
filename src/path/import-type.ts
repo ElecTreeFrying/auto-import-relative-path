@@ -7,6 +7,7 @@ export function determineImportType(filePath: string): ImportType | null {
     case '.jsx':
     case '.ts':
     case '.tsx':
+    case '.vue':
       return 'script';
     case '.css':
       return 'stylesheet';

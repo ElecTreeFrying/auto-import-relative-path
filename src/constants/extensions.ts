@@ -48,12 +48,27 @@ export const SCSS_SUPPORTED_EXTENSIONS: FileExtension[] = [
   ...IMAGE_FILE_EXTENSIONS,
 ];
 
+export const VUE_SUPPORTED_EXTENSIONS: FileExtension[] = [
+  '.vue',
+  '.ts',
+  '.js',
+  '.jsx',
+  '.tsx',
+  '.json',
+  '.yml',
+  '.yaml',
+  ...IMAGE_FILE_EXTENSIONS,
+  ...MEDIA_FILE_EXTENSIONS,
+  ...TEXT_TRACK_FILE_EXTENSIONS,
+];
+
 export const SCRIPT_FILE_EXTENSIONS: FileExtension[] = [
   '.ts',
   '.tsx',
   '.mdx',
   '.js',
   '.jsx',
+  '.vue',
 ];
 
 export const STYLESHEET_FILE_EXTENSIONS: FileExtension[] = [
@@ -69,4 +84,5 @@ export const CROSS_IMPORT_DESTINATIONS: FileExtension[] = [
   '.tsx',
   '.mdx',
   '.jsx',
+  '.vue',
 ];

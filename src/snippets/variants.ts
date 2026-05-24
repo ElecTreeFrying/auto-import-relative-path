@@ -74,6 +74,8 @@ export async function buildImportSnippetVariants(): Promise<ImportSnippetVariant
     case '.tsx':
     case '.mdx':
       return buildTsxVariants(sourceFileExt, scriptPath, labelScriptPath, fullPath, labelFullPath);
+    case '.vue':
+      return buildVueVariants(sourceFileExt, scriptPath, labelScriptPath, fullPath, labelFullPath);
     case '.css':
       return buildCssVariants(sourceFilePath, fullPath, labelFullPath);
     case '.scss':
@@ -136,6 +138,27 @@ function buildTsxVariants(
   return variant ? [variant] : [];
 }
 
+function buildVueVariants(
+  sourceFileExt: FileExtension,
+  scriptPath: string,
+  labelScriptPath: string,
+  fullPath: string,
+  labelFullPath: string,
+): ImportSnippetVariant[] {
+  const isScript = sourceFileExt === '.ts' || sourceFileExt === '.tsx'
+    || sourceFileExt === '.js' || sourceFileExt === '.jsx';
+  const importPath = isScript ? scriptPath : fullPath;
+  const labelPath = isScript ? labelScriptPath : labelFullPath;
+
+  return TYPESCRIPT_IMPORT_OPTIONS.map(opt =>
+    toStyledVariant(
+      opt,
+      buildTypeScriptImportSnippetByStyle(opt.value, importPath),
+      buildTypeScriptImportSnippetByStyle(opt.value, labelPath),
+      'script', 'typescript',
+    ));
+}
+
 function buildReactNonScriptVariant(
   sourceFileExt: FileExtension,
   fullPath: string,
@@ -163,6 +186,7 @@ function buildReactNonScriptVariant(
     case '.md':
     case '.mdx':
     case '.pdf':
+    case '.vue':
       return toHardcodedVariant(
         new vscode.SnippetString(`import \${1:name} from '${fullPath}';`),
         new vscode.SnippetString(`import \${1:name} from '${labelFullPath}';`),

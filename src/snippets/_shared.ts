@@ -49,6 +49,7 @@ export async function buildReactImport(opts: ReactImportOptions): Promise<vscode
     case '.md':
     case '.mdx':
     case '.pdf':
+    case '.vue':
       return new vscode.SnippetString(`import \${1:name} from '${fullPath}';`);
     case '.mp4':
     case '.webm':

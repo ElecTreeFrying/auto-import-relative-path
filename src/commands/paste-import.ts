@@ -7,6 +7,7 @@ import {
   MARKDOWN_SUPPORTED_EXTENSIONS,
   CROSS_IMPORT_DESTINATIONS,
   SCSS_SUPPORTED_EXTENSIONS,
+  VUE_SUPPORTED_EXTENSIONS,
 } from '../constants/extensions';
 import { getFilePathInfo } from '../editor/file-path-info';
 import { insertImportSnippet } from '../editor/insert-snippet';
@@ -46,6 +47,7 @@ export async function executePasteImport(): Promise<void> {
     || (!MARKDOWN_SUPPORTED_EXTENSIONS.includes(sourceFileExt) && destinationFileExt === '.md')
     || (!CSS_SUPPORTED_EXTENSIONS.includes(sourceFileExt) && destinationFileExt === '.css')
     || (!SCSS_SUPPORTED_EXTENSIONS.includes(sourceFileExt) && destinationFileExt === '.scss')
+    || (!VUE_SUPPORTED_EXTENSIONS.includes(sourceFileExt) && destinationFileExt === '.vue')
     || snippet.value === '\n'
     || snippet.value === ''
   ) {
