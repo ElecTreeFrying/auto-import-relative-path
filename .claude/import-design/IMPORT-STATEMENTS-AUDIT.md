@@ -639,7 +639,7 @@ Out of scope for this audit. Anything under `src/test/**` (unit tests in `by-sty
 
 #### Step 6 — HTML script modernization
 
-- [ ] **Done**
+- [x] **Done**
 
 **Sections:** "HTML (three settings: script / image / stylesheet)" above (script subsection) · "HTML script (new `buildHtmlScriptImportSnippetByStyle`)" snippet spec · "Removed-value fallback policy" above — **Verify:** `npm run compile && npm test`
 

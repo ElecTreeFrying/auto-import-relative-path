@@ -12,6 +12,7 @@ import {
   TYPESCRIPT_IMPORT_OPTIONS,
   CSS_IMPORT_OPTIONS,
   SCSS_IMPORT_OPTIONS,
+  HTML_SCRIPT_IMPORT_OPTIONS,
   MARKDOWN_IMAGE_IMPORT_OPTIONS,
 } from './_styles';
 import { buildJavaScriptImportSnippetByStyle } from './javascript';
@@ -19,7 +20,7 @@ import { buildTypeScriptImportSnippetByStyle } from './typescript';
 import { buildCssImportSnippetByStyle, buildCssImageImportSnippet } from './css';
 import { buildScssImportSnippetByStyle, prepareScssImportPath } from './scss';
 import {
-  buildHtmlScriptImportSnippet,
+  buildHtmlScriptImportSnippetByStyle,
   buildHtmlImageImportSnippet,
   buildHtmlStylesheetImportSnippet,
 } from './html';
@@ -210,10 +211,13 @@ function buildScssVariants(
 function buildHtmlVariants(sourceFilePath: string, fullPath: string, labelFullPath: string): ImportSnippetVariant[] {
   switch (determineImportType(sourceFilePath)) {
     case 'script':
-      return [toHardcodedVariant(
-        buildHtmlScriptImportSnippet(fullPath),
-        buildHtmlScriptImportSnippet(labelFullPath),
-      )];
+      return HTML_SCRIPT_IMPORT_OPTIONS.map(opt =>
+        toStyledVariant(
+          opt,
+          buildHtmlScriptImportSnippetByStyle(opt.value, fullPath),
+          buildHtmlScriptImportSnippetByStyle(opt.value, labelFullPath),
+          'markup', 'htmlScript',
+        ));
     case 'image':
       return [toHardcodedVariant(
         buildHtmlImageImportSnippet(fullPath),

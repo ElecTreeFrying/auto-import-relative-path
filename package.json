@@ -271,12 +271,20 @@
             "title": "HTML <script> tag style",
             "description": "Tag inserted at the cursor when a .js source is imported into a .html destination. '_relativePath_' is replaced with the computed relative path.",
             "type": "string",
-            "default": "<script type=\"text/javascript\" src=\"_relativePath_\"></script>",
+            "default": "<script src=\"_relativePath_\"></script>",
             "enum": [
+              "<script src=\"_relativePath_\"></script>",
+              "<script src=\"_relativePath_\" defer></script>",
+              "<script type=\"module\" src=\"_relativePath_\"></script>",
+              "<script src=\"_relativePath_\" async></script>",
               "<script type=\"text/javascript\" src=\"_relativePath_\"></script>"
             ],
             "enumDescriptions": [
-              "Standard <script type=\"text/javascript\" src=\"...\"></script> tag"
+              "Modern minimal — type is the HTML5 default",
+              "Deferred execution — runs after parsing, preserves order",
+              "ES module — native ESM in HTML",
+              "Async execution — order-independent, runs when downloaded",
+              "Legacy — includes redundant type=\"text/javascript\""
             ]
           },
           "auto-import.importStatement.markup.htmlImageImportStyle": {

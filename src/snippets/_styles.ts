@@ -46,7 +46,11 @@ export const SCSS_IMPORT_OPTIONS: ImportStyle[] = [
 ];
 
 export const HTML_SCRIPT_IMPORT_OPTIONS: ImportStyle[] = [
-  { value: 0, description: '<script type="text/javascript" src="_relativePath_"></script>' },
+  { value: 0, description: '<script src="_relativePath_"></script>', tag: 'Modern minimal — type is the HTML5 default' },
+  { value: 1, description: '<script src="_relativePath_" defer></script>', tag: 'Deferred execution — runs after parsing, preserves order' },
+  { value: 2, description: '<script type="module" src="_relativePath_"></script>', tag: 'ES module — native ESM in HTML' },
+  { value: 3, description: '<script src="_relativePath_" async></script>', tag: 'Async execution — order-independent, runs when downloaded' },
+  { value: 4, description: '<script type="text/javascript" src="_relativePath_"></script>', tag: 'Legacy — includes redundant type="text/javascript"' },
 ];
 
 export const HTML_IMAGE_IMPORT_OPTIONS: ImportStyle[] = [
