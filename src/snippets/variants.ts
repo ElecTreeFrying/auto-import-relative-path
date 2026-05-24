@@ -136,6 +136,13 @@ function buildReactNonScriptVariant(
   fullPath: string,
   labelFullPath: string,
 ): ImportSnippetVariant | null {
+  if (fullPath.endsWith('.module.css') || fullPath.endsWith('.module.scss')) {
+    return toHardcodedVariant(
+      new vscode.SnippetString(`import \${1:styles} from '${fullPath}';`),
+      new vscode.SnippetString(`import \${1:styles} from '${labelFullPath}';`),
+    );
+  }
+
   switch (sourceFileExt) {
     case '.gif':
     case '.jpeg':

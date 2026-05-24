@@ -30,6 +30,10 @@ export async function buildReactImport(opts: ReactImportOptions): Promise<vscode
 
   const fullPath = relativePath + extractFileExtension(sourceFilePath);
 
+  if (sourceFilePath.endsWith('.module.css') || sourceFilePath.endsWith('.module.scss')) {
+    return new vscode.SnippetString(`import \${1:styles} from '${fullPath}';`);
+  }
+
   switch (sourceFileExt) {
     case '.gif':
     case '.jpeg':

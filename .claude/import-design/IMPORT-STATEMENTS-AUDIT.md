@@ -651,7 +651,7 @@ Out of scope for this audit. Anything under `src/test/**` (unit tests in `by-sty
 
 #### Step 8 — CSS Modules fix (behavior fix)
 
-- [ ] **Done**
+- [x] **Done**
 
 Behavior change for existing users.
 
