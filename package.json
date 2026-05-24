@@ -239,18 +239,20 @@
             "title": "SCSS @import / @use style",
             "description": "Template used when a .scss or .css source is imported into a .scss destination. Modern Sass uses @use for a true module system; legacy Sass uses @import. Leading underscores on partial filenames (e.g. _variables.scss) are stripped automatically to match Sass's partial-resolution convention.",
             "type": "string",
-            "default": "@import '_relativePath_';",
+            "default": "@use '_relativePath_';",
             "enum": [
-              "@import '_relativePath_';",
-              "@import url('_relativePath_');",
               "@use '_relativePath_';",
-              "@use '_relativePath_' as *;"
+              "@use '_relativePath_' as *;",
+              "@use '_relativePath_' as name;",
+              "@forward '_relativePath_';",
+              "@import '_relativePath_';"
             ],
             "enumDescriptions": [
-              "Legacy @import — quoted path",
-              "Legacy @import — url() function",
               "Modern @use — Sass module system (recommended)",
-              "Modern @use with wildcard alias — no namespace prefix required"
+              "Modern @use with wildcard alias — no namespace prefix required",
+              "Modern @use with named alias",
+              "Sass module re-export — barrel pattern",
+              "Legacy @import — Sass-deprecated"
             ]
           },
           "auto-import.importStatement.styleSheet.scssImageImportStyle": {

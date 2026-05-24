@@ -38,10 +38,11 @@ export const CSS_IMAGE_IMPORT_OPTIONS: ImportStyle[] = [
 ];
 
 export const SCSS_IMPORT_OPTIONS: ImportStyle[] = [
-  { value: 0, description: "@import '_relativePath_';", tag: 'Legacy @import — quoted path' },
-  { value: 1, description: "@import url('_relativePath_');", tag: 'Legacy @import — url() function' },
-  { value: 2, description: "@use '_relativePath_';", tag: 'Modern @use — Sass module system (recommended)' },
-  { value: 3, description: "@use '_relativePath_' as *;", tag: 'Modern @use with wildcard alias — no namespace prefix required' },
+  { value: 0, description: "@use '_relativePath_';", tag: 'Modern @use — Sass module system (recommended)' },
+  { value: 1, description: "@use '_relativePath_' as *;", tag: 'Modern @use with wildcard alias — no namespace prefix required' },
+  { value: 2, description: "@use '_relativePath_' as name;", tag: 'Modern @use with named alias' },
+  { value: 3, description: "@forward '_relativePath_';", tag: 'Sass module re-export — barrel pattern' },
+  { value: 4, description: "@import '_relativePath_';", tag: 'Legacy @import — Sass-deprecated' },
 ];
 
 export const HTML_SCRIPT_IMPORT_OPTIONS: ImportStyle[] = [

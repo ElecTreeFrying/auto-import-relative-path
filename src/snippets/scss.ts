@@ -27,15 +27,17 @@ export function buildScssImportSnippetByStyle(
 ): vscode.SnippetString {
   switch (styleIndex) {
     case 0:
-      return new vscode.SnippetString(`@import '${relativePath}';`);
-    case 1:
-      return new vscode.SnippetString(`@import url('${relativePath}');`);
-    case 2:
       return new vscode.SnippetString(`@use '${relativePath}';`);
-    case 3:
+    case 1:
       return new vscode.SnippetString(`@use '${relativePath}' as \${1:*};`);
-    default:
+    case 2:
+      return new vscode.SnippetString(`@use '${relativePath}' as $1;`);
+    case 3:
+      return new vscode.SnippetString(`@forward '${relativePath}';`);
+    case 4:
       return new vscode.SnippetString(`@import '${relativePath}';`);
+    default:
+      return new vscode.SnippetString(`@use '${relativePath}';`);
   }
 }
 

@@ -633,7 +633,7 @@ Out of scope for this audit. Anything under `src/test/**` (unit tests in `by-sty
 
 #### Step 5 — SCSS overhaul
 
-- [ ] **Done**
+- [x] **Done**
 
 **Sections:** "SCSS (`SCSS_IMPORT_OPTIONS`)" above (final list: 5 entries, was 4) · "SCSS (`buildScssImportSnippetByStyle`)" snippet spec (path pipeline note + `@forward` importIndicators follow-on) · "Removed-value fallback policy" above — **Verify:** `npm run compile && npm test`
 

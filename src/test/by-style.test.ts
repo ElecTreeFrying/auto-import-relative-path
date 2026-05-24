@@ -98,10 +98,11 @@ describe('buildScssImportSnippetByStyle', () => {
   const path = './partial';
 
   const cases: Array<[number, string]> = [
-    [0, "@import './partial';"],
-    [1, "@import url('./partial');"],
-    [2, "@use './partial';"],
-    [3, "@use './partial' as ${1:*};"],
+    [0, "@use './partial';"],
+    [1, "@use './partial' as ${1:*};"],
+    [2, "@use './partial' as $1;"],
+    [3, "@forward './partial';"],
+    [4, "@import './partial';"],
   ];
 
   for (const [index, expected] of cases) {
@@ -110,8 +111,8 @@ describe('buildScssImportSnippetByStyle', () => {
     });
   }
 
-  it('falls through to quoted @import on undefined index', () => {
-    assert.strictEqual(buildScssImportSnippetByStyle(undefined, path).value, "@import './partial';");
+  it('falls through to @use on undefined index', () => {
+    assert.strictEqual(buildScssImportSnippetByStyle(undefined, path).value, "@use './partial';");
   });
 });
 

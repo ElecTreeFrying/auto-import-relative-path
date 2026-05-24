@@ -53,7 +53,8 @@ function insertSnippetAtBottom(snippet: vscode.SnippetString): void {
   const documentText = editor.document.getText();
   const importIndicators = [
     'import ', 'var name = require(', 'const name = require(', 'require(',
-    "@import '", '@import "', '@import url(', '@import (', "@use '", '@use "'
+    "@import '", '@import "', '@import url(', '@import (', "@use '", '@use "',
+    "@forward '", '@forward "'
   ];
 
   let insertionLine = 0;
