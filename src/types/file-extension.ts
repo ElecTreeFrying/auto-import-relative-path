@@ -28,6 +28,21 @@ type FontFileExtension =
 
 type DocumentFileExtension = '.pdf';
 
+type VideoFileExtension =
+  | '.mp4'
+  | '.webm'
+  | '.mov';
+
+type AudioFileExtension =
+  | '.mp3'
+  | '.ogg'
+  | '.wav'
+  | '.m4a';
+
+type TextTrackFileExtension = '.vtt';
+
+type MediaFileExtension = VideoFileExtension | AudioFileExtension | TextTrackFileExtension;
+
 type WebFileExtension =
   | HtmlFileExtension
   | YamlFileExtension
@@ -45,4 +60,4 @@ type ScriptFileExtension =
 
 type DataFileExtension = '.json';
 
-export type FileExtension = WebFileExtension | ScriptFileExtension | DataFileExtension | DocumentFileExtension;
+export type FileExtension = WebFileExtension | ScriptFileExtension | DataFileExtension | DocumentFileExtension | MediaFileExtension;

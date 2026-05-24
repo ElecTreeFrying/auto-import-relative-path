@@ -10,10 +10,26 @@ export const IMAGE_FILE_EXTENSIONS: FileExtension[] = [
   '.webp',
 ];
 
+export const MEDIA_FILE_EXTENSIONS: FileExtension[] = [
+  '.mp4',
+  '.webm',
+  '.mov',
+  '.mp3',
+  '.ogg',
+  '.wav',
+  '.m4a',
+];
+
+export const TEXT_TRACK_FILE_EXTENSIONS: FileExtension[] = [
+  '.vtt',
+];
+
 export const HTML_SUPPORTED_EXTENSIONS: FileExtension[] = [
   '.js',
   '.css',
   ...IMAGE_FILE_EXTENSIONS,
+  ...MEDIA_FILE_EXTENSIONS,
+  ...TEXT_TRACK_FILE_EXTENSIONS,
 ];
 
 export const MARKDOWN_SUPPORTED_EXTENSIONS: FileExtension[] = [

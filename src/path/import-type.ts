@@ -12,6 +12,17 @@ export function determineImportType(filePath: string): ImportType | null {
       return 'stylesheet';
     case '.md':
       return 'markdown';
+    case '.mp4':
+    case '.webm':
+    case '.mov':
+      return 'video';
+    case '.mp3':
+    case '.ogg':
+    case '.wav':
+    case '.m4a':
+      return 'audio';
+    case '.vtt':
+      return 'text-track';
     case '.html':
       return null;
     case '.scss':

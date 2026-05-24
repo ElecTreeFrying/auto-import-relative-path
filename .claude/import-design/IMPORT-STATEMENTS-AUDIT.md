@@ -659,7 +659,7 @@ Behavior change for existing users.
 
 #### Step 9 — Media types + gating tables
 
-- [ ] **Done**
+- [x] **Done**
 
 **Read first:** [`IMPORT-MEDIA-FILES.md`](IMPORT-MEDIA-FILES.md) (full design — extension unions, gating tables, `determineImportType` changes) · [`decisions/media-files.md`](decisions/media-files.md) (criteria application — which extensions passed and why; rejection ledger — what not to add)
 

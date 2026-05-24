@@ -2,4 +2,7 @@ export type ImportType =
   | 'script'
   | 'stylesheet'
   | 'markdown'
-  | 'image';
+  | 'image'
+  | 'video'
+  | 'audio'
+  | 'text-track';
