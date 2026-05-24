@@ -189,18 +189,22 @@
             "type": "string",
             "default": "import { name } from '_relativePath_';",
             "enum": [
-              "import name from '_relativePath_';",
               "import { name } from '_relativePath_';",
-              "import { default as name } from '_relativePath_';",
+              "import name from '_relativePath_';",
               "import * as name from '_relativePath_';",
-              "import '_relativePath_';"
+              "import '_relativePath_';",
+              "import type { name } from '_relativePath_';",
+              "import { name, type Type } from '_relativePath_';",
+              "const name = await import('_relativePath_');"
             ],
             "enumDescriptions": [
+              "ES module: named import — legacy Angular files (.component / .directive / .pipe / .service / .module) auto-fill PascalCase identifiers (back-compat)",
               "ES module: default import",
-              "ES module: named import — Angular files (.component / .directive / .pipe / .service / .module) auto-fill PascalCase identifiers",
-              "ES module: aliased default import",
               "ES module: namespace import (every export bound under one name)",
-              "ES module: side-effect import (no binding)"
+              "ES module: side-effect import (no binding)",
+              "TypeScript: type-only import (TS 3.8+ — zero runtime, erased at compile time)",
+              "TypeScript: mixed value + type import (TS 4.5+ inline modifier)",
+              "Dynamic import: lazy-load / code-splitting"
             ]
           },
           "auto-import.importStatement.styleSheet.preserveStylesheetFileExtension": {

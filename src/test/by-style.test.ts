@@ -36,10 +36,12 @@ describe('buildTypeScriptImportSnippetByStyle', () => {
   const path = './foo';
 
   const cases: Array<[number, string]> = [
-    [0, "import $1 from './foo';"],
-    [2, "import { default as $1 } from './foo';"],
-    [3, "import * as $1 from './foo';"],
-    [4, "import './foo';"],
+    [1, "import $1 from './foo';"],
+    [2, "import * as $1 from './foo';"],
+    [3, "import './foo';"],
+    [4, "import type { $1 } from './foo';"],
+    [5, "import { $1, type $2 } from './foo';"],
+    [6, "const $1 = await import('./foo');"],
   ];
 
   for (const [index, expected] of cases) {
@@ -52,27 +54,27 @@ describe('buildTypeScriptImportSnippetByStyle', () => {
     assert.strictEqual(buildTypeScriptImportSnippetByStyle(undefined, path).value, "import { $1 } from './foo';");
   });
 
-  it('renders index 1 with $1 placeholder for non-Angular paths', () => {
-    assert.strictEqual(buildTypeScriptImportSnippetByStyle(1, './foo').value, "import { $1 } from './foo';");
+  it('renders index 0 with $1 placeholder for non-Angular paths', () => {
+    assert.strictEqual(buildTypeScriptImportSnippetByStyle(0, './foo').value, "import { $1 } from './foo';");
   });
 
-  it('renders index 1 with PascalCase substitution for .component paths', () => {
+  it('renders index 0 with PascalCase substitution for .component paths', () => {
     assert.strictEqual(
-      buildTypeScriptImportSnippetByStyle(1, './app-root.component').value,
+      buildTypeScriptImportSnippetByStyle(0, './app-root.component').value,
       "import { AppRootComponent } from './app-root.component';",
     );
   });
 
-  it('renders index 1 with PascalCase substitution for .service paths', () => {
+  it('renders index 0 with PascalCase substitution for .service paths', () => {
     assert.strictEqual(
-      buildTypeScriptImportSnippetByStyle(1, './data.service').value,
+      buildTypeScriptImportSnippetByStyle(0, './data.service').value,
       "import { DataService } from './data.service';",
     );
   });
 
   it('strips a trailing .ts extension before deriving the Angular identifier', () => {
     assert.strictEqual(
-      buildTypeScriptImportSnippetByStyle(1, './app-root.component.ts').value,
+      buildTypeScriptImportSnippetByStyle(0, './app-root.component.ts').value,
       "import { AppRootComponent } from './app-root.component.ts';",
     );
   });

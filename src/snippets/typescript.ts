@@ -34,15 +34,19 @@ export function buildTypeScriptImportSnippetByStyle(
 ): vscode.SnippetString {
   switch (styleIndex) {
     case 0:
-      return new vscode.SnippetString(`import $1 from '${relativePath}';`);
-    case 1:
       return new vscode.SnippetString(`import { ${generateAngularLegacyImportName(relativePath)} } from '${relativePath}';`);
+    case 1:
+      return new vscode.SnippetString(`import $1 from '${relativePath}';`);
     case 2:
-      return new vscode.SnippetString(`import { default as $1 } from '${relativePath}';`);
-    case 3:
       return new vscode.SnippetString(`import * as $1 from '${relativePath}';`);
-    case 4:
+    case 3:
       return new vscode.SnippetString(`import '${relativePath}';`);
+    case 4:
+      return new vscode.SnippetString(`import type { $1 } from '${relativePath}';`);
+    case 5:
+      return new vscode.SnippetString(`import { $1, type $2 } from '${relativePath}';`);
+    case 6:
+      return new vscode.SnippetString(`const $1 = await import('${relativePath}');`);
     default:
       return new vscode.SnippetString(`import { $1 } from '${relativePath}';`);
   }
