@@ -62,6 +62,20 @@ export const VUE_SUPPORTED_EXTENSIONS: FileExtension[] = [
   ...TEXT_TRACK_FILE_EXTENSIONS,
 ];
 
+export const SVELTE_SUPPORTED_EXTENSIONS: FileExtension[] = [
+  '.svelte',
+  '.ts',
+  '.js',
+  '.jsx',
+  '.tsx',
+  '.json',
+  '.yml',
+  '.yaml',
+  ...IMAGE_FILE_EXTENSIONS,
+  ...MEDIA_FILE_EXTENSIONS,
+  ...TEXT_TRACK_FILE_EXTENSIONS,
+];
+
 export const SCRIPT_FILE_EXTENSIONS: FileExtension[] = [
   '.ts',
   '.tsx',
@@ -69,6 +83,7 @@ export const SCRIPT_FILE_EXTENSIONS: FileExtension[] = [
   '.js',
   '.jsx',
   '.vue',
+  '.svelte',
 ];
 
 export const STYLESHEET_FILE_EXTENSIONS: FileExtension[] = [
@@ -85,4 +100,5 @@ export const CROSS_IMPORT_DESTINATIONS: FileExtension[] = [
   '.mdx',
   '.jsx',
   '.vue',
+  '.svelte',
 ];

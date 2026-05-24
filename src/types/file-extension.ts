@@ -43,7 +43,9 @@ type TextTrackFileExtension = '.vtt';
 
 type VueFileExtension = '.vue';
 
-type FrameworkComponentFileExtension = VueFileExtension;
+type SvelteFileExtension = '.svelte';
+
+type FrameworkComponentFileExtension = VueFileExtension | SvelteFileExtension;
 
 type MediaFileExtension = VideoFileExtension | AudioFileExtension | TextTrackFileExtension;
 

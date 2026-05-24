@@ -7,6 +7,7 @@ import {
   MARKDOWN_SUPPORTED_EXTENSIONS,
   CROSS_IMPORT_DESTINATIONS,
   SCSS_SUPPORTED_EXTENSIONS,
+  SVELTE_SUPPORTED_EXTENSIONS,
   VUE_SUPPORTED_EXTENSIONS,
 } from '../constants/extensions';
 import { getFilePathInfo } from '../editor/file-path-info';
@@ -48,6 +49,7 @@ export async function executePasteImport(): Promise<void> {
     || (!CSS_SUPPORTED_EXTENSIONS.includes(sourceFileExt) && destinationFileExt === '.css')
     || (!SCSS_SUPPORTED_EXTENSIONS.includes(sourceFileExt) && destinationFileExt === '.scss')
     || (!VUE_SUPPORTED_EXTENSIONS.includes(sourceFileExt) && destinationFileExt === '.vue')
+    || (!SVELTE_SUPPORTED_EXTENSIONS.includes(sourceFileExt) && destinationFileExt === '.svelte')
     || snippet.value === '\n'
     || snippet.value === ''
   ) {

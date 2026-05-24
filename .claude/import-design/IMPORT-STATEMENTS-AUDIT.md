@@ -683,7 +683,7 @@ Behavior change for existing users.
 
 #### Step 12 — Svelte support (Phase 2)
 
-- [ ] **Done**
+- [x] **Done**
 
 **Read first:** [`IMPORT-FRAMEWORK-COMPONENTS.md`](IMPORT-FRAMEWORK-COMPONENTS.md) Phase 2 — Svelte (proposal at a glance, locked decisions, implementation sketch, stepped execution plan) · [`decisions/framework-components.md`](decisions/framework-components.md) (rejection ledger)
 

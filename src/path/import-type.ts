@@ -8,6 +8,7 @@ export function determineImportType(filePath: string): ImportType | null {
     case '.ts':
     case '.tsx':
     case '.vue':
+    case '.svelte':
       return 'script';
     case '.css':
       return 'stylesheet';
