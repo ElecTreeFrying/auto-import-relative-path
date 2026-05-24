@@ -139,6 +139,8 @@ function buildReactNonScriptVariant(
     case '.jpeg':
     case '.jpg':
     case '.png':
+    case '.svg':
+    case '.avif':
     case '.webp':
     case '.json':
     case '.html':
@@ -146,6 +148,7 @@ function buildReactNonScriptVariant(
     case '.yaml':
     case '.md':
     case '.mdx':
+    case '.pdf':
       return toHardcodedVariant(
         new vscode.SnippetString(`import \${1:name} from '${fullPath}';`),
         new vscode.SnippetString(`import \${1:name} from '${labelFullPath}';`),

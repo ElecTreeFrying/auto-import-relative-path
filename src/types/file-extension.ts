@@ -16,6 +16,8 @@ type ImageFileExtension =
   | '.jpeg'
   | '.jpg'
   | '.png'
+  | '.svg'
+  | '.avif'
   | '.webp';
 
 type FontFileExtension =
@@ -23,6 +25,8 @@ type FontFileExtension =
   | '.woff2'
   | '.ttf'
   | '.eot';
+
+type DocumentFileExtension = '.pdf';
 
 type WebFileExtension =
   | HtmlFileExtension
@@ -41,4 +45,4 @@ type ScriptFileExtension =
 
 type DataFileExtension = '.json';
 
-export type FileExtension = WebFileExtension | ScriptFileExtension | DataFileExtension;
+export type FileExtension = WebFileExtension | ScriptFileExtension | DataFileExtension | DocumentFileExtension;

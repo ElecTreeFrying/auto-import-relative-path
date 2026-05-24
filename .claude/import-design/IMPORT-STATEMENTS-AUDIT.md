@@ -621,7 +621,7 @@ Out of scope for this audit. Anything under `src/test/**` (unit tests in `by-sty
 
 #### Step 3 — Source extensions (.svg, .avif, .pdf)
 
-- [ ] **Done**
+- [x] **Done**
 
 **Sections:** "JSX / TSX / MDX" above (bucket 2 additions + "Implementation footnote" for type/constant sync) · "JSX/TSX/MDX non-script sources" snippet spec (bucket 2) — **Verify:** `npm run compile && npm test`
 

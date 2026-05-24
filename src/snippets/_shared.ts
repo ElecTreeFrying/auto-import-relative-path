@@ -35,6 +35,8 @@ export async function buildReactImport(opts: ReactImportOptions): Promise<vscode
     case '.jpeg':
     case '.jpg':
     case '.png':
+    case '.svg':
+    case '.avif':
     case '.webp':
     case '.json':
     case '.html':
@@ -42,6 +44,7 @@ export async function buildReactImport(opts: ReactImportOptions): Promise<vscode
     case '.yaml':
     case '.md':
     case '.mdx':
+    case '.pdf':
       return new vscode.SnippetString(`import \${1:name} from '${fullPath}';`);
     case '.woff':
     case '.woff2':

@@ -5,6 +5,8 @@ export const IMAGE_FILE_EXTENSIONS: FileExtension[] = [
   '.jpeg',
   '.jpg',
   '.png',
+  '.svg',
+  '.avif',
   '.webp',
 ];
 
