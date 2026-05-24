@@ -12,8 +12,10 @@ import {
   TYPESCRIPT_IMPORT_OPTIONS,
   CSS_IMPORT_OPTIONS,
   SCSS_IMPORT_OPTIONS,
+  HTML_AUDIO_IMPORT_OPTIONS,
   HTML_IMAGE_IMPORT_OPTIONS,
   HTML_SCRIPT_IMPORT_OPTIONS,
+  HTML_VIDEO_IMPORT_OPTIONS,
   MARKDOWN_IMAGE_IMPORT_OPTIONS,
 } from './_styles';
 import { buildJavaScriptImportSnippetByStyle } from './javascript';
@@ -23,6 +25,9 @@ import { buildScssImportSnippetByStyle, prepareScssImportPath } from './scss';
 import {
   buildHtmlScriptImportSnippetByStyle,
   buildHtmlImageImportSnippetByStyle,
+  buildHtmlVideoImportSnippetByStyle,
+  buildHtmlAudioImportSnippetByStyle,
+  buildHtmlTextTrackImportSnippet,
   buildHtmlStylesheetImportSnippet,
 } from './html';
 import { buildMarkdownImportSnippet, buildMarkdownImageImportSnippetByStyle } from './markdown';
@@ -162,6 +167,18 @@ function buildReactNonScriptVariant(
         new vscode.SnippetString(`import \${1:name} from '${fullPath}';`),
         new vscode.SnippetString(`import \${1:name} from '${labelFullPath}';`),
       );
+    case '.mp4':
+    case '.webm':
+    case '.mov':
+    case '.mp3':
+    case '.ogg':
+    case '.wav':
+    case '.m4a':
+    case '.vtt':
+      return toHardcodedVariant(
+        new vscode.SnippetString(`import \${1:url} from '${fullPath}';`),
+        new vscode.SnippetString(`import \${1:url} from '${labelFullPath}';`),
+      );
     case '.woff':
     case '.woff2':
     case '.ttf':
@@ -234,6 +251,27 @@ function buildHtmlVariants(sourceFilePath: string, fullPath: string, labelFullPa
           buildHtmlImageImportSnippetByStyle(opt.value, labelFullPath),
           'markup', 'htmlImage',
         ));
+    case 'video':
+      return HTML_VIDEO_IMPORT_OPTIONS.map(opt =>
+        toStyledVariant(
+          opt,
+          buildHtmlVideoImportSnippetByStyle(opt.value, fullPath),
+          buildHtmlVideoImportSnippetByStyle(opt.value, labelFullPath),
+          'markup', 'htmlVideo',
+        ));
+    case 'audio':
+      return HTML_AUDIO_IMPORT_OPTIONS.map(opt =>
+        toStyledVariant(
+          opt,
+          buildHtmlAudioImportSnippetByStyle(opt.value, fullPath),
+          buildHtmlAudioImportSnippetByStyle(opt.value, labelFullPath),
+          'markup', 'htmlAudio',
+        ));
+    case 'text-track':
+      return [toHardcodedVariant(
+        buildHtmlTextTrackImportSnippet(fullPath),
+        buildHtmlTextTrackImportSnippet(labelFullPath),
+      )];
     case 'stylesheet':
       return [toHardcodedVariant(
         buildHtmlStylesheetImportSnippet(fullPath),

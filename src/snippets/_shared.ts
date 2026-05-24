@@ -50,6 +50,15 @@ export async function buildReactImport(opts: ReactImportOptions): Promise<vscode
     case '.mdx':
     case '.pdf':
       return new vscode.SnippetString(`import \${1:name} from '${fullPath}';`);
+    case '.mp4':
+    case '.webm':
+    case '.mov':
+    case '.mp3':
+    case '.ogg':
+    case '.wav':
+    case '.m4a':
+    case '.vtt':
+      return new vscode.SnippetString(`import \${1:url} from '${fullPath}';`);
     case '.woff':
     case '.woff2':
     case '.ttf':

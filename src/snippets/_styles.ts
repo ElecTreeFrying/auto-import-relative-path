@@ -59,6 +59,18 @@ export const HTML_IMAGE_IMPORT_OPTIONS: ImportStyle[] = [
   { value: 2, description: '<img src="_relativePath_" alt="" width="" height="">', tag: 'Explicit dimensions — Core Web Vitals CLS prevention' },
 ];
 
+export const HTML_VIDEO_IMPORT_OPTIONS: ImportStyle[] = [
+  { value: 0, description: '<video src="_relativePath_" controls></video>' },
+  { value: 1, description: '<video src="_relativePath_" autoplay muted loop playsinline></video>', tag: 'Silent autoplay — background video (hero sections)' },
+  { value: 2, description: '<video src="_relativePath_" controls poster=""></video>', tag: 'Controls + poster — custom thumbnail before playback' },
+  { value: 3, description: '<video src="_relativePath_" controls preload="metadata"></video>', tag: 'Long-form video — preload metadata only (Core Web Vitals)' },
+];
+
+export const HTML_AUDIO_IMPORT_OPTIONS: ImportStyle[] = [
+  { value: 0, description: '<audio src="_relativePath_" controls></audio>' },
+  { value: 1, description: '<audio src="_relativePath_" controls preload="metadata"></audio>', tag: 'Network-friendly — preload metadata only' },
+];
+
 export const HTML_STYLESHEET_IMPORT_OPTIONS: ImportStyle[] = [
   { value: 0, description: '<link href="_relativePath_" rel="stylesheet">' },
 ];

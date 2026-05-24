@@ -667,7 +667,7 @@ Behavior change for existing users.
 
 #### Step 10 — Media JSX/TSX/MDX + HTML dispatch
 
-- [ ] **Done**
+- [x] **Done**
 
 **Read first:** [`IMPORT-MEDIA-FILES.md`](IMPORT-MEDIA-FILES.md) (per-destination snippets, snippet placeholder spec, implementation sketch — the full design for JSX/TSX/MDX dispatch bucket and HTML video/audio/text-track shapes) · [`decisions/media-files.md`](decisions/media-files.md) (cross-cutting design choices — why `controls` is the universal default, why video/audio settings are separate, why JSX/TSX/MDX uses dispatch not a picker)
 

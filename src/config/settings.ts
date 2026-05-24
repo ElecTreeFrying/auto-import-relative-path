@@ -32,6 +32,8 @@ const AUTO_IMPORT_CONFIG = freeze({
     settings: freeze({
       htmlScript: 'htmlScriptImportStyle',
       htmlImage: 'htmlImageImportStyle',
+      htmlVideo: 'htmlVideoImportStyle',
+      htmlAudio: 'htmlAudioImportStyle',
       htmlStyleSheet: 'htmlStyleSheetImportStyle',
       markdown: 'markdownImportStyle',
       markdownImage: 'markdownImageImportStyle',
@@ -56,6 +58,8 @@ export type AutoImportSettingKey =
   | 'scssImage'
   | 'htmlScript'
   | 'htmlImage'
+  | 'htmlVideo'
+  | 'htmlAudio'
   | 'htmlStyleSheet'
   | 'markdown'
   | 'markdownImage';

@@ -4,7 +4,13 @@ import { getAutoImportSetting } from '../config/settings';
 import { extractFileExtension } from '../path/extension';
 import { determineImportType } from '../path/import-type';
 import { getFilePathInfo } from '../editor/file-path-info';
-import { HTML_IMAGE_IMPORT_OPTIONS, HTML_SCRIPT_IMPORT_OPTIONS, resolveStyleIndex } from './_styles';
+import {
+  HTML_AUDIO_IMPORT_OPTIONS,
+  HTML_IMAGE_IMPORT_OPTIONS,
+  HTML_SCRIPT_IMPORT_OPTIONS,
+  HTML_VIDEO_IMPORT_OPTIONS,
+  resolveStyleIndex,
+} from './_styles';
 
 export async function buildSnippet(): Promise<vscode.SnippetString> {
   const { sourceFilePath, relativePath } = await getFilePathInfo();
@@ -19,6 +25,16 @@ export async function buildSnippet(): Promise<vscode.SnippetString> {
       const styleIndex = resolveStyleIndex(HTML_IMAGE_IMPORT_OPTIONS, getAutoImportSetting<string>('markup', 'htmlImage'));
       return buildHtmlImageImportSnippetByStyle(styleIndex, fullPath);
     }
+    case 'video': {
+      const styleIndex = resolveStyleIndex(HTML_VIDEO_IMPORT_OPTIONS, getAutoImportSetting<string>('markup', 'htmlVideo'));
+      return buildHtmlVideoImportSnippetByStyle(styleIndex, fullPath);
+    }
+    case 'audio': {
+      const styleIndex = resolveStyleIndex(HTML_AUDIO_IMPORT_OPTIONS, getAutoImportSetting<string>('markup', 'htmlAudio'));
+      return buildHtmlAudioImportSnippetByStyle(styleIndex, fullPath);
+    }
+    case 'text-track':
+      return buildHtmlTextTrackImportSnippet(fullPath);
     case 'stylesheet':
       return buildHtmlStylesheetImportSnippet(fullPath);
     default:
@@ -64,4 +80,40 @@ export function buildHtmlImageImportSnippetByStyle(
 
 export function buildHtmlStylesheetImportSnippet(relativePath: string): vscode.SnippetString {
   return new vscode.SnippetString(`<link href="${relativePath}" rel="stylesheet">`);
+}
+
+export function buildHtmlVideoImportSnippetByStyle(
+  styleIndex: number | undefined,
+  relativePath: string,
+): vscode.SnippetString {
+  switch (styleIndex) {
+    case 0:
+      return new vscode.SnippetString(`<video src="${relativePath}" controls></video>`);
+    case 1:
+      return new vscode.SnippetString(`<video src="${relativePath}" autoplay muted loop playsinline></video>`);
+    case 2:
+      return new vscode.SnippetString(`<video src="${relativePath}" controls poster="$1"></video>`);
+    case 3:
+      return new vscode.SnippetString(`<video src="${relativePath}" controls preload="metadata"></video>`);
+    default:
+      return new vscode.SnippetString(`<video src="${relativePath}" controls></video>`);
+  }
+}
+
+export function buildHtmlAudioImportSnippetByStyle(
+  styleIndex: number | undefined,
+  relativePath: string,
+): vscode.SnippetString {
+  switch (styleIndex) {
+    case 0:
+      return new vscode.SnippetString(`<audio src="${relativePath}" controls></audio>`);
+    case 1:
+      return new vscode.SnippetString(`<audio src="${relativePath}" controls preload="metadata"></audio>`);
+    default:
+      return new vscode.SnippetString(`<audio src="${relativePath}" controls></audio>`);
+  }
+}
+
+export function buildHtmlTextTrackImportSnippet(relativePath: string): vscode.SnippetString {
+  return new vscode.SnippetString(`<track src="${relativePath}" kind="subtitles" srclang="\${1:en}" label="\${2:English}"></track>`);
 }
