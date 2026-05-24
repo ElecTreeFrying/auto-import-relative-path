@@ -13,6 +13,10 @@ export async function insertImportSnippet(snippet: vscode.SnippetString): Promis
     return insertSnippetAtCursor(snippet);
   }
 
+  if (await shouldUseAstroFrontmatter()) {
+    return insertSnippetAtAstroFrontmatter(snippet);
+  }
+
   const placement = getAutoImportSetting('preferences', 'placement');
 
   switch (placement) {
@@ -81,4 +85,30 @@ function determineInsertionColumn(editor: vscode.TextEditor): number {
     SCRIPT_FILE_EXTENSIONS.includes(fileExtension) || STYLESHEET_FILE_EXTENSIONS.includes(fileExtension);
 
   return isScriptOrStylesheet ? 0 : currentColumn;
+}
+
+async function shouldUseAstroFrontmatter(): Promise<boolean> {
+  const { destinationFileExt } = await getFilePathInfo();
+  return destinationFileExt === '.astro';
+}
+
+function insertSnippetAtAstroFrontmatter(snippet: vscode.SnippetString): void {
+  const editor = vscode.window.activeTextEditor;
+  const lines = editor.document.getText().split('\n');
+
+  let openingFenceLine = -1;
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].trim() === '---') {
+      openingFenceLine = i;
+      break;
+    }
+  }
+
+  if (openingFenceLine === -1) {
+    const wrappedSnippet = new vscode.SnippetString(`---\n${snippet.value}---\n`);
+    editor.insertSnippet(wrappedSnippet, new vscode.Position(0, 0));
+    return;
+  }
+
+  editor.insertSnippet(snippet, new vscode.Position(openingFenceLine + 1, 0));
 }

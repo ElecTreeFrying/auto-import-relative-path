@@ -45,7 +45,9 @@ type VueFileExtension = '.vue';
 
 type SvelteFileExtension = '.svelte';
 
-type FrameworkComponentFileExtension = VueFileExtension | SvelteFileExtension;
+type AstroFileExtension = '.astro';
+
+type FrameworkComponentFileExtension = VueFileExtension | SvelteFileExtension | AstroFileExtension;
 
 type MediaFileExtension = VideoFileExtension | AudioFileExtension | TextTrackFileExtension;
 

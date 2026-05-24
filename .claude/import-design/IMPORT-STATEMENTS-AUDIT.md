@@ -691,7 +691,7 @@ Behavior change for existing users.
 
 #### Step 13 — Astro support (Phase 3)
 
-- [ ] **Done**
+- [x] **Done**
 
 **Read first:** [`IMPORT-FRAMEWORK-COMPONENTS.md`](IMPORT-FRAMEWORK-COMPONENTS.md) Phase 3 — Astro (proposal at a glance, locked decisions, implementation sketch, stepped execution plan — 4 steps; includes the frontmatter-aware placement override in `src/editor/insert-snippet.ts`) · [`decisions/framework-components.md`](decisions/framework-components.md) (rejection ledger)
 

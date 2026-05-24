@@ -9,6 +9,7 @@ export function determineImportType(filePath: string): ImportType | null {
     case '.tsx':
     case '.vue':
     case '.svelte':
+    case '.astro':
       return 'script';
     case '.css':
       return 'stylesheet';

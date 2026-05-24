@@ -76,6 +76,24 @@ export const SVELTE_SUPPORTED_EXTENSIONS: FileExtension[] = [
   ...TEXT_TRACK_FILE_EXTENSIONS,
 ];
 
+export const ASTRO_SUPPORTED_EXTENSIONS: FileExtension[] = [
+  '.astro',
+  '.ts',
+  '.js',
+  '.jsx',
+  '.tsx',
+  '.vue',
+  '.svelte',
+  '.json',
+  '.yml',
+  '.yaml',
+  '.md',
+  '.mdx',
+  ...IMAGE_FILE_EXTENSIONS,
+  ...MEDIA_FILE_EXTENSIONS,
+  ...TEXT_TRACK_FILE_EXTENSIONS,
+];
+
 export const SCRIPT_FILE_EXTENSIONS: FileExtension[] = [
   '.ts',
   '.tsx',
@@ -84,6 +102,7 @@ export const SCRIPT_FILE_EXTENSIONS: FileExtension[] = [
   '.jsx',
   '.vue',
   '.svelte',
+  '.astro',
 ];
 
 export const STYLESHEET_FILE_EXTENSIONS: FileExtension[] = [
@@ -101,4 +120,5 @@ export const CROSS_IMPORT_DESTINATIONS: FileExtension[] = [
   '.jsx',
   '.vue',
   '.svelte',
+  '.astro',
 ];
