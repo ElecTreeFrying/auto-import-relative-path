@@ -26,11 +26,12 @@ Order of precedence:
 
 ### "Bottom" insertion
 
-Walks `document.getText().split('\n')` looking for any of **ten** `importIndicators` markers and inserts after the last match:
+Walks `document.getText().split('\n')` looking for any of **twelve** `importIndicators` markers and inserts after the last match:
 
 ```
 'import ', 'var name = require(', 'const name = require(', 'require(',
-"@import '", '@import "', '@import url(', '@import (', "@use '", '@use "'
+"@import '", '@import "', '@import url(', '@import (', "@use '", '@use "',
+"@forward '", '@forward "'
 ```
 
 Falls through to line 0 when no marker matches. **New import-syntax markers must be added here** or "Bottom" placement will silently land at line 0 instead of after the existing imports.

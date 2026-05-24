@@ -4,13 +4,15 @@ Runtime gating tables for source/destination extension pairs.
 
 ## File
 
-- `extensions.ts` — eight exported constants.
+- `extensions.ts` — ten exported constants.
 
 ## What's exported
 
 | Constant | Purpose |
 |----------|---------|
 | `IMAGE_FILE_EXTENSIONS` | Base raster-image extension set; spread into the four supported-extension lists. |
+| `MEDIA_FILE_EXTENSIONS` | Video + audio extensions; spread into `HTML_SUPPORTED_EXTENSIONS`. |
+| `TEXT_TRACK_FILE_EXTENSIONS` | `.vtt`; spread into `HTML_SUPPORTED_EXTENSIONS`. |
 | `HTML_SUPPORTED_EXTENSIONS` | Sources accepted when the destination is `.html`. |
 | `MARKDOWN_SUPPORTED_EXTENSIONS` | Sources accepted when the destination is `.md`. |
 | `CSS_SUPPORTED_EXTENSIONS` | Sources accepted when the destination is `.css`. |

@@ -8,7 +8,7 @@ Pure path helpers. **No `vscode` import** — fully Node-testable. New helpers i
 |------|-----------------|---------|
 | `relative.ts` | `computeRelative(sourceFilePath, destinationFilePath): string` | Returns a Unix-style, extension-stripped relative path (with `./` prefix for same-directory imports). Regression-tested per CHANGELOG `0.6.1`. |
 | `extension.ts` | `extractFileExtension(filePath): FileExtension`, `removeFileExtension(filePath): string` | Thin wrappers over Node's `path.parse`. |
-| `import-type.ts` | `determineImportType(filePath): ImportType \| null` | Classifies a source file as `'script' \| 'stylesheet' \| 'markdown' \| 'image' \| null`. |
+| `import-type.ts` | `determineImportType(filePath): ImportType \| null` | Classifies a source file as `'script' \| 'stylesheet' \| 'markdown' \| 'image' \| 'video' \| 'audio' \| 'text-track' \| null`. |
 
 ## Where to add new code
 

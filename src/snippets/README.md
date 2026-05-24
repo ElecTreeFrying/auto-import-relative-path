@@ -17,15 +17,15 @@ One module per destination language.
 
 | File | Purpose |
 |------|---------|
-| `javascript.ts` | JS shapes (9 styles) via `auto-import.importStatement.script.javascriptImportStyle`. |
-| `typescript.ts` | TS shapes (5 styles), with Angular PascalCase substitution at index 1. |
+| `javascript.ts` | JS shapes (7 styles) via `auto-import.importStatement.script.javascriptImportStyle`. |
+| `typescript.ts` | TS shapes (7 styles), with Angular PascalCase substitution at index 0. |
 | `jsx.ts` | JSX entry — delegates to `_shared.ts:buildReactImport` with JS as primary. |
 | `tsx.ts` | TSX entry — delegates to `_shared.ts:buildReactImport` with TS primary, JS fallback for `.js` sources. |
 | `mdx.ts` | MDX entry — same shape as `tsx.ts` (TS primary, JS fallback). |
 | `css.ts` | CSS shapes (2 styles); `buildCssImageImportSnippet` exported for SCSS reuse. |
-| `scss.ts` | SCSS shapes (4 styles), with partial-filename underscore stripping and asymmetric `.css` extension preservation. |
-| `html.ts` | HTML `<script>` / `<img>` / `<link>` (fixed shapes). |
-| `markdown.ts` | Markdown link (fixed) + image (2 configurable styles). |
+| `scss.ts` | SCSS shapes (5 styles), with partial-filename underscore stripping and asymmetric `.css` extension preservation. |
+| `html.ts` | HTML `<script>` (5 styles) / `<img>` (3) / `<video>` (4) / `<audio>` (2) configurable + `<link>` / `<track>` fixed. |
+| `markdown.ts` | Markdown link (fixed) + image (3 configurable styles). |
 
 `_`-prefixed files are internal to the `snippets/` subtree. Importing them from outside `snippets/` is a smell; `languages/` modules importing `../_styles` and `../_shared` is expected.
 

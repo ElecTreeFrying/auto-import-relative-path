@@ -5,12 +5,12 @@ Cross-cutting type unions used across the codebase. **String-literal unions, not
 ## Files
 
 - `file-extension.ts` — `FileExtension` union (the only export from this file).
-- `import-type.ts` — `ImportType` four-way classifier.
+- `import-type.ts` — `ImportType` seven-way classifier.
 - `notification.ts` — `NotificationType` nine-way notification kind (seven warning, two info).
 
 ## `file-extension.ts` — only `FileExtension` is exported
 
-Category sub-types (`HtmlFileExtension`, `YamlFileExtension`, `StylesheetFileExtension`, `ImageFileExtension`, `FontFileExtension`, `WebFileExtension`, `ScriptFileExtension`, `DataFileExtension`) are **intentionally unexported** — consumers depend on the umbrella `FileExtension` union. The categories are organisational comments inside the file, not a public taxonomy.
+Category sub-types (`HtmlFileExtension`, `YamlFileExtension`, `MarkdownFileExtension`, `StylesheetFileExtension`, `ImageFileExtension`, `FontFileExtension`, `DocumentFileExtension`, `VideoFileExtension`, `AudioFileExtension`, `TextTrackFileExtension`, `MediaFileExtension`, `WebFileExtension`, `ScriptFileExtension`, `DataFileExtension`) are **intentionally unexported** — consumers depend on the umbrella `FileExtension` union. The categories are organisational comments inside the file, not a public taxonomy.
 
 **Conventions:** every value is lowercase and dot-prefixed (`.ts`, `.png`, etc.) so it matches `path.parse(filePath).ext` without normalisation. The `as FileExtension` cast at runtime boundaries (e.g. `extractFileExtension` return) is **erased** — no runtime check.
 
@@ -24,7 +24,7 @@ A missing entry in (2) produces a silent fall-through to a `default:` branch —
 
 ## `import-type.ts` — `ImportType`
 
-Four buckets: `'script' | 'stylesheet' | 'markdown' | 'image'`.
+Seven buckets: `'script' | 'stylesheet' | 'markdown' | 'image' | 'video' | 'audio' | 'text-track'`.
 
 - **Producer**: `path/import-type.ts:determineImportType` (which returns `ImportType | null` — see that file's CLAUDE.md for the two intentional `null` returns).
 - **Consumers**: `snippets/{css,scss,html,markdown}.ts`. JSX/TSX/MDX **do not** consult this — they branch on the raw source extension via `_shared.ts`.

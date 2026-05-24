@@ -6,7 +6,7 @@ Pure path math. **No `vscode` import** — every file here is Node-testable. Don
 
 - `relative.ts` — `computeRelative(source, destination)` returns the import-ready relative path.
 - `extension.ts` — `extractFileExtension` / `removeFileExtension` thin wrappers over `path.parse`.
-- `import-type.ts` — `determineImportType(filePath)` four-way classifier with two intentional `null` returns.
+- `import-type.ts` — `determineImportType(filePath)` seven-way classifier with two intentional `null` returns.
 
 ## `computeRelative` — the `./` prefix rule
 
@@ -30,13 +30,16 @@ This quirk is unreachable in practice: the only caller (`computeRelative`) alway
 
 ## `determineImportType` — `ImportType | null`, not just `ImportType`
 
-Maps file extension to one of four buckets, with two `null` returns:
+Maps file extension to one of seven buckets, with two `null` returns:
 
 | Source extension | Returns |
 |------------------|---------|
 | `.js`, `.jsx`, `.ts`, `.tsx` | `'script'` |
 | `.css` | `'stylesheet'` |
 | `.md` | `'markdown'` |
+| `.mp4`, `.webm`, `.mov` | `'video'` |
+| `.mp3`, `.ogg`, `.wav`, `.m4a` | `'audio'` |
+| `.vtt` | `'text-track'` |
 | `.html` | `null` (defensive — gating already rejects HTML→HTML upstream) |
 | `.scss` | `null` (so `snippets/languages/scss.ts` falls through its `switch` to its SCSS-specific default that handles `@use`/partial filenames) |
 | anything else | `'image'` (`default:` catch-all) |
