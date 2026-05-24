@@ -29,19 +29,15 @@ export function buildJavaScriptImportSnippetByStyle(
     case 1:
       return new vscode.SnippetString(`import { $1 } from '${relativePath}';`);
     case 2:
-      return new vscode.SnippetString(`import { default as $1 } from '${relativePath}';`);
+      return new vscode.SnippetString(`import $1, { $2 } from '${relativePath}';`);
     case 3:
       return new vscode.SnippetString(`import * as $1 from '${relativePath}';`);
     case 4:
       return new vscode.SnippetString(`import '${relativePath}';`);
     case 5:
-      return new vscode.SnippetString(`var $1 = require('${relativePath}');`);
-    case 6:
       return new vscode.SnippetString(`const $1 = require('${relativePath}');`);
-    case 7:
-      return new vscode.SnippetString(`var $1 = import('${relativePath}');`);
-    case 8:
-      return new vscode.SnippetString(`const $1 = import('${relativePath}');`);
+    case 6:
+      return new vscode.SnippetString(`const $1 = await import('${relativePath}');`);
     default:
       return new vscode.SnippetString(`import $1 from '${relativePath}';`);
   }

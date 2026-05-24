@@ -11,13 +11,11 @@ export function resolveStyleIndex(table: ImportStyle[], configValue: string | un
 export const JAVASCRIPT_IMPORT_OPTIONS: ImportStyle[] = [
   { value: 0, description: "import name from '_relativePath_';", tag: 'ES module: default import' },
   { value: 1, description: "import { name } from '_relativePath_';", tag: 'ES module: named import (destructured)' },
-  { value: 2, description: "import { default as name } from '_relativePath_';", tag: 'ES module: aliased default import' },
+  { value: 2, description: "import name, { other } from '_relativePath_';", tag: 'ES module: default + named import (mixed)' },
   { value: 3, description: "import * as name from '_relativePath_';", tag: 'ES module: namespace import (every export bound under one name)' },
   { value: 4, description: "import '_relativePath_';", tag: 'ES module: side-effect import (no binding)' },
-  { value: 5, description: "var name = require('_relativePath_');", tag: 'CommonJS: var require()' },
-  { value: 6, description: "const name = require('_relativePath_');", tag: 'CommonJS: const require()' },
-  { value: 7, description: "var name = import('_relativePath_');", tag: 'Dynamic import(): var' },
-  { value: 8, description: "const name = import('_relativePath_');", tag: 'Dynamic import(): const' },
+  { value: 5, description: "const name = require('_relativePath_');", tag: 'CommonJS: const require()' },
+  { value: 6, description: "const name = await import('_relativePath_');", tag: 'Dynamic import: lazy-load / code-splitting' },
 ];
 
 export const TYPESCRIPT_IMPORT_OPTIONS: ImportStyle[] = [

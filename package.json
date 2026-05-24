@@ -163,24 +163,20 @@
             "enum": [
               "import name from '_relativePath_';",
               "import { name } from '_relativePath_';",
-              "import { default as name } from '_relativePath_';",
+              "import name, { other } from '_relativePath_';",
               "import * as name from '_relativePath_';",
               "import '_relativePath_';",
-              "var name = require('_relativePath_');",
               "const name = require('_relativePath_');",
-              "var name = import('_relativePath_');",
-              "const name = import('_relativePath_');"
+              "const name = await import('_relativePath_');"
             ],
             "enumDescriptions": [
               "ES module: default import",
               "ES module: named import (destructured)",
-              "ES module: aliased default import",
+              "ES module: default + named import (mixed)",
               "ES module: namespace import (every export bound under one name)",
               "ES module: side-effect import (no binding)",
-              "CommonJS: var require()",
               "CommonJS: const require()",
-              "Dynamic import(): var",
-              "Dynamic import(): const"
+              "Dynamic import: lazy-load / code-splitting"
             ]
           },
           "auto-import.importStatement.script.typescriptImportStyle": {

@@ -12,13 +12,11 @@ describe('buildJavaScriptImportSnippetByStyle', () => {
   const cases: Array<[number, string]> = [
     [0, "import $1 from './foo';"],
     [1, "import { $1 } from './foo';"],
-    [2, "import { default as $1 } from './foo';"],
+    [2, "import $1, { $2 } from './foo';"],
     [3, "import * as $1 from './foo';"],
     [4, "import './foo';"],
-    [5, "var $1 = require('./foo');"],
-    [6, "const $1 = require('./foo');"],
-    [7, "var $1 = import('./foo');"],
-    [8, "const $1 = import('./foo');"],
+    [5, "const $1 = require('./foo');"],
+    [6, "const $1 = await import('./foo');"],
   ];
 
   for (const [index, expected] of cases) {
