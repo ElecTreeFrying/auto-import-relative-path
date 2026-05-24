@@ -4,7 +4,7 @@ Runtime gating tables for source/destination extension pairs.
 
 ## File
 
-- `extensions.ts` — ten exported constants.
+- `extensions.ts` — thirteen exported constants.
 
 ## What's exported
 
@@ -17,6 +17,9 @@ Runtime gating tables for source/destination extension pairs.
 | `MARKDOWN_SUPPORTED_EXTENSIONS` | Sources accepted when the destination is `.md`. |
 | `CSS_SUPPORTED_EXTENSIONS` | Sources accepted when the destination is `.css`. |
 | `SCSS_SUPPORTED_EXTENSIONS` | Sources accepted when the destination is `.scss`. |
+| `VUE_SUPPORTED_EXTENSIONS` | Sources accepted when the destination is `.vue`. |
+| `SVELTE_SUPPORTED_EXTENSIONS` | Sources accepted when the destination is `.svelte`. |
+| `ASTRO_SUPPORTED_EXTENSIONS` | Sources accepted when the destination is `.astro`. |
 | `CROSS_IMPORT_DESTINATIONS` | Destinations allowed to import a *different* extension. Destinations not listed require source extension to equal destination extension. |
 | `SCRIPT_FILE_EXTENSIONS` | Used only by `editor/insert-snippet.ts` to force column-0 placement for script destinations. |
 | `STYLESHEET_FILE_EXTENSIONS` | Used only by `editor/insert-snippet.ts` to force column-0 placement for stylesheet destinations. |

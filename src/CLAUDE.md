@@ -41,7 +41,7 @@ See each directory's `CLAUDE.md` for the deep rules:
 | Directory | What it owns | Key invariant |
 |-----------|--------------|---------------|
 | `commands/` | The five registered commands | Clipboard is the data channel; failure paths return void, never throw |
-| `editor/` | vscode-API helpers | Forced-cursor placement overrides the user setting for HTML/MD/non-stylesheet → stylesheet |
+| `editor/` | vscode-API helpers | Forced-cursor placement overrides the user setting for HTML/MD/non-stylesheet → stylesheet; Astro frontmatter placement overrides between forced-cursor and user setting |
 | `snippets/` | Per-language builders + dispatch | Style `description` strings are byte-exact contracts with `package.json` enums |
 | `path/` | Pure path math | No `vscode` import; `./` prefix rule is regression-tested |
 | `config/` | Workspace config | Three-site byte-exact sync (`package.json` ↔ `_styles.ts` ↔ per-language `switch`) |

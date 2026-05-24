@@ -699,7 +699,7 @@ Behavior change for existing users.
 
 #### Step 14 — Doc-update sweep
 
-- [ ] **Done**
+- [x] **Done**
 
 **Sections:** "Doc-update sweep" above (starting-point list of known drift areas — not exhaustive).
 

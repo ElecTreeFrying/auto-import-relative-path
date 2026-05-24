@@ -4,7 +4,7 @@ Runtime gating tables for source/destination extension pairs.
 
 ## File
 
-- `extensions.ts` — ten exports, listed below.
+- `extensions.ts` — thirteen exports, listed below.
 
 ## What's here
 
@@ -17,6 +17,9 @@ Runtime gating tables for source/destination extension pairs.
 | `MARKDOWN_SUPPORTED_EXTENSIONS` | `commands/paste-import.ts` clause 4 | Sources accepted for `.md` destinations |
 | `CSS_SUPPORTED_EXTENSIONS` | `commands/paste-import.ts` clause 5 | Sources accepted for `.css` destinations |
 | `SCSS_SUPPORTED_EXTENSIONS` | `commands/paste-import.ts` clause 6 | Sources accepted for `.scss` destinations |
+| `VUE_SUPPORTED_EXTENSIONS` | `commands/paste-import.ts` clause 7 | Sources accepted for `.vue` destinations |
+| `SVELTE_SUPPORTED_EXTENSIONS` | `commands/paste-import.ts` clause 8 | Sources accepted for `.svelte` destinations |
+| `ASTRO_SUPPORTED_EXTENSIONS` | `commands/paste-import.ts` clause 9 | Sources accepted for `.astro` destinations |
 | `CROSS_IMPORT_DESTINATIONS` | `commands/paste-import.ts` clause 1 | Destinations allowed to import a *different* extension |
 | `SCRIPT_FILE_EXTENSIONS` | `editor/insert-snippet.ts:determineInsertionColumn` | Force column-0 placement |
 | `STYLESHEET_FILE_EXTENSIONS` | `editor/insert-snippet.ts:determineInsertionColumn` | Force column-0 placement |
@@ -34,7 +37,7 @@ Runtime: these tables are the runtime safety net. Keep them in sync with `types/
 ## Adding a new accepted source/destination pair
 
 1. Add the source extension to the matching `*_SUPPORTED_EXTENSIONS` table.
-2. Make sure the relevant per-language module under `src/snippets/` knows how to produce a snippet for that source — the eight-clause gating won't catch a source that lands at the per-language `switch`'s `default:` and emits an empty snippet (it will, but you'll have produced a less-useful error path).
+2. Make sure the relevant per-language module under `src/snippets/` knows how to produce a snippet for that source — the eleven-clause gating won't catch a source that lands at the per-language `switch`'s `default:` and emits an empty snippet (it will, but you'll have produced a less-useful error path).
 
 ## Adding a new file extension entirely
 

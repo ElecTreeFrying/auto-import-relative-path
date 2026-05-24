@@ -8,7 +8,7 @@ Do NOT append a `Co-Authored-By: Claude ...` trailer (or any other Claude/AI att
 
 ## Project
 
-VS Code extension that generates relative-path import statements for JS/TS/JSX/TSX/MDX/CSS/SCSS/HTML/Markdown. Five commands (`extension.copyFilePath`, `extension.pasteImport`, `extension.copyPaste`, `extension.pasteImportWithStyle`, `extension.setDefaultImportStyle`) are registered in `src/extension.ts`. The first three are bound to keybindings in `package.json` (`cmd/ctrl+shift+a`, `cmd/ctrl+i`, and `alt+d` in the explorer respectively); the latter two are reachable via the Command Palette (and `pasteImportWithStyle` also via the `copy-success` toast button).
+VS Code extension that generates relative-path import statements for JS/TS/JSX/TSX/MDX/CSS/SCSS/HTML/Markdown/Vue/Svelte/Astro. Five commands (`extension.copyFilePath`, `extension.pasteImport`, `extension.copyPaste`, `extension.pasteImportWithStyle`, `extension.setDefaultImportStyle`) are registered in `src/extension.ts`. The first three are bound to keybindings in `package.json` (`cmd/ctrl+shift+a`, `cmd/ctrl+i`, and `alt+d` in the explorer respectively); the latter two are reachable via the Command Palette (and `pasteImportWithStyle` also via the `copy-success` toast button).
 
 ## Subdirectory guides
 
@@ -17,7 +17,7 @@ Each directory under `src/` has its own pair of nested guides. Read the director
 | Directory | Scope | Guides |
 |-----------|-------|--------|
 | `src/` | Source-tree overview, dependency layering, naming conventions | [`src/README.md`](src/README.md), [`src/CLAUDE.md`](src/CLAUDE.md) |
-| `src/commands/` | The five commands; clipboard data channel, parallel fetch, eight-clause gating | [`src/commands/README.md`](src/commands/README.md), [`src/commands/CLAUDE.md`](src/commands/CLAUDE.md) |
+| `src/commands/` | The five commands; clipboard data channel, parallel fetch, eleven-clause gating | [`src/commands/README.md`](src/commands/README.md), [`src/commands/CLAUDE.md`](src/commands/CLAUDE.md) |
 | `src/editor/` | VS Code-API helpers (clipboard, snippet insertion, notifications) | [`src/editor/README.md`](src/editor/README.md), [`src/editor/CLAUDE.md`](src/editor/CLAUDE.md) |
 | `src/snippets/` | Per-language snippet builders + dispatch; style sync rules; JSX/TSX/MDX shared algorithm | [`src/snippets/README.md`](src/snippets/README.md), [`src/snippets/CLAUDE.md`](src/snippets/CLAUDE.md) |
 | `src/path/` | Pure path math (no `vscode` import); `./` prefix rule | [`src/path/README.md`](src/path/README.md), [`src/path/CLAUDE.md`](src/path/CLAUDE.md) |
@@ -82,22 +82,22 @@ The clipboard is the data channel between "copy" and "paste". The flow is:
 ```
 buildImportSnippet()                          ← src/snippets/dispatch.ts
   switch (destinationFileExt)
-    → src/snippets/languages/{javascript,typescript,jsx,tsx,mdx,css,scss,html,markdown}.ts
+    → src/snippets/languages/{javascript,typescript,jsx,tsx,mdx,css,scss,html,markdown,vue,svelte,astro}.ts
         each module's buildSnippet() reads file-path info + user setting
         → resolveStyleIndex(<TABLE>, configValue) from src/snippets/_styles.ts
           switch on the matched ImportStyle.value to emit the SnippetString
 ```
 
-JSX, TSX, and MDX share their algorithm via `buildReactImport` in `src/snippets/_shared.ts`; the only difference is which script-snippet builder is "primary" (JS for JSX; TS for TSX and MDX, with JS as fallback for `.js` sources in both). Non-script sources fall through to a hardcoded `switch` inside `buildReactImport` with four groups: CSS Modules (`.module.css`/`.module.scss`) emit `import ${1:styles} from '<path>';`; image/data/markup (`.gif`/`.jpeg`/`.jpg`/`.png`/`.svg`/`.avif`/`.webp`/`.json`/`.html`/`.yml`/`.yaml`/`.md`/`.mdx`/`.pdf`) emit `import ${1:name} from '<path>';`; media/text-track (`.mp4`/`.webm`/`.mov`/`.mp3`/`.ogg`/`.wav`/`.m4a`/`.vtt`) emit `import ${1:url} from '<path>';`; fonts and stylesheets (`.woff`/`.woff2`/`.ttf`/`.eot`/`.css`/`.scss`) emit a side-effect `import '<path>';`. Reaching the `default:` branch means an unsupported extension slipped through gating in `paste-import.ts`.
+JSX, TSX, and MDX share their algorithm via `buildReactImport` in `src/snippets/_shared.ts`; the only difference is which script-snippet builder is "primary" (JS for JSX; TS for TSX and MDX, with JS as fallback for `.js` sources in both). Non-script sources fall through to a hardcoded `switch` inside `buildReactImport` with four groups: CSS Modules (`.module.css`/`.module.scss`) emit `import ${1:styles} from '<path>';`; image/data/markup/component (`.gif`/`.jpeg`/`.jpg`/`.png`/`.svg`/`.avif`/`.webp`/`.json`/`.html`/`.yml`/`.yaml`/`.md`/`.mdx`/`.pdf`/`.vue`/`.svelte`/`.astro`) emit `import ${1:name} from '<path>';`; media/text-track (`.mp4`/`.webm`/`.mov`/`.mp3`/`.ogg`/`.wav`/`.m4a`/`.vtt`) emit `import ${1:url} from '<path>';`; fonts and stylesheets (`.woff`/`.woff2`/`.ttf`/`.eot`/`.css`/`.scss`) emit a side-effect `import '<path>';`. Reaching the `default:` branch means an unsupported extension slipped through gating in `paste-import.ts`.
 
 For HTML/SCSS/CSS/Markdown destinations, `determineImportType()` (`src/path/import-type.ts`) classifies the *source* into `'script' | 'stylesheet' | 'markdown' | 'image' | 'video' | 'audio' | 'text-track'`, with two `null` returns: `.html` (defensive — gating already rejects HTML→HTML before this runs) and `.scss` (so `snippets/languages/scss.ts` falls through its `switch` to the SCSS-specific default that handles `@use` and partial filenames). The `'image'` branch is a `default:` catch-all, not a guarantee the source is image-like — the gating tables in `constants/extensions.ts` are what makes that safe.
 
 ### Cross-import gating
 
-`paste-import.ts` short-circuits with the `'not-supported'` toast (`NotificationType` is a string-literal union, not an enum — see `src/types/notification.ts`) when the source/destination pair is invalid. The eight-clause conjunction in that file is the canonical rejection list; each clause cross-references a table in `src/constants/extensions.ts`:
+`paste-import.ts` short-circuits with the `'not-supported'` toast (`NotificationType` is a string-literal union, not an enum — see `src/types/notification.ts`) when the source/destination pair is invalid. The eleven-clause conjunction in that file is the canonical rejection list; each clause cross-references a table in `src/constants/extensions.ts`:
 
-- `HTML_SUPPORTED_EXTENSIONS`, `MARKDOWN_SUPPORTED_EXTENSIONS`, `CSS_SUPPORTED_EXTENSIONS`, `SCSS_SUPPORTED_EXTENSIONS` — what each markup/stylesheet destination accepts as a source.
-- `CROSS_IMPORT_DESTINATIONS` — destinations allowed to import a *different* extension (`.html`, `.md`, `.css`, `.scss`, `.tsx`, `.mdx`, `.jsx`). For destinations *not* in this list (currently `.js`, `.ts`), source extension must equal destination extension.
+- `HTML_SUPPORTED_EXTENSIONS`, `MARKDOWN_SUPPORTED_EXTENSIONS`, `CSS_SUPPORTED_EXTENSIONS`, `SCSS_SUPPORTED_EXTENSIONS`, `VUE_SUPPORTED_EXTENSIONS`, `SVELTE_SUPPORTED_EXTENSIONS`, `ASTRO_SUPPORTED_EXTENSIONS` — what each markup/stylesheet/framework-component destination accepts as a source.
+- `CROSS_IMPORT_DESTINATIONS` — destinations allowed to import a *different* extension (`.html`, `.md`, `.css`, `.scss`, `.tsx`, `.mdx`, `.jsx`, `.vue`, `.svelte`, `.astro`). For destinations *not* in this list (currently `.js`, `.ts`), source extension must equal destination extension.
 - `IMAGE_FILE_EXTENSIONS` — base set spliced into the four supported-extension lists via `...IMAGE_FILE_EXTENSIONS`; reuse instead of inlining new image groups. Runtime mirror of `types/file-extension.ts:ImageFileExtension` — keep both in sync.
 - `MEDIA_FILE_EXTENSIONS` — video + audio extensions; spliced into `HTML_SUPPORTED_EXTENSIONS` via `...MEDIA_FILE_EXTENSIONS`. Runtime mirror of `types/file-extension.ts:VideoFileExtension | AudioFileExtension`.
 - `TEXT_TRACK_FILE_EXTENSIONS` — `.vtt`; spliced into `HTML_SUPPORTED_EXTENSIONS` via `...TEXT_TRACK_FILE_EXTENSIONS`. Runtime mirror of `types/file-extension.ts:TextTrackFileExtension`.
@@ -112,6 +112,7 @@ When adding a new accepted pair, update the matching constant **and** make sure 
 `insertImportSnippet()` in `src/editor/insert-snippet.ts`:
 
 - `shouldRepositionCursor()` overrides placement to "Cursor" when the destination is `.html`, `.md`, or a stylesheet importing a non-stylesheet source. The user's `importStatementPlacement` setting (Top/Bottom/Cursor) only applies otherwise.
+- `shouldUseAstroFrontmatter()` overrides placement for `.astro` destinations — inserts inside the frontmatter `---` fence (or wraps in a new fence if none exists). Checked after forced-cursor but before the user's placement setting.
 - "Bottom" walks `document.getText().split('\n')` looking for any of twelve `importIndicators` markers (`import `, the three `require(` shapes, six `@import`/`@use` shapes covering both quote styles and the `url(...)` form, and two `@forward` shapes) and inserts after the last match — falls through to line 0 when no marker matches. New import-syntax markers must be added to `importIndicators` or "Bottom" placement will silently land at line 0.
 - `determineInsertionColumn()` forces column 0 for destinations whose extension is in `SCRIPT_FILE_EXTENSIONS` or `STYLESHEET_FILE_EXTENSIONS`; otherwise inserts at the cursor's column (important for HTML/Markdown where the user is typing inline).
 - The placement strings `'Top'`, `'Bottom'`, `'Cursor'` are matched literally against the user's setting — adding a new placement requires editing both the `switch` here and the `enum` in `package.json`.

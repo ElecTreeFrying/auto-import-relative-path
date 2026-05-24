@@ -34,7 +34,7 @@ Maps file extension to one of seven buckets, with two `null` returns:
 
 | Source extension | Returns |
 |------------------|---------|
-| `.js`, `.jsx`, `.ts`, `.tsx` | `'script'` |
+| `.js`, `.jsx`, `.ts`, `.tsx`, `.vue`, `.svelte`, `.astro` | `'script'` |
 | `.css` | `'stylesheet'` |
 | `.md` | `'markdown'` |
 | `.mp4`, `.webm`, `.mov` | `'video'` |

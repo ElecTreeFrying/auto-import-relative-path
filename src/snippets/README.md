@@ -26,6 +26,9 @@ One module per destination language.
 | `scss.ts` | SCSS shapes (5 styles), with partial-filename underscore stripping and asymmetric `.css` extension preservation. |
 | `html.ts` | HTML `<script>` (5 styles) / `<img>` (3) / `<video>` (4) / `<audio>` (2) configurable + `<link>` / `<track>` fixed. |
 | `markdown.ts` | Markdown link (fixed) + image (3 configurable styles). |
+| `vue.ts` | Vue SFC entry — delegates to `buildTypeScriptImportSnippet` for all sources; strips extension for script sources per preserve setting. |
+| `svelte.ts` | Svelte entry — same shape as `vue.ts`; delegates to `buildTypeScriptImportSnippet`. |
+| `astro.ts` | Astro entry — same shape as `vue.ts`; delegates to `buildTypeScriptImportSnippet`. |
 
 `_`-prefixed files are internal to the `snippets/` subtree. Importing them from outside `snippets/` is a smell; `languages/` modules importing `../_styles` and `../_shared` is expected.
 

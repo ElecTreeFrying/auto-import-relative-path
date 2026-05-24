@@ -22,7 +22,8 @@ Order of precedence:
 1. **Forced cursor** (`shouldRepositionCursor` returns true) — always wins. Triggers when:
    - Destination is `.html` or `.md` (no canonical "top of file" for embedded tags).
    - Destination is a stylesheet (`.css`/`.scss`) but source is *not* the same stylesheet kind (e.g. `.css` importing an image — `url('...')` belongs at the cursor).
-2. **User setting** `auto-import.preferences.importStatementPlacement` — `'Top'` / `'Bottom'` / `'Cursor'` matched **literally** as strings. Adding a new placement requires editing both the `switch` here and the `enum` in `package.json`.
+2. **Astro frontmatter** (`shouldUseAstroFrontmatter` returns true) — for `.astro` destinations, inserts inside the `---` frontmatter fence via `insertSnippetAtAstroFrontmatter`. If no fence exists, wraps the import in a new `---` block at line 0.
+3. **User setting** `auto-import.preferences.importStatementPlacement` — `'Top'` / `'Bottom'` / `'Cursor'` matched **literally** as strings. Adding a new placement requires editing both the `switch` here and the `enum` in `package.json`.
 
 ### "Bottom" insertion
 
