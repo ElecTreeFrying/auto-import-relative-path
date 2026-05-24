@@ -627,7 +627,7 @@ Out of scope for this audit. Anything under `src/test/**` (unit tests in `by-sty
 
 #### Step 4 — Markdown image overhaul
 
-- [ ] **Done**
+- [x] **Done**
 
 **Sections:** "Markdown image (`MARKDOWN_IMAGE_IMPORT_OPTIONS`)" above (final list: 3 entries, was 2) · "Markdown image (`buildMarkdownImageImportSnippetByStyle`)" snippet spec · "Removed-value fallback policy" above — **Verify:** `npm run compile && npm test`
 

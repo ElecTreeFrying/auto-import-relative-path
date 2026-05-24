@@ -61,6 +61,7 @@ export const MARKDOWN_IMPORT_OPTIONS: ImportStyle[] = [
 ];
 
 export const MARKDOWN_IMAGE_IMPORT_OPTIONS: ImportStyle[] = [
-  { value: 0, description: '![alt-text](_relativePath_ "Hover text")', tag: 'Inline image syntax with hover-text title' },
-  { value: 1, description: '![alt-text][image] / [image]: _relativePath_ "Hover text"', tag: 'Reference-style — define [ref] once, reuse it elsewhere in the document' },
+  { value: 0, description: '![alt-text](_relativePath_)', tag: 'Bare inline image — most common Markdown image form' },
+  { value: 1, description: '![alt-text](_relativePath_ "Hover text")', tag: 'Inline image syntax with hover-text title' },
+  { value: 2, description: '<img src="_relativePath_" alt="" width="" height="">', tag: 'HTML embed for sizing — Core Web Vitals CLS prevention' },
 ];
