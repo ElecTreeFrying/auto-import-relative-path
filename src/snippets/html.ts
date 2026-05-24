@@ -4,7 +4,7 @@ import { getAutoImportSetting } from '../config/settings';
 import { extractFileExtension } from '../path/extension';
 import { determineImportType } from '../path/import-type';
 import { getFilePathInfo } from '../editor/file-path-info';
-import { HTML_SCRIPT_IMPORT_OPTIONS, resolveStyleIndex } from './_styles';
+import { HTML_IMAGE_IMPORT_OPTIONS, HTML_SCRIPT_IMPORT_OPTIONS, resolveStyleIndex } from './_styles';
 
 export async function buildSnippet(): Promise<vscode.SnippetString> {
   const { sourceFilePath, relativePath } = await getFilePathInfo();
@@ -15,8 +15,10 @@ export async function buildSnippet(): Promise<vscode.SnippetString> {
       const styleIndex = resolveStyleIndex(HTML_SCRIPT_IMPORT_OPTIONS, getAutoImportSetting<string>('markup', 'htmlScript'));
       return buildHtmlScriptImportSnippetByStyle(styleIndex, fullPath);
     }
-    case 'image':
-      return buildHtmlImageImportSnippet(fullPath);
+    case 'image': {
+      const styleIndex = resolveStyleIndex(HTML_IMAGE_IMPORT_OPTIONS, getAutoImportSetting<string>('markup', 'htmlImage'));
+      return buildHtmlImageImportSnippetByStyle(styleIndex, fullPath);
+    }
     case 'stylesheet':
       return buildHtmlStylesheetImportSnippet(fullPath);
     default:
@@ -44,8 +46,20 @@ export function buildHtmlScriptImportSnippetByStyle(
   }
 }
 
-export function buildHtmlImageImportSnippet(relativePath: string): vscode.SnippetString {
-  return new vscode.SnippetString(`<img src="${relativePath}" alt="sample">`);
+export function buildHtmlImageImportSnippetByStyle(
+  styleIndex: number | undefined,
+  relativePath: string,
+): vscode.SnippetString {
+  switch (styleIndex) {
+    case 0:
+      return new vscode.SnippetString(`<img src="${relativePath}" alt="sample">`);
+    case 1:
+      return new vscode.SnippetString(`<img src="${relativePath}" alt="$1" loading="lazy">`);
+    case 2:
+      return new vscode.SnippetString(`<img src="${relativePath}" alt="$1" width="$2" height="$3">`);
+    default:
+      return new vscode.SnippetString(`<img src="${relativePath}" alt="sample">`);
+  }
 }
 
 export function buildHtmlStylesheetImportSnippet(relativePath: string): vscode.SnippetString {

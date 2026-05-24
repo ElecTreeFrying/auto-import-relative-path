@@ -55,6 +55,8 @@ export const HTML_SCRIPT_IMPORT_OPTIONS: ImportStyle[] = [
 
 export const HTML_IMAGE_IMPORT_OPTIONS: ImportStyle[] = [
   { value: 0, description: '<img src="_relativePath_" alt="sample">' },
+  { value: 1, description: '<img src="_relativePath_" alt="" loading="lazy">', tag: 'Lazy loading — opt-in for below-fold images' },
+  { value: 2, description: '<img src="_relativePath_" alt="" width="" height="">', tag: 'Explicit dimensions — Core Web Vitals CLS prevention' },
 ];
 
 export const HTML_STYLESHEET_IMPORT_OPTIONS: ImportStyle[] = [

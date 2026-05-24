@@ -289,14 +289,18 @@
           },
           "auto-import.importStatement.markup.htmlImageImportStyle": {
             "title": "HTML <img> tag style",
-            "description": "Tag inserted at the cursor when an image source is imported into a .html destination. '_relativePath_' is replaced with the computed relative path.",
+            "description": "Tag inserted at the cursor when an image source is imported into a .html destination. Choose between a basic tag, a lazy-loading variant, or an HTML embed with explicit dimensions. '_relativePath_' is replaced with the computed relative path.",
             "type": "string",
             "default": "<img src=\"_relativePath_\" alt=\"sample\">",
             "enum": [
-              "<img src=\"_relativePath_\" alt=\"sample\">"
+              "<img src=\"_relativePath_\" alt=\"sample\">",
+              "<img src=\"_relativePath_\" alt=\"\" loading=\"lazy\">",
+              "<img src=\"_relativePath_\" alt=\"\" width=\"\" height=\"\">"
             ],
             "enumDescriptions": [
-              "Standard <img> tag with placeholder alt text"
+              "Standard <img> tag with placeholder alt text",
+              "Lazy loading — opt-in for below-fold images",
+              "Explicit dimensions — Core Web Vitals CLS prevention"
             ]
           },
           "auto-import.importStatement.markup.htmlStyleSheetImportStyle": {

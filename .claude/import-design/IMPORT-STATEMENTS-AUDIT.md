@@ -645,7 +645,7 @@ Out of scope for this audit. Anything under `src/test/**` (unit tests in `by-sty
 
 #### Step 7 — HTML image modernization
 
-- [ ] **Done**
+- [x] **Done**
 
 **Sections:** "HTML (three settings: script / image / stylesheet)" above (image subsection) · "HTML image (new `buildHtmlImageImportSnippetByStyle`)" snippet spec — **Verify:** `npm run compile && npm test`
 
