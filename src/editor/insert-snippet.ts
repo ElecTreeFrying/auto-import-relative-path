@@ -26,12 +26,15 @@ export async function insertImportSnippet(snippet: vscode.SnippetString): Promis
     return insertSnippetAtCursor(snippet);
   }
 
+  const placement = getAutoImportSetting<string>('preferences', 'placement');
+
   if (destinationFileExt === '.astro') {
-    const placement = getAutoImportSetting<string>('preferences', 'placement');
     return insertSnippetAtAstroFrontmatter(snippet, placement);
   }
 
-  const placement = getAutoImportSetting('preferences', 'placement');
+  if (destinationFileExt === '.vue' || destinationFileExt === '.svelte') {
+    return insertSnippetAtSfcScript(snippet, placement);
+  }
 
   switch (placement) {
     case 'Top':
@@ -117,8 +120,8 @@ function findAstroFrontmatterBounds(lines: string[]): { openingLine: number; clo
   return null;
 }
 
-/** Finds the insertion line for Bottom placement within a frontmatter region. */
-function findAstroBottomLine(lines: string[], openingLine: number, closingLine: number): number {
+/** Finds the insertion line for Bottom placement within a bounded region (Astro frontmatter or SFC script block). */
+function findBottomLineInRange(lines: string[], openingLine: number, closingLine: number): number {
   let insertionLine = openingLine + 1;
   for (let i = openingLine + 1; i < closingLine; i++) {
     if (IMPORT_INDICATORS.some(indicator => lines[i].includes(indicator))) {
@@ -151,12 +154,65 @@ function insertSnippetAtAstroFrontmatter(snippet: vscode.SnippetString, placemen
         insertSnippetAtPosition(snippet, cursorLine);
         return;
       }
-      insertSnippetAtPosition(snippet, findAstroBottomLine(lines, openingLine, closingLine));
+      insertSnippetAtPosition(snippet, findBottomLineInRange(lines, openingLine, closingLine));
       return;
     }
     case 'Bottom':
     default:
-      insertSnippetAtPosition(snippet, findAstroBottomLine(lines, openingLine, closingLine));
+      insertSnippetAtPosition(snippet, findBottomLineInRange(lines, openingLine, closingLine));
+      return;
+  }
+}
+
+/** Finds a `<script...>` / `</script>` pair. Prefers `<script setup` (Vue composition API) over bare `<script`. */
+function findSfcScriptBounds(lines: string[]): { openingLine: number; closingLine: number } | null {
+  return findScriptBlock(lines, '<script setup') ?? findScriptBlock(lines, '<script');
+}
+
+function findScriptBlock(lines: string[], openingTag: string): { openingLine: number; closingLine: number } | null {
+  let openingLine = -1;
+  for (let i = 0; i < lines.length; i++) {
+    const trimmed = lines[i].trim();
+    if (openingLine === -1) {
+      if (trimmed.startsWith(openingTag)) {
+        openingLine = i;
+      }
+    } else if (trimmed === '</script>') {
+      return { openingLine, closingLine: i };
+    }
+  }
+  return null;
+}
+
+function insertSnippetAtSfcScript(snippet: vscode.SnippetString, placement: string | undefined): void {
+  const editor = vscode.window.activeTextEditor;
+  const lines = editor.document.getText().split('\n');
+  const bounds = findSfcScriptBounds(lines);
+
+  if (!bounds) {
+    const wrappedSnippet = new vscode.SnippetString(`<script>\n${snippet.value}</script>\n`);
+    editor.insertSnippet(wrappedSnippet, new vscode.Position(0, 0));
+    return;
+  }
+
+  const { openingLine, closingLine } = bounds;
+
+  switch (placement) {
+    case 'Top':
+      insertSnippetAtPosition(snippet, openingLine + 1);
+      return;
+    case 'Cursor': {
+      const cursorLine = editor.selection.anchor.line;
+      if (cursorLine > openingLine && cursorLine < closingLine) {
+        insertSnippetAtPosition(snippet, cursorLine);
+        return;
+      }
+      insertSnippetAtPosition(snippet, findBottomLineInRange(lines, openingLine, closingLine));
+      return;
+    }
+    case 'Bottom':
+    default:
+      insertSnippetAtPosition(snippet, findBottomLineInRange(lines, openingLine, closingLine));
       return;
   }
 }
