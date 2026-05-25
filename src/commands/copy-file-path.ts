@@ -15,7 +15,7 @@ export async function executeCopyFilePath(): Promise<boolean> {
   }
 
   await vscode.env.clipboard.writeText(filePath);
-  showNotification('copy-success', { basename: path.basename(filePath) }).then(action => {
+  void showNotification('copy-success', { basename: path.basename(filePath) }).then(action => {
     switch (action) {
       case 'Paste with Style':
         void vscode.commands.executeCommand('extension.pasteImportWithStyle');
