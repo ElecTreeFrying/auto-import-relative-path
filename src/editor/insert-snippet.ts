@@ -18,6 +18,22 @@ function isCommentLine(line: string): boolean {
   return trimmed.startsWith('//') || trimmed.startsWith('/*') || trimmed.startsWith('*');
 }
 
+/** Extracts leading whitespace (spaces or tabs) from a line. */
+function getLineIndentation(line: string): string {
+  const match = line.match(/^(\s*)/);
+  return match ? match[1] : '';
+}
+
+/** Returns the indentation of the first non-empty content line within a bounded block. */
+function detectBlockIndentation(lines: string[], openingLine: number, closingLine: number): string {
+  for (let i = openingLine + 1; i < closingLine; i++) {
+    if (lines[i].trim().length > 0) {
+      return getLineIndentation(lines[i]);
+    }
+  }
+  return '';
+}
+
 export async function insertImportSnippet(snippet: vscode.SnippetString): Promise<void> {
   const { sourceFileExt, destinationFileExt } = await getFilePathInfo();
 
@@ -94,10 +110,13 @@ function insertSnippetAtBottom(snippet: vscode.SnippetString): void {
   insertSnippetAtPosition(snippet, insertionLine);
 }
 
-function insertSnippetAtPosition(snippet: vscode.SnippetString, lineNumber: number): void {
+function insertSnippetAtPosition(snippet: vscode.SnippetString, lineNumber: number, indentation?: string): void {
   const editor = vscode.window.activeTextEditor;
   const insertionColumn = determineInsertionColumn(editor);
-  editor.insertSnippet(snippet, new vscode.Position(lineNumber, insertionColumn));
+  const insertionSnippet = indentation
+    ? new vscode.SnippetString(indentation + snippet.value)
+    : snippet;
+  editor.insertSnippet(insertionSnippet, new vscode.Position(lineNumber, insertionColumn));
 }
 
 function determineInsertionColumn(editor: vscode.TextEditor): number {
@@ -126,14 +145,21 @@ function findAstroFrontmatterBounds(lines: string[]): { openingLine: number; clo
 }
 
 /** Finds the insertion line for Bottom placement within a bounded region (Astro frontmatter or SFC script block). */
-function findBottomLineInRange(lines: string[], openingLine: number, closingLine: number): number {
+function findBottomLineInRange(
+  lines: string[],
+  openingLine: number,
+  closingLine: number,
+): { line: number; indentation: string } {
   let insertionLine = openingLine + 1;
+  let lastImportIndentation = '';
   for (let i = openingLine + 1; i < closingLine; i++) {
     if (!isCommentLine(lines[i]) && IMPORT_INDICATORS.some(indicator => lines[i].includes(indicator))) {
       insertionLine = i + 1;
+      lastImportIndentation = getLineIndentation(lines[i]);
     }
   }
-  return insertionLine;
+  const indentation = lastImportIndentation || detectBlockIndentation(lines, openingLine, closingLine);
+  return { line: insertionLine, indentation };
 }
 
 function insertSnippetAtAstroFrontmatter(snippet: vscode.SnippetString, placement: string | undefined): void {
@@ -150,22 +176,28 @@ function insertSnippetAtAstroFrontmatter(snippet: vscode.SnippetString, placemen
   const { openingLine, closingLine } = bounds;
 
   switch (placement) {
-    case 'Top':
-      insertSnippetAtPosition(snippet, openingLine + 1);
+    case 'Top': {
+      const indentation = detectBlockIndentation(lines, openingLine, closingLine);
+      insertSnippetAtPosition(snippet, openingLine + 1, indentation);
       return;
+    }
     case 'Cursor': {
       const cursorLine = editor.selection.anchor.line;
       if (cursorLine > openingLine && cursorLine < closingLine) {
-        insertSnippetAtPosition(snippet, cursorLine);
+        const indentation = getLineIndentation(lines[cursorLine]) || detectBlockIndentation(lines, openingLine, closingLine);
+        insertSnippetAtPosition(snippet, cursorLine, indentation);
         return;
       }
-      insertSnippetAtPosition(snippet, findBottomLineInRange(lines, openingLine, closingLine));
+      const bottom = findBottomLineInRange(lines, openingLine, closingLine);
+      insertSnippetAtPosition(snippet, bottom.line, bottom.indentation);
       return;
     }
     case 'Bottom':
-    default:
-      insertSnippetAtPosition(snippet, findBottomLineInRange(lines, openingLine, closingLine));
+    default: {
+      const bottom = findBottomLineInRange(lines, openingLine, closingLine);
+      insertSnippetAtPosition(snippet, bottom.line, bottom.indentation);
       return;
+    }
   }
 }
 
@@ -203,21 +235,27 @@ function insertSnippetAtSfcScript(snippet: vscode.SnippetString, placement: stri
   const { openingLine, closingLine } = bounds;
 
   switch (placement) {
-    case 'Top':
-      insertSnippetAtPosition(snippet, openingLine + 1);
+    case 'Top': {
+      const indentation = detectBlockIndentation(lines, openingLine, closingLine);
+      insertSnippetAtPosition(snippet, openingLine + 1, indentation);
       return;
+    }
     case 'Cursor': {
       const cursorLine = editor.selection.anchor.line;
       if (cursorLine > openingLine && cursorLine < closingLine) {
-        insertSnippetAtPosition(snippet, cursorLine);
+        const indentation = getLineIndentation(lines[cursorLine]) || detectBlockIndentation(lines, openingLine, closingLine);
+        insertSnippetAtPosition(snippet, cursorLine, indentation);
         return;
       }
-      insertSnippetAtPosition(snippet, findBottomLineInRange(lines, openingLine, closingLine));
+      const bottom = findBottomLineInRange(lines, openingLine, closingLine);
+      insertSnippetAtPosition(snippet, bottom.line, bottom.indentation);
       return;
     }
     case 'Bottom':
-    default:
-      insertSnippetAtPosition(snippet, findBottomLineInRange(lines, openingLine, closingLine));
+    default: {
+      const bottom = findBottomLineInRange(lines, openingLine, closingLine);
+      insertSnippetAtPosition(snippet, bottom.line, bottom.indentation);
       return;
+    }
   }
 }
