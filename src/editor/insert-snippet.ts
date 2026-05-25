@@ -13,6 +13,11 @@ const IMPORT_INDICATORS = [
   "@forward '", '@forward "'
 ];
 
+function isCommentLine(line: string): boolean {
+  const trimmed = line.trimStart();
+  return trimmed.startsWith('//') || trimmed.startsWith('/*') || trimmed.startsWith('*');
+}
+
 export async function insertImportSnippet(snippet: vscode.SnippetString): Promise<void> {
   const { sourceFileExt, destinationFileExt } = await getFilePathInfo();
 
@@ -81,7 +86,7 @@ function insertSnippetAtBottom(snippet: vscode.SnippetString): void {
 
   let insertionLine = 0;
   documentText.split('\n').forEach((lineContent, index) => {
-    if (IMPORT_INDICATORS.some(indicator => lineContent.includes(indicator))) {
+    if (!isCommentLine(lineContent) && IMPORT_INDICATORS.some(indicator => lineContent.includes(indicator))) {
       insertionLine = index + 1;
     }
   });
@@ -124,7 +129,7 @@ function findAstroFrontmatterBounds(lines: string[]): { openingLine: number; clo
 function findBottomLineInRange(lines: string[], openingLine: number, closingLine: number): number {
   let insertionLine = openingLine + 1;
   for (let i = openingLine + 1; i < closingLine; i++) {
-    if (IMPORT_INDICATORS.some(indicator => lines[i].includes(indicator))) {
+    if (!isCommentLine(lines[i]) && IMPORT_INDICATORS.some(indicator => lines[i].includes(indicator))) {
       insertionLine = i + 1;
     }
   }

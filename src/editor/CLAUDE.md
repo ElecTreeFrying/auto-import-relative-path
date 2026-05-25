@@ -37,7 +37,7 @@ Walks `document.getText().split('\n')` looking for any of **nine** `importIndica
 "@forward '", '@forward "'
 ```
 
-Falls through to line 0 when no marker matches. **New import-syntax markers must be added here** or "Bottom" placement will silently land at line 0 instead of after the existing imports.
+Comment lines (starting with `//`, `/*`, or `*` after whitespace) are skipped to prevent false positives from commented-out imports or prose comments containing indicator substrings. Falls through to line 0 when no marker matches. **New import-syntax markers must be added here** or "Bottom" placement will silently land at line 0 instead of after the existing imports.
 
 ### Insertion column
 
