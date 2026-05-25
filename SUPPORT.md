@@ -1,9 +1,9 @@
 # Support & Contributing — Auto Import Relative Path
 
-Where to get help, how to diagnose common issues, and how to contribute. For features and configuration see the [README][README]; for visual workflows see the [demo gallery][DEMO].
+Where to get help, how to diagnose common issues, and how to contribute. For features and configuration see the [README][README]; for the full specification see [SPEC.md][SPEC].
 
 [README]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/README.md
-[DEMO]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md
+[SPEC]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/SPEC.md
 
 ---
 
@@ -16,8 +16,6 @@ Where to get help, how to diagnose common issues, and how to contribute. For fea
 - [Feature requests](#feature-requests)
 - [Contributing](#contributing)
   - [Setup](#setup)
-  - [Useful commands](#useful-commands)
-  - [Architecture overview](#architecture-overview)
   - [Adding a new file-type pair](#adding-a-new-file-type-pair)
   - [Adding a new file extension](#adding-a-new-file-extension)
   - [Tests](#tests)
@@ -27,13 +25,13 @@ Where to get help, how to diagnose common issues, and how to contribute. For fea
 
 ## Quick Links
 
-| Resource                                                                                              | What you'll find                                                  |
-|-------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------|
-| [README][README]                                                                                      | Feature overview, commands, full configuration reference          |
-| [Demo gallery][DEMO]                                                                                  | Animated walkthroughs and per-language output examples            |
-| [CHANGELOG][CHANGELOG]                                                                                | Release notes and version history                                 |
-| [GitHub Issues][issues]                                                                               | Bug reports, feature requests, questions                          |
-| [VS Code Marketplace][marketplace]                                                                    | Install page, reviews, version listings                           |
+| Resource                    | What you'll find                                                  |
+|-----------------------------|-------------------------------------------------------------------|
+| [README][README]            | Feature overview, commands, full configuration reference           |
+| [SPEC.md][SPEC]             | Full specification — commands, extensions, styles, placement, path logic |
+| [CHANGELOG][CHANGELOG]      | Release notes and version history                                 |
+| [GitHub Issues][issues]     | Bug reports, feature requests, questions                          |
+| [VS Code Marketplace][marketplace] | Install page, reviews, version listings                    |
 
 [CHANGELOG]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/CHANGELOG.md
 [issues]: https://github.com/ElecTreeFrying/auto-import-relative-path/issues
@@ -45,7 +43,7 @@ Where to get help, how to diagnose common issues, and how to contribute. For fea
 
 ### Does this extension send my data anywhere?
 
-**No.** It is 100% local — no telemetry, no network calls, no AI. The whole bundle is ~11 KB minified, and you can read every line of the [source on GitHub][source].
+**No.** It is 100% local — no telemetry, no network calls, no AI. The whole bundle is ~10 KB gzipped, and you can read every line of the [source on GitHub][source].
 
 [source]: https://github.com/ElecTreeFrying/auto-import-relative-path/tree/master/src
 
@@ -57,13 +55,23 @@ Where to get help, how to diagnose common issues, and how to contribute. For fea
 
 **Yes,** with a caveat. The extension treats every file as just a path on disk and computes the relative path between two files — it has no concept of package boundaries. If you're importing across packages and your build prefers package-name imports (e.g. `@org/pkg/util`), the extension won't deduce that for you. It will give you the correct `../../packages/pkg/util` relative path instead.
 
+### How do Vue / Svelte / Astro imports work?
+
+All three are fully supported destinations. They use the **TypeScript import style** for all source types. Import placement is automatically constrained to the correct region:
+
+- **Astro** — inside the `---` frontmatter fences
+- **Vue** — inside the `<script setup>` block (or `<script>` if no setup block exists)
+- **Svelte** — inside the `<script>` block
+
+If no frontmatter or script block exists, one is created at line 0 automatically. See [README — §Supported Languages](README.md#supported-languages) and [SPEC — §Framework component destinations](SPEC.md#framework-component-destinations) for the full accepted-source lists.
+
 ### Why are some configurations single-option dropdowns?
 
-HTML and Markdown shapes have a single canonical form (`<script src="...">`, `<img>`, `<link>`, `![](...)`). The dropdowns exist for VS Code settings-UI parity. They will gain options as soon as multiple are sensible. If you want a different default, [open an issue][issues] with your preferred shape.
+HTML stylesheet (`<link>`), Markdown link (`[text](path)`), and CSS/SCSS image (`url('…')`) shapes each have a single canonical form. The dropdowns exist for VS Code settings-UI parity. They will gain options as soon as multiple are sensible. If you want a different default, [open an issue][issues] with your preferred shape.
 
 ### Why does the import shape change when I switch destination files?
 
-Because the **destination decides the syntax**. Pasting into `.scss` produces `@import` or `@use`; pasting into `.html` produces `<script>` or `<link>`; pasting into `.tsx` produces an ES module `import`. The source extension is one input; the destination is the other. The extension's job is to pick the right shape automatically.
+Because the **destination decides the syntax**. Pasting into `.scss` produces `@use`; pasting into `.html` produces `<script>` or `<link>`; pasting into `.tsx` produces an ES module `import`. The source extension is one input; the destination is the other. The extension's job is to pick the right shape automatically.
 
 ### Can I rebind `Ctrl+I` / `Cmd+I` / `Alt+D`?
 
@@ -79,15 +87,11 @@ Run **Auto Import: Paste as Import (Pick Style)** from the Command Palette (<kbd
 
 Run **Auto Import: Set Default Import Style** from the Command Palette. The QuickPick lists every style for the current source/destination pair (e.g. open a `.ts` file with a `.ts` source on the clipboard to set your TypeScript default). Your current default is marked with a check and pinned to the top. The chosen style is written to your global VS Code User settings.
 
-Some destinations don't have a configurable default — HTML, Markdown links, and CSS/SCSS image references all use a single hardcoded shape. The command shows a "no configurable style" notice in those cases.
+Some destinations don't have a configurable default — HTML stylesheet, Markdown link, and CSS/SCSS image references all use a single hardcoded shape. The command shows a "no configurable style" notice in those cases.
 
 ### Can I import a folder (barrel) instead of a file?
 
 **Not directly.** The extension targets individual files. If you have an `index.ts` barrel, copy that file specifically. There is no `dir → import './dir';` shortcut yet — [open an issue][issues] if you'd like one.
-
-### Can I add `.vue` / `.svelte` / `.astro` support?
-
-**Not out of the box.** Adding a new destination language is a four-step contributor task — see [Adding a new file extension](#adding-a-new-file-extension).
 
 ### Why does my import path not show file extensions (or always show them)?
 
@@ -112,9 +116,9 @@ Each section below is **symptom → cause → fix**. If your issue isn't here, [
 - For `Paste` and `Auto`, no editor tab is open or focused.
 - The source / destination extension pair isn't supported.
 
-**Fix:** Select a file in the Explorer, make sure an editor tab is focused, and check the [supported pairs table][pairs] in the README. If your pair *should* be supported, [open an issue][issues].
+**Fix:** Select a file in the Explorer, make sure an editor tab is focused, and check the [supported languages table][langs] in the README. If your pair *should* be supported, [open an issue][issues].
 
-[pairs]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/README.md#supported-source--destination-pairs
+[langs]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/README.md#supported-languages
 
 ---
 
@@ -126,7 +130,7 @@ Each section below is **symptom → cause → fix**. If your issue isn't here, [
 - `.html` → `.html` is explicitly rejected (HTML has no relative-import syntax for embedding itself).
 - A typo or unusual extension that's not in the gating tables.
 
-**Fix:** Check the [supported pairs table][pairs]. If your pair *should* be supported, [open an issue][issues] with your source / destination extensions.
+**Fix:** Check the [supported languages table][langs]. If your pair *should* be supported, [open an issue][issues] with your source / destination extensions.
 
 ---
 
@@ -150,7 +154,7 @@ Each section below is **symptom → cause → fix**. If your issue isn't here, [
 
 ### "Bottom" placement always lands at line 0
 
-**Cause:** "Bottom" appends after the *last recognised* import line. The detector looks for `import …`, `var/const x = require(…)`, `@import '…'`, `@import url(…)`, and `@use '…'`. If none are found, it falls back to line 0.
+**Cause:** "Bottom" appends after the *last recognised* import line. The detector looks for `import …`, `var/const x = require(…)`, `@import '…'`, `@import url(…)`, `@use '…'`, and `@forward '…'`. If none are found, it falls back to line 0.
 
 **Fix:** Add at least one import line manually to seed the file. Subsequent inserts will then anchor correctly to the bottom of the import block.
 
@@ -167,11 +171,11 @@ Each section below is **symptom → cause → fix**. If your issue isn't here, [
 
 ---
 
-### TypeScript shows a PascalCase name instead of `$1`
+### TypeScript shows a PascalCase name instead of a placeholder
 
 **Cause:** This is the Angular auto-fill, and it's intentional. When the `import { name }` style is selected and the source filename contains `.component`, `.directive`, `.pipe`, `.service`, or `.module`, the extension derives a PascalCase identifier from the basename automatically (e.g., `app-root.component.ts` → `{ AppRootComponent }`).
 
-**Fix:** Switch to a different TypeScript shape (`import name from '_relativePath_';` is the closest equivalent) if you don't want this. The auto-fill only triggers on the `import { name }` shape — every other shape uses `$1` unconditionally.
+**Fix:** Switch to a different TypeScript shape (`import name from './path';` is the closest equivalent) if you don't want this. The auto-fill only triggers on the `import { name }` shape — every other shape uses a placeholder unconditionally.
 
 ---
 
@@ -237,84 +241,37 @@ npm install
 
 Press <kbd>F5</kbd> inside VS Code to launch an Extension Development Host with the extension loaded. The default build task (`npm: watch`) starts automatically and rebuilds on every save.
 
-### Useful commands
-
-| Command                  | Purpose                                                                                  |
-|--------------------------|------------------------------------------------------------------------------------------|
-| `npm run compile`        | Type-check, lint, and bundle for development (sourcemaps included).                       |
-| `npm run watch`          | Parallel `tsc --noEmit --watch` and `esbuild --watch` via `npm-run-all`.                  |
-| `npm run package`        | Production bundle (used by `vscode:prepublish`). ~11 KB minified.                         |
-| `npm run check-types`    | `tsc --noEmit` with no bundling — fastest correctness check.                              |
-| `npm run lint`           | ESLint over `src/`.                                                                      |
-| `npm run compile-tests`  | Compile `src/test/` to `out/` for the test runner (separate from esbuild).                |
-| `npm test`               | Full pretest chain (`compile-tests` + `compile` + `lint`) then `@vscode/test-cli`.        |
-
-Run a single test by filtering Mocha:
-
-```bash
-npm test -- --grep "<test name>"
-```
-
-The runner glob is `out/test/**/*.test.js` — only files emitted by `compile-tests` get picked up.
-
-### Architecture overview
-
-The source tree is **layered by responsibility**, with strict directional dependencies (lower layers never import from higher ones):
-
-```
-src/
-├── extension.ts             ← entry point: activate / deactivate
-├── commands/                ← public command surface (5 commands)
-├── editor/                  ← VS Code-API helpers (clipboard, snippets, notifications)
-├── snippets/                ← per-language snippet builders + dispatch
-├── path/                    ← pure path math (no `vscode` import; Node-testable)
-├── config/                  ← workspace-config access
-├── constants/               ← runtime gating tables (supported extension pairs)
-├── types/                   ← string-literal type unions (no enums)
-└── test/                    ← Mocha BDD tests
-```
-
-**Allowed dependency direction:**
-
-- `commands → editor, snippets, constants, types`
-- `snippets → config, path, editor, types, constants`
-- `editor → config, path, constants, types`
-- `path → types`
-
-`config`, `constants`, and `types` are leaves — they import only from `vscode` (config) or nothing project-internal.
-
-**Conventions:**
-
-- Files use noun-only kebab-case (`relative-path.ts`, `file-path-info.ts`). No suffixes like `.command.ts`, `.util.ts`, `.types.ts` — the parent directory carries the kind signal.
-- Filename starts with `_` (e.g. `_styles.ts`, `_shared.ts`) → directory-internal; importing from outside the directory is a smell.
-- The only barrel file is `commands/index.ts`. Other directories use direct imports so dependency direction stays visible at the call site.
-- Every module, function, type, interface property, and constant has TSDoc.
-
-Each `src/<dir>/` has its own `CLAUDE.md` (architecture invariants) and `README.md` (navigation) for deeper, directory-specific guidance.
+See [README — §Commands & Keybindings](README.md#commands--keybindings) for the full command table and [SPEC.md](SPEC.md) for the detailed architecture specification. Each `src/<dir>/` also has its own `CLAUDE.md` (architecture invariants) and `README.md` (navigation) for directory-specific guidance.
 
 ### Adding a new file-type pair
 
 To accept a new source extension for an existing destination (e.g. `.yaml` for `.html`):
 
-1. **`src/constants/extensions.ts`** — add the source to the matching `*_SUPPORTED_EXTENSIONS` table (`HTML_SUPPORTED_EXTENSIONS`, `MARKDOWN_SUPPORTED_EXTENSIONS`, `CSS_SUPPORTED_EXTENSIONS`, or `SCSS_SUPPORTED_EXTENSIONS`).
-2. **`src/snippets/<destination-language>.ts`** — make sure the per-language `buildSnippet` knows how to handle that source. The eight-clause gating in `commands/paste-import.ts` won't catch a source that lands at the per-language `switch`'s `default:` and emits an empty snippet.
+1. **`src/constants/extensions.ts`** — add the source to the matching `*_SUPPORTED_EXTENSIONS` table (`HTML_SUPPORTED_EXTENSIONS`, `MARKDOWN_SUPPORTED_EXTENSIONS`, `CSS_SUPPORTED_EXTENSIONS`, `SCSS_SUPPORTED_EXTENSIONS`, `VUE_SUPPORTED_EXTENSIONS`, `SVELTE_SUPPORTED_EXTENSIONS`, or `ASTRO_SUPPORTED_EXTENSIONS`).
+2. **`src/snippets/languages/<destination>.ts`** — make sure the per-language `buildSnippet` knows how to handle that source. The gating in `commands/paste-import.ts` won't catch a source that lands at the per-language `switch`'s `default:` and emits an empty snippet.
 
 ### Adding a new file extension
 
-To add a new file extension entirely (e.g. accepting `.bmp` everywhere `.png` is accepted), three sites must stay in sync:
+To add a new file extension entirely (e.g. accepting `.bmp` everywhere `.png` is accepted), four sites must stay in sync:
 
 1. **`src/types/file-extension.ts`** — add to the relevant category sub-type (`ImageFileExtension`, `ScriptFileExtension`, `StyleSheetFileExtension`, etc).
 2. **`src/constants/extensions.ts`** — add to the matching runtime gating table (`IMAGE_FILE_EXTENSIONS` mirrors `ImageFileExtension`).
-3. **`src/snippets/dispatch.ts`** (if it's a new destination) **or** `src/snippets/_shared.ts` (if it's a new JSX / TSX source).
+3. **`src/snippets/dispatch.ts`** (if it's a new destination) or the relevant `src/snippets/languages/*.ts` / `src/snippets/_react.ts` (if it's a new source for JSX/TSX/MDX).
+4. **`src/snippets/variants.ts`** — add a matching `case` so the picker commands (`pasteImportWithStyle`, `setDefaultImportStyle`) work for the new extension.
 
-Drift between these three sites is **silent** — a missing gating entry produces a fall-through to a `default:` branch rather than a type error. The runtime cast `as FileExtension` at boundaries is erased.
+Drift between these sites is **silent** — a missing gating entry produces a fall-through to a `default:` branch rather than a type error. The runtime cast `as FileExtension` at boundaries is erased.
 
 ### Tests
 
 Tests live in `src/test/` and are compiled to `out/test/` by `npm run compile-tests`. The runner picks up `out/test/**/*.test.js`.
 
+```bash
+npm test                          # full chain: compile-tests + compile + lint + run
+npm test -- --grep "<test name>"  # run a single test by name
+```
+
 - Write tests in BDD style (`describe` / `it`).
-- Use Node's built-in `assert` — Chai and Sinon were dropped in commit `f06101f` and should not be reintroduced.
+- Use Node's built-in `assert` — Chai and Sinon were dropped and should not be reintroduced.
 - Tests run from `out/`, **not** `dist/` — `dist/` is the production esbuild bundle, `out/` is the tsc test build.
 
 ---
@@ -323,8 +280,8 @@ Tests live in `src/test/` and are compiled to `out/test/` by `npm run compile-te
 
 If this extension saves you time, consider:
 
-- ⭐ **Starring** the repo on [GitHub](https://github.com/ElecTreeFrying/auto-import-relative-path)
-- 💬 **Leaving a review** on the [VS Code Marketplace][marketplace]
-- **Donating** — addresses are listed in the [README's Support the project section][donate]
+- **Starring** the repo on [GitHub](https://github.com/ElecTreeFrying/auto-import-relative-path)
+- **Leaving a review** on the [VS Code Marketplace][marketplace]
+- **Donating** — addresses are listed in the [README's Support section][donate]
 
-[donate]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/README.md#support-the-project
+[donate]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/README.md#support
