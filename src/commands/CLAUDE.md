@@ -51,7 +51,7 @@ On success, the `copy-success` toast carries two action buttons — **Paste with
 
 ## `paste-import-with-style.ts` — pick-style variant of paste-import
 
-Mirrors `paste-import.ts` step-by-step (clearNotifications → null-check editor → parallel fetch → clipboard sanity → same-file check → file-exists stat → seven-clause gating), but swaps `buildImportSnippet()` for `snippets/variants.ts:buildImportSnippetVariants()`. Branches on `variants.length` after gating:
+Mirrors `paste-import.ts` step-by-step (clearNotifications → null-check editor → parallel fetch → clipboard sanity → same-file check → file-exists stat → ten-clause gating), but swaps `buildImportSnippet()` for `snippets/variants.ts:buildImportSnippetVariants()`. Branches on `variants.length` after gating:
 
 - **0** → `'not-supported'` toast (defensive — gating already caught this).
 - **1** → insert directly via `insertImportSnippet(new vscode.SnippetString(variants[0].snippetText))`. Single-shape destinations (HTML, Markdown text, CSS image, SCSS image, JSX/TSX/MDX non-script source) take this path so the user gets the same silent-insert UX as `cmd+i`.
