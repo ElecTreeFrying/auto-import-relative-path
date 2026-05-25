@@ -10,7 +10,7 @@
   },
   "icon": "assets/extension-icon.png",
   "engines": {
-    "vscode": "^1.118.0"
+    "vscode": "^1.115.0"
   },
   "homepage": "https://github.com/ElecTreeFrying/auto-import-relative-path",
   "repository": {
@@ -400,7 +400,7 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.118.0",
+    "@types/vscode": "^1.115.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "^22.19.18",
     "esbuild": "^0.28.0",
