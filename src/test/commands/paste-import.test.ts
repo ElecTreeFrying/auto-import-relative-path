@@ -88,6 +88,41 @@ describe('executePasteImport', () => {
       const changed = await waitForDocumentChange(() => executePasteImport());
       assert.strictEqual(changed, false, 'expected no document change for .ts into .html');
     });
+
+    it('.ts into .js rejects (same-extension rule)', async () => {
+      await openFixture('src/sibling.js');
+      await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'src/bar.ts'));
+      const changed = await waitForDocumentChange(() => executePasteImport());
+      assert.strictEqual(changed, false, 'expected no document change for .ts into .js');
+    });
+
+    it('.js into .ts rejects (same-extension rule)', async () => {
+      await openFixture('src/foo.ts');
+      await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'src/sibling.js'));
+      const changed = await waitForDocumentChange(() => executePasteImport());
+      assert.strictEqual(changed, false, 'expected no document change for .js into .ts');
+    });
+
+    it('.scss into .html rejects (not in HTML_SUPPORTED_EXTENSIONS)', async () => {
+      await openFixture('pages/index.html');
+      await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'styles/main.scss'));
+      const changed = await waitForDocumentChange(() => executePasteImport());
+      assert.strictEqual(changed, false, 'expected no document change for .scss into .html');
+    });
+
+    it('.css into .vue rejects (not in VUE_SUPPORTED_EXTENSIONS)', async () => {
+      await openFixture('src/App.vue');
+      await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'styles/global.css'));
+      const changed = await waitForDocumentChange(() => executePasteImport());
+      assert.strictEqual(changed, false, 'expected no document change for .css into .vue');
+    });
+
+    it('.scss into .astro rejects (not in ASTRO_SUPPORTED_EXTENSIONS)', async () => {
+      await openFixture('src/App.astro');
+      await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'styles/main.scss'));
+      const changed = await waitForDocumentChange(() => executePasteImport());
+      assert.strictEqual(changed, false, 'expected no document change for .scss into .astro');
+    });
   });
 
   describe('successful insertion', () => {
@@ -111,6 +146,28 @@ describe('executePasteImport', () => {
       assert.notStrictEqual(editor.document.getText(), textBefore, 'document should differ after insertion');
       const allText = editor.document.getText();
       assert.ok(allText.includes('<script src='), `expected <script> tag in document, got: ${allText.slice(0, 200)}`);
+    });
+
+    it('.ts into .vue inserts TS-style import (cross-import)', async () => {
+      const editor = await openFixture('src/App.vue');
+      await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'src/bar.ts'));
+      const textBefore = editor.document.getText();
+      const changed = await waitForDocumentChange(() => executePasteImport(), 2000);
+      assert.strictEqual(changed, true, 'expected document change for valid .ts into .vue');
+      assert.notStrictEqual(editor.document.getText(), textBefore, 'document should differ after insertion');
+      const allText = editor.document.getText();
+      assert.ok(allText.includes("from './bar'"), `expected import path in document, got: ${allText.slice(0, 200)}`);
+    });
+
+    it('.css into .scss inserts SCSS import (cross-import)', async () => {
+      const editor = await openFixture('styles/main.scss');
+      await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'styles/global.css'));
+      const textBefore = editor.document.getText();
+      const changed = await waitForDocumentChange(() => executePasteImport(), 2000);
+      assert.strictEqual(changed, true, 'expected document change for valid .css into .scss');
+      assert.notStrictEqual(editor.document.getText(), textBefore, 'document should differ after insertion');
+      const allText = editor.document.getText();
+      assert.ok(allText.includes('./global.css'), `expected SCSS import with .css preserved, got: ${allText.slice(0, 200)}`);
     });
   });
 });
