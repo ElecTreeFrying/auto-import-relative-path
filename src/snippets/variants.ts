@@ -18,6 +18,7 @@ import {
   HTML_VIDEO_IMPORT_OPTIONS,
   MARKDOWN_IMAGE_IMPORT_OPTIONS,
 } from './_styles';
+import { readExportedClassName } from './_class-name';
 import { buildJavaScriptImportSnippetByStyle } from './languages/javascript';
 import { buildTypeScriptImportSnippetByStyle } from './languages/typescript';
 import { buildCssImportSnippetByStyle, buildCssImageImportSnippet } from './languages/css';
@@ -61,14 +62,17 @@ export async function buildImportSnippetVariants(): Promise<ImportSnippetVariant
           buildJavaScriptImportSnippetByStyle(opt.value, labelScriptPath),
           'script', 'javascript',
         ));
-    case '.ts':
+    case '.ts': {
+      const className = await readExportedClassName(sourceFilePath);
+      const resolved = className ?? undefined;
       return TYPESCRIPT_IMPORT_OPTIONS.map(opt =>
         toStyledVariant(
           opt,
-          buildTypeScriptImportSnippetByStyle(opt.value, scriptPath),
-          buildTypeScriptImportSnippetByStyle(opt.value, labelScriptPath),
+          buildTypeScriptImportSnippetByStyle(opt.value, scriptPath, resolved),
+          buildTypeScriptImportSnippetByStyle(opt.value, labelScriptPath, resolved),
           'script', 'typescript',
         ));
+    }
     case '.jsx':
       return buildJsxVariants(sourceFileExt, scriptPath, labelScriptPath, fullPath, labelFullPath);
     case '.tsx':

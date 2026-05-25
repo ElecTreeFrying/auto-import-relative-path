@@ -14,13 +14,19 @@ const IMPORT_INDICATORS = [
 ];
 
 export async function insertImportSnippet(snippet: vscode.SnippetString): Promise<void> {
+  const { sourceFileExt, destinationFileExt } = await getFilePathInfo();
+
+  if (isInlineSnippet(sourceFileExt, destinationFileExt)) {
+    return insertSnippetInline(snippet);
+  }
+
   snippet = snippet.appendText('\n');
 
-  if (await shouldRepositionCursor()) {
+  if (shouldRepositionCursor(destinationFileExt)) {
     return insertSnippetAtCursor(snippet);
   }
 
-  if (await shouldUseAstroFrontmatter()) {
+  if (destinationFileExt === '.astro') {
     const placement = getAutoImportSetting<string>('preferences', 'placement');
     return insertSnippetAtAstroFrontmatter(snippet, placement);
   }
@@ -39,14 +45,21 @@ export async function insertImportSnippet(snippet: vscode.SnippetString): Promis
   }
 }
 
-async function shouldRepositionCursor(): Promise<boolean> {
-  const { sourceFileExt, destinationFileExt } = await getFilePathInfo();
-
+/** Non-stylesheet source into a stylesheet destination produces an inline `url()` snippet. */
+function isInlineSnippet(sourceFileExt: FileExtension, destinationFileExt: FileExtension): boolean {
   return (
-    (!STYLESHEET_FILE_EXTENSIONS.includes(sourceFileExt) && STYLESHEET_FILE_EXTENSIONS.includes(destinationFileExt)) ||
-    destinationFileExt === '.html' ||
-    destinationFileExt === '.md'
+    !STYLESHEET_FILE_EXTENSIONS.includes(sourceFileExt) && STYLESHEET_FILE_EXTENSIONS.includes(destinationFileExt)
   );
+}
+
+function shouldRepositionCursor(destinationFileExt: FileExtension): boolean {
+  return destinationFileExt === '.html' || destinationFileExt === '.md';
+}
+
+/** Inserts at the exact cursor position (line and column) without a trailing newline. */
+function insertSnippetInline(snippet: vscode.SnippetString): void {
+  const editor = vscode.window.activeTextEditor;
+  editor.insertSnippet(snippet, editor.selection.anchor);
 }
 
 function insertSnippetAtTop(snippet: vscode.SnippetString): void {
@@ -87,11 +100,6 @@ function determineInsertionColumn(editor: vscode.TextEditor): number {
     SCRIPT_FILE_EXTENSIONS.includes(fileExtension) || STYLESHEET_FILE_EXTENSIONS.includes(fileExtension);
 
   return isScriptOrStylesheet ? 0 : currentColumn;
-}
-
-async function shouldUseAstroFrontmatter(): Promise<boolean> {
-  const { destinationFileExt } = await getFilePathInfo();
-  return destinationFileExt === '.astro';
 }
 
 /** Finds the opening and closing `---` fence lines. Returns `null` if fewer than two fences exist. */

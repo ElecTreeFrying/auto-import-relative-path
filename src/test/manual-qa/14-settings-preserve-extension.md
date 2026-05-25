@@ -44,7 +44,7 @@ Set `preserveScriptFileExtension = true`.
 
 ### Angular naming with preserve ON  ⚡ FIXED (Bug #2)
 
-- [ ] `src/components/app-root.component.ts` → `src/bar.ts` (style 1):
+- [ ] `src/components/app-root.component.ts` → `src/bar.ts` (style 0):
   - Output: `import { AppRootComponent } from './components/app-root.component.ts';`
   - **Identifier is `AppRootComponent`**, NOT `AppRootComponentTs`
 

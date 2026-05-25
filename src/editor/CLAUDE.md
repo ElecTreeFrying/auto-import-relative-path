@@ -17,13 +17,14 @@ Helpers that touch the `vscode` API on behalf of `commands/` and `snippets/`. Th
 
 ## `insert-snippet.ts` — placement rules
 
+All overrides are resolved from a single `getFilePathInfo()` call at the top of `insertImportSnippet` — no redundant clipboard re-reads.
+
 Order of precedence:
 
-1. **Forced cursor** (`shouldRepositionCursor` returns true) — always wins. Triggers when:
-   - Destination is `.html` or `.md` (no canonical "top of file" for embedded tags).
-   - Destination is a stylesheet (`.css`/`.scss`) but source is *not* the same stylesheet kind (e.g. `.css` importing an image — `url('...')` belongs at the cursor).
-2. **Astro frontmatter** (`shouldUseAstroFrontmatter` returns true) — for `.astro` destinations, reads the user's placement setting and constrains insertion to within the `---` frontmatter fences via `insertSnippetAtAstroFrontmatter`. `findAstroFrontmatterBounds` locates both fences (returns `null` if fewer than two exist). If no frontmatter exists, all three modes converge: wraps the import in a new `---` block at line 0. Within an existing frontmatter block: **Top** inserts after the opening `---`; **Bottom** scans the frontmatter region for `IMPORT_INDICATORS` and inserts after the last match (falls back to after the opening `---`); **Cursor** inserts at the cursor line if it's inside the fences, otherwise falls back to Bottom.
-3. **User setting** `auto-import.preferences.importStatementPlacement` — `'Top'` / `'Bottom'` / `'Cursor'` matched **literally** as strings. Adding a new placement requires editing both the `switch` here and the `enum` in `package.json`.
+1. **Inline snippet** (`isInlineSnippet` returns true) — non-stylesheet source into a stylesheet destination (e.g. image → `.css`/`.scss`). Inserts the `url('...')` snippet at the exact cursor position (line *and* column from `editor.selection.anchor`) with **no trailing newline**. Bypasses `determineInsertionColumn` and the `\n` append entirely, since `url()` is an inline CSS value, not a standalone statement.
+2. **Forced cursor** (`shouldRepositionCursor` returns true) — destination is `.html` or `.md`. Appends `\n` and inserts at the cursor line via `insertSnippetAtCursor` (column decided by `determineInsertionColumn` — returns cursor column for these non-script/non-stylesheet destinations).
+3. **Astro frontmatter** (destination is `.astro`) — reads the user's placement setting and constrains insertion to within the `---` frontmatter fences via `insertSnippetAtAstroFrontmatter`. `findAstroFrontmatterBounds` locates both fences (returns `null` if fewer than two exist). If no frontmatter exists, all three modes converge: wraps the import in a new `---` block at line 0. Within an existing frontmatter block: **Top** inserts after the opening `---`; **Bottom** scans the frontmatter region for `IMPORT_INDICATORS` and inserts after the last match (falls back to after the opening `---`); **Cursor** inserts at the cursor line if it's inside the fences, otherwise falls back to Bottom.
+4. **User setting** `auto-import.preferences.importStatementPlacement` — `'Top'` / `'Bottom'` / `'Cursor'` matched **literally** as strings. Adding a new placement requires editing both the `switch` here and the `enum` in `package.json`.
 
 ### "Bottom" insertion
 

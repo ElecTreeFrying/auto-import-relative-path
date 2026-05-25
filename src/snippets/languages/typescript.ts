@@ -5,6 +5,7 @@ import { getAutoImportSetting } from '../../config/settings';
 import { extractFileExtension } from '../../path/extension';
 import { getFilePathInfo } from '../../editor/file-path-info';
 import { TYPESCRIPT_IMPORT_OPTIONS, resolveStyleIndex } from '../_styles';
+import { readExportedClassName } from '../_class-name';
 
 const LEGACY_ANGULAR_FILE_SUFFIXES = [
   '.component',
@@ -20,21 +21,27 @@ export async function buildSnippet(): Promise<vscode.SnippetString> {
   const shouldPreserveExtension = getAutoImportSetting('script', 'preserve');
   const fileExtension = shouldPreserveExtension ? extractFileExtension(sourceFilePath) : '';
 
-  return buildTypeScriptImportSnippet(relativePath + fileExtension);
+  const className = await readExportedClassName(sourceFilePath);
+  return buildTypeScriptImportSnippet(relativePath + fileExtension, className ?? undefined);
 }
 
-export function buildTypeScriptImportSnippet(relativePath: string): vscode.SnippetString {
+export function buildTypeScriptImportSnippet(relativePath: string, detectedImportName?: string): vscode.SnippetString {
   const styleIndex = resolveStyleIndex(TYPESCRIPT_IMPORT_OPTIONS, getAutoImportSetting<string>('script', 'typescript'));
-  return buildTypeScriptImportSnippetByStyle(styleIndex, relativePath);
+  return buildTypeScriptImportSnippetByStyle(styleIndex, relativePath, detectedImportName);
 }
 
 export function buildTypeScriptImportSnippetByStyle(
   styleIndex: number | undefined,
   relativePath: string,
+  detectedImportName?: string,
 ): vscode.SnippetString {
   switch (styleIndex) {
-    case 0:
-      return new vscode.SnippetString(`import { ${generateAngularLegacyImportName(relativePath)} } from '${relativePath}';`);
+    case 0: {
+      const importName = detectedImportName
+        ? `\${1:${detectedImportName}}`
+        : generateAngularLegacyImportName(relativePath);
+      return new vscode.SnippetString(`import { ${importName} } from '${relativePath}';`);
+    }
     case 1:
       return new vscode.SnippetString(`import $1 from '${relativePath}';`);
     case 2:
@@ -47,8 +54,10 @@ export function buildTypeScriptImportSnippetByStyle(
       return new vscode.SnippetString(`import { $1, type $2 } from '${relativePath}';`);
     case 6:
       return new vscode.SnippetString(`const $1 = await import('${relativePath}');`);
-    default:
-      return new vscode.SnippetString(`import { $1 } from '${relativePath}';`);
+    default: {
+      const importName = detectedImportName ? `\${1:${detectedImportName}}` : '$1';
+      return new vscode.SnippetString(`import { ${importName} } from '${relativePath}';`);
+    }
   }
 }
 

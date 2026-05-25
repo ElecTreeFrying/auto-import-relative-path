@@ -1,6 +1,6 @@
 # 13 — Placement settings
 
-Validates `auto-import.preferences.importStatementPlacement`, the three forced-cursor overrides, the insertion-column rule, and the 10-marker Bottom heuristic.
+Validates `auto-import.preferences.importStatementPlacement`, the three forced-cursor overrides, the insertion-column rule, and the 12-marker Bottom heuristic.
 
 **Sources:**
 - `src/editor/insert-snippet.ts` — `insertImportSnippet`, `shouldRepositionCursor`, `insertSnippetAtBottom`, `determineInsertionColumn`
@@ -98,13 +98,14 @@ For each, set `placement = Cursor`. Place cursor at column 10 (10 leading spaces
 - [ ] `.html` destination → snippet at column 10 (cursor's column)
 - [ ] `.md` destination → snippet at column 10
 
-## Bottom-placement marker detection — all 10 indicators
+## Bottom-placement marker detection — all 12 indicators
 
 The `importIndicators` array in `insertSnippetAtBottom`:
 
 ```
 'import ', 'var name = require(', 'const name = require(', 'require(',
-"@import '", '@import "', '@import url(', '@import (', "@use '", '@use "'
+"@import '", '@import "', '@import url(', '@import (', "@use '", '@use "',
+"@forward '", '@forward "'
 ```
 
 Set `placement = Bottom`. The workspace ships purpose-built fixtures whose first lines exercise every indicator — no editing needed.
@@ -172,7 +173,7 @@ When inserting at line N (any placement), the column is computed once for the wh
 - [ ] Override #3 (stylesheet + non-stylesheet source — 5 cases)
 - [ ] Insertion column for 4 script types + 2 stylesheet types
 - [ ] Insertion column for HTML + MD
-- [ ] All 10 Bottom-marker indicators (verified via `with-imports.ts`, `with-requires.js`, `styles/with-imports.css`, `styles/with-uses.scss`)
+- [ ] All 12 Bottom-marker indicators (verified via `with-imports.ts`, `with-requires.js`, `styles/with-imports.css`, `styles/with-uses.scss`)
 - [ ] HTML cursor override around existing resources (`pages/with-resources.html`)
 - [ ] Multiple imports → picks last
 - [ ] No markers → line 0 (2 cases via `empty-file.ts`, `single-char.ts`)

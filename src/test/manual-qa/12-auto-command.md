@@ -4,7 +4,7 @@ Validates `executeCopyPaste` — the sequential `await executeCopyFilePath(); aw
 
 **Sources:**
 - `src/commands/copy-paste.ts` — sequential composition
-- `src/commands/copy-file-path.ts` — copy phase (Bug #4 fixes here)
+- `src/commands/copy-file-path.ts` — copy phase (Bug #3 fixes here)
 - `src/commands/paste-import.ts` — paste phase
 
 ## Setup
@@ -29,7 +29,7 @@ Validates `executeCopyPaste` — the sequential `await executeCopyFilePath(); aw
 
 - [ ] **Paste uses the just-copied path.** Run Auto on `foo.ts`. Verify the import is for `foo`, not for the previously-copied path.
 
-## Race condition stress (Bug #4 verification)
+## Race condition stress (Bug #3 verification)
 
 The fix awaits `executeCommand('copyFilePath')` and `clipboard.writeText` so paste reliably reads the just-written path.
 
@@ -103,7 +103,7 @@ When copy can't produce a usable path, `executeCopyFilePath` returns `false` and
 
 - [ ] Basic happy path
 - [ ] Sequential ordering (2 cases)
-- [ ] Race condition stress (3 cases) — Bug #4
+- [ ] Race condition stress (3 cases) — Bug #3
 - [ ] Keybinding context (3 cases)
 - [ ] Paste rejection still updates clipboard (2 cases) — exact toast text matches the new parameterized format
 - [ ] No-active-editor toast fires (was silent — now warns)

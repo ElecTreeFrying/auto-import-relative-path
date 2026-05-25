@@ -35,7 +35,7 @@ If a checkbox fails, do not proceed past that file. Reproduce the failure, captu
 | 09 | `09-paste-into-scss.md` | SCSS partial + `.css` preserve asymmetry |
 | 10 | `10-paste-into-html.md` | `<script>` / `<img>` / `<link>` |
 | 11 | `11-paste-into-markdown.md` | Markdown link + image (inline & reference) |
-| 12 | `12-auto-command.md` | Sequential copy+paste; verifies Bug #4 fix |
+| 12 | `12-auto-command.md` | Sequential copy+paste; verifies Bug #3 fix |
 | 13 | `13-settings-placement.md` | Top/Bottom/Cursor + 4 forced-cursor overrides + Astro frontmatter + insertion column |
 | 14 | `14-settings-preserve-extension.md` | Both preserve flags + SCSS `.css` asymmetry |
 | 15 | `15-gating-and-rejection.md` | All 11 gating clauses isolated |

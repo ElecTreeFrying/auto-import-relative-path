@@ -37,11 +37,13 @@ The picker shows the path as a **basename** (`'foo'`, `'widget'`, `'logo.png'`) 
 
 For each pair below, run **both** commands back-to-back without changing the source/destination, and confirm the QuickPick lists are identical (same labels, same `description` tags, same order). Cancel with Esc each time so settings don't drift.
 
-- [ ] `.ts → .ts`: copy `src/foo.ts`, focus `src/bar.ts`. **Expect:** 5 items, top entry `import name from 'foo';` (TS default-import shape — note basename, not `'./foo'`).
-- [ ] `.js → .js`: copy `src/sibling.js`, focus a `.js` file (`with-requires.js`). **Expect:** 9 items, top entry `import name from 'sibling';` (basename only).
+- [ ] `.ts → .ts`: copy `src/foo.ts`, focus `src/bar.ts`. **Expect:** 7 items, top entry `import { name } from 'foo';` (TS named-import shape — note basename, not `'./foo'`).
+- [ ] `.js → .js`: copy `src/sibling.js`, focus a `.js` file (`with-requires.js`). **Expect:** 7 items, top entry `import name from 'sibling';` (basename only).
 - [ ] `.css → .css`: copy `styles/global.css`, focus `styles/main.css` (or another `.css`). **Expect:** 2 items: `@import 'global.css';` and `@import url('global.css');` (basename includes `.css` since stylesheets always preserve the extension on the path).
-- [ ] `.scss → .scss`: copy `styles/_partial.scss`, focus `styles/main.scss`. **Expect:** 4 items, all rendering the partial as `'partial'` (leading `_` stripped *and* basename collapsed): `@import 'partial';`, `@import url('partial');`, `@use 'partial';`, `@use 'partial' as *;`.
-- [ ] `.png → .md`: copy `assets/logo.png`, focus `docs/README.md` (Markdown image branch). **Expect:** 2 items — inline `![alt-text](logo.png "Hover text")` and reference-style `![alt-text][image] / [image]: logo.png "Hover text"`.
+- [ ] `.scss → .scss`: copy `styles/_partial.scss`, focus `styles/main.scss`. **Expect:** 5 items, all rendering the partial as `'partial'` (leading `_` stripped *and* basename collapsed): `@use 'partial';`, `@use 'partial' as *;`, `@use 'partial' as name;`, `@forward 'partial';`, `@import 'partial';`.
+- [ ] `.png → .md`: copy `assets/logo.png`, focus `docs/README.md` (Markdown image branch). **Expect:** 3 items — bare inline `![alt-text](logo.png)`, inline with title `![alt-text](logo.png "Hover text")`, HTML embed `<img src="logo.png" alt="" width="" height="">`.
+- [ ] `.mp4 → .html`: copy `assets/media/clip.mp4`, focus `pages/index.html`. **Expect:** 4 items (video styles: controls, autoplay muted loop, controls + poster, controls + preload metadata).
+- [ ] `.mp3 → .html`: copy `assets/media/song.mp3`, focus `pages/index.html`. **Expect:** 2 items (audio styles: controls, controls + preload metadata).
 - [ ] **Same picker, same items.** For one of the pairs above, run `pasteImportWithStyle`, scroll the items, then Esc. Immediately run `setDefaultImportStyle`. **Expect:** the lists scroll identically.
 
 ## `setDefaultImportStyle` — current-default indicator
@@ -51,9 +53,9 @@ The `setDefaultImportStyle` picker reorders the variant matching the persisted s
 - [ ] **Default TS shape is first and marked.** Reset `typescriptImportStyle` to `import { name } from '_relativePath_';` (the package.json default). `.ts → .ts` setup (copy `src/foo.ts`, focus `src/bar.ts`). Run `setDefaultImportStyle`. **Expect:**
   - Top item (position 0) has label `import { name } from 'foo';` (basename).
   - Top item's description ends with a checkmark icon and the text `Current default`.
-  - The other 4 TS variants follow in their natural `_styles.ts` order.
+  - The other 6 TS variants follow in their natural `_styles.ts` order.
   - Esc to close — no setting change.
-- [ ] **Default JS shape is first and marked.** Reset `javascriptImportStyle` to `import name from '_relativePath_';`. `.js → .js` setup. Run. **Expect:** top item label `import name from 'sibling';` (basename) with the checkmark indicator on its description; remaining 8 JS variants follow.
+- [ ] **Default JS shape is first and marked.** Reset `javascriptImportStyle` to `import name from '_relativePath_';`. `.js → .js` setup. Run. **Expect:** top item label `import name from 'sibling';` (basename) with the checkmark indicator on its description; remaining 6 JS variants follow.
 - [ ] **Indicator follows the persisted value.** With `.ts → .ts` setup, run `setDefaultImportStyle`, pick the entry labeled `import * as name from 'foo';` (namespace import). The toast confirms save with `import * as name from '_relativePath_';` (the *template*, not the basename). Run `setDefaultImportStyle` again. **Expect:** the namespace shape (`import * as name from 'foo';`) is now at position 0 with the `$(check) Current default` indicator. The previous default (`import { name } from 'foo';`) drops back into its natural-order slot without an indicator. Esc to close.
 - [ ] **`pasteImportWithStyle` does NOT reorder.** With the namespace shape persisted (from the previous test), `.ts → .ts` setup. Run `pasteImportWithStyle`. **Expect:** items render in their natural order — top item is the default-import shape (`import name from 'foo';`), not the namespace shape. **No** `$(check) Current default` indicator on any item. The pick-style command is style-agnostic about the persisted setting.
 - [ ] **Indicator survives across destination kinds.** With CSS default `@import '_relativePath_';` set, `.css → .css` setup. Run `setDefaultImportStyle`. **Expect:** top item is the quoted-path `@import 'global.css';` with the indicator; the `url()` variant `@import url('global.css');` is second without indicator.
@@ -73,8 +75,8 @@ After this section: restore `typescriptImportStyle`, `javascriptImportStyle`, `c
 
 For these source/destination pairs, the picker short-circuits and inserts directly — same UX as `Cmd/Ctrl+I`.
 
-- [ ] **HTML destination.** Copy `src/foo.ts`, focus `pages/index.html` (cursor on a blank line inside `<body>`). Run `pasteImportWithStyle`. **Expect:** `<script type="text/javascript" src="../src/foo.ts"></script>` inserted; **no picker shown**.
-- [ ] **HTML image destination.** Copy `assets/logo.png`, focus `pages/index.html`. Run. **Expect:** `<img src="../assets/logo.png" alt="sample">` inserted; no picker.
+- [ ] **HTML stylesheet destination.** Copy `styles/global.css`, focus `pages/index.html` (cursor on a blank line inside `<body>`). Run `pasteImportWithStyle`. **Expect:** `<link href="../styles/global.css" rel="stylesheet">` inserted; **no picker shown** (1 hardcoded stylesheet variant).
+- [ ] **HTML text-track destination.** Copy `assets/media/captions.vtt`, focus `pages/index.html`. Run. **Expect:** `<track src="..." kind="subtitles" srclang="en" label="English">` inserted; no picker (1 hardcoded text-track variant).
 - [ ] **CSS image (url).** Copy `assets/logo.png`, focus `styles/main.css` (cursor on a blank line). Run. **Expect:** `url('../assets/logo.png')` inserted; no picker.
 - [ ] **SCSS image (reuses CSS url).** Copy `assets/logo.png`, focus `styles/main.scss`. Run. **Expect:** `url('../assets/logo.png')` inserted; no picker.
 - [ ] **JSX non-script (image).** Copy `assets/logo.png`, focus `src/badge.jsx`. Run. **Expect:** `import ${1:name} from '../assets/logo.png';` inserted; no picker.
@@ -109,9 +111,8 @@ For each test, **verify the editor body is unchanged** and the persisted setting
 
 These hit the `variants[0].setting === undefined` branch in `set-default-import-style.ts:99`. The matching `*ImportStyle` settings exist in `package.json` for UI parity only and are never read at runtime. **No setting is mutated**, no snippet is inserted.
 
-- [ ] **HTML destination, script source.** Copy `src/foo.ts`, focus `pages/index.html`. Run `setDefaultImportStyle`. **Expect:** warning toast `Auto Import: No configurable style for .ts → .html files.` Settings unchanged. Editor unchanged.
-- [ ] **HTML, image source.** Copy `assets/logo.png`, focus `pages/index.html`. Run. **Expect:** `Auto Import: No configurable style for .png → .html files.`
-- [ ] **HTML, stylesheet source.** Copy `styles/global.css`, focus `pages/index.html`. **Expect:** `Auto Import: No configurable style for .css → .html files.`
+- [ ] **HTML, stylesheet source.** Copy `styles/global.css`, focus `pages/index.html`. Run `setDefaultImportStyle`. **Expect:** warning toast `Auto Import: No configurable style for .css → .html files.` Settings unchanged. Editor unchanged. (1 hardcoded `<link>` variant — `setting` is `undefined`.)
+- [ ] **HTML, text-track source.** Copy `assets/media/captions.vtt`, focus `pages/index.html`. Run. **Expect:** `Auto Import: No configurable style for .vtt → .html files.` (1 hardcoded `<track>` variant.)
 - [ ] **Markdown text.** Copy `docs/README.md`, focus another `.md`. **Expect:** `Auto Import: No configurable style for .md → .md files.`
 - [ ] **CSS image.** Copy `assets/logo.png`, focus `styles/main.css`. **Expect:** `Auto Import: No configurable style for .png → .css files.`
 - [ ] **SCSS image.** Copy `assets/logo.png`, focus `styles/main.scss`. **Expect:** `Auto Import: No configurable style for .png → .scss files.`
@@ -147,12 +148,12 @@ After running this file, restore the defaults from the Setup block (TS default =
 ## Sign-off
 
 - [ ] Discovery (3 cases) — both commands listed; toast button only on `pasteImportWithStyle`
-- [ ] Picker items match across both commands (6 source/destination pairs)
+- [ ] Picker items match across both commands (8 source/destination pairs incl. video/audio)
 - [ ] Current-default indicator (6 cases) — `setDefaultImportStyle` reorders matching variant to top + adds `$(check) Current default` to description; `pasteImportWithStyle` does not; no-match falls back gracefully
 - [ ] `pasteImportWithStyle` one-shot insert (3 styled cases + Esc + 7 single-variant fast-path destinations)
 - [ ] `setDefaultImportStyle` persists styled choices (9 happy paths) — settings flip, editor unchanged, round-trip with `Cmd/Ctrl+I` confirms
 - [ ] `setDefaultImportStyle` Esc cancels cleanly
-- [ ] `'no-configurable-style'` toast for 8 hardcoded destinations — no setting mutated
+- [ ] `'no-configurable-style'` toast for 7 hardcoded destinations — no setting mutated
 - [ ] Gating rejection text matches paste-import for 7 cases
 - [ ] `clearNotifications()` runs first for both commands
 - [ ] Defaults restored before next file

@@ -76,6 +76,49 @@ describe('buildTypeScriptImportSnippetByStyle', () => {
       "import { AppRootComponent } from './app-root.component.ts';",
     );
   });
+
+  it('uses detectedImportName as a placeholder at index 0 when provided', () => {
+    assert.strictEqual(
+      buildTypeScriptImportSnippetByStyle(0, './navigation', 'NavigationComponent').value,
+      "import { ${1:NavigationComponent} } from './navigation';",
+    );
+  });
+
+  it('prefers detectedImportName placeholder over Angular legacy derivation at index 0', () => {
+    assert.strictEqual(
+      buildTypeScriptImportSnippetByStyle(0, './app-root.component', 'AppRootComponent').value,
+      "import { ${1:AppRootComponent} } from './app-root.component';",
+    );
+  });
+
+  it('falls back to Angular legacy when detectedImportName is undefined at index 0', () => {
+    assert.strictEqual(
+      buildTypeScriptImportSnippetByStyle(0, './data.service', undefined).value,
+      "import { DataService } from './data.service';",
+    );
+  });
+
+  it('uses detectedImportName as a placeholder in the default branch when provided', () => {
+    assert.strictEqual(
+      buildTypeScriptImportSnippetByStyle(undefined, './foo', 'MyService').value,
+      "import { ${1:MyService} } from './foo';",
+    );
+  });
+
+  it('ignores detectedImportName for non-named-import styles', () => {
+    assert.strictEqual(
+      buildTypeScriptImportSnippetByStyle(1, './foo', 'MyService').value,
+      "import $1 from './foo';",
+    );
+    assert.strictEqual(
+      buildTypeScriptImportSnippetByStyle(2, './foo', 'MyService').value,
+      "import * as $1 from './foo';",
+    );
+    assert.strictEqual(
+      buildTypeScriptImportSnippetByStyle(3, './foo', 'MyService').value,
+      "import './foo';",
+    );
+  });
 });
 
 describe('buildCssImportSnippetByStyle', () => {

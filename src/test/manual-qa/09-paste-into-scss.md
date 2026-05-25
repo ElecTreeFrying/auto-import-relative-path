@@ -1,6 +1,6 @@
 # 09 — Paste into `.scss` destination
 
-Validates SCSS-snippet generation. SCSS supports four shapes (`@import`, `@import url()`, `@use`, `@use … as *;`), strips leading `_` from partial filenames, and **always** preserves `.css` on `.css` sources regardless of `preserveStylesheetFileExtension`.
+Validates SCSS-snippet generation. SCSS supports five shapes (`@use`, `@use as *`, `@use as name`, `@forward`, `@import`), strips leading `_` from partial filenames, and **always** preserves `.css` on `.css` sources regardless of `preserveStylesheetFileExtension`.
 
 **Sources:**
 - `src/snippets/languages/scss.ts` — snippet builder, `normalizePartialFilename`, `determineScssExtension`
@@ -14,7 +14,7 @@ Validates SCSS-snippet generation. SCSS supports four shapes (`@import`, `@impor
 - 00-setup.md complete; 01-sanity passed
 - Active editor: `styles/main.scss`
 - Default: `placement = Bottom`, `preserveStylesheetFileExtension = false`
-- `scssImportStyle` = `@import '_relativePath_';` (style 0)
+- `scssImportStyle` = `@use '_relativePath_';` (style 0)
 
 ## Cross-import gating matrix
 
@@ -42,24 +42,28 @@ Validates SCSS-snippet generation. SCSS supports four shapes (`@import`, `@impor
 
 - [ ] All 19 cases match — both extensions appear verbatim in the parameterized toast.
 
-## Style options — all 4 SCSS shapes
+## Style options — all 5 SCSS shapes
 
 For each, set `auto-import.importStatement.styleSheet.scssImportStyle`, copy `styles/_partial.scss`, paste into `styles/main.scss`.
 
-### Style 0 — `@import '_relativePath_';`
-- [ ] Output: `@import './partial';` (leading `_` stripped from partial filename)
+### Style 0 — `@use '_relativePath_';`
+- [ ] Output: `@use './partial';` (leading `_` stripped from partial filename)
 
-### Style 1 — `@import url('_relativePath_');`
-- [ ] Output: `@import url('./partial');`
-
-### Style 2 — `@use '_relativePath_';`
-- [ ] Output: `@use './partial';`
-
-### Style 3 — `@use '_relativePath_' as *;`  ⚡ FIXED (Bug #1)
+### Style 1 — `@use '_relativePath_' as *;`  ⚡ FIXED (Bug #1)
 - [ ] Output: `@use './partial' as *;` with cursor selecting `*` (placeholder default)
 - [ ] **Trailing `;` is present**
 - [ ] **`*` is the default placeholder value** (Tab confirms `*`)
 - [ ] Type `prefix` then Tab → result: `@use './partial' as prefix;`
+
+### Style 2 — `@use '_relativePath_' as name;`
+- [ ] Output: `@use './partial' as $1;`
+- [ ] Cursor at `$1` placeholder for the alias name
+
+### Style 3 — `@forward '_relativePath_';`
+- [ ] Output: `@forward './partial';`
+
+### Style 4 — `@import '_relativePath_';`
+- [ ] Output: `@import './partial';` (legacy Sass — deprecated but still supported)
 
 ## Partial filename stripping (last segment only)
 
@@ -127,7 +131,7 @@ Wait — re-check: the rule is `sourceFileExt !== '.scss' && destinationFileExt 
 
 - [ ] **Self-import.** Copy `styles/main.scss`, paste into itself → `Auto Import: A file cannot import itself.`
 - [ ] **Empty SCSS file.** Snippet at line 0.
-- [ ] **`@use` with custom prefix retained on Tab.** Set style 3, copy `_partial.scss`, paste, type `vars`, Tab → result: `@use './partial' as vars;`
+- [ ] **`@use` with custom prefix retained on Tab.** Set style 2, copy `_partial.scss`, paste, type `vars`, Tab → result: `@use './partial' as vars;`
 
 ## Cleanup
 
@@ -138,7 +142,7 @@ rm -f styles/_partials/inner.scss
 ## Sign-off
 
 - [ ] Cross-import matrix (17 cases)
-- [ ] All 4 SCSS styles (Bug #1 verified at style 3)
+- [ ] All 5 SCSS styles (Bug #1 verified at style 1)
 - [ ] Partial filename stripping (5 cases)
 - [ ] preserveStylesheetFileExtension off + asymmetric `.css` (3 cases)
 - [ ] preserveStylesheetFileExtension on + asymmetric `.css` (3 cases)

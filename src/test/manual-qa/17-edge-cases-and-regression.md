@@ -69,7 +69,7 @@ This needs a *second* folder unrelated to `manual-qa-workspace/`. Construct it o
   **Expect:** 10 imports inserted (or 10 attempts — duplicates are fine). No duplicates lost. No errors.
 
 - [ ] **Auto burst.** From Explorer, click 5 different `.ts` files in sequence and `Alt+D` each before the previous toast clears.
-  **Expect:** every Auto runs to completion. No race condition (Bug #4 fix verified).
+  **Expect:** every Auto runs to completion. No race condition (Bug #3 fix verified).
 
 - [ ] **Setting toggle mid-flight.** With `placement = Top`, paste once. Immediately change to `Bottom` (without reload). Paste again.
   **Expect:** second paste at Bottom. No reload required.
@@ -95,7 +95,7 @@ This needs a *second* folder unrelated to `manual-qa-workspace/`. Construct it o
   - `preserveScriptFileExtension = true`
   - `preserveStylesheetFileExtension = true`
   - `javascriptImportStyle = const name = require('_relativePath_');`
-  - `typescriptImportStyle = import { default as name } from '_relativePath_';`
+  - `typescriptImportStyle = import * as name from '_relativePath_';`
   - `cssImportStyle = @import url('_relativePath_');`
   - `scssImportStyle = @use '_relativePath_' as *;`
   - `markdownImageImportStyle = ![alt-text][image] / [image]: _relativePath_ "Hover text"`
@@ -111,14 +111,13 @@ This needs a *second* folder unrelated to `manual-qa-workspace/`. Construct it o
 
 This was the original 0.6.1 fix — verify it still works after our changes.
 
-## Regression — the 4 fixes from this session
+## Regression — the 3 fixes from this session
 
 Re-verify (this is duplicated from `02-bug-fix-verification.md` as a final regression check before sign-off):
 
-- [ ] **Bug #1.** SCSS style 3 → `@use './partial' as ${1:*};` with `*` default and `;`. (Pick one case.)
-- [ ] **Bug #2.** TS style 1, preserveScriptFileExtension=true, `app-root.component.ts` → `import { AppRootComponent } from './components/app-root.component.ts';` (NOT `AppRootComponentTs`).
-- [ ] **Bug #3.** TS style 2 → `import { default as $1 } from './foo';` (literal `default`, single placeholder).
-- [ ] **Bug #4.** Auto command on `src/foo.ts` into `src/bar.ts` works deterministically across 10 rapid invocations. Additionally verify: with no Explorer selection, `Alt+D` fires only the `'no-file-to-copy'` toast and `paste-import` is not invoked (`copy-paste.ts:6-8` short-circuit).
+- [ ] **Bug #1.** SCSS style 1 → `@use './partial' as ${1:*};` with `*` default and `;`. (Pick one case.)
+- [ ] **Bug #2.** TS style 0, preserveScriptFileExtension=true, `app-root.component.ts` → `import { AppRootComponent } from './components/app-root.component.ts';` (NOT `AppRootComponentTs`).
+- [ ] **Bug #3.** Auto command on `src/foo.ts` into `src/bar.ts` works deterministically across 10 rapid invocations. Additionally verify: with no Explorer selection, `Alt+D` fires only the `'no-file-to-copy'` toast and `paste-import` is not invoked (`copy-paste.ts:6-8` short-circuit).
 
 ## Manual smoke test of all 9 destination types
 

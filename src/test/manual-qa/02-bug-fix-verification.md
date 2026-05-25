@@ -12,7 +12,7 @@ Verify every fix from this session. **If any of these fails, the fix has regress
 
 ## Bug #1 — SCSS `@use … as *;` snippet
 
-**File:** `src/snippets/languages/scss.ts:71`. Style index 3 had `@use 'path' as $1` (no `*` default, no `;`). Now: `@use 'path' as ${1:*};`.
+**File:** `src/snippets/languages/scss.ts`. Style index 1 had `@use 'path' as $1` (no `*` default, no `;`). Now: `@use 'path' as ${1:*};`.
 
 ### Configure
 - Open Settings (`Cmd/Ctrl+,`) → search `scssImportStyle`
@@ -80,43 +80,7 @@ Now flip `preserveScriptFileExtension` to **FALSE**.
 
 ---
 
-## Bug #3 — `import { default as name }` literal `default`
-
-**Files:** `src/snippets/languages/javascript.ts:48`, `src/snippets/languages/typescript.ts:60`. Was emitting `import { $1 as $2 }` (both placeholders). Now: `import { default as $1 }` (literal `default` + single placeholder).
-
-### TypeScript
-
-#### Configure
-- `auto-import.importStatement.script.typescriptImportStyle` = `import { default as name } from '_relativePath_';`
-
-#### Tests
-
-- [ ] **Snippet shape.** Copy `src/foo.ts` → paste into `src/bar.ts`.
-  **Expect:** `import { default as $1 } from './foo';`
-  - Word `default` is literal text (NOT a placeholder)
-  - Single tabstop after `as ` (the alias name)
-  - Cursor lands at the single tabstop
-
-- [ ] **Tab navigation.** Type `Foo` then `Tab`.
-  **Expect:** result is `import { default as Foo } from './foo';` and cursor exits the snippet.
-
-### JavaScript
-
-#### Configure
-- `auto-import.importStatement.script.javascriptImportStyle` = `import { default as name } from '_relativePath_';`
-
-#### Tests
-
-- [ ] **Snippet shape.** Copy `src/sibling.js` → paste into `src/other.js`.
-  **Expect:** `import { default as $1 } from './sibling';`
-  - Same shape rules as TS above
-
-- [ ] **Tab navigation.** Type `Sibling` then `Tab`.
-  **Expect:** `import { default as Sibling } from './sibling';`
-
----
-
-## Bug #4 — Copy command race conditions
+## Bug #3 — Copy command race conditions
 
 **File:** `src/commands/copy-file-path.ts:27,37`. `executeCommand('copyFilePath')` and `clipboard.writeText` are now awaited, eliminating a race where the read could resolve before the built-in command finished writing.
 
@@ -152,7 +116,6 @@ The same file was further hardened to validate the post-condition: when the roun
 
 - [ ] **Bug #1 — SCSS `@use … as *;`** all 4 cases pass
 - [ ] **Bug #2 — Angular naming** all 5 components × 2 preserve states + non-Angular case pass (11 cases)
-- [ ] **Bug #3 — `default as`** all 4 cases pass (TS + JS)
-- [ ] **Bug #4 — Race conditions** all stress cases pass
+- [ ] **Bug #3 — Race conditions** all stress cases pass
 
 Tester / date: ___________________
