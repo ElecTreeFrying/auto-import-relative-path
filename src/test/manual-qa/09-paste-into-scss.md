@@ -3,11 +3,11 @@
 Validates SCSS-snippet generation. SCSS supports four shapes (`@import`, `@import url()`, `@use`, `@use … as *;`), strips leading `_` from partial filenames, and **always** preserves `.css` on `.css` sources regardless of `preserveStylesheetFileExtension`.
 
 **Sources:**
-- `src/snippets/scss.ts` — snippet builder, `normalizePartialFilename`, `determineScssExtension`
-- `src/snippets/css.ts` — image branch reuses `buildCssImageImportSnippet`
+- `src/snippets/languages/scss.ts` — snippet builder, `normalizePartialFilename`, `determineScssExtension`
+- `src/snippets/languages/css.ts` — image branch reuses `buildCssImageImportSnippet`
 - `src/path/import-type.ts` — `.scss → null` so destination handler picks the SCSS-specific default branch
 - `src/commands/paste-import.ts` — gating clause 6 (SCSS_SUPPORTED_EXTENSIONS)
-- `src/constants/extensions.ts` — `SCSS_SUPPORTED_EXTENSIONS = .scss + .css + 5 images`
+- `src/constants/extensions.ts` — `SCSS_SUPPORTED_EXTENSIONS = .scss + .css + 7 images`
 
 ## Setup
 
@@ -29,6 +29,8 @@ Validates SCSS-snippet generation. SCSS supports four shapes (`@import`, `@impor
 | `assets/icon.gif` | ✅ `url(...)` |
 | `assets/photo.jpeg` | ✅ `url(...)` |
 | `assets/photo.jpg` | ✅ `url(...)` |
+| `assets/icon.svg` | ✅ `url(...)` |
+| `assets/banner.avif` | ✅ `url(...)` |
 | `assets/thumb.webp` | ✅ `url(...)` |
 | `src/foo.ts` | ❌ `Auto Import: Cannot import .ts into .scss files.` |
 | `src/sibling.js` | ❌ `Auto Import: Cannot import .js into .scss files.` |
@@ -36,9 +38,9 @@ Validates SCSS-snippet generation. SCSS supports four shapes (`@import`, `@impor
 | `docs/README.md` | ❌ `Auto Import: Cannot import .md into .scss files.` |
 | `data/config.json` | ❌ `Auto Import: Cannot import .json into .scss files.` |
 | `assets/font.woff2` | ❌ `Auto Import: Cannot import .woff2 into .scss files.` |
-| `assets/icon.svg` | ❌ `Auto Import: Cannot import .svg into .scss files.` |
+| `unsupported/texture.bmp` | ❌ `Auto Import: Cannot import .bmp into .scss files.` |
 
-- [ ] All 17 cases match — both extensions appear verbatim in the parameterized toast.
+- [ ] All 19 cases match — both extensions appear verbatim in the parameterized toast.
 
 ## Style options — all 4 SCSS shapes
 

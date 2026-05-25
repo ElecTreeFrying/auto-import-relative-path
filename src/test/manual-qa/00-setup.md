@@ -22,10 +22,12 @@ The full layout and the rationale for every fixture is documented in [`../manual
 | Stylesheets | `styles/main.scss`, `_partial.scss`, `_variables.scss`, `global.css`, `reset.css`, `_partials/_nested.scss` |
 | Bottom-landing | `with-imports.ts`, `with-requires.js`, `styles/with-imports.css`, `styles/with-uses.scss`, `pages/with-resources.html` |
 | Markup / docs | `pages/index.html`, `pages/about.html`, `docs/README.md`, `docs/guide.md` |
-| Images / fonts / data | `assets/logo.png`, `icon.gif`, `photo.jpeg`, `photo.jpg`, `thumb.webp`, `font.woff2`, `regular.ttf`, `icon.svg`; `data/config.json`, `config.yaml`, `locale.yml` |
+| Images / fonts / data | `assets/logo.png`, `icon.gif`, `photo.jpeg`, `photo.jpg`, `icon.svg`, `banner.avif`, `thumb.webp`, `font.woff2`, `regular.ttf`; `data/config.json`, `config.yaml`, `locale.yml` |
+| Media / text-track | `assets/media/clip.mp4`, `demo.webm`, `animation.mov`, `song.mp3`, `effect.ogg`, `voice.wav`, `track.m4a`, `captions.vtt` |
+| Framework-component destinations | `src/App.vue`, `App.svelte`, `App.astro` |
 | Edge cases | `empty-file.ts`, `whitespace-only.ts`, `single-char.ts`, `comments-only.ts`, `my files/spaced.ts` |
 | Unicode / deep paths | `unicode-paths/日本語.ts`, `unicode-paths/café-menu.tsx`, `deeply/nested/components/widgets/{deep-widget.tsx, deep-styles.scss}`, `very-deep/level-01/.../level-09/extreme-leaf.ts` |
-| Unsupported (rejection) | `unsupported/Main.java`, `unsupported/styles.less`, `unsupported/animation.mov`, `unsupported/archive.zip` |
+| Unsupported (rejection) | `unsupported/Main.java`, `unsupported/styles.less`, `unsupported/texture.bmp`, `unsupported/render.avi`, `unsupported/archive.zip` |
 
 `manual-qa-workspace/` is also stocked with rich exploratory siblings (`Button.tsx`, `Layout.jsx`, `legacy/*.js`, `hooks/`, `utils/`, etc.) — handy for ad-hoc QA but not required by any specific checklist.
 

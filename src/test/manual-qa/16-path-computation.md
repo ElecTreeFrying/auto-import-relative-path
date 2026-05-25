@@ -5,7 +5,7 @@ Validates the pure path-math layer: `./` prefix rule (CHANGELOG 0.6.1 regression
 **Sources:**
 - `src/path/relative.ts` — `computeRelative`, `toUnixPath`, `areFilesInSameDirectory`
 - `src/path/extension.ts` — `extractFileExtension`, `removeFileExtension`
-- `src/snippets/scss.ts:normalizePartialFilename` — partial `_` stripping
+- `src/snippets/languages/scss.ts:normalizePartialFilename` — partial `_` stripping
 - `src/editor/file-path-info.ts` — single source of truth
 
 ## Setup

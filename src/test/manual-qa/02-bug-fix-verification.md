@@ -12,7 +12,7 @@ Verify every fix from this session. **If any of these fails, the fix has regress
 
 ## Bug #1 — SCSS `@use … as *;` snippet
 
-**File:** `src/snippets/scss.ts:71`. Style index 3 had `@use 'path' as $1` (no `*` default, no `;`). Now: `@use 'path' as ${1:*};`.
+**File:** `src/snippets/languages/scss.ts:71`. Style index 3 had `@use 'path' as $1` (no `*` default, no `;`). Now: `@use 'path' as ${1:*};`.
 
 ### Configure
 - Open Settings (`Cmd/Ctrl+,`) → search `scssImportStyle`
@@ -38,7 +38,7 @@ Verify every fix from this session. **If any of these fails, the fix has regress
 
 ## Bug #2 — TypeScript Angular naming with `preserveScriptFileExtension`
 
-**File:** `src/snippets/typescript.ts:generateAngularLegacyImportName`. Was producing `AppRootComponentTs` when extension preservation was on. Now correctly produces `AppRootComponent`.
+**File:** `src/snippets/languages/typescript.ts:generateAngularLegacyImportName`. Was producing `AppRootComponentTs` when extension preservation was on. Now correctly produces `AppRootComponent`.
 
 ### Configure
 - `auto-import.importStatement.script.typescriptImportStyle` = `import { name } from '_relativePath_';`
@@ -82,7 +82,7 @@ Now flip `preserveScriptFileExtension` to **FALSE**.
 
 ## Bug #3 — `import { default as name }` literal `default`
 
-**Files:** `src/snippets/javascript.ts:48`, `src/snippets/typescript.ts:60`. Was emitting `import { $1 as $2 }` (both placeholders). Now: `import { default as $1 }` (literal `default` + single placeholder).
+**Files:** `src/snippets/languages/javascript.ts:48`, `src/snippets/languages/typescript.ts:60`. Was emitting `import { $1 as $2 }` (both placeholders). Now: `import { default as $1 }` (literal `default` + single placeholder).
 
 ### TypeScript
 

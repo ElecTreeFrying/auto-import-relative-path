@@ -1,12 +1,12 @@
 # 10 — Paste into `.html` destination
 
-Validates HTML-snippet generation. HTML emits one of three fixed shapes (`<script>`, `<img>`, `<link>`) routed by `determineImportType`. Cursor placement is **always** forced for `.html` destinations.
+Validates HTML-snippet generation. HTML emits one of six tag types (`<script>`, `<img>`, `<video>`, `<audio>`, `<track>`, `<link>`) routed by `determineImportType`. Four are configurable via style settings (script: 5, image: 3, video: 4, audio: 2); two are fixed single-shape (link, track). Cursor placement is **always** forced for `.html` destinations.
 
 **Sources:**
-- `src/snippets/html.ts` — three fixed builders
+- `src/snippets/languages/html.ts` — six builders (four configurable, two fixed)
 - `src/path/import-type.ts` — `determineImportType` (`.html → null` defensively)
 - `src/commands/paste-import.ts` — gating clauses 2 & 3
-- `src/constants/extensions.ts` — `HTML_SUPPORTED_EXTENSIONS = .js + .css + 5 images`
+- `src/constants/extensions.ts` — `HTML_SUPPORTED_EXTENSIONS = .js + .css + 7 images + 7 media + 1 text-track`
 
 ## Setup
 
@@ -16,7 +16,7 @@ Validates HTML-snippet generation. HTML emits one of three fixed shapes (`<scrip
 
 ## Cross-import gating matrix
 
-`HTML_SUPPORTED_EXTENSIONS = ['.js', '.css', ...IMAGE_FILE_EXTENSIONS]`. **`.html → .html` is explicitly rejected** by clause 2 (no relative-import syntax for HTML embedding itself).
+`HTML_SUPPORTED_EXTENSIONS = ['.js', '.css', ...IMAGE_FILE_EXTENSIONS, ...MEDIA_FILE_EXTENSIONS, ...TEXT_TRACK_FILE_EXTENSIONS]`. **`.html → .html` is explicitly rejected** by clause 2 (no relative-import syntax for HTML embedding itself).
 
 | Source | Expected |
 |--------|----------|
@@ -26,7 +26,12 @@ Validates HTML-snippet generation. HTML emits one of three fixed shapes (`<scrip
 | `assets/icon.gif` | ✅ `<img>` |
 | `assets/photo.jpeg` | ✅ `<img>` |
 | `assets/photo.jpg` | ✅ `<img>` |
+| `assets/icon.svg` | ✅ `<img>` |
+| `assets/banner.avif` | ✅ `<img>` |
 | `assets/thumb.webp` | ✅ `<img>` |
+| `assets/media/clip.mp4` | ✅ `<video>` tag |
+| `assets/media/song.mp3` | ✅ `<audio>` tag |
+| `assets/media/captions.vtt` | ✅ `<track>` tag |
 | `pages/about.html` | ❌ `Auto Import: Cannot import .html into .html files.` (clause 2: html→html) |
 | `src/foo.ts` | ❌ `Auto Import: Cannot import .ts into .html files.` |
 | `src/widget.tsx` | ❌ `Auto Import: Cannot import .tsx into .html files.` |
@@ -36,31 +41,74 @@ Validates HTML-snippet generation. HTML emits one of three fixed shapes (`<scrip
 | `data/config.json` | ❌ `Auto Import: Cannot import .json into .html files.` |
 | `data/config.yaml` | ❌ `Auto Import: Cannot import .yaml into .html files.` |
 | `assets/font.woff2` | ❌ `Auto Import: Cannot import .woff2 into .html files.` |
-| `assets/icon.svg` | ❌ `Auto Import: Cannot import .svg into .html files.` |
+| `unsupported/texture.bmp` | ❌ `Auto Import: Cannot import .bmp into .html files.` |
 
-- [ ] All 17 cases match — both extensions appear verbatim in the parameterized toast.
+- [ ] All 21 cases match — both extensions appear verbatim in the parameterized toast.
 
-## Snippet shapes — fixed (no configurable styles)
+## Snippet shapes — six tag types
 
-The `htmlScriptImportStyle` / `htmlImageImportStyle` / `htmlStyleSheetImportStyle` settings exist in `package.json` for UI parity but each has only a single enum value; the corresponding builder always emits that single shape.
+Four are configurable (`<script>`, `<img>`, `<video>`, `<audio>`) — the user picks the shape via `htmlScriptImportStyle`, `htmlImageImportStyle`, `htmlVideoImportStyle`, `htmlAudioImportStyle` in `package.json`. Two are fixed single-shape (`<link>`, `<track>`). The `htmlStyleSheetImportStyle` setting exists for UI parity only (single enum value).
 
-### `<script>` for `.js` source
+### `<script>` for `.js` source — 5 styles
+
+Default style 0: modern minimal (no `type` attribute).
 
 - [ ] Copy `src/sibling.js` → paste into `pages/index.html`.
-  **Expect:** `<script type="text/javascript" src="../src/sibling.js"></script>`
+  **Expect (style 0):** `<script src="../src/sibling.js"></script>`
   - Full `.js` extension preserved on `src` attribute
   - Relative path uses forward slashes
   - No placeholder tabstops in this shape
 
-### `<img>` for image sources
+Cycle through the other 4 styles:
+- [ ] Style 1 → `<script src="../src/sibling.js" defer></script>`
+- [ ] Style 2 → `<script type="module" src="../src/sibling.js"></script>`
+- [ ] Style 3 → `<script src="../src/sibling.js" async></script>`
+- [ ] Style 4 → `<script type="text/javascript" src="../src/sibling.js"></script>` (legacy)
+
+### `<img>` for image sources — 3 styles
+
+Default style 0: basic with `alt="sample"`.
 
 - [ ] `assets/logo.png` → `<img src="../assets/logo.png" alt="sample">`
 - [ ] `assets/icon.gif` → `<img src="../assets/icon.gif" alt="sample">`
 - [ ] `assets/photo.jpeg` → `<img src="../assets/photo.jpeg" alt="sample">`
 - [ ] `assets/photo.jpg` → `<img src="../assets/photo.jpg" alt="sample">`
+- [ ] `assets/icon.svg` → `<img src="../assets/icon.svg" alt="sample">`
+- [ ] `assets/banner.avif` → `<img src="../assets/banner.avif" alt="sample">`
 - [ ] `assets/thumb.webp` → `<img src="../assets/thumb.webp" alt="sample">`
 
-### `<link>` for `.css` source
+Cycle through the other 2 styles (using any image fixture):
+- [ ] Style 1 → `<img src="..." alt="$1" loading="lazy">`
+- [ ] Style 2 → `<img src="..." alt="$1" width="$2" height="$3">`
+
+### `<video>` for video sources — 4 styles
+
+Default style 0: controls only.
+
+- [ ] `assets/media/clip.mp4` → `<video src="../assets/media/clip.mp4" controls></video>`
+- [ ] `assets/media/demo.webm` → `<video src="../assets/media/demo.webm" controls></video>`
+- [ ] `assets/media/animation.mov` → `<video src="../assets/media/animation.mov" controls></video>`
+
+Cycle through the other 3 styles:
+- [ ] Style 1 → `<video src="..." autoplay muted loop playsinline></video>`
+- [ ] Style 2 → `<video src="..." controls poster="$1"></video>`
+- [ ] Style 3 → `<video src="..." controls preload="metadata"></video>`
+
+### `<audio>` for audio sources — 2 styles
+
+Default style 0: controls only.
+
+- [ ] `assets/media/song.mp3` → `<audio src="../assets/media/song.mp3" controls></audio>`
+- [ ] `assets/media/effect.ogg` → `<audio src="../assets/media/effect.ogg" controls></audio>`
+
+Style 1:
+- [ ] Style 1 → `<audio src="..." controls preload="metadata"></audio>`
+
+### `<track>` for text-track source — fixed shape
+
+- [ ] `assets/media/captions.vtt` → `<track src="../assets/media/captions.vtt" kind="subtitles" srclang="${1:en}" label="${2:English}"></track>`
+
+### `<link>` for `.css` source — fixed shape
 
 - [ ] `styles/global.css` → `<link href="../styles/global.css" rel="stylesheet">`
 - [ ] `styles/reset.css` → `<link href="../styles/reset.css" rel="stylesheet">`
@@ -107,13 +155,18 @@ The `htmlScriptImportStyle` / `htmlImageImportStyle` / `htmlStyleSheetImportStyl
 
 ## Known limitations / not bugs
 
-- The `htmlScriptImportStyle`, `htmlImageImportStyle`, and `htmlStyleSheetImportStyle` settings are UI-only — changing them has no functional effect. The corresponding `_styles.ts` tables (`HTML_SCRIPT_IMPORT_OPTIONS`, etc.) declare a single entry purely for `package.json` parity.
+- `htmlStyleSheetImportStyle` is UI-only — it has a single enum value and the builder hardcodes the single `<link>` shape. The other three HTML style settings (`htmlScriptImportStyle`, `htmlImageImportStyle`, `htmlVideoImportStyle`, `htmlAudioImportStyle`) are multi-entry and actively consumed.
 - HTML doesn't strip extensions from paths; full extension always preserved (`.js`, `.css`, `.png` all visible in `src`/`href`).
 
 ## Sign-off
 
-- [ ] Cross-import matrix (17 cases, including `.html→.html` rejection)
-- [ ] `<script>`, `<img>`, `<link>` shapes (8 source variants)
+- [ ] Cross-import matrix (21 cases, including `.html→.html` rejection)
+- [ ] `<script>` shape + 4 style variants
+- [ ] `<img>` shape + 2 style variants (7 image sources)
+- [ ] `<video>` shape + 3 style variants (3 video sources)
+- [ ] `<audio>` shape + 1 style variant (2 audio sources)
+- [ ] `<track>` fixed shape (1 text-track source)
+- [ ] `<link>` fixed shape (2 CSS sources)
 - [ ] Forced-cursor placement (3 overrides)
 - [ ] Insertion column = cursor (not 0) — 3 cases
 - [ ] Path computation (4 cases)

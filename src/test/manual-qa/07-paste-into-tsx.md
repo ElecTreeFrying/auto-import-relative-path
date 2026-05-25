@@ -1,12 +1,12 @@
 # 07 — Paste into `.tsx` destination
 
-Validates TSX-snippet generation. TSX uses `_shared.ts:buildReactImport` with **primary `[.ts, .tsx]` → TS snippet**, **fallback `[.js]` → JS snippet** (asymmetric vs JSX), plus the same hardcoded switch for non-script sources.
+Validates TSX-snippet generation. TSX uses `_react.ts:buildReactImport` with **primary `[.ts, .tsx]` → TS snippet**, **fallback `[.js]` → JS snippet** (asymmetric vs JSX), plus the same hardcoded switch for non-script sources.
 
 **Sources:**
-- `src/snippets/tsx.ts` — calls `buildReactImport`
-- `src/snippets/_shared.ts` — shared algorithm with primary + fallback
-- `src/snippets/typescript.ts` — primary
-- `src/snippets/javascript.ts` — fallback
+- `src/snippets/languages/tsx.ts` — calls `buildReactImport`
+- `src/snippets/_react.ts` — shared algorithm with primary + fallback
+- `src/snippets/languages/typescript.ts` — primary
+- `src/snippets/languages/javascript.ts` — fallback
 - `src/constants/extensions.ts` — `.tsx` IS in `CROSS_IMPORT_DESTINATIONS`
 
 ## Setup
@@ -14,12 +14,12 @@ Validates TSX-snippet generation. TSX uses `_shared.ts:buildReactImport` with **
 - 00-setup.md complete; 01-sanity passed
 - Active editor: `src/widget.tsx`
 - Default: `placement = Bottom`, `preserveScriptFileExtension = false`
-- `typescriptImportStyle` = `import { name } from '_relativePath_';` (style 1)
+- `typescriptImportStyle` = `import { name } from '_relativePath_';` (style 0)
 - `javascriptImportStyle` = `import name from '_relativePath_';` (style 0)
 
 ## Primary script sources → TS snippet
 
-| Source | Expected (style 1, non-Angular) |
+| Source | Expected (style 0, non-Angular) |
 |--------|----------------------------------|
 | `src/foo.ts` | `import { $1 } from './foo';` (TS shape) |
 | `src/components/Button.tsx` | `import { $1 } from './components/Button';` (TS shape — `Button` is non-Angular, so `$1` placeholder, not auto-derived) |
@@ -31,17 +31,17 @@ Validates TSX-snippet generation. TSX uses `_shared.ts:buildReactImport` with **
 
 This is the key TSX rule: a `.js` source dropped into a `.tsx` destination produces a **JS-shaped** import, not a TS-shaped one.
 
-- [ ] `src/sibling.js` → `import $1 from './sibling';` (JS style 0 — NOT TS style 1)
+- [ ] `src/sibling.js` → `import $1 from './sibling';` (JS style 0 — NOT TS style 0)
 
 ## `.jsx` source → REJECTED
 
-`.jsx` is in neither primary nor fallback for TSX. Falls through `_shared.ts` switch default → empty → `'not-supported'` toast (parameterized).
+`.jsx` is in neither primary nor fallback for TSX. Falls through `_react.ts` switch default → empty → `'not-supported'` toast (parameterized).
 
 - [ ] `src/badge.jsx` → `Auto Import: Cannot import .jsx into .tsx files.`
 
 ## Angular naming applies for `.ts`/`.tsx` sources
 
-Style 1 with Angular conventions:
+Style 0 with Angular conventions:
 
 ### preserveScriptFileExtension = FALSE
 - [ ] `src/components/app-root.component.ts` → `import { AppRootComponent } from './components/app-root.component';`
@@ -63,13 +63,15 @@ The workspace ships `src/components/test.component.tsx` (Angular-style class in 
 
 ## Non-script sources → hardcoded switch
 
-Same as JSX (since `_shared.ts` is shared):
+Same as JSX (since `_react.ts` is shared):
 
 ### Image sources → default-import
 - [ ] `assets/logo.png` → `import name$1 from './assets/logo.png';`
 - [ ] `assets/icon.gif` → `import name$1 from './assets/icon.gif';`
 - [ ] `assets/photo.jpeg` → `import name$1 from './assets/photo.jpeg';`
 - [ ] `assets/photo.jpg` → `import name$1 from './assets/photo.jpg';`
+- [ ] `assets/icon.svg` → `import name$1 from './assets/icon.svg';`
+- [ ] `assets/banner.avif` → `import name$1 from './assets/banner.avif';`
 - [ ] `assets/thumb.webp` → `import name$1 from './assets/thumb.webp';`
 
 ### Data / markup / YAML → default-import
@@ -87,30 +89,35 @@ Same as JSX (since `_shared.ts` is shared):
 - [ ] `styles/global.css` → `import './styles/global.css';`
 - [ ] `styles/main.scss` → `import './styles/main.scss';`
 
+### Media sources → url-import
+- [ ] `assets/media/clip.mp4` → `import url$1 from './assets/media/clip.mp4';`
+- [ ] `assets/media/song.mp3` → `import url$1 from './assets/media/song.mp3';`
+- [ ] `assets/media/captions.vtt` → `import url$1 from './assets/media/captions.vtt';`
+
 ### Unsupported → REJECTED
-- [ ] `assets/icon.svg` → `Auto Import: Cannot import .svg into .tsx files.`
+- [ ] `unsupported/texture.bmp` → `Auto Import: Cannot import .bmp into .tsx files.`
 
 ## Style propagation
 
-`.ts`/`.tsx` sources delegate to `buildTypeScriptImportSnippet` → all 5 TS styles must propagate:
+`.ts`/`.tsx` sources delegate to `buildTypeScriptImportSnippet` → all 7 TS styles must propagate:
 
-- [ ] TS Style 0 → `import $1 from './foo';`
-- [ ] TS Style 1 → `import { $1 } from './foo';` (non-Angular)
-- [ ] TS Style 2 → `import { default as $1 } from './foo';` ⚡ FIXED
-- [ ] TS Style 3 → `import * as $1 from './foo';`
-- [ ] TS Style 4 → `import './foo';`
+- [ ] TS Style 0 → `import { $1 } from './foo';` (non-Angular, `$1` placeholder)
+- [ ] TS Style 1 → `import $1 from './foo';`
+- [ ] TS Style 2 → `import * as $1 from './foo';`
+- [ ] TS Style 3 → `import './foo';`
+- [ ] TS Style 4 → `import type { $1 } from './foo';`
+- [ ] TS Style 5 → `import { $1, type $2 } from './foo';`
+- [ ] TS Style 6 → `const $1 = await import('./foo');`
 
-`.js` source delegates to `buildJavaScriptImportSnippet` → all 9 JS styles must propagate:
+`.js` source delegates to `buildJavaScriptImportSnippet` → all 7 JS styles must propagate:
 
 - [ ] JS Style 0 → `import $1 from './sibling';`
 - [ ] JS Style 1 → `import { $1 } from './sibling';`
-- [ ] JS Style 2 → `import { default as $1 } from './sibling';` ⚡ FIXED
+- [ ] JS Style 2 → `import $1, { $2 } from './sibling';`
 - [ ] JS Style 3 → `import * as $1 from './sibling';`
 - [ ] JS Style 4 → `import './sibling';`
-- [ ] JS Style 5 → `var $1 = require('./sibling');`
-- [ ] JS Style 6 → `const $1 = require('./sibling');`
-- [ ] JS Style 7 → `var $1 = import('./sibling');`
-- [ ] JS Style 8 → `const $1 = import('./sibling');`
+- [ ] JS Style 5 → `const $1 = require('./sibling');`
+- [ ] JS Style 6 → `const $1 = await import('./sibling');`
 
 ## `preserveScriptFileExtension` propagation
 
@@ -138,7 +145,7 @@ No persistent fixtures to remove — `src/components/Button.tsx` and `src/compon
 - [ ] `.jsx` source rejected (1)
 - [ ] Angular suite (5 conventions × 2 preserve states + 1 .tsx case)
 - [ ] Non-script sources (15 cases)
-- [ ] All 5 TS + all 9 JS styles propagate
+- [ ] All 7 TS + all 7 JS styles propagate
 - [ ] preserveScriptFileExtension across script and non-script
 - [ ] Edge cases
 

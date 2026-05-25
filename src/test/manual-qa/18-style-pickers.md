@@ -128,7 +128,7 @@ Same checks file 15 covers, re-applied here against the picker commands. Both sh
 - [ ] **Source deleted between copy and run.** Copy `src/foo.ts`. Delete the file (rename works too). Run each command. **Expect:** `Auto Import: Source file no longer exists: foo.ts.`
 - [ ] **Disallowed pair (`.html → .ts`).** Copy `pages/index.html`, focus `src/bar.ts`. Run each command. **Expect:** `Auto Import: Cannot import .html into .ts files.` (clause 1 — `.ts` not in `CROSS_IMPORT_DESTINATIONS` and source ≠ destination).
 - [ ] **`.html → .html` (clause 2).** Copy any `.html`, focus another `.html`. **Expect:** `Auto Import: Cannot import .html into .html files.`
-- [ ] **`.svg → .jsx` (JSX `_shared.ts:default:`).** Copy `assets/icon.svg`, focus `src/badge.jsx`. Run each command. **Expect:** `Auto Import: Cannot import .svg into .jsx files.` (`isEmptyVariantSet` short-circuits to `'not-supported'`).
+- [ ] **`.bmp → .jsx` (JSX `_react.ts:default:`).** Copy `unsupported/texture.bmp`, focus `src/badge.jsx`. Run each command. **Expect:** `Auto Import: Cannot import .bmp into .jsx files.` (`isEmptyVariantSet` short-circuits to `'not-supported'`).
 
 ## `clearNotifications()` runs first
 

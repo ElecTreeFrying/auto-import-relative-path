@@ -4,7 +4,7 @@ A complete, sequential manual-QA pass for every code path in the extension. Walk
 
 ## Why this exists
 
-Four real bugs were fixed in `src/snippets/scss.ts`, `src/snippets/typescript.ts`, `src/snippets/javascript.ts`, and `src/commands/copy-file-path.ts`. Before shipping, every code path is verified end-to-end — both the four fixes and every adjacent behavior they could have touched.
+Four real bugs were fixed in `src/snippets/languages/scss.ts`, `src/snippets/languages/typescript.ts`, `src/snippets/languages/javascript.ts`, and `src/commands/copy-file-path.ts`. Before shipping, every code path is verified end-to-end — both the four fixes and every adjacent behavior they could have touched.
 
 0.7.0 also replaced the two generic warning toasts (`Same file path.`, `Not supported.`) with **nine specific, parameterized notifications** (seven warning + two info) — see `src/editor/notification.ts` for the canonical text. Every test below quotes the *exact* expected toast string; testers should compare strings byte-for-byte, not just toast presence.
 
@@ -60,8 +60,8 @@ The checklists below name files relative to that workspace root: when 04 says "c
 | `pages/with-resources.html` | 13 | Bottom-placement landing after existing `<script>`/`<link>`/`<img>` |
 | `unsupported/Main.java` | 15 | Clause 1 — arbitrary unsupported-extension source |
 | `unsupported/styles.less` | 15 | Clause 6 — close-to-supported but not in `SCSS_SUPPORTED_EXTENSIONS` |
-| `unsupported/animation.mov`, `archive.zip` | 15 | Binary unsupported sources |
-| `assets/icon.svg` | 06, 07, 15 | Unsupported in JSX/TSX/MDX `_react.ts:default:` branch |
+| `unsupported/render.avi`, `archive.zip` | 15 | Binary unsupported sources |
+| `unsupported/texture.bmp` | 06, 07, 15, 18 | Unsupported in JSX/TSX/MDX `_react.ts:default:` branch |
 | `whitespace-only.ts`, `single-char.ts` | 17 | Degenerate file destinations |
 | `empty-file.ts`, `comments-only.ts` | 13, 17 | Bottom-placement edge cases |
 | `unicode-paths/日本語.ts`, `unicode-paths/café-menu.tsx` | 16 | Unicode in path computation |

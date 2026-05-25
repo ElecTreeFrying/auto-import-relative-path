@@ -1,9 +1,9 @@
 # 05 — Paste into `.ts` destination (+ Angular naming suite)
 
-Validates TS-snippet generation, `.ts`-as-destination gating, and the Angular PascalCase auto-naming at style index 1.
+Validates TS-snippet generation, `.ts`-as-destination gating, and the Angular PascalCase auto-naming at style index 0.
 
 **Sources:**
-- `src/snippets/typescript.ts` — snippet builder + `generateAngularLegacyImportName`
+- `src/snippets/languages/typescript.ts` — snippet builder + `generateAngularLegacyImportName`
 - `src/commands/paste-import.ts` — gating
 - `src/constants/extensions.ts` — `.ts` NOT in `CROSS_IMPORT_DESTINATIONS`
 
@@ -31,34 +31,40 @@ Validates TS-snippet generation, `.ts`-as-destination gating, and the Angular Pa
 | `data/config.json` | ❌ `Auto Import: Cannot import .json into .ts files.` |
 | `data/config.yaml` | ❌ `Auto Import: Cannot import .yaml into .ts files.` |
 | `assets/font.woff2` | ❌ `Auto Import: Cannot import .woff2 into .ts files.` |
-| `assets/icon.svg` | ❌ `Auto Import: Cannot import .svg into .ts files.` |
+| `assets/icon.svg` | ❌ `Auto Import: Cannot import .svg into .ts files.` (`.ts` not in CROSS_IMPORT_DESTINATIONS, source ≠ dest) |
 
 - [ ] All 13 cases match — both extensions appear verbatim in the parameterized toast.
 
-## Style options — all 5 TS shapes
+## Style options — all 7 TS shapes
 
 For each, set `auto-import.importStatement.script.typescriptImportStyle` to the value, then copy `src/foo.ts` and paste into `src/bar.ts`.
 
-### Style 0 — `import name from '_relativePath_';`
-- [ ] Output: `import $1 from './foo';`
-
-### Style 1 — `import { name } from '_relativePath_';`  ★ Angular-aware
+### Style 0 — `import { name } from '_relativePath_';`  ★ Angular-aware
 - [ ] Output (non-Angular `foo.ts`): `import { $1 } from './foo';` — placeholder, not auto-derived
 - [ ] **The Angular suite below uses this style.**
 
-### Style 2 — `import { default as name } from '_relativePath_';`  ⚡ FIXED
-- [ ] Output: `import { default as $1 } from './foo';`
-- [ ] `default` literal, single tabstop
+### Style 1 — `import name from '_relativePath_';`
+- [ ] Output: `import $1 from './foo';`
 
-### Style 3 — `import * as name from '_relativePath_';`
+### Style 2 — `import * as name from '_relativePath_';`
 - [ ] Output: `import * as $1 from './foo';`
 
-### Style 4 — `import '_relativePath_';`
+### Style 3 — `import '_relativePath_';`
 - [ ] Output: `import './foo';`
 
-## Angular naming suite (style 1, 5 conventions × 2 preserve states)
+### Style 4 — `import type { name } from '_relativePath_';`
+- [ ] Output: `import type { $1 } from './foo';`
 
-**Style:** `import { name } from '_relativePath_';`
+### Style 5 — `import { name, type Type } from '_relativePath_';`
+- [ ] Output: `import { $1, type $2 } from './foo';`
+- [ ] Two tabstops: `$1` for the value import, `$2` for the type import
+
+### Style 6 — `const name = await import('_relativePath_');`
+- [ ] Output: `const $1 = await import('./foo');`
+
+## Angular naming suite (style 0, 5 conventions × 2 preserve states)
+
+**Style:** `import { name } from '_relativePath_';` (style 0 — the Angular-aware named import)
 
 ### preserveScriptFileExtension = FALSE
 
@@ -79,7 +85,7 @@ For each, copy → paste into `src/bar.ts`:
 - [ ] `src/components/trim.pipe.ts` → `import { TrimPipe } from './components/trim.pipe.ts';` — NOT `TrimPipeTs`
 - [ ] `src/components/user.service.ts` → `import { UserService } from './components/user.service.ts';` — NOT `UserServiceTs`
 
-### Non-Angular fallback (style 1, no auto-naming)
+### Non-Angular fallback (style 0, no auto-naming)
 
 - [ ] `src/foo.ts` → `import { $1 } from './foo';` — `$1` placeholder, NOT `Foo`
 - [ ] `src/helpers.ts` → `import { $1 } from './helpers';` — placeholder, NOT `Helpers`
@@ -113,7 +119,7 @@ Auto-naming is keyed off the basename, so it must work the same with `'./X'` as 
 ## Sign-off
 
 - [ ] Cross-import matrix (13 cases)
-- [ ] All 5 style options
+- [ ] All 7 style options
 - [ ] Angular suite preserveScriptFileExtension=FALSE (5 cases)
 - [ ] Angular suite preserveScriptFileExtension=TRUE (5 cases) — Bug #2 verified
 - [ ] Non-Angular fallback (2 cases)

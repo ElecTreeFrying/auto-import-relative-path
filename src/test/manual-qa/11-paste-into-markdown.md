@@ -3,10 +3,10 @@
 Validates Markdown-snippet generation. Markdown emits one of two shapes: inline link `![text](path)` for Markdown sources, or one of two image shapes for image sources. Cursor placement is **always** forced for `.md` destinations.
 
 **Sources:**
-- `src/snippets/markdown.ts` — `buildMarkdownImportSnippet` + `buildMarkdownImageImportSnippet`
+- `src/snippets/languages/markdown.ts` — `buildMarkdownImportSnippet` + `buildMarkdownImageImportSnippet`
 - `src/path/import-type.ts` — `determineImportType`
 - `src/commands/paste-import.ts` — gating clause 4
-- `src/constants/extensions.ts` — `MARKDOWN_SUPPORTED_EXTENSIONS = .md + 5 images`
+- `src/constants/extensions.ts` — `MARKDOWN_SUPPORTED_EXTENSIONS = .md + 7 images`
 
 ## Setup
 
@@ -25,6 +25,8 @@ Validates Markdown-snippet generation. Markdown emits one of two shapes: inline 
 | `assets/icon.gif` | ✅ Image |
 | `assets/photo.jpeg` | ✅ Image |
 | `assets/photo.jpg` | ✅ Image |
+| `assets/icon.svg` | ✅ Image |
+| `assets/banner.avif` | ✅ Image |
 | `assets/thumb.webp` | ✅ Image |
 | `src/foo.ts` | ❌ `Auto Import: Cannot import .ts into .md files.` |
 | `src/sibling.js` | ❌ `Auto Import: Cannot import .js into .md files.` |
@@ -36,9 +38,9 @@ Validates Markdown-snippet generation. Markdown emits one of two shapes: inline 
 | `data/config.json` | ❌ `Auto Import: Cannot import .json into .md files.` |
 | `data/config.yaml` | ❌ `Auto Import: Cannot import .yaml into .md files.` |
 | `assets/font.woff2` | ❌ `Auto Import: Cannot import .woff2 into .md files.` |
-| `assets/icon.svg` | ❌ `Auto Import: Cannot import .svg into .md files.` |
+| `unsupported/texture.bmp` | ❌ `Auto Import: Cannot import .bmp into .md files.` |
 
-- [ ] All 17 cases match — both extensions appear verbatim in the parameterized toast.
+- [ ] All 19 cases match — both extensions appear verbatim in the parameterized toast.
 
 ## Markdown-source shape (fixed inline link)
 

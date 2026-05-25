@@ -3,9 +3,9 @@
 Validates the two boolean settings that control whether file extensions are preserved on import paths.
 
 **Sources:**
-- `src/snippets/javascript.ts`, `typescript.ts`, `_shared.ts` — consume `preserveScriptFileExtension`
-- `src/snippets/scss.ts:determineScssExtension` — consumes `preserveStylesheetFileExtension` with `.css` asymmetry
-- `src/snippets/css.ts` — `.css` always preserves on its own paths regardless of setting (it's the destination doing the preserving)
+- `src/snippets/languages/javascript.ts`, `typescript.ts`, `_react.ts` — consume `preserveScriptFileExtension`
+- `src/snippets/languages/scss.ts:determineScssExtension` — consumes `preserveStylesheetFileExtension` with `.css` asymmetry
+- `src/snippets/languages/css.ts` — `.css` always preserves on its own paths regardless of setting (it's the destination doing the preserving)
 - `src/config/settings.ts` — `getAutoImportSetting('script', 'preserveScriptFileExtension')` etc.
 
 ## Setup

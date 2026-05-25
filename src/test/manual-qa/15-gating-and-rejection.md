@@ -1,14 +1,14 @@
 # 15 — Gating & rejection
 
-Validates every rejection path: no active editor, empty/garbage clipboard, same-file, source-not-found, the eight not-supported clauses, and the seven-variant notification system.
+Validates every rejection path: no active editor, empty/garbage clipboard, same-file, source-not-found, the eleven not-supported clauses, and seven of the nine notification variants (the remaining two — `no-configurable-style` and `default-style-saved` — are covered in `18-style-pickers.md`).
 
 **Sources:**
-- `src/commands/paste-import.ts` — order-of-checks: `no-active-editor` → `empty-clipboard` → `same-file-path` → `source-not-found` → 8-clause `not-supported`
+- `src/commands/paste-import.ts` — order-of-checks: `no-active-editor` → `empty-clipboard` → `same-file-path` → `source-not-found` → 11-clause `not-supported`
 - `src/commands/copy-file-path.ts` — post-condition guard fires `no-file-to-copy` and returns `false`; `commands/copy-paste.ts` short-circuits on that return
-- `src/constants/extensions.ts` — `CROSS_IMPORT_DESTINATIONS`, `HTML/MARKDOWN/CSS/SCSS_SUPPORTED_EXTENSIONS`
+- `src/constants/extensions.ts` — `CROSS_IMPORT_DESTINATIONS`, `HTML/MARKDOWN/CSS/SCSS/VUE/SVELTE/ASTRO_SUPPORTED_EXTENSIONS`
 - `src/snippets/dispatch.ts` — empty `SnippetString('')` for unhandled destination
-- `src/snippets/_shared.ts` — empty for unhandled JSX/TSX/MDX source
-- `src/editor/notification.ts` — seven `NotificationType` variants (six warning + one info), each with verbatim text the toast must match
+- `src/snippets/_react.ts` — empty for unhandled JSX/TSX/MDX source
+- `src/editor/notification.ts` — nine `NotificationType` variants (seven warning + two info); this file covers the seven paste/copy variants
 - `src/types/notification.ts` — the string-literal union (no enum)
 
 ## Setup
@@ -24,7 +24,7 @@ The order matters because earlier checks can mask later ones. Per `paste-import.
 2. clipboard fails `trim() !== ''` AND `path.isAbsolute()` AND `path.extname() !== ''` → `'empty-clipboard'` warning
 3. `sourceFilePath.toLowerCase() === destinationFilePath.toLowerCase()` → `'same-file-path'` warning
 4. `vscode.workspace.fs.stat(source)` throws → `'source-not-found'` warning
-5. eight-clause gating fails → `'not-supported'` warning (parameterized with `sourceExt`/`destinationExt`)
+5. eleven-clause gating fails → `'not-supported'` warning (parameterized with `sourceExt`/`destinationExt`)
 6. otherwise → snippet inserted
 
 When testing each clause below, ensure the test setup *only* trips that clause — earlier clauses will short-circuit before later ones run.
@@ -60,20 +60,20 @@ After the same-file check passes, `vscode.workspace.fs.stat` verifies the source
 - [ ] **Move during edit.** Copy `src/helpers.ts`. Rename it: `mv src/helpers.ts src/helpers-renamed.ts`. Paste into `src/bar.ts`.
   **Expect:** `Auto Import: Source file no longer exists: helpers.ts.` (the basename in the toast matches the *original* — the clipboard wasn't aware of the rename). Cleanup.
 
-## The 8 not-supported gating clauses (paste-import.ts, check #5)
+## The 11 not-supported gating clauses (paste-import.ts, check #5)
 
 Each clause should be testable in isolation. Set `placement = Cursor` for predictability. The `'not-supported'` toast is parameterized — the source and destination extensions appear verbatim:
 `Auto Import: Cannot import ${sourceExt} into ${destinationExt} files.`
 
 ### Clause 1: dest not in CROSS_IMPORT_DESTINATIONS AND src ≠ dest extension
 
-`CROSS_IMPORT_DESTINATIONS = ['.html', '.md', '.css', '.scss', '.tsx', '.jsx']`. So `.js` and `.ts` are NOT cross-import.
+`CROSS_IMPORT_DESTINATIONS = ['.html', '.md', '.css', '.scss', '.tsx', '.mdx', '.jsx', '.vue', '.svelte', '.astro']`. So `.js` and `.ts` are NOT cross-import.
 
 - [ ] `.ts` source → `.js` dest: `src/foo.ts` → `src/sibling.js`. **Expect:** `Auto Import: Cannot import .ts into .js files.`
 - [ ] `.js` source → `.ts` dest: `src/sibling.js` → `src/foo.ts`. **Expect:** `Auto Import: Cannot import .js into .ts files.`
 - [ ] `.png` source → `.ts` dest: `assets/logo.png` → `src/foo.ts`. **Expect:** `Auto Import: Cannot import .png into .ts files.`
 - [ ] **Arbitrary unsupported language source.** `unsupported/Main.java` → `src/foo.ts`. **Expect:** `Auto Import: Cannot import .java into .ts files.` (`.java` is in no allowed-source list anywhere — not even a candidate.)
-- [ ] **Binary unsupported source.** `unsupported/animation.mov` → `src/foo.ts`. **Expect:** `Auto Import: Cannot import .mov into .ts files.`
+- [ ] **Binary unsupported source.** `unsupported/render.avi` → `src/foo.ts`. **Expect:** `Auto Import: Cannot import .avi into .ts files.`
 - [ ] **Negative case:** `.ts` source → `.ts` dest (different files): `src/foo.ts` → `src/bar.ts`. **Expect:** snippet inserted (no rejection — same extension).
 
 ### Clause 2: `.html → .html`
@@ -82,7 +82,7 @@ Each clause should be testable in isolation. Set `placement = Cursor` for predic
 
 ### Clause 3: source not in HTML_SUPPORTED_EXTENSIONS, dest is `.html`
 
-`HTML_SUPPORTED = .js + .css + 5 images`. Anything else rejected (each row produces a parameterized toast naming the actual source ext):
+`HTML_SUPPORTED = .js + .css + 7 images + 7 media + 1 text-track`. Anything else rejected (each row produces a parameterized toast naming the actual source ext):
 
 - [ ] `src/foo.ts` → `pages/index.html`. **Expect:** `Auto Import: Cannot import .ts into .html files.`
 - [ ] `src/widget.tsx` → `pages/index.html`. **Expect:** `Auto Import: Cannot import .tsx into .html files.`
@@ -94,7 +94,7 @@ Each clause should be testable in isolation. Set `placement = Cursor` for predic
 
 ### Clause 4: source not in MARKDOWN_SUPPORTED_EXTENSIONS, dest is `.md`
 
-`MARKDOWN_SUPPORTED = .md + 5 images`. Anything else rejected:
+`MARKDOWN_SUPPORTED = .md + 7 images`. Anything else rejected:
 
 - [ ] `src/foo.ts` → `docs/README.md`. **Expect:** `Auto Import: Cannot import .ts into .md files.`
 - [ ] `styles/main.scss` → `docs/README.md`. **Expect:** `Auto Import: Cannot import .scss into .md files.`
@@ -105,7 +105,7 @@ Each clause should be testable in isolation. Set `placement = Cursor` for predic
 
 ### Clause 5: source not in CSS_SUPPORTED_EXTENSIONS, dest is `.css`
 
-`CSS_SUPPORTED = .css + 5 images`.
+`CSS_SUPPORTED = .css + 7 images`.
 
 - [ ] `styles/main.scss` → `styles/global.css`. **Expect:** `Auto Import: Cannot import .scss into .css files.`
 - [ ] `src/foo.ts` → `styles/global.css`. **Expect:** `Auto Import: Cannot import .ts into .css files.`
@@ -115,7 +115,7 @@ Each clause should be testable in isolation. Set `placement = Cursor` for predic
 
 ### Clause 6: source not in SCSS_SUPPORTED_EXTENSIONS, dest is `.scss`
 
-`SCSS_SUPPORTED = .scss + .css + 5 images`. Notably, `.less` is NOT supported even though Sass and Less are syntactically close.
+`SCSS_SUPPORTED = .scss + .css + 7 images`. Notably, `.less` is NOT supported even though Sass and Less are syntactically close.
 
 - [ ] `src/foo.ts` → `styles/main.scss`. **Expect:** `Auto Import: Cannot import .ts into .scss files.`
 - [ ] `pages/index.html` → `styles/main.scss`. **Expect:** `Auto Import: Cannot import .html into .scss files.`
@@ -125,19 +125,43 @@ Each clause should be testable in isolation. Set `placement = Cursor` for predic
 - [ ] **Negative `.css`:** `styles/global.css` → `styles/main.scss`. **Expect:** `@import` (with `.css` always preserved).
 - [ ] **Negative image:** `assets/logo.png` → `styles/main.scss`. **Expect:** `url(...)`.
 
-### Clause 7: snippet value is `'\n'`
+### Clause 7: source not in VUE_SUPPORTED_EXTENSIONS, dest is `.vue`
 
-Catch-all for builders that explicitly return `'\n'`. Most production paths fall through to clause 8 (empty `''`) instead.
+`VUE_SUPPORTED = .vue + .ts + .js + .jsx + .tsx + .json + .yml + .yaml + 7 images + 7 media + 1 text-track`.
 
-- [ ] **Unsupported destination extension.** Create `touch foo.unknown` at the workspace root, open it. Copy `src/foo.ts`. Paste. **Expect:** `Auto Import: Cannot import .ts into .unknown files.` (dispatch's `default:` returns `''`, caught by clause 8 — but if the destination ext were ever `'\n'`, clause 7 would catch).
+- [ ] `styles/main.scss` → `src/App.vue`. **Expect:** `Auto Import: Cannot import .scss into .vue files.`
+- [ ] `pages/index.html` → `src/App.vue`. **Expect:** `Auto Import: Cannot import .html into .vue files.`
+- [ ] **Negative:** `src/foo.ts` → `src/App.vue`. **Expect:** TS import inserted.
 
-### Clause 8: snippet value is `''`
+### Clause 8: source not in SVELTE_SUPPORTED_EXTENSIONS, dest is `.svelte`
+
+`SVELTE_SUPPORTED = .svelte + .ts + .js + .jsx + .tsx + .json + .yml + .yaml + 7 images + 7 media + 1 text-track`.
+
+- [ ] `styles/main.scss` → `src/App.svelte`. **Expect:** `Auto Import: Cannot import .scss into .svelte files.`
+- [ ] `pages/index.html` → `src/App.svelte`. **Expect:** `Auto Import: Cannot import .html into .svelte files.`
+- [ ] **Negative:** `src/foo.ts` → `src/App.svelte`. **Expect:** TS import inserted.
+
+### Clause 9: source not in ASTRO_SUPPORTED_EXTENSIONS, dest is `.astro`
+
+`ASTRO_SUPPORTED = .astro + .ts + .js + .jsx + .tsx + .vue + .svelte + .json + .yml + .yaml + .md + .mdx + 7 images + 7 media + 1 text-track`.
+
+- [ ] `styles/main.scss` → `src/App.astro`. **Expect:** `Auto Import: Cannot import .scss into .astro files.`
+- [ ] `styles/global.css` → `src/App.astro`. **Expect:** `Auto Import: Cannot import .css into .astro files.`
+- [ ] **Negative:** `src/foo.ts` → `src/App.astro`. **Expect:** TS import inserted.
+
+### Clause 10: snippet value is `'\n'`
+
+Catch-all for builders that explicitly return `'\n'`. Most production paths fall through to clause 11 (empty `''`) instead.
+
+- [ ] **Unsupported destination extension.** Create `touch foo.unknown` at the workspace root, open it. Copy `src/foo.ts`. Paste. **Expect:** `Auto Import: Cannot import .ts into .unknown files.` (dispatch's `default:` returns `''`, caught by clause 11 — but if the destination ext were ever `'\n'`, clause 10 would catch).
+
+### Clause 11: snippet value is `''`
 
 Empty snippet. Most direct path: a destination not handled by dispatch.
 
 - [ ] **Custom unsupported extension.** `touch foo.unknown` at the workspace root, open it. Copy `src/foo.ts`. Paste. **Expect:** `Auto Import: Cannot import .ts into .unknown files.`
 
-- [ ] **JSX/TSX/MDX with unsupported source.** `assets/icon.svg` → `src/badge.jsx`. **Expect:** `Auto Import: Cannot import .svg into .jsx files.` (`.svg` isn't in primary or fallback or the hardcoded switch → `_shared.ts` `default:` returns empty.)
+- [ ] **JSX/TSX/MDX with unsupported source.** `unsupported/texture.bmp` → `src/badge.jsx`. **Expect:** `Auto Import: Cannot import .bmp into .jsx files.` (`.bmp` isn't in primary or fallback or the hardcoded switch → `_react.ts` `default:` returns empty.)
 
 - [ ] **TSX with .jsx source.** `src/badge.jsx` → `src/widget.tsx`. **Expect:** `Auto Import: Cannot import .jsx into .tsx files.` (`.jsx` not in primary `[.ts,.tsx]` or fallback `[.js]`.)
 
@@ -171,9 +195,9 @@ The first check in `paste-import.ts:53-56`. Was previously a silent return; now 
 - [ ] **Welcome page focused (not an editor).** Quit and relaunch the Extension Development Host so the Welcome page is visible. Without opening any file, run `Auto Import: Paste as Import` from the Palette.
   **Expect:** same `'no-active-editor'` toast.
 
-## Notification messages — exact text (all 7 variants)
+## Notification messages — exact text (7 of 9 variants)
 
-Every toast must match `src/editor/notification.ts:30-52` byte-for-byte. All are prefixed with `Auto Import:` (no more `Auto Import Relative Path:` prefix anywhere).
+Every toast must match `src/editor/notification.ts:17-54` byte-for-byte. All are prefixed with `Auto Import:` (no more `Auto Import Relative Path:` prefix anywhere). The remaining 2 variants (`no-configurable-style` and `default-style-saved`) are covered in `18-style-pickers.md`.
 
 | Type | Rendered text | Toast level |
 |------|---------------|-------------|
@@ -186,7 +210,7 @@ Every toast must match `src/editor/notification.ts:30-52` byte-for-byte. All are
 | `copy-success` | `Auto Import: Copied path — ${basename}` | info |
 
 - [ ] All six warning toasts render as warning (yellow/orange icon), not error (red).
-- [ ] `copy-success` is the only **info** toast (blue/neutral icon, no warning glyph).
+- [ ] `copy-success` is the only **info** toast in this set (blue/neutral icon, no warning glyph).
 - [ ] `not-supported`, `source-not-found`, and `copy-success` interpolate their payload — verify the dynamic value (e.g., `.png`, `foo.ts`) appears verbatim in the rendered toast.
 
 ## `notifications.clearAll` clears prior warnings on the next command
@@ -199,7 +223,7 @@ Every toast must match `src/editor/notification.ts:30-52` byte-for-byte. All are
 - [ ] Trigger an `'empty-clipboard'` warning. Don't dismiss. Run Paste again with a valid clipboard.
   **Expect:** prior warning dismissed; new snippet inserted (no second toast on success — the only success notification is for Copy).
 
-## Notification flow coverage — provoke each of the 7 variants
+## Notification flow coverage — provoke each of the 7 paste/copy variants
 
 A single end-to-end pass that fires every notification at least once. Tick when each variant has been observed with the exact text from the table above.
 
@@ -231,11 +255,14 @@ rm -f foo.unknown
 - [ ] Clause 4: MD supported sources (6 cases)
 - [ ] Clause 5: CSS supported sources (5 cases)
 - [ ] Clause 6: SCSS supported sources (7 cases incl. `.less` close-but-rejected)
-- [ ] Clause 7/8: empty/newline snippet (3 cases)
+- [ ] Clause 7: Vue gating (3 cases)
+- [ ] Clause 8: Svelte gating (3 cases)
+- [ ] Clause 9: Astro gating (3 cases)
+- [ ] Clause 10/11: empty/newline snippet (3 cases)
 - [ ] Garbage clipboard fires `empty-clipboard` (4 cases)
 - [ ] No-active-editor fires `no-active-editor` toast (2 cases)
-- [ ] All 7 notification texts exact (warning vs info levels correct)
+- [ ] All 7 paste/copy notification texts exact (warning vs info levels correct)
 - [ ] clearAll behavior (2 cases)
-- [ ] Notification flow coverage — every variant observed (7 cases)
+- [ ] Notification flow coverage — every paste/copy variant observed (7 cases)
 
 Tester / date: ___________________

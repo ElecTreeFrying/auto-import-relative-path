@@ -3,7 +3,7 @@
 Validates CSS-snippet generation. CSS supports two `@import` shapes plus the `url('…')` image shape via `determineImportType`.
 
 **Sources:**
-- `src/snippets/css.ts` — snippet builder + `buildCssImageImportSnippet`
+- `src/snippets/languages/css.ts` — snippet builder + `buildCssImageImportSnippet`
 - `src/path/import-type.ts` — `determineImportType` routes images vs stylesheets
 - `src/commands/paste-import.ts` — gating clause 5 (CSS_SUPPORTED_EXTENSIONS)
 - `src/constants/extensions.ts` — `CSS_SUPPORTED_EXTENSIONS = ['.css', ...IMAGE_FILE_EXTENSIONS]`
@@ -17,7 +17,7 @@ Validates CSS-snippet generation. CSS supports two `@import` shapes plus the `ur
 
 ## Cross-import gating matrix
 
-`.css` is in `CROSS_IMPORT_DESTINATIONS`; allowed sources = `CSS_SUPPORTED_EXTENSIONS = .css + 5 images`.
+`.css` is in `CROSS_IMPORT_DESTINATIONS`; allowed sources = `CSS_SUPPORTED_EXTENSIONS = .css + 7 images`.
 
 | Source | Expected |
 |--------|----------|
@@ -26,6 +26,8 @@ Validates CSS-snippet generation. CSS supports two `@import` shapes plus the `ur
 | `assets/icon.gif` | ✅ `url(...)` |
 | `assets/photo.jpeg` | ✅ `url(...)` |
 | `assets/photo.jpg` | ✅ `url(...)` |
+| `assets/icon.svg` | ✅ `url(...)` |
+| `assets/banner.avif` | ✅ `url(...)` |
 | `assets/thumb.webp` | ✅ `url(...)` |
 | `styles/main.scss` | ❌ `Auto Import: Cannot import .scss into .css files.` (`.scss` not in CSS_SUPPORTED) |
 | `src/foo.ts` | ❌ `Auto Import: Cannot import .ts into .css files.` |
@@ -34,9 +36,9 @@ Validates CSS-snippet generation. CSS supports two `@import` shapes plus the `ur
 | `docs/README.md` | ❌ `Auto Import: Cannot import .md into .css files.` |
 | `data/config.json` | ❌ `Auto Import: Cannot import .json into .css files.` |
 | `assets/font.woff2` | ❌ `Auto Import: Cannot import .woff2 into .css files.` |
-| `assets/icon.svg` | ❌ `Auto Import: Cannot import .svg into .css files.` |
+| `unsupported/texture.bmp` | ❌ `Auto Import: Cannot import .bmp into .css files.` |
 
-- [ ] All 14 cases match — both extensions appear verbatim in the parameterized toast.
+- [ ] All 16 cases match — both extensions appear verbatim in the parameterized toast.
 
 ## Style options — both CSS shapes
 
