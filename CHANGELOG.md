@@ -1,60 +1,58 @@
 # Changelog
 
-## [0.7.0] - 2026-05-11
+## [1.0.0] - 2026-05-25
+
+### Breaking Changes
+- **Minimum VS Code version raised to `^1.118.0`.** Older VS Code installations will no longer load the extension.
+- **TypeScript import styles reshuffled.** The "aliased default" shape (`import { $1 as $2 } from '…'`) has been removed. Three new shapes added: type-only import, mixed value + type import (TS 4.5+), and dynamic `await import()`. Net change: 5 → 7 entries — **style indices have shifted**; users with a non-default `typescriptImportStyle` should re-select their preferred shape in Settings.
+- **JavaScript import styles reshuffled.** Four legacy shapes removed: `import { default as name }`, `var = require()`, `var = import()`, `const = import()`. Two new shapes added: mixed default + named import, and `const = await import()`. Net change: 9 → 7 entries — **style indices have shifted**; users with a non-default `javascriptImportStyle` should re-select.
+- **SCSS default flipped from `@import` to `@use`.** The `@import url(…)` shape has been dropped entirely. Two new shapes added: `@use '…' as *` and `@forward '…'`. Users who relied on `@import` as the default should update their `scssImportStyle` setting.
+- **HTML script default flipped to modern minimal.** `<script type="text/javascript" src="…"></script>` → `<script src="…"></script>`. Three new shapes added: `defer`, `type="module"`, and `async`. Users who need the legacy `type` attribute should select it explicitly.
+- **Markdown image default reordered.** Two new shapes added (bare inline, HTML `<img>` embed) and the default position rotated. Users with a non-default `markdownImageImportStyle` should verify their selection.
+- **Markdown link default changed from image syntax to link syntax.** `markdownImportStyle` now defaults to `[text](path)` instead of `![text](path)`. Image embeds belong under the dedicated `markdownImageImportStyle` setting.
 
 ### Added
-- **Specific, actionable error toasts.** Two generic warnings (`"Same file path"`, `"Not supported"`) are now **five distinct messages** that tell you what to do next instead of leaving you to guess:
-  - *"A file cannot import itself."* — source equals destination.
-  - *"This file type can't be imported into the current file."* — source/destination pair rejected by gating.
-  - *"Open a file to paste an import."* — paste invoked without an active editor.
-  - *"No file selected to copy."* — copy invoked without a focused file.
-  - *"Clipboard does not contain a file path. Use Auto Import: Copy File Path on a source file first."* — paste invoked before any path was copied.
-- **Pick the import shape on the fly with two new commands.** The command surface grows from 3 to 5; the new entries focus on style choice without round-tripping through Settings:
-  - **`Auto Import: Paste as Import (Pick Style)`** (`extension.pasteImportWithStyle`) — opens a QuickPick of every applicable import shape for the current source → destination pair and inserts the one you choose. Reachable from the Command Palette and from the new **"Paste with Style"** button on the *Copied path — &lt;basename&gt;* toast (so the picker is one click away from copy). Single-shape destinations (HTML, Markdown text, CSS image, SCSS image, JSX/TSX non-script source) skip the picker and insert directly — no UI noise where there is only one valid shape.
-  - **`Auto Import: Set Default Import Style`** (`extension.setDefaultImportStyle`) — same picker, but persists your choice to **User (Global) settings** instead of inserting a snippet. The currently-selected default is hoisted to the top of the list and tagged with a `$(check) Current default` icon, so you always know which shape is active before you change it.
-- **Three new toast actions.** Existing toasts gain actionable buttons so common follow-ups are one click away:
-  - **"Paste with Style"** on the *Copied path — &lt;basename&gt;* toast → invokes `Auto Import: Paste as Import (Pick Style)`.
-  - **"Paste Now"** on the same toast → invokes `Auto Import: Paste as Import` for users who would rather click than reach for the keybinding.
-  - **"View Supported Files"** on the *can't be imported* toast → opens the README's supported source/destination pairs section on GitHub.
-- **Two new style-flow toasts.** The `NotificationType` union grows from 7 to 9 to cover the Set Default Import Style flow:
-  - *"Auto Import: No configurable style for `<sourceExt>` → `<destinationExt>` files."* — raised when the destination has only a single hardcoded shape (HTML, Markdown text, CSS image, SCSS image, JSX/TSX non-script source) and there is nothing for the user to pick.
-  - *"Auto Import: Default style saved — `<style>`."* — info toast confirming the new default landed in User settings.
-- **Picker labels render as basename.** QuickPick rows now show a tight basename identifier (`widget`, `utils`) instead of the full relative path — easier to scan when picking among 5+ shapes. The inserted snippet is unchanged and still uses the full relative path (e.g., `import { Widget } from '../../components/widget'`).
-- **`setAutoImportSetting(namespace, key, value, target?)` writer** in `src/config/settings.ts` — symmetric counterpart to the existing `getAutoImportSetting` reader, used by `Auto Import: Set Default Import Style` to persist the chosen shape. Defaults to `vscode.ConfigurationTarget.Global` (User scope) since every extension setting is global by design.
-- **Style metadata on `ImportSnippetVariant`.** Variants derived from a `*_IMPORT_OPTIONS` table now carry a `setting: { namespace, key, value }` reference (byte-exact against `package.json:enum`) so the Set-Default picker can persist the user's choice without re-deriving the destination → settings-table mapping at write time.
-- **Five-command registration test** in `src/test/extension.test.ts` — iterates `vscode.commands.getCommands(true)` and asserts all five commands are registered, guarding against accidental registration drift after refactors.
-- **Pre-built manual-QA fixture workspace** at `src/test/manual-qa-workspace/` — ~158 source/destination fixture files covering every supported pair, gating-rejection cases, Angular suffix conventions, and edge cases (whitespace/Unicode/deep paths). Opened in the Extension Development Host during manual-QA walks; intentionally excluded from the Mocha runner so it remains a static paste-source/destination fixture rather than an automated suite.
-- **`typescript-eslint`** unified package (replaces the separate `@typescript-eslint/parser` + `@typescript-eslint/eslint-plugin`).
-- **`npm-run-all`** to power the parallel `watch:*` scripts.
+- **Four new destination languages.** Vue (`.vue`), Svelte (`.svelte`), Astro (`.astro`), and MDX (`.mdx`) are now supported as import destinations — bringing the total to 12 destination file types.
+- **Media and document source types.** Video (`.mp4`, `.webm`, `.mov`), audio (`.mp3`, `.ogg`, `.wav`, `.m4a`), text-track (`.vtt`), and additional asset types (`.svg`, `.avif`, `.pdf`) can now be imported into JSX, TSX, MDX, and HTML destinations — bringing the total to 35 supported file extensions across 15 categories.
+- **Two new commands.**
+  - **Auto Import: Paste as Import (Pick Style)** — opens a QuickPick listing every applicable import shape for the current source/destination pair. Reachable from the Command Palette and from the "Paste with Style" button on the copy-success toast. Single-shape destinations insert directly without showing the picker.
+  - **Auto Import: Set Default Import Style** — same picker, but persists the chosen shape to User (Global) settings instead of inserting a snippet. The current default is marked with a checkmark icon and appears first in the list.
+- **Smart placement for component files.** Astro imports land inside `---` frontmatter fences. Vue and Svelte imports land inside `<script>` blocks (prefers `<script setup>` in Vue). CSS/SCSS `url()` values insert inline at the exact cursor position. All modes respect the Top/Bottom/Cursor placement setting. Indentation automatically matches the surrounding block.
+- **Actionable error and confirmation toasts.** Two generic warnings ("Same file path", "Not supported") replaced by five specific messages: *"A file cannot import itself"*, *"This file type can't be imported into the current file"*, *"Open a file to paste an import"*, *"No file selected to copy"*, and *"Clipboard does not contain a file path"*. Three toast action buttons added: "Paste with Style", "Paste Now", and "View Supported Files". Two new confirmation toasts for the Set Default flow: *"No configurable style"* warning and *"Default style saved"* confirmation. Plus a *"No file extension"* warning when copying extensionless files.
+- **Class-name detection for TypeScript.** The named-import shape (`import { Name } from '…'`) now auto-fills the identifier from the source file's `export class Name` declaration when available. Falls back to Angular-convention PascalCase derivation (`.component`, `.directive`, `.pipe`, `.service`, `.module` suffixes), then to a `$1` tab-stop placeholder.
+- **New import styles per language.** TypeScript: `import type { }`, mixed value + type, dynamic `await import()`. JavaScript: mixed default + named, `await import()`. SCSS: `@use '…' as *`, `@forward '…'`. HTML script: `defer`, `type="module"`, `async`. HTML image: lazy-loading with `loading="lazy"`, CLS-safe dimensions with `width`/`height` attributes.
+- **Comprehensive test coverage.** 15+ automated test suites covering path math, import-type classification, extension gating tables, style-table integrity, class-name detection, and per-language snippet builders for every supported destination (JavaScript, TypeScript, CSS, SCSS, HTML, Markdown, JSX, TSX, framework components). Five-command registration guard test. Integration demo workspace with fixture files for every supported pair.
+- **Toolchain modernization.** Webpack replaced by esbuild (~11 KB production bundle). Unified `typescript-eslint` package replaces the separate parser and plugin. `npm-run-all` powers parallel `watch:tsc` + `watch:esbuild` scripts. Build pipeline: `compile` runs `check-types && lint && esbuild`; `watch` runs both watchers concurrently.
 
 ### Changed
-- **Self-describing command palette titles.** Each command now says what it does at a glance:
-  - `Auto Import: Paste` → **`Auto Import: Paste as Import`**
-  - `Auto Import: Copy` → **`Auto Import: Copy File Path`**
-  - `Auto Import: Auto` → **`Auto Import: Insert Import from Selected File`**
-- **Settings panel rewritten end-to-end.** Every setting under *Auto Import Relative Path* now has a precise top-level description **plus per-choice `enumDescriptions`** — pick the right import shape without leaving the Settings UI. Notables: the TypeScript named-import shape documents the Angular auto-fill behavior (`.component`, `.directive`, `.pipe`, `.service`, `.module` files get a PascalCase identifier auto-derived from the basename), and SCSS `@use` options are labelled *"modern (recommended)"* vs *"legacy"* so newcomers know which one to pick.
-- **TypeScript "aliased default" shape simplified.** `import { $1 as $2 } from '…'` → **`import { default as $1 } from '…'`**. One tab stop instead of two, and the snippet now reflects the actual ES-module semantics for aliasing the default export.
-- **Markdown link default is now a link.** `markdownImportStyle` defaults to **`[text](_relativePath_)`** (was `![text](…)` — image syntax). Image embeds remain available via the dedicated `markdownImageImportStyle` setting where they belong.
-- **Copy toast wording.** `Copied <basename>` → **`Copied path — <basename>`** so it's clear the *path* was copied, not the file.
-- **Marketplace description and keywords overhauled.** New one-line value prop calls out the supported targets explicitly (JS, TS, JSX, TSX, CSS, SCSS, HTML, Markdown), Angular-aware naming, SCSS partial support, and 20+ configurable styles. Keywords expanded to cover JSX/TSX, SCSS/Sass, ESM, CommonJS, React, Angular, snippet, and productivity.
-- **Documentation overhauled.** `README.md`, `DEMO.md`, and `SUPPORT.md` rewritten end-to-end — README has a quick-start path, DEMO is a structured *Demo Gallery* organized by workflow → placement mode → per-language output, and SUPPORT walks the full triage path.
-- **Toolchain modernization.** Bumped `engines.vscode` to `^1.118.0`, refreshed scaffold configs (`eslint.config.mjs`, `.vscode/tasks.json`, `.vscode/extensions.json`, `.vscodeignore`, `esbuild.js`) to match the latest `yo code` conventions, and updated `devDependencies`.
-- **Bundler migration.** Replaced webpack with esbuild (`esbuild.js` replaces `webpack.config.js`). Production bundle is now **~11 KB** — down from ~14 KB earlier in this release cycle, a roughly 20% reduction in shipped JS that translates to a slightly faster cold activation.
-- **Built for AI-assisted maintenance.** The source tree is layered into seven single-responsibility directories with comprehensive TSDoc on every module, function, type, interface property, constant, and union member — every intent and invariant is documented inline and surfaces in IntelliSense. Future updates, issue triage, and contributor onboarding are first-class AI workflows: an LLM (or a human) can read any file in isolation and understand its role, its consumers, and the invariants it must preserve.
-- **`AUTO_IMPORT_CONFIG` internal restructure.** The internal config map went from `{ namespace: { settingKey: propertyName } }` to `{ namespace: { namespace, settings: { settingKey: propertyName } } }` so the namespace string can live alongside the alias map without colliding. Both `script` and `stylesheet` namespaces now expose the same alias `'preserve'` — the namespace disambiguates which `preserve*FileExtension` setting it resolves to. **No `package.json` setting names changed** — public configuration paths (`auto-import.importStatement.script.*`, `auto-import.importStatement.styleSheet.*`) remain identical, so existing user settings carry over without migration.
-- **Build pipeline.** Adopted the modern scaffold's `compile`/`watch`/`package` scripts — `compile` now runs `check-types && lint && esbuild` in series; `watch` runs parallel `watch:tsc` + `watch:esbuild` via `npm-run-all`.
-- **`@types/node` pinning.** Switched from wildcard `22.x` to explicit `^22.19.18` to match the rest of the deps' caret-+-full-version style.
-- **`tsconfig.json`.** Added defensive `compilerOptions.types: ["node", "mocha"]` to make `@types/node` and `@types/mocha` ambient inclusion explicit (prevents intermittent VS Code TS Server phantom `TS2591` errors after a `node_modules` rebuild).
+- **Command palette titles renamed for clarity.** `Auto Import: Paste` → *Paste as Import*. `Auto Import: Copy` → *Copy File Path*. `Auto Import: Auto` → *Insert Import from Selected File*.
+- **Copy toast wording.** `Copied <basename>` → `Copied path — <basename>` to clarify that the *path* was copied, not the file contents.
+- **TypeScript aliased-default simplified.** `import { $1 as $2 } from '…'` → `import { default as $1 } from '…'` — one tab stop instead of two, and the snippet now reflects correct ES-module semantics.
+- **Settings panel rewritten.** Every setting has a precise top-level description plus per-choice `enumDescriptions`. TypeScript documents the Angular auto-fill behavior; SCSS labels `@use` as "modern (recommended)" and `@import` as "legacy".
+- **Marketplace metadata overhauled.** Description, keywords, and categories updated for the full 12-destination, 35-extension, 5-command scope.
+- **Source layout restructured.** Seven single-responsibility directories (`commands/`, `editor/`, `snippets/`, `path/`, `config/`, `constants/`, `types/`) with strict layered dependency direction.
+- **Documentation rewritten.** README.md restructured for quick-start onboarding with framework badges and inline demo; SUPPORT.md rewritten for the expanded command and language surface.
 
 ### Fixed
-- **Angular auto-naming with `preserveScriptFileExtension: true`.** `app-root.component.ts` with the preservation flag on previously produced `{ AppRootComponentTs }` because the `.ts` was folded into the PascalCase conversion. The script extension is now stripped before naming, so the identifier is always `{ AppRootComponent }` regardless of the preservation setting.
+- **Angular auto-naming with `preserveScriptFileExtension: true`.** `app-root.component.ts` no longer produces `{ AppRootComponentTs }` — the script extension is stripped before PascalCase derivation.
+- **CSS Modules in JSX/TSX/MDX.** `.module.css` and `.module.scss` sources now emit `import styles from '…'` (default import) instead of a named import.
+- **Markdown-to-Markdown links.** `.md → .md` imports now use link syntax `[text](path)` instead of image syntax.
+- **SCSS `@use … as` shape.** Now correctly emits `@use '…' as ${1:*};`.
+- **JS/TS default-as shape.** Now correctly emits `import { default as $1 } from '…'`.
+- **JSX/TSX non-script placeholders.** Asset imports use descriptive `${1:name}` instead of bare `$1`.
+- **Markdown image hover-text.** The title string now includes a tab-stop placeholder.
+- **Bottom placement indicator scan.** Comment lines are skipped when scanning for the last import statement.
+- **Inline `url()` insertion.** Inserts at the exact cursor position (line and column) with no trailing newline.
+- **Placement default fallback.** Now aligns with the `package.json` default value instead of silently falling to a different position.
 
 ### Removed
-- `vsc-extension-quickstart.md` — `yo code` scaffold artifact, not relevant to users of the published extension.
-- `webpack`, `webpack-cli`, `ts-loader` — no longer needed after the esbuild migration.
-- `@typescript-eslint/parser`, `@typescript-eslint/eslint-plugin` — superseded by the unified `typescript-eslint` package.
+- `vsc-extension-quickstart.md` — scaffold artifact, not relevant to published extension users.
+- `webpack`, `webpack-cli`, `ts-loader` — replaced by esbuild.
+- `@typescript-eslint/parser`, `@typescript-eslint/eslint-plugin` — replaced by unified `typescript-eslint`.
 - `mocha` (direct devDep) — now pulled transitively via `@vscode/test-cli`.
 - `vscode-test` — legacy duplicate of `@vscode/test-cli`.
+- Six legacy import shapes removed from style pickers: 4 JavaScript shapes (`{ default as name }`, `var = require()`, `var = import()`, `const = import()`), 1 TypeScript shape (`{ $1 as $2 }`), and 1 SCSS shape (`@import url(…)`).
+- `DEMO.md` — demo content consolidated into the README.
 
 ## [0.6.1] - 2025-03-28
 
