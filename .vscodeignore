@@ -13,3 +13,7 @@ IMPORT-STATEMENTS-AUDIT.md
 **/*.map
 **/*.ts
 **/.vscode-test.*
+qa/**
+CLAUDE.md
+process/**
+.claude/**
