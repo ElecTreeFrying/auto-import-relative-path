@@ -35,8 +35,7 @@ async function shouldRepositionCursor(): Promise<boolean> {
   const { sourceFileExt, destinationFileExt } = await getFilePathInfo();
 
   return (
-    (sourceFileExt !== '.css' && destinationFileExt === '.css') ||
-    (sourceFileExt !== '.scss' && destinationFileExt === '.scss') ||
+    (!STYLESHEET_FILE_EXTENSIONS.includes(sourceFileExt) && STYLESHEET_FILE_EXTENSIONS.includes(destinationFileExt)) ||
     destinationFileExt === '.html' ||
     destinationFileExt === '.md'
   );
