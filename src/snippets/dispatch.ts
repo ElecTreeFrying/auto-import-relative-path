@@ -11,9 +11,7 @@ import * as css from './languages/css';
 import * as scss from './languages/scss';
 import * as html from './languages/html';
 import * as markdown from './languages/markdown';
-import * as vue from './languages/vue';
-import * as svelte from './languages/svelte';
-import * as astro from './languages/astro';
+import * as frameworkComponent from './languages/framework-component';
 
 export async function buildImportSnippet(): Promise<vscode.SnippetString> {
   const { destinationFilePath } = await getFilePathInfo();
@@ -37,11 +35,9 @@ export async function buildImportSnippet(): Promise<vscode.SnippetString> {
     case '.md':
       return markdown.buildSnippet();
     case '.vue':
-      return vue.buildSnippet();
     case '.svelte':
-      return svelte.buildSnippet();
     case '.astro':
-      return astro.buildSnippet();
+      return frameworkComponent.buildSnippet();
     default:
       return new vscode.SnippetString('');
   }
