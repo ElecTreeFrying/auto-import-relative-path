@@ -1,7 +1,7 @@
 import typescriptEslint from "typescript-eslint";
 
 export default [{
-    ignores: ["src/test/manual-qa-workspace/**"],
+    ignores: ["qa/workspace/**", "qa/demo-workspace/**"],
 }, {
     files: ["**/*.ts"],
 }, {
