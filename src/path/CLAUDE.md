@@ -46,4 +46,4 @@ Maps file extension to one of seven buckets, with two `null` returns:
 
 The `'image'` branch is **not** a guarantee that the source is image-like — it's a default. The runtime gating in `commands/paste-import.ts` is what makes that safe.
 
-Consumers: `snippets/{css,scss,html,markdown}.ts`. JSX/TSX/MDX don't consult this — they branch on the raw source extension via `_shared.ts`.
+Consumers: `snippets/languages/{css,scss,html,markdown}.ts` and `snippets/variants.ts`. JSX/TSX/MDX don't consult this — they branch on the raw source extension via `_react.ts`.

@@ -36,7 +36,7 @@ If a checkbox fails, do not proceed past that file. Reproduce the failure, captu
 | 10 | `10-paste-into-html.md` | `<script>` / `<img>` / `<link>` |
 | 11 | `11-paste-into-markdown.md` | Markdown link + image (inline & reference) |
 | 12 | `12-auto-command.md` | Sequential copy+paste; verifies Bug #4 fix |
-| 13 | `13-settings-placement.md` | Top/Bottom/Cursor + 3 overrides + insertion column |
+| 13 | `13-settings-placement.md` | Top/Bottom/Cursor + 4 forced-cursor overrides + Astro frontmatter + insertion column |
 | 14 | `14-settings-preserve-extension.md` | Both preserve flags + SCSS `.css` asymmetry |
 | 15 | `15-gating-and-rejection.md` | All 11 gating clauses isolated |
 | 16 | `16-path-computation.md` | `./`, `../`, partials, spaces/unicode |
@@ -61,7 +61,7 @@ The checklists below name files relative to that workspace root: when 04 says "c
 | `unsupported/Main.java` | 15 | Clause 1 — arbitrary unsupported-extension source |
 | `unsupported/styles.less` | 15 | Clause 6 — close-to-supported but not in `SCSS_SUPPORTED_EXTENSIONS` |
 | `unsupported/animation.mov`, `archive.zip` | 15 | Binary unsupported sources |
-| `assets/icon.svg` | 06, 07, 15 | Unsupported in JSX/TSX/MDX `_shared.ts:default:` branch |
+| `assets/icon.svg` | 06, 07, 15 | Unsupported in JSX/TSX/MDX `_react.ts:default:` branch |
 | `whitespace-only.ts`, `single-char.ts` | 17 | Degenerate file destinations |
 | `empty-file.ts`, `comments-only.ts` | 13, 17 | Bottom-placement edge cases |
 | `unicode-paths/日本語.ts`, `unicode-paths/café-menu.tsx` | 16 | Unicode in path computation |

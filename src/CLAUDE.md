@@ -29,7 +29,7 @@ extension.ts                 # entry: activate/deactivate
 
 - **Place by responsibility, not by file type.** Pure functions go in `path/`; vscode-API helpers in `editor/`; snippet builders in `snippets/`. Don't create a `utils/` directory.
 - **Naming.** Files use noun-only kebab-case (`relative-path.ts`, `file-path-info.ts`). Don't reintroduce suffixes like `.command.ts`, `.util.ts`, `-fn.ts`, `.types.ts`, `.enums.ts`, `.interface.ts` — the parent directory carries the kind signal.
-- **Internal modules.** A leading underscore (`_styles.ts`, `_shared.ts`) marks a directory-internal module; importing one from outside its directory is a smell.
+- **Internal modules.** A leading underscore (`_styles.ts`, `_react.ts`) marks a directory-internal module; importing one from outside its directory is a smell.
 - **The only barrel.** `commands/index.ts` is the only re-export-only file. Other directories use direct imports so dependency direction stays visible at every call site.
 - **TSDoc invariant.** Every module, exported function, type, interface property, and constant has TSDoc. New files must follow.
 - **No `vscode` import in `path/` or `types/`.** Those layers stay Node-testable.

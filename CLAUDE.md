@@ -63,7 +63,7 @@ src/
 └── types/                      # cross-cutting type unions
 ```
 
-Allowed dependency direction: `commands → editor, snippets, constants, types`; `snippets → config, path, editor, types, constants`; `editor → config, path, constants, types`; `path → types`. Lower layers never import from higher layers. Internal-only sibling modules in `snippets/` are prefixed with `_` (`_styles.ts`, `_shared.ts`).
+Allowed dependency direction: `commands → editor, snippets, constants, types`; `snippets → config, path, editor, types, constants`; `editor → config, path, constants, types`; `path → types`. Lower layers never import from higher layers. Internal-only sibling modules in `snippets/` are prefixed with `_` (`_styles.ts`, `_react.ts`).
 
 ### End-to-end flow
 
@@ -73,7 +73,7 @@ The clipboard is the data channel between "copy" and "paste". The flow is:
 2. **Paste** (`src/commands/paste-import.ts`) — reads the clipboard as the *source* path, takes the active editor's file as the *destination*, runs `getFilePathInfo()` and `buildImportSnippet()` together via `Promise.all` (independent reads — running concurrently halves the latency), gates on supported extension pairs, and inserts the resulting snippet via `insertImportSnippet`. Two distinct user-visible rejections: source path equals destination path (case-insensitive) → `'same-file-path'` toast; bad source/destination pair *or* empty snippet → `'not-supported'` toast. Every failure path returns void; nothing throws.
 3. **Auto** (`src/commands/copy-paste.ts`) — sequential `await` of the two above.
 
-`getFilePathInfo()` in `src/editor/file-path-info.ts` is the single source of truth for `{ relativePath, sourceFilePath, destinationFilePath, sourceFileExt, destinationFileExt }`. It is called from many sites (every per-language `buildSnippet()`, `_shared.ts:buildReactImport`, `dispatch.ts`, `insert-snippet.ts:shouldRepositionCursor`); each call re-reads the clipboard, so don't introduce branches that mutate the clipboard between reads — `paste-import.ts`'s `Promise.all` runs two such reads in parallel and relies on both seeing the same value. The function dereferences `editor.document.uri.fsPath` unconditionally and will throw if there is no active editor; every command that starts the calling chain (`paste-import.ts`, `paste-import-with-style.ts`, `set-default-import-style.ts`) is responsible for that check.
+`getFilePathInfo()` in `src/editor/file-path-info.ts` is the single source of truth for `{ relativePath, sourceFilePath, destinationFilePath, sourceFileExt, destinationFileExt }`. It is called from many sites (every per-language `buildSnippet()`, `_react.ts:buildReactImport`, `dispatch.ts`, `insert-snippet.ts:shouldRepositionCursor`); each call re-reads the clipboard, so don't introduce branches that mutate the clipboard between reads — `paste-import.ts`'s `Promise.all` runs two such reads in parallel and relies on both seeing the same value. The function dereferences `editor.document.uri.fsPath` unconditionally and will throw if there is no active editor; every command that starts the calling chain (`paste-import.ts`, `paste-import-with-style.ts`, `set-default-import-style.ts`) is responsible for that check.
 
 `computeRelative(source, destination)` in `src/path/relative.ts` is pure (no `vscode` import — Node-testable): it returns a Unix-style path with the extension stripped. The `./` prefix is added when the two files are in the *same directory* (case-insensitive comparison of `path.parse(...).dir` for macOS/Windows) **or** when `path.relative` produced a result that doesn't already start with `.` — this catches edge cases where absolute → relative would otherwise emit `'foo'` instead of `'./foo'`. The prefix rule is regression-tested per CHANGELOG `0.6.1`.
 
@@ -82,13 +82,15 @@ The clipboard is the data channel between "copy" and "paste". The flow is:
 ```
 buildImportSnippet()                          ← src/snippets/dispatch.ts
   switch (destinationFileExt)
-    → src/snippets/languages/{javascript,typescript,jsx,tsx,mdx,css,scss,html,markdown,vue,svelte,astro}.ts
+    → src/snippets/languages/{javascript,typescript,jsx,tsx,css,scss,html,markdown,framework-component}.ts
         each module's buildSnippet() reads file-path info + user setting
         → resolveStyleIndex(<TABLE>, configValue) from src/snippets/_styles.ts
           switch on the matched ImportStyle.value to emit the SnippetString
 ```
 
-JSX, TSX, and MDX share their algorithm via `buildReactImport` in `src/snippets/_shared.ts`; the only difference is which script-snippet builder is "primary" (JS for JSX; TS for TSX and MDX, with JS as fallback for `.js` sources in both). Non-script sources fall through to a hardcoded `switch` inside `buildReactImport` with four groups: CSS Modules (`.module.css`/`.module.scss`) emit `import ${1:styles} from '<path>';`; image/data/markup/component (`.gif`/`.jpeg`/`.jpg`/`.png`/`.svg`/`.avif`/`.webp`/`.json`/`.html`/`.yml`/`.yaml`/`.md`/`.mdx`/`.pdf`/`.vue`/`.svelte`/`.astro`) emit `import ${1:name} from '<path>';`; media/text-track (`.mp4`/`.webm`/`.mov`/`.mp3`/`.ogg`/`.wav`/`.m4a`/`.vtt`) emit `import ${1:url} from '<path>';`; fonts and stylesheets (`.woff`/`.woff2`/`.ttf`/`.eot`/`.css`/`.scss`) emit a side-effect `import '<path>';`. Reaching the `default:` branch means an unsupported extension slipped through gating in `paste-import.ts`.
+`.mdx` destinations fall through to `tsx.ts` (identical import semantics). `.vue`, `.svelte`, and `.astro` destinations share `framework-component.ts` (all three delegate to `buildTypeScriptImportSnippet`). The picker commands (`pasteImportWithStyle`, `setDefaultImportStyle`) use a parallel entry point — `variants.ts:buildImportSnippetVariants()` — which mirrors the same destination switch but enumerates all applicable styles instead of applying the user's default.
+
+JSX, TSX, and MDX share their algorithm via `buildReactImport` in `src/snippets/_react.ts`; the only difference is which script-snippet builder is "primary" (JS for JSX; TS for TSX and MDX, with JS as fallback for `.js` sources in both). Non-script sources fall through to a hardcoded `switch` inside `buildReactImport` with four groups: CSS Modules (`.module.css`/`.module.scss`) emit `import ${1:styles} from '<path>';`; image/data/markup/component (`.gif`/`.jpeg`/`.jpg`/`.png`/`.svg`/`.avif`/`.webp`/`.json`/`.html`/`.yml`/`.yaml`/`.md`/`.mdx`/`.pdf`/`.vue`/`.svelte`/`.astro`) emit `import ${1:name} from '<path>';`; media/text-track (`.mp4`/`.webm`/`.mov`/`.mp3`/`.ogg`/`.wav`/`.m4a`/`.vtt`) emit `import ${1:url} from '<path>';`; fonts and stylesheets (`.woff`/`.woff2`/`.ttf`/`.eot`/`.css`/`.scss`) emit a side-effect `import '<path>';`. Reaching the `default:` branch means an unsupported extension slipped through gating in `paste-import.ts`.
 
 For HTML/SCSS/CSS/Markdown destinations, `determineImportType()` (`src/path/import-type.ts`) classifies the *source* into `'script' | 'stylesheet' | 'markdown' | 'image' | 'video' | 'audio' | 'text-track'`, with two `null` returns: `.html` (defensive — gating already rejects HTML→HTML before this runs) and `.scss` (so `snippets/languages/scss.ts` falls through its `switch` to the SCSS-specific default that handles `@use` and partial filenames). The `'image'` branch is a `default:` catch-all, not a guarantee the source is image-like — the gating tables in `constants/extensions.ts` are what makes that safe.
 
@@ -105,7 +107,7 @@ For HTML/SCSS/CSS/Markdown destinations, `determineImportType()` (`src/path/impo
 
 `.html → .html` is rejected explicitly (no relative-import syntax for HTML embedding itself); an empty snippet (`''` or `'\n'`) is the catch-all signal that "no language module handled this destination" — see `snippets/dispatch.ts`'s `default:` branch. A separate same-file check (`sourceFilePath.toLowerCase() === destinationFilePath.toLowerCase()`) raises the `'same-file-path'` toast *before* the gating conjunction runs.
 
-When adding a new accepted pair, update the matching constant **and** make sure the relevant per-language module in `snippets/languages/` can produce a snippet for that source extension. When adding a new file extension entirely, three sites must stay in sync: (1) the matching category type in `src/types/file-extension.ts`, (2) the runtime gating tables in `src/constants/extensions.ts`, and (3) the matching `case` in `snippets/dispatch.ts` (destination dispatch) or `snippets/_shared.ts` (JSX/TSX/MDX source dispatch). The runtime cast `as FileExtension` is erased, so a missing gating entry produces a silent fall-through rather than a type error — gating is the runtime safety net.
+When adding a new accepted pair, update the matching constant **and** make sure the relevant per-language module in `snippets/languages/` can produce a snippet for that source extension. When adding a new file extension entirely, four sites must stay in sync: (1) the matching category type in `src/types/file-extension.ts`, (2) the runtime gating tables in `src/constants/extensions.ts`, (3) the matching `case` in `snippets/dispatch.ts` (destination dispatch) or `snippets/_react.ts` (JSX/TSX/MDX source dispatch), and (4) the matching `case` in `snippets/variants.ts:buildImportSnippetVariants` (so the picker commands work for the new extension). The runtime cast `as FileExtension` is erased, so a missing gating entry produces a silent fall-through rather than a type error — gating is the runtime safety net.
 
 ### Insertion placement
 
@@ -119,7 +121,7 @@ When adding a new accepted pair, update the matching constant **and** make sure 
 
 ### Configuration system
 
-`src/config/settings.ts` defines `getAutoImportSetting(namespaceKey, settingKey)` over the frozen `AUTO_IMPORT_CONFIG` map (four namespaces: `preferences`, `script`, `stylesheet`, `markup`). Adding or renaming a user setting requires changes in **three** places that must stay byte-exact in sync — drift causes `vscode.workspace.getConfiguration().get(...)` to return `undefined` and the snippet builder silently falls through to its `default:` branch:
+`src/config/settings.ts` defines `getAutoImportSetting(namespaceKey, settingKey)` (reader) and `setAutoImportSetting(namespaceKey, settingKey, value, target?)` (writer, consumed by `set-default-import-style.ts` to persist the user's chosen default; defaults to `ConfigurationTarget.Global`) over the frozen `AUTO_IMPORT_CONFIG` map (four namespaces: `preferences`, `script`, `stylesheet`, `markup`). Adding or renaming a user setting requires changes in **three** places that must stay byte-exact in sync — drift causes `vscode.workspace.getConfiguration().get(...)` to return `undefined` and the snippet builder silently falls through to its `default:` branch:
 
 1. `package.json` → `contributes.configuration.properties` (the VS Code-visible setting + its `enum`).
 2. `src/snippets/_styles.ts` → an `ImportStyle[]` whose `description` strings match the `package.json` `enum` strings exactly (lookup is by string equality via `resolveStyleIndex`).
@@ -149,5 +151,5 @@ Snippets use VS Code `SnippetString` placeholders (`$1`, `$2`).
 ## Naming conventions
 
 - Files use noun-only kebab-case: `relative-path.ts`, `file-path-info.ts`. Do not reintroduce suffixes like `.command.ts`, `.util.ts`, `-fn.ts`, `.types.ts`, `.enums.ts`, `.interface.ts` — the parent directory carries the kind signal.
-- Modules whose filename starts with `_` (e.g., `snippets/_styles.ts`, `snippets/_shared.ts`) are internal to their parent subtree; importing them from outside `snippets/` is a smell. The `snippets/languages/` modules importing `../_styles` and `../_shared` is expected.
+- Modules whose filename starts with `_` (e.g., `snippets/_styles.ts`, `snippets/_react.ts`) are internal to their parent subtree; importing them from outside `snippets/` is a smell. The `snippets/languages/` modules importing `../_styles` and `../_react` is expected.
 - The only barrel file is `src/commands/index.ts`. Other directories use direct imports so dependency direction stays visible at the call site.

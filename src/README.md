@@ -21,7 +21,7 @@ Source root for the Auto Import Relative Path VS Code extension.
 | What | Where |
 |------|-------|
 | New command | `commands/` (new file + register in `extension.ts` + `package.json`) |
-| New language snippet | `snippets/` (new file + `case` in `dispatch.ts`) |
+| New language snippet | `snippets/` (new file + `case` in `dispatch.ts` + `case` in `variants.ts`) |
 | New pure helper | `path/` |
 | New `vscode` API helper | `editor/` |
 | New cross-cutting type | `types/` |

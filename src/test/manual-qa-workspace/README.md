@@ -95,10 +95,10 @@ Every cell of the source-extension × destination-extension matrix is reachable 
 | ES modules vs CommonJS (`module.exports`, `exports.x`, `var require`, `const require`) | `src/legacy/*.js`, `with-requires.js`, `src/sibling.js`, `src/other.js` |
 | `_partial.scss` filename normalization | `styles/_partial.scss`, `styles/_variables.scss`, `styles/components/_*.scss` |
 | Nested-partial path (`_partials/` directory keeps underscore) | `styles/_partials/_nested.scss` |
-| All 5 image extensions (`.gif/.jpeg/.jpg/.png/.webp`) | `assets/`, `assets/images/`, `assets/icons/` |
+| All 7 image extensions (`.gif/.jpeg/.jpg/.png/.svg/.avif/.webp`) | `assets/`, `assets/images/`, `assets/icons/` |
 | All 4 font extensions (`.woff/.woff2/.ttf/.eot`) | `assets/fonts/` |
 | `.json/.yaml/.yml` data sources for JSX/TSX/MDX | `data/` |
-| Bottom-placement landing across all 10 `importIndicators` | `with-imports.ts`, `with-requires.js`, `styles/with-imports.css`, `styles/with-uses.scss`, `pages/with-resources.html` |
+| Bottom-placement landing across all 12 `importIndicators` | `with-imports.ts`, `with-requires.js`, `styles/with-imports.css`, `styles/with-uses.scss`, `pages/with-resources.html` |
 | Empty / whitespace / single-char / comments-only edge cases | root-level files |
 | Path with space, Unicode path, deep traversal | `my files/`, `unicode-paths/`, `deeply/...`, `very-deep/level-01/.../level-09/` |
 | Unsupported-extension rejection (clause 1, clause 3–6, JSX/TSX/MDX `default:`) | `unsupported/`, `assets/icon.svg` |

@@ -72,6 +72,7 @@ Markdown emits `[text](path)` for Markdown-to-Markdown links (fixed), with three
 
 1. New file in `languages/`, named after the language.
 2. New `case` in `dispatch.ts:buildImportSnippet`.
-3. New `case` in `types/file-extension.ts:ScriptFileExtension` (if scripty) or the relevant category type.
-4. New gating table or entry in `constants/extensions.ts`.
-5. New `*_IMPORT_OPTIONS` table in `_styles.ts` and matching `package.json` enum (three-site sync).
+3. New `case` in `variants.ts:buildImportSnippetVariants` (so the picker commands work for the new destination).
+4. New `case` in `types/file-extension.ts:ScriptFileExtension` (if scripty) or the relevant category type.
+5. New gating table or entry in `constants/extensions.ts`.
+6. New `*_IMPORT_OPTIONS` table in `_styles.ts` and matching `package.json` enum (three-site sync).
