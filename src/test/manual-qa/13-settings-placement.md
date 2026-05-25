@@ -3,7 +3,7 @@
 Validates `auto-import.preferences.importStatementPlacement`, the inline-snippet override, the two forced-cursor overrides, the insertion-column rule, and the 9-marker Bottom heuristic.
 
 **Sources:**
-- `src/editor/insert-snippet.ts` — `insertImportSnippet`, `shouldRepositionCursor`, `insertSnippetAtBottom`, `determineInsertionColumn`
+- `src/editor/insert-snippet.ts` — `insertImportSnippet`, `isInlineSnippet`, `shouldRepositionCursor`, `insertSnippetAtSfcScript`, `insertSnippetAtBottom`, `determineInsertionColumn`
 - `src/constants/extensions.ts` — `SCRIPT_FILE_EXTENSIONS`, `STYLESHEET_FILE_EXTENSIONS`
 - `package.json` — enum: `Top`, `Bottom`, `Cursor`
 
@@ -37,15 +37,30 @@ For all three tests, copy `src/foo.ts` → paste into `src/bar.ts`. Place cursor
 
 ### Invalid enum value
 - [ ] In settings.json, set the value to `Middle` (invalid). Reload.
-  **Expect:** code path goes to `default:` branch in `insertImportSnippet`'s switch → cursor placement (the `default:` falls through to `insertSnippetAtCursor`).
+  **Expect:** code path goes to `default:` branch in `insertImportSnippet`'s switch → Bottom placement (aligned with the `package.json` default).
 
-## Forced-cursor overrides — three paths
+## Inline snippet override — CSS/SCSS image imports
 
-`shouldRepositionCursor` returns `true` (overriding any user setting) when:
-1. Destination is `.html`
-2. Destination is `.md`
-3. Destination is `.css` and source is NOT `.css`
-4. Destination is `.scss` and source is NOT `.scss`
+`isInlineSnippet` returns `true` when source is not a stylesheet but destination is `.css` or `.scss` (image → stylesheet). The snippet is inserted at the **exact cursor position** (line AND column from `editor.selection.anchor`) with **no trailing newline**.
+
+- [ ] Set `placement = Top`. Cursor at line 5, column 14 of `styles/main.scss` (inside a property value). Copy `assets/logo.png` → paste.
+  **Expect:** `url('./assets/logo.png')` at line 5 column 14 (not line 0, not column 0). No trailing newline splitting the line.
+
+- [ ] Set `placement = Top`. Cursor at line 5, column 14 of `styles/global.css`. Copy `assets/logo.png` → paste.
+  **Expect:** `url('./assets/logo.png')` at line 5 column 14. Same inline behavior.
+
+- [ ] Set `placement = Top`. Cursor at line 5 of `styles/main.scss`. Copy `styles/global.css` → paste.
+  **Expect:** `@use` at line 0 (NOT inline — `.css` IS a stylesheet, so `isInlineSnippet` is false; normal Top applies).
+
+- [ ] Set `placement = Top`. Cursor at line 5 of `styles/main.scss`. Copy `styles/_partial.scss` → paste.
+  **Expect:** `@use` at line 0 (NOT inline — `.scss` IS a stylesheet).
+
+- [ ] Set `placement = Top`. Cursor at line 5 of `styles/global.css`. Copy `styles/reset.css` → paste.
+  **Expect:** `@import` at line 0 (NOT inline — `.css = .css`).
+
+## Forced-cursor overrides — HTML and Markdown
+
+`shouldRepositionCursor` returns `true` (overriding any user setting) when destination is `.html` or `.md`. These destinations have no canonical import location — always inserts at the cursor line.
 
 ### Override #1 — HTML destination
 
@@ -57,23 +72,6 @@ For all three tests, copy `src/foo.ts` → paste into `src/bar.ts`. Place cursor
 
 - [ ] Set `placement = Top`. Cursor at line 5 of `docs/README.md`. Copy `assets/logo.png` → paste.
   **Expect:** image snippet at line 5.
-
-### Override #3 — Stylesheet + non-stylesheet source
-
-- [ ] Set `placement = Top`. Cursor at line 5 of `styles/main.scss`. Copy `assets/logo.png` → paste.
-  **Expect:** `url(...)` at line 5 (override fires because `.png ≠ .scss`).
-
-- [ ] Set `placement = Top`. Cursor at line 5 of `styles/main.scss`. Copy `styles/global.css` → paste.
-  **Expect:** `@import` at line 5 (override fires because `.css ≠ .scss`).
-
-- [ ] Set `placement = Top`. Cursor at line 5 of `styles/main.scss`. Copy `styles/_partial.scss` → paste.
-  **Expect:** `@import` at line 0 (no override — `.scss = .scss`).
-
-- [ ] Set `placement = Top`. Cursor at line 5 of `styles/global.css`. Copy `assets/logo.png` → paste.
-  **Expect:** `url(...)` at line 5 (override: `.png ≠ .css`).
-
-- [ ] Set `placement = Top`. Cursor at line 5 of `styles/global.css`. Copy `styles/reset.css` → paste.
-  **Expect:** `@import` at line 0 (no override — `.css = .css`).
 
 ## Insertion column rule
 
@@ -146,11 +144,11 @@ Set `placement = Bottom`. The workspace ships purpose-built fixtures whose first
 - [ ] Empty destination: paste into `empty-file.ts`. **Expect:** line 0.
 - [ ] No-marker destination: paste into `single-char.ts` (one byte, no markers). **Expect:** line 0.
 
-### Documented heuristic false-positive
+### Comment-line filtering
 
-`comments-only.ts` is purpose-built for this: it contains a comment with the substring `import ` inside, plus pure block comments.
+Comment lines (starting with `//`, `/*`, or `*`) are now skipped by the indicator scan. `comments-only.ts` is purpose-built for this: it contains a comment with the substring `import ` inside, plus pure block comments.
 
-- [ ] **`comments-only.ts` Bottom landing.** Open it. Paste any valid TS source. **Expect:** new import lands AFTER the line `// I want to import bar later` (the heuristic matches the literal substring inside the comment). **Documented heuristic limitation, not a bug** — see `src/editor/insert-snippet.ts` module header.
+- [ ] **`comments-only.ts` Bottom landing.** Open it. Paste any valid TS source. **Expect:** new import lands at **line 0** (not after the comment containing `import `). Comments are no longer matched by the indicator scan.
 
 ## Per-language snippet column behavior
 
@@ -165,19 +163,56 @@ When inserting at line N (any placement), the column is computed once for the wh
 
 - [ ] **Different destinations have different rules.** Test in same session: paste into `.ts` (column 0) then paste into `.html` (cursor column). Both behave correctly without restart.
 
+## Vue/Svelte `<script>` block awareness
+
+`insertSnippetAtSfcScript` constrains placement to within a `<script...>` / `</script>` pair. `findSfcScriptBounds` prefers `<script setup` over bare `<script`.
+
+### Vue — template-first with `<script setup>`
+
+Use a Vue file with `<template>` before `<script setup>` (the standard Vue 3 layout):
+
+```vue
+<template>
+  <div>Hello</div>
+</template>
+<script setup>
+import { ref } from 'vue';
+</script>
+```
+
+- [ ] **Top.** Set `placement = Top`. Copy a `.ts` file → paste into the Vue file.
+  **Expect:** new import at the line AFTER `<script setup>` (inside the block), NOT at line 0.
+- [ ] **Bottom.** Set `placement = Bottom`. Same paste.
+  **Expect:** new import AFTER the existing `import { ref }` line (indicator scan within script block).
+- [ ] **Cursor inside script.** Set `placement = Cursor`. Place cursor inside the `<script setup>` block. Paste.
+  **Expect:** import at cursor line.
+- [ ] **Cursor outside script.** Set `placement = Cursor`. Place cursor inside `<template>`. Paste.
+  **Expect:** falls back to Bottom within the script block (not at cursor in template).
+
+### Vue — no script block
+
+- [ ] Use a Vue file with only `<template>` (no `<script>`). Copy a `.ts` file → paste.
+  **Expect:** a `<script>...</script>` pair is created at line 0, wrapping the import.
+
+### Svelte
+
+- [ ] Repeat Top/Bottom tests with a `.svelte` file that has `<script>` at the top.
+  **Expect:** same constrained behavior as Vue.
+
 ## Sign-off
 
 - [ ] Three placement values + default + invalid enum
+- [ ] Inline snippet override (CSS/SCSS image — 5 cases)
 - [ ] Override #1 (HTML)
 - [ ] Override #2 (Markdown)
-- [ ] Override #3 (stylesheet + non-stylesheet source — 5 cases)
 - [ ] Insertion column for 4 script types + 2 stylesheet types
 - [ ] Insertion column for HTML + MD
 - [ ] All 9 Bottom-marker indicators (verified via `with-imports.ts`, `with-requires.js`, `styles/with-imports.css`, `styles/with-uses.scss`)
 - [ ] HTML cursor override around existing resources (`pages/with-resources.html`)
 - [ ] Multiple imports → picks last
 - [ ] No markers → line 0 (2 cases via `empty-file.ts`, `single-char.ts`)
-- [ ] Heuristic false-positive documented (`comments-only.ts`)
+- [ ] Comment-line filtering (`comments-only.ts` → line 0)
+- [ ] Vue/Svelte script block awareness (Top, Bottom, Cursor inside, Cursor outside, no block)
 - [ ] Mid-flight setting change
 
 Tester / date: ___________________
