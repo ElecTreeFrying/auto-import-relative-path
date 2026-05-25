@@ -1,6 +1,6 @@
 # 13 — Placement settings
 
-Validates `auto-import.preferences.importStatementPlacement`, the three forced-cursor overrides, the insertion-column rule, and the 12-marker Bottom heuristic.
+Validates `auto-import.preferences.importStatementPlacement`, the inline-snippet override, the two forced-cursor overrides, the insertion-column rule, and the 9-marker Bottom heuristic.
 
 **Sources:**
 - `src/editor/insert-snippet.ts` — `insertImportSnippet`, `shouldRepositionCursor`, `insertSnippetAtBottom`, `determineInsertionColumn`
@@ -98,13 +98,13 @@ For each, set `placement = Cursor`. Place cursor at column 10 (10 leading spaces
 - [ ] `.html` destination → snippet at column 10 (cursor's column)
 - [ ] `.md` destination → snippet at column 10
 
-## Bottom-placement marker detection — all 12 indicators
+## Bottom-placement marker detection — all 9 indicators
 
-The `importIndicators` array in `insertSnippetAtBottom`:
+The `IMPORT_INDICATORS` array in `insertSnippetAtBottom`:
 
 ```
-'import ', 'var name = require(', 'const name = require(', 'require(',
-"@import '", '@import "', '@import url(', '@import (', "@use '", '@use "',
+'import ', 'require(',
+"@import '", '@import "', '@import url(', "@use '", '@use "',
 "@forward '", '@forward "'
 ```
 
@@ -112,18 +112,18 @@ Set `placement = Bottom`. The workspace ships purpose-built fixtures whose first
 
 ### Script indicators — `with-imports.ts` and `with-requires.js`
 
-`with-imports.ts` contains existing `import …` lines; `with-requires.js` contains `var name = require(…)`, `const name = require(…)`, and `require(…)` (side-effect) — covering all four script indicators in one file each.
+`with-imports.ts` contains existing `import …` lines; `with-requires.js` contains `require(…)` calls in several shapes — both indicators covered across the two files.
 
 - [ ] **`with-imports.ts` (covers `import `).** Open `with-imports.ts`. Copy `src/foo.ts` from Explorer. Paste.
   **Expect:** new import lands AFTER the file's last `import …` line.
-- [ ] **`with-requires.js` (covers `var require(`, `const require(`, and bare `require(`).** Open `with-requires.js`. Copy `src/sibling.js`. Paste.
+- [ ] **`with-requires.js` (covers `require(`).** Open `with-requires.js`. Copy `src/sibling.js`. Paste.
   **Expect:** new import lands AFTER the file's last require-style line (whichever comes last — Bottom picks the LAST match).
 
 ### Stylesheet indicators — `styles/with-imports.css` and `styles/with-uses.scss`
 
-`with-imports.css` covers all four `@import …` shapes. `with-uses.scss` covers both `@use '…'` and `@use "…"` plus `@import` for completeness.
+`with-imports.css` covers all three `@import …` shapes. `with-uses.scss` covers both `@use '…'` and `@use "…"` plus `@import` for completeness.
 
-- [ ] **`styles/with-imports.css` (covers `@import '`, `@import "`, `@import url(`, `@import (`).** Open it. Copy `styles/reset.css`. Paste.
+- [ ] **`styles/with-imports.css` (covers `@import '`, `@import "`, `@import url(`).** Open it. Copy `styles/reset.css`. Paste.
   **Expect:** new `@import` lands AFTER the file's last `@import …` line.
 - [ ] **`styles/with-uses.scss` (covers `@use '`, `@use "`, plus existing `@import`).** Open it. Copy `styles/_partial.scss`. Paste.
   **Expect:** new `@use`/`@import` lands AFTER the file's last `@use`/`@import` line.
@@ -173,7 +173,7 @@ When inserting at line N (any placement), the column is computed once for the wh
 - [ ] Override #3 (stylesheet + non-stylesheet source — 5 cases)
 - [ ] Insertion column for 4 script types + 2 stylesheet types
 - [ ] Insertion column for HTML + MD
-- [ ] All 12 Bottom-marker indicators (verified via `with-imports.ts`, `with-requires.js`, `styles/with-imports.css`, `styles/with-uses.scss`)
+- [ ] All 9 Bottom-marker indicators (verified via `with-imports.ts`, `with-requires.js`, `styles/with-imports.css`, `styles/with-uses.scss`)
 - [ ] HTML cursor override around existing resources (`pages/with-resources.html`)
 - [ ] Multiple imports → picks last
 - [ ] No markers → line 0 (2 cases via `empty-file.ts`, `single-char.ts`)

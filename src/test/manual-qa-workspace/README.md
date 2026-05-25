@@ -109,7 +109,7 @@ Every cell of the source-extension × destination-extension matrix is reachable 
 | All 4 font extensions (`.woff/.woff2/.ttf/.eot`) | `assets/fonts/` |
 | `.json/.yaml/.yml` data sources for JSX/TSX/MDX | `data/` |
 | `.pdf` data source for JSX/TSX/MDX | `data/document.pdf` |
-| Bottom-placement landing across all 12 `importIndicators` | `with-imports.ts`, `with-requires.js`, `styles/with-imports.css`, `styles/with-uses.scss`, `pages/with-resources.html` |
+| Bottom-placement landing across all 9 `IMPORT_INDICATORS` | `with-imports.ts`, `with-requires.js`, `styles/with-imports.css`, `styles/with-uses.scss`, `pages/with-resources.html` |
 | Empty / whitespace / single-char / comments-only edge cases | root-level files |
 | Path with space, Unicode path, deep traversal | `my files/`, `unicode-paths/`, `deeply/...`, `very-deep/level-01/.../level-09/` |
 | Unsupported-extension rejection (clause 1, clause 3–6, JSX/TSX/MDX `default:`) | `unsupported/{Main.java, styles.less, texture.bmp, render.avi, archive.zip}` |

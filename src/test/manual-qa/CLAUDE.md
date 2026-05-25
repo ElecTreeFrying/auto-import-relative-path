@@ -15,7 +15,7 @@ Sequential markdown checklists driving the human manual-QA pass before each rele
 | `03-copy-command.md` | `extension.copyFilePath` round-trip + `copy-success` toast buttons |
 | `04-paste-into-javascript.md` … `11-paste-into-markdown.md` | One per destination extension (`.js`, `.ts`, `.jsx`, `.tsx`, `.css`, `.scss`, `.html`, `.md`) |
 | `12-auto-command.md` | `extension.copyPaste` (alt+d): sequential copy→paste, race stress, copy-fail short-circuit |
-| `13-settings-placement.md` | `importStatementPlacement` + the 4 forced-cursor overrides + the 12 Bottom-marker indicators |
+| `13-settings-placement.md` | `importStatementPlacement` + the inline-snippet override + the 2 forced-cursor overrides + the 9 Bottom-marker indicators |
 | `14-settings-preserve-extension.md` | `preserve{Script,Stylesheet}FileExtension` + the `.css → .scss` asymmetry |
 | `15-gating-and-rejection.md` | 11-clause gating conjunction + 9 byte-exact notification variants |
 | `16-path-computation.md` | `./` prefix rule (CHANGELOG 0.6.1), `../`, partial `_` stripping, spaces, unicode |

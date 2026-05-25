@@ -8,8 +8,8 @@ import { getFilePathInfo } from './file-path-info';
 
 /** Markers used by Bottom placement to find the last import line. */
 const IMPORT_INDICATORS = [
-  'import ', 'var name = require(', 'const name = require(', 'require(',
-  "@import '", '@import "', '@import url(', '@import (', "@use '", '@use "',
+  'import ', 'require(',
+  "@import '", '@import "', '@import url(', "@use '", '@use "',
   "@forward '", '@forward "'
 ];
 

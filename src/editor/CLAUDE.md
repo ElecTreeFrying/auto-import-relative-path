@@ -28,11 +28,11 @@ Order of precedence:
 
 ### "Bottom" insertion
 
-Walks `document.getText().split('\n')` looking for any of **twelve** `importIndicators` markers and inserts after the last match:
+Walks `document.getText().split('\n')` looking for any of **nine** `importIndicators` markers and inserts after the last match:
 
 ```
-'import ', 'var name = require(', 'const name = require(', 'require(',
-"@import '", '@import "', '@import url(', '@import (', "@use '", '@use "',
+'import ', 'require(',
+"@import '", '@import "', '@import url(', "@use '", '@use "',
 "@forward '", '@forward "'
 ```
 
