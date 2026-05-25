@@ -1,7 +1,7 @@
 {
   "name": "auto-import",
   "displayName": "Auto Import Relative Path",
-  "description": "Generate ready-made relative-path imports with one keystroke. Pick a file in the Explorer; the right import — JS, TS, JSX, TSX, CSS, SCSS, HTML, or Markdown — lands in your editor. Angular-aware naming, SCSS partial support, and 20+ configurable styles.",
+  "description": "Generate relative-path imports with one keystroke — JS, TS, JSX, TSX, MDX, CSS, SCSS, HTML, Markdown, Vue, Svelte, and Astro. 35 source extensions, 38 configurable styles, exported-class detection, framework-aware placement.",
   "publisher": "ElecTreeFrying",
   "version": "0.6.1",
   "author": {
@@ -72,8 +72,12 @@
     "typescript",
     "jsx",
     "tsx",
+    "mdx",
     "react",
     "angular",
+    "vue",
+    "svelte",
+    "astro",
     "css",
     "scss",
     "sass",
@@ -82,6 +86,8 @@
     "es modules",
     "esm",
     "commonjs",
+    "css modules",
+    "import style",
     "snippet",
     "productivity"
   ],
@@ -135,7 +141,7 @@
         "properties": {
           "auto-import.preferences.importStatementPlacement": {
             "title": "Import statement placement",
-            "description": "Where to insert generated import statements in the destination file. Forced to 'Cursor' for HTML, Markdown, and when importing a non-stylesheet into a stylesheet — those contexts only make sense at the cursor and the user setting is ignored. Default: Bottom.",
+            "description": "Where to insert generated import statements in the destination file. Forced to 'Cursor' for HTML, Markdown, and when importing a non-stylesheet into a stylesheet. For .astro files, placement is constrained to the frontmatter block; for .vue and .svelte files, to the script block. Default: Bottom.",
             "type": "string",
             "default": "Bottom",
             "enum": [
@@ -157,7 +163,7 @@
           },
           "auto-import.importStatement.script.javascriptImportStyle": {
             "title": "JavaScript / JSX import style",
-            "description": "Template used for .js destinations, and for .js / .jsx sources imported into .jsx or .tsx files. '_relativePath_' is replaced with the computed relative path; 'name' becomes a snippet placeholder so your cursor lands on it after insertion.",
+            "description": "Template used for .js destinations, and for .js / .jsx sources imported into .jsx, .tsx, or .mdx files. '_relativePath_' is replaced with the computed relative path; 'name' becomes a snippet placeholder so your cursor lands on it after insertion.",
             "type": "string",
             "default": "import name from '_relativePath_';",
             "enum": [
@@ -181,7 +187,7 @@
           },
           "auto-import.importStatement.script.typescriptImportStyle": {
             "title": "TypeScript / TSX import style",
-            "description": "Template used for .ts destinations, and for .ts / .tsx sources imported into .tsx files. '_relativePath_' is replaced with the computed relative path; 'name' becomes a snippet placeholder. With the 'import { name }' shape, Angular file conventions (.component, .directive, .pipe, .service, .module) auto-fill 'name' with a PascalCase identifier derived from the basename — for example, app-root.component.ts becomes { AppRootComponent }.",
+            "description": "Template used for .ts destinations, for .ts / .tsx sources imported into .tsx or .mdx files, and for all script sources imported into .vue, .svelte, or .astro files. '_relativePath_' is replaced with the computed relative path; 'name' becomes a snippet placeholder. With the 'import { name }' shape, Angular file conventions (.component, .directive, .pipe, .service, .module) auto-fill 'name' with a PascalCase identifier derived from the basename — for example, app-root.component.ts becomes { AppRootComponent }.",
             "type": "string",
             "default": "import { name } from '_relativePath_';",
             "enum": [

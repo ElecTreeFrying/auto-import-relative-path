@@ -1,6 +1,7 @@
 # Build output
 out
 dist
+*.tsbuildinfo
 
 # Dependencies
 node_modules
@@ -9,10 +10,16 @@ node_modules
 .vscode-test/
 *.vsix
 
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
 # Project-private assets & notes
-/assets/test
-/process/*
+process
 
 # Claude Code
 .claude/*
-!.claude/import-design/
