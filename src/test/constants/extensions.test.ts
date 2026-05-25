@@ -37,46 +37,68 @@ describe('constants/extensions', () => {
 
   it('HTML_SUPPORTED_EXTENSIONS has 17 entries (.js, .css + 7 images + 7 media + .vtt)', () => {
     assert.strictEqual(HTML_SUPPORTED_EXTENSIONS.length, 17);
-    assert.ok(HTML_SUPPORTED_EXTENSIONS.includes('.js' as any), 'missing .js');
-    assert.ok(HTML_SUPPORTED_EXTENSIONS.includes('.css' as any), 'missing .css');
+    for (const ext of [ '.js', '.css' ]) {
+      assert.ok(HTML_SUPPORTED_EXTENSIONS.includes(ext as any), `missing ${ext}`);
+    }
+    for (const ext of [ '.ts', '.tsx', '.jsx', '.scss', '.md', '.json' ]) {
+      assert.ok(!HTML_SUPPORTED_EXTENSIONS.includes(ext as any), `${ext} should not be in HTML`);
+    }
   });
 
   it('MARKDOWN_SUPPORTED_EXTENSIONS has 8 entries (.md + 7 images)', () => {
     assert.strictEqual(MARKDOWN_SUPPORTED_EXTENSIONS.length, 8);
     assert.ok(MARKDOWN_SUPPORTED_EXTENSIONS.includes('.md' as any), 'missing .md');
+    for (const ext of [ '.html', '.js', '.ts', '.css', '.scss' ]) {
+      assert.ok(!MARKDOWN_SUPPORTED_EXTENSIONS.includes(ext as any), `${ext} should not be in Markdown`);
+    }
   });
 
   it('CSS_SUPPORTED_EXTENSIONS has 8 entries (.css + 7 images)', () => {
     assert.strictEqual(CSS_SUPPORTED_EXTENSIONS.length, 8);
     assert.ok(CSS_SUPPORTED_EXTENSIONS.includes('.css' as any), 'missing .css');
+    for (const ext of [ '.scss', '.js', '.ts' ]) {
+      assert.ok(!CSS_SUPPORTED_EXTENSIONS.includes(ext as any), `${ext} should not be in CSS`);
+    }
   });
 
   it('SCSS_SUPPORTED_EXTENSIONS has 9 entries (.scss, .css + 7 images)', () => {
     assert.strictEqual(SCSS_SUPPORTED_EXTENSIONS.length, 9);
-    assert.ok(SCSS_SUPPORTED_EXTENSIONS.includes('.scss' as any), 'missing .scss');
-    assert.ok(SCSS_SUPPORTED_EXTENSIONS.includes('.css' as any), 'missing .css');
+    for (const ext of [ '.scss', '.css' ]) {
+      assert.ok(SCSS_SUPPORTED_EXTENSIONS.includes(ext as any), `missing ${ext}`);
+    }
+    for (const ext of [ '.js', '.ts' ]) {
+      assert.ok(!SCSS_SUPPORTED_EXTENSIONS.includes(ext as any), `${ext} should not be in SCSS`);
+    }
   });
 
   it('VUE_SUPPORTED_EXTENSIONS has 23 entries', () => {
     assert.strictEqual(VUE_SUPPORTED_EXTENSIONS.length, 23);
-    assert.ok(VUE_SUPPORTED_EXTENSIONS.includes('.vue' as any), 'missing .vue');
-    assert.ok(VUE_SUPPORTED_EXTENSIONS.includes('.ts' as any), 'missing .ts');
-    assert.ok(VUE_SUPPORTED_EXTENSIONS.includes('.json' as any), 'missing .json');
+    for (const ext of [ '.vue', '.ts', '.js', '.jsx', '.tsx', '.json', '.yml', '.yaml' ]) {
+      assert.ok(VUE_SUPPORTED_EXTENSIONS.includes(ext as any), `missing ${ext}`);
+    }
+    for (const ext of [ '.css', '.scss', '.md', '.mdx' ]) {
+      assert.ok(!VUE_SUPPORTED_EXTENSIONS.includes(ext as any), `${ext} should not be in Vue`);
+    }
   });
 
   it('SVELTE_SUPPORTED_EXTENSIONS has 23 entries', () => {
     assert.strictEqual(SVELTE_SUPPORTED_EXTENSIONS.length, 23);
-    assert.ok(SVELTE_SUPPORTED_EXTENSIONS.includes('.svelte' as any), 'missing .svelte');
-    assert.ok(SVELTE_SUPPORTED_EXTENSIONS.includes('.ts' as any), 'missing .ts');
+    for (const ext of [ '.svelte', '.ts', '.js', '.jsx', '.tsx', '.json', '.yml', '.yaml' ]) {
+      assert.ok(SVELTE_SUPPORTED_EXTENSIONS.includes(ext as any), `missing ${ext}`);
+    }
+    for (const ext of [ '.css', '.scss', '.md', '.mdx' ]) {
+      assert.ok(!SVELTE_SUPPORTED_EXTENSIONS.includes(ext as any), `${ext} should not be in Svelte`);
+    }
   });
 
   it('ASTRO_SUPPORTED_EXTENSIONS has 27 entries', () => {
     assert.strictEqual(ASTRO_SUPPORTED_EXTENSIONS.length, 27);
-    assert.ok(ASTRO_SUPPORTED_EXTENSIONS.includes('.astro' as any), 'missing .astro');
-    assert.ok(ASTRO_SUPPORTED_EXTENSIONS.includes('.vue' as any), 'missing .vue');
-    assert.ok(ASTRO_SUPPORTED_EXTENSIONS.includes('.svelte' as any), 'missing .svelte');
-    assert.ok(ASTRO_SUPPORTED_EXTENSIONS.includes('.md' as any), 'missing .md');
-    assert.ok(ASTRO_SUPPORTED_EXTENSIONS.includes('.mdx' as any), 'missing .mdx');
+    for (const ext of [ '.astro', '.vue', '.svelte', '.ts', '.js', '.jsx', '.tsx', '.json', '.yml', '.yaml', '.md', '.mdx' ]) {
+      assert.ok(ASTRO_SUPPORTED_EXTENSIONS.includes(ext as any), `missing ${ext}`);
+    }
+    for (const ext of [ '.css', '.scss' ]) {
+      assert.ok(!ASTRO_SUPPORTED_EXTENSIONS.includes(ext as any), `${ext} should not be in Astro`);
+    }
   });
 
   it('CROSS_IMPORT_DESTINATIONS has exactly 10 members', () => {
