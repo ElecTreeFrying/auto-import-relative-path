@@ -1,10 +1,10 @@
-# src/test/manual-qa-workspace/CLAUDE.md
+# qa/workspace/CLAUDE.md
 
-~174 fixture files opened as a folder in the Extension Development Host by a human walking `../manual-qa/`. Never compiled, never linted, never imported by Mocha — every code path *into* this directory is a user pressing **F5**, not the build.
+~174 fixture files opened as a folder in the Extension Development Host by a human walking `../checklists/`. Never compiled, never linted, never imported by Mocha — every code path *into* this directory is a user pressing **F5**, not the build.
 
 ## DO NOT scan this tree wholesale
 
-The parent `src/test/CLAUDE.md` already lists this directory under "Sibling directories — DO NOT read into" because the tree is large, static, and yields no signal you can't get from this file or the sibling `README.md`. Repeating the rule locally so it applies even when you arrive here directly:
+The tree is large, static, and yields no signal you can't get from this file or the sibling `README.md`:
 
 - **Never** `find`, `grep`, or `ls -R` across the workspace. The ~174 files are placeholders — there is no needle in this haystack.
 - If a task names a specific fixture, `Edit` or `Write` precisely that file. Don't survey the surrounding tree first.
@@ -15,8 +15,8 @@ The parent `src/test/CLAUDE.md` already lists this directory under "Sibling dire
 
 | Surface | Where the exclusion lives | What it means |
 |---------|---------------------------|---------------|
-| TypeScript compilation (`tsc -p .`) | `tsconfig.json:18` — `"exclude": ["src/test/manual-qa-workspace/**"]` | Fixtures may import from uninstalled packages, reference undeclared globals, or be syntactically invalid. |
-| ESLint (`npm run lint`) | `eslint.config.mjs:4` — `ignores: ["src/test/manual-qa-workspace/**"]` | Fixtures are not held to project style rules. |
+| TypeScript compilation (`tsc -p .`) | `tsconfig.json` — `"include": ["src/**/*"]` excludes `qa/` entirely | Fixtures may import from uninstalled packages, reference undeclared globals, or be syntactically invalid. |
+| ESLint (`npm run lint`) | `eslint.config.mjs:4` — `ignores: ["qa/workspace/**"]` | Fixtures are not held to project style rules. |
 | Mocha test runner (`npm test`) | `.vscode-test.mjs` glob `out/test/**/*.test.js` (implicit — fixtures are never emitted to `out/`) | The test runner cannot pick up anything inside this directory, even by accident. |
 
 **Don't lift any of these.** Removing an exclusion makes the toolchain trip over deliberately-broken fixtures (e.g. `empty-file.ts`, `whitespace-only.ts`, the `unsupported/` rejection samples). The exclusions are what make those fixtures legal.
@@ -46,17 +46,17 @@ This table is the unique value of this `CLAUDE.md` versus the sibling `README.md
 | `data/document.pdf` | `.pdf` branch in `src/snippets/_react.ts:buildReactImport` → `import ${1:name} from '<path>';` |
 | `docs/example.mdx` | `.mdx` destination in `src/snippets/dispatch.ts` → falls through to `tsx.buildSnippet()` (identical semantics) |
 
-When refactoring any of the code sites above, run the matching manual-QA checklist under `../manual-qa/` over the fixtures listed here before shipping.
+When refactoring any of the code sites above, run the matching manual-QA checklist under `../checklists/` over the fixtures listed here before shipping.
 
 ## Baseline filenames are immutable
 
-The ~37-name baseline list in `README.md:Maintenance notes` is referenced by every checklist in `../manual-qa/` (`01-sanity-and-keybindings.md` through `18-style-pickers.md`). Renaming a baseline produces a *silent* test break: the checklist will instruct the tester to copy a file that no longer exists at the named path, and nothing in the toolchain will warn.
+The ~37-name baseline list in `README.md:Maintenance notes` is referenced by every checklist in `../checklists/` (`01-sanity-and-keybindings.md` through `18-style-pickers.md`). Renaming a baseline produces a *silent* test break: the checklist will instruct the tester to copy a file that no longer exists at the named path, and nothing in the toolchain will warn.
 
 **Workflow when a baseline must change:**
 
 1. Rename / remove the file inside this workspace.
 2. Update its entry in `README.md:Maintenance notes`.
-3. Grep `../manual-qa/` for every reference to the old name and update each checklist.
+3. Grep `../checklists/` for every reference to the old name and update each checklist.
 
 Realistic-sibling fixtures (e.g., `api-client.ts`, the `Button.tsx` family, `_mixins.scss`, `data/feature-flags.json`) are *not* on the baseline list and are free to rename — they exist for ad-hoc exploratory QA only and are never quoted by a checklist.
 
@@ -66,7 +66,7 @@ Images (`.png` / `.jpg` / `.jpeg` / `.gif` / `.webp` / `.svg`) and fonts (`.woff
 
 ## Adding a new fixture
 
-1. **Baseline fixture** (will be quoted by a checklist): add the file → append its name to `README.md:Maintenance notes` → reference it from the relevant `../manual-qa/NN-*.md`.
+1. **Baseline fixture** (will be quoted by a checklist): add the file → append its name to `README.md:Maintenance notes` → reference it from the relevant `../checklists/NN-*.md`.
 2. **Realistic sibling** (ad-hoc exploratory QA only, not quoted by any checklist): just add the file. No doc updates needed.
 3. **Fixture for a brand-new file extension** (one not already in `src/types/file-extension.ts`): the three-site sync described in `src/types/CLAUDE.md` applies first — gating tables (`src/constants/extensions.ts`), destination dispatch (`src/snippets/dispatch.ts`), and the type union (`src/types/file-extension.ts`) must accept the new extension *before* any fixture is meaningful. Otherwise the fixture exists but the snippet builders silently fall through to their `default:` branch and the QA tester sees empty output.
 4. Never add a `package.json`, `tsconfig.json`, `.eslintrc`, or `.vscode/` inside this directory — see "Excluded from every toolchain surface" above.

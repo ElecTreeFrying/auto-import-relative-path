@@ -1,6 +1,6 @@
 # src/test/
 
-Mocha BDD tests and two manual-QA directories.
+Mocha BDD tests. Manual QA checklists and fixture workspaces live in the top-level `qa/` directory.
 
 ## Layout
 
@@ -13,9 +13,6 @@ Mocha BDD tests and two manual-QA directories.
 | `constants/` | Gating-table tests (`extensions`) |
 | `snippets/` | Snippet builder, dispatch, variants, class-name, and styles tests |
 | `snippets/languages/` | Per-language snippet builder tests (9 files, one per destination language) |
-| `demo-workspace/` | Small fixture workspace consumed by the Mocha test runner |
-| `manual-qa/` | 18 sequential checklists for human QA before release |
-| `manual-qa-workspace/` | ~174 fixture files for manual QA (opened in the Extension Development Host) |
 
 ## Running
 

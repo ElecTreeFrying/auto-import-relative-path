@@ -5,7 +5,7 @@ Verify the extension loads and every entry point works. If any of these fail, st
 ## Setup
 
 - `00-setup.md` complete
-- Extension Development Host running with `manual-qa-workspace/` open as the folder
+- Extension Development Host running with `qa/workspace/` open as the folder
 - No prior toasts on screen (close VS Code's notifications panel if needed)
 
 ## Tests
@@ -31,7 +31,7 @@ Verify the extension loads and every entry point works. If any of these fail, st
   **Expect:** info toast `Auto Import: Copied path — bar.ts`. Clipboard now contains the absolute path of `bar.ts`.
 
 - [ ] **Verify clipboard externally.** Paste in any non-VS-Code text field (browser URL bar, Terminal, Notes app, etc.).
-  **Expect:** absolute path string of `bar.ts` (e.g. `/Users/<you>/<repo>/src/test/manual-qa-workspace/src/bar.ts`).
+  **Expect:** absolute path string of `bar.ts` (e.g. `/Users/<you>/<repo>/qa/workspace/src/bar.ts`).
 
 ### Keybinding — Paste (`cmd/ctrl+i`)
 

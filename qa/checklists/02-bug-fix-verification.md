@@ -5,7 +5,7 @@ Verify every fix from this session. **If any of these fails, the fix has regress
 ## Setup
 
 - `00-setup.md` complete
-- Extension Development Host running with `manual-qa-workspace/` open as the folder
+- Extension Development Host running with `qa/workspace/` open as the folder
 - 01-sanity-and-keybindings passed
 
 ---

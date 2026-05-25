@@ -45,12 +45,12 @@ Final checklist. Validates uncommon scenarios, stress conditions, and explicit r
 
 ## Multi-root workspace
 
-This needs a *second* folder unrelated to `manual-qa-workspace/`. Construct it outside the repo so it doesn't clutter the fixture tree:
+This needs a *second* folder unrelated to `qa/workspace/`. Construct it outside the repo so it doesn't clutter the fixture tree:
 
 - [ ] Create a second folder: `mkdir -p ~/multi-root-test/src; touch ~/multi-root-test/src/extern.ts`.
-- [ ] In the EDH, **File → Add Folder to Workspace…** → add `~/multi-root-test/`. (Both `manual-qa-workspace/` and `multi-root-test/` are now top-level roots.)
+- [ ] In the EDH, **File → Add Folder to Workspace…** → add `~/multi-root-test/`. (Both `qa/workspace/` and `multi-root-test/` are now top-level roots.)
 - [ ] Save the multi-root workspace as `~/multi-root-test/multi.code-workspace` (or anywhere — VS Code will prompt).
-- [ ] Copy `extern.ts` from the second root → paste into `src/foo.ts` of the *first* root (the fixture workspace). **Expect:** absolute path computation works across root boundaries; the resulting path resolves up out of `manual-qa-workspace/` and back down into `multi-root-test/` (exact form depends on where each root lives on disk).
+- [ ] Copy `extern.ts` from the second root → paste into `src/foo.ts` of the *first* root (the fixture workspace). **Expect:** absolute path computation works across root boundaries; the resulting path resolves up out of `qa/workspace/` and back down into `multi-root-test/` (exact form depends on where each root lives on disk).
 
 - [ ] **Cross-root same-file rejection:** copy `~/multi-root-test/src/extern.ts`, paste into the same file. **Expect:** warning toast `Auto Import: A file cannot import itself.`.
 
@@ -74,8 +74,8 @@ This needs a *second* folder unrelated to `manual-qa-workspace/`. Construct it o
 - [ ] **Setting toggle mid-flight.** With `placement = Top`, paste once. Immediately change to `Bottom` (without reload). Paste again.
   **Expect:** second paste at Bottom. No reload required.
 
-- [ ] **Source file deleted between copy and paste.** Copy `src/foo.ts` (clipboard now holds its absolute path). Delete the file from a terminal: `rm src/test/manual-qa-workspace/src/foo.ts` (run from the repo root). Back in the EDH, paste into `src/bar.ts`.
-  **Expect:** warning toast `Auto Import: Source file no longer exists: foo.ts.` — `paste-import.ts:70-74` runs `vscode.workspace.fs.stat` after the same-file check and fires the `'source-not-found'` notification when the file is gone. Editor unchanged. **Cleanup:** `git checkout src/test/manual-qa-workspace/src/foo.ts` (also from the repo root).
+- [ ] **Source file deleted between copy and paste.** Copy `src/foo.ts` (clipboard now holds its absolute path). Delete the file from a terminal: `rm qa/workspace/src/foo.ts` (run from the repo root). Back in the EDH, paste into `src/bar.ts`.
+  **Expect:** warning toast `Auto Import: Source file no longer exists: foo.ts.` — `paste-import.ts:70-74` runs `vscode.workspace.fs.stat` after the same-file check and fires the `'source-not-found'` notification when the file is gone. Editor unchanged. **Cleanup:** `git checkout qa/workspace/src/foo.ts` (also from the repo root).
 
 - [ ] **Extreme-depth path stress.** Open `very-deep/level-01/level-02/level-03/level-04/level-05/level-06/level-07/level-08/level-09/extreme-leaf.ts`. Copy `src/foo.ts`. Paste.
   **Expect:** snippet inserted with a 9-level relative path (`'../../../../../../../../../src/foo'`). Verifies the path-math layer doesn't choke on extreme traversal depth.

@@ -1,13 +1,13 @@
-# manual-qa-workspace
+# qa/workspace
 
-Self-contained fixture workspace for the **Auto Import Relative Path** extension's manual-QA suite. Open this directory as a VS Code workspace inside the Extension Development Host (F5 from the parent project) and walk the checklists in `../manual-qa/` against it.
+Self-contained fixture workspace for the **Auto Import Relative Path** extension's manual-QA suite. Open this directory as a VS Code workspace inside the Extension Development Host (F5 from the parent project) and walk the checklists in `../checklists/` against it.
 
 > **Not test code.** Nothing in here is compiled or imported by the Mocha test runner — every file exists purely as a paste source or destination. The runner glob (`out/test/**/*.test.js`) ignores this directory.
 
 ## Layout
 
 ```
-manual-qa-workspace/
+workspace/
 ├── empty-file.ts                       0-byte (edge case)
 ├── whitespace-only.ts                  whitespace-only (edge case)
 ├── single-char.ts                      1-byte (edge case)
@@ -120,8 +120,8 @@ Every cell of the source-extension × destination-extension matrix is reachable 
 
 ## Maintenance notes
 
-- The baseline filenames (`foo.ts`, `bar.ts`, `helpers.ts`, `sibling.js`, `other.js`, `widget.tsx`, `badge.jsx`, `app-root.component.ts`, `auth.module.ts`, `highlight.directive.ts`, `trim.pipe.ts`, `user.service.ts`, `_partial.scss`, `_variables.scss`, `main.scss`, `secondary.scss`, `global.css`, `reset.css`, `_partials/_nested.scss`, `index.html`, `about.html`, `README.md`, `guide.md`, `logo.png`, `icon.gif`, `photo.jpeg`, `photo.jpg`, `thumb.webp`, `icon.svg`, `banner.avif`, `font.woff2`, `regular.ttf`, `config.json`, `config.yaml`, `locale.yml`, `empty-file.ts`, `comments-only.ts`, `my files/spaced.ts`, `App.vue`, `App.svelte`, `App.astro`, `clip.mp4`, `song.mp3`, `captions.vtt`, `texture.bmp`) are **referenced by every checklist in `../manual-qa/`** (`01-sanity-and-keybindings.md` through `18-style-pickers.md`). Renaming them silently breaks the checklists — the tester will be told to copy a file that no longer exists at that path.
+- The baseline filenames (`foo.ts`, `bar.ts`, `helpers.ts`, `sibling.js`, `other.js`, `widget.tsx`, `badge.jsx`, `app-root.component.ts`, `auth.module.ts`, `highlight.directive.ts`, `trim.pipe.ts`, `user.service.ts`, `_partial.scss`, `_variables.scss`, `main.scss`, `secondary.scss`, `global.css`, `reset.css`, `_partials/_nested.scss`, `index.html`, `about.html`, `README.md`, `guide.md`, `logo.png`, `icon.gif`, `photo.jpeg`, `photo.jpg`, `thumb.webp`, `icon.svg`, `banner.avif`, `font.woff2`, `regular.ttf`, `config.json`, `config.yaml`, `locale.yml`, `empty-file.ts`, `comments-only.ts`, `my files/spaced.ts`, `App.vue`, `App.svelte`, `App.astro`, `clip.mp4`, `song.mp3`, `captions.vtt`, `texture.bmp`) are **referenced by every checklist in `../checklists/`** (`01-sanity-and-keybindings.md` through `18-style-pickers.md`). Renaming them silently breaks the checklists — the tester will be told to copy a file that no longer exists at that path.
 - Realistic siblings (`api-client.ts`, the `Button.tsx` family, `_mixins.scss`, etc.) are free to rename — they're for ad-hoc exploratory QA.
 - Image and font files are zero-byte placeholders. The extension only inspects file extensions, so real binary content is unnecessary.
 
-See `CLAUDE.md` in this directory for fixture-role mappings (which code path each fixture group exercises) and the "baselines are immutable" invariant. See `../manual-qa/README.md` for the checklist run-order and master sign-off.
+See `CLAUDE.md` in this directory for fixture-role mappings (which code path each fixture group exercises) and the "baselines are immutable" invariant. See `../checklists/README.md` for the checklist run-order and master sign-off.

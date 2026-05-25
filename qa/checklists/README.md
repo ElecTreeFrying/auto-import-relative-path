@@ -13,8 +13,8 @@ Four real bugs were fixed in `src/snippets/languages/scss.ts`, `src/snippets/lan
 1. **Install:** `npm install` (root of the project).
 2. **Compile:** `npm run compile` (must succeed before testing).
 3. **Launch the Extension Development Host:** press **F5** in the main project's VS Code window. A second VS Code window opens with the extension loaded from `dist/extension.js`.
-4. **Open the fixture workspace:** in the EDH window, **File → Open Folder…** → `<this-repo>/src/test/manual-qa-workspace/`. (Step-by-step in `00-setup.md`.) The fixtures are pre-built — you don't construct anything.
-5. **Walk files `01-…` → `18-…` in order.** Each file is self-contained: setup, tests, expected outcomes, optional "known limitations" callouts, and a per-file sign-off. Every path quoted in a checklist is **relative to the workspace root** (`src/foo.ts` means `manual-qa-workspace/src/foo.ts`).
+4. **Open the fixture workspace:** in the EDH window, **File → Open Folder…** → `<this-repo>/qa/workspace/`. (Step-by-step in `00-setup.md`.) The fixtures are pre-built — you don't construct anything.
+5. **Walk files `01-…` → `18-…` in order.** Each file is self-contained: setup, tests, expected outcomes, optional "known limitations" callouts, and a per-file sign-off. Every path quoted in a checklist is **relative to the workspace root** (`src/foo.ts` means `qa/workspace/src/foo.ts`).
 6. **Sign off** in the master matrix at the bottom of this README.
 
 If a checkbox fails, do not proceed past that file. Reproduce the failure, capture the steps, then triage.
@@ -45,9 +45,9 @@ If a checkbox fails, do not proceed past that file. Reproduce the failure, captu
 
 ## Fixtures
 
-Live in [`../manual-qa-workspace/`](../manual-qa-workspace/) — see that folder's `README.md` for the full layout (~174 files across `src/`, `styles/`, `pages/`, `docs/`, `assets/`, `data/`, plus edge-case roots `empty-file.ts`, `whitespace-only.ts`, `single-char.ts`, `comments-only.ts`, `with-imports.ts`, `with-requires.js`, `my files/spaced.ts`, `unicode-paths/`, `deeply/...`, `very-deep/...`, `unsupported/`).
+Live in [`../workspace/`](../workspace/) — see that folder's `README.md` for the full layout (~174 files across `src/`, `styles/`, `pages/`, `docs/`, `assets/`, `data/`, plus edge-case roots `empty-file.ts`, `whitespace-only.ts`, `single-char.ts`, `comments-only.ts`, `with-imports.ts`, `with-requires.js`, `my files/spaced.ts`, `unicode-paths/`, `deeply/...`, `very-deep/...`, `unsupported/`).
 
-The checklists below name files relative to that workspace root: when 04 says "copy `src/foo.ts`", it means `manual-qa-workspace/src/foo.ts`. The 37 *baseline* filenames the checklists rely on are listed in the workspace README's "Maintenance notes" section — renaming any of those breaks a test.
+The checklists below name files relative to that workspace root: when 04 says "copy `src/foo.ts`", it means `qa/workspace/src/foo.ts`. The 37 *baseline* filenames the checklists rely on are listed in the workspace README's "Maintenance notes" section — renaming any of those breaks a test.
 
 ### Files purpose-built for specific tests
 

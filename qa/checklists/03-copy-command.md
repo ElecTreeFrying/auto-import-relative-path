@@ -22,7 +22,7 @@ Validates `executeCopyFilePath` end-to-end. This is a prerequisite for every pas
 ### Clipboard population
 
 - [ ] **External paste check.** After copying `src/foo.ts`, paste into a non-VS-Code app (Terminal, Notes, browser).
-  **Expect:** the absolute path of `foo.ts` appears (e.g. `/Users/<you>/<repo>/src/test/manual-qa-workspace/src/foo.ts`).
+  **Expect:** the absolute path of `foo.ts` appears (e.g. `/Users/<you>/<repo>/qa/workspace/src/foo.ts`).
 
 - [ ] **Path is absolute.** Verify the pasted path begins with `/` (macOS/Linux) or a drive letter (Windows). **Expect:** absolute, never relative.
 
