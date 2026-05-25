@@ -29,18 +29,22 @@ This table is the unique value of this `CLAUDE.md` versus the sibling `README.md
 
 | Fixture group | Code site it exercises |
 |---------------|------------------------|
-| `src/components/*.{component,module,directive,pipe,service}.ts` | `src/snippets/typescript.ts:generateAngularLegacyImportName` — Angular PascalCase substitution at style index 0 only |
-| `styles/_*.scss`, `styles/_partials/_nested.scss`, `styles/components/_*.scss` | `src/snippets/scss.ts:normalizePartialFilename` — leading-`_` strip on the *last* path segment |
+| `src/components/*.{component,module,directive,pipe,service}.ts` | `src/snippets/languages/typescript.ts:generateAngularLegacyImportName` — Angular PascalCase substitution at style index 0 only |
+| `styles/_*.scss`, `styles/_partials/_nested.scss`, `styles/components/_*.scss` | `src/snippets/languages/scss.ts:normalizePartialFilename` — leading-`_` strip on the *last* path segment |
 | `with-imports.ts`, `with-requires.js`, `styles/with-imports.css`, `styles/with-uses.scss`, `pages/with-resources.html` | `src/editor/insert-snippet.ts:importIndicators` — Bottom-placement landing across all 12 markers |
-| `unsupported/{Main.java, styles.less, animation.mov, archive.zip}`, `assets/icon.svg` | `src/commands/paste-import.ts` 11-clause gating conjunction; `assets/icon.svg` additionally hits the JSX/TSX/MDX `_react.ts:default:` branch |
+| `unsupported/{Main.java, styles.less, texture.bmp, render.avi, archive.zip}` | `src/commands/paste-import.ts` 11-clause gating conjunction; `texture.bmp` additionally hits the JSX/TSX/MDX `_react.ts:default:` branch |
 | `empty-file.ts`, `whitespace-only.ts`, `single-char.ts`, `comments-only.ts` | Degenerate-document destinations; `comments-only.ts` specifically catches the Bottom-placement heuristic false-positive on the substring `import ` inside a comment |
 | `my files/spaced.ts`, `unicode-paths/{日本語.ts, café-menu.tsx}` | `src/path/relative.ts:computeRelative` — non-ASCII + space-containing path computation |
 | `deeply/nested/components/widgets/*`, `very-deep/level-01/.../level-09/extreme-leaf.ts` | `src/path/relative.ts` — multi-level `../` traversal (4 and 9 levels) |
-| `src/legacy/*.js`, `src/lib/*.js`, `src/sibling.js`, `src/other.js` | JavaScript export-shape coverage for `src/snippets/javascript.ts` (CommonJS `module.exports`, `exports.x`, IIFE, ES-module `export class`, `var require`/`const require`) |
-| `src/types/*.ts`, `src/lib/*.ts`, `src/server/*.ts`, `src/models/*.ts` | TypeScript export-shape coverage for `src/snippets/typescript.ts` (`interface`, `type`, `enum`, `const enum`, `namespace`, abstract class, default class/function, barrel re-export) |
+| `src/legacy/*.js`, `src/lib/*.js`, `src/sibling.js`, `src/other.js` | JavaScript export-shape coverage for `src/snippets/languages/javascript.ts` (CommonJS `module.exports`, `exports.x`, IIFE, ES-module `export class`, `var require`/`const require`) |
+| `src/types/*.ts`, `src/lib/*.ts`, `src/server/*.ts`, `src/models/*.ts` | TypeScript export-shape coverage for `src/snippets/languages/typescript.ts` (`interface`, `type`, `enum`, `const enum`, `namespace`, abstract class, default class/function, barrel re-export) |
 | `src/components/*.{jsx,tsx}` | React-component shape coverage for `src/snippets/_react.ts:buildReactImport` (function component, class component, HOC, forwardRef, generic, memoized, default export) |
-| `assets/{logo.png, icon.gif, photo.jpeg, photo.jpg, thumb.webp, font.woff2, regular.ttf}`, `assets/{images,icons,fonts}/*` | `IMAGE_FILE_EXTENSIONS` + font-extension paths through `src/snippets/_react.ts` and the non-script branches of `src/snippets/{html,css,scss,markdown}.ts` |
+| `src/App.vue`, `src/App.svelte`, `src/App.astro` | `src/snippets/languages/framework-component.ts:buildSnippet` — Vue/Svelte/Astro destinations delegating to `buildTypeScriptImportSnippet` |
+| `assets/{logo.png, icon.gif, photo.jpeg, photo.jpg, thumb.webp, icon.svg, banner.avif, font.woff2, regular.ttf}`, `assets/{images,icons,fonts}/*` | `IMAGE_FILE_EXTENSIONS` + font-extension paths through `src/snippets/_react.ts` and the non-script branches of `src/snippets/languages/{html,css,scss,markdown}.ts` |
+| `assets/media/{clip.mp4, demo.webm, animation.mov, song.mp3, effect.ogg, voice.wav, track.m4a, captions.vtt}` | `MEDIA_FILE_EXTENSIONS` + `TEXT_TRACK_FILE_EXTENSIONS` paths through `src/snippets/_react.ts` (url import), `src/snippets/languages/html.ts` (video/audio/text-track tags), and `src/path/import-type.ts:determineImportType` |
 | `data/{config.json, config.yaml, locale.yml, *.json, *.yaml}` | JSON/YAML branches in `src/snippets/_react.ts:buildReactImport`'s hardcoded non-script `switch` |
+| `data/document.pdf` | `.pdf` branch in `src/snippets/_react.ts:buildReactImport` → `import ${1:name} from '<path>';` |
+| `docs/example.mdx` | `.mdx` destination in `src/snippets/dispatch.ts` → falls through to `tsx.buildSnippet()` (identical semantics) |
 
 When refactoring any of the code sites above, run the matching manual-QA checklist under `../manual-qa/` over the fixtures listed here before shipping.
 
