@@ -11,8 +11,8 @@ Runtime gating tables for source/destination extension pairs.
 | Constant | Consumed by | Purpose |
 |----------|-------------|---------|
 | `IMAGE_FILE_EXTENSIONS` | The seven `*_SUPPORTED_EXTENSIONS` lists | Base set spread via `...IMAGE_FILE_EXTENSIONS` |
-| `MEDIA_FILE_EXTENSIONS` | `HTML_SUPPORTED_EXTENSIONS` | Video + audio extensions spread via `...MEDIA_FILE_EXTENSIONS` |
-| `TEXT_TRACK_FILE_EXTENSIONS` | `HTML_SUPPORTED_EXTENSIONS` | `.vtt` spread via `...TEXT_TRACK_FILE_EXTENSIONS` |
+| `MEDIA_FILE_EXTENSIONS` | The four `*_SUPPORTED_EXTENSIONS` lists that accept media (HTML, Vue, Svelte, Astro) | Video + audio extensions spread via `...MEDIA_FILE_EXTENSIONS` |
+| `TEXT_TRACK_FILE_EXTENSIONS` | The four `*_SUPPORTED_EXTENSIONS` lists that accept media (HTML, Vue, Svelte, Astro) | `.vtt` spread via `...TEXT_TRACK_FILE_EXTENSIONS` |
 | `HTML_SUPPORTED_EXTENSIONS` | `commands/paste-import.ts` clause 3 | Sources accepted for `.html` destinations |
 | `MARKDOWN_SUPPORTED_EXTENSIONS` | `commands/paste-import.ts` clause 4 | Sources accepted for `.md` destinations |
 | `CSS_SUPPORTED_EXTENSIONS` | `commands/paste-import.ts` clause 5 | Sources accepted for `.css` destinations |
