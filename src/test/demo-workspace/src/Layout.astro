@@ -1,0 +1,14 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import { getCollection } from 'astro:content';
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <ClientRouter />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
