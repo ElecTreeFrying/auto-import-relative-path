@@ -6,11 +6,11 @@ Per-language snippet builders + the destination-extension dispatch in `dispatch.
 
 - `dispatch.ts` — single-level destination-extension switch consumed by `extension.pasteImport`.
 - `variants.ts` — parallel aggregator that enumerates every applicable style for the current paste, consumed by `extension.pasteImportWithStyle` and `extension.setDefaultImportStyle`. Mirrors `dispatch.ts`'s destination switch and the per-language source classification, but calls each language's `buildXImportSnippetByStyle` **twice** per `*_IMPORT_OPTIONS` entry — once with the full relative path (for `snippetText`, the insertion payload) and once with `path.basename(...)` of that path (for `label`, the picker preview). The basename render keeps QuickPick labels short and width-stable regardless of source nesting depth (`'../../components/widget'` → `'widget'`). Each styled variant also carries a `setting?: { namespace, key, value }` triple pointing at the backing `package.json` setting, so `set-default-import-style.ts` can persist the chosen style via `setAutoImportSetting` without re-deriving the destination → table mapping. Hardcoded variants leave `setting` undefined.
-- `_shared.ts` — internal: `buildReactImport` shared by JSX/TSX/MDX.
+- `_react.ts` — internal: `buildReactImport` shared by JSX/TSX/MDX.
 - `_styles.ts` — internal: `ImportStyle[]` tables + `resolveStyleIndex`. Each entry on the nine active tables also carries an optional `tag` (free-form short label) used by the QuickPick rendered in `paste-import-with-style.ts`.
 - `languages/` — one module per destination language (`javascript.ts`, `typescript.ts`, `jsx.ts`, `tsx.ts`, `css.ts`, `scss.ts`, `html.ts`, `markdown.ts`, `framework-component.ts`). `.mdx` destinations fall through to `tsx.ts` in `dispatch.ts` (identical import semantics). `.vue`, `.svelte`, and `.astro` destinations share `framework-component.ts` (identical import semantics). The six styled languages (JS, TS, CSS, SCSS, HTML, MD-image) export both a config-reading `buildXImportSnippet` and pure `buildXImportSnippetByStyle(styleIndex, relativePath)` functions. HTML exports four styled builders (script, image, video, audio) plus two fixed-shape builders (stylesheet, text-track).
 
-The `_`-prefixed files are internal to the `snippets/` subtree — importing them from outside `snippets/` is a smell. The `languages/` modules importing `../_styles` and `../_shared` is expected (they are within the subtree).
+The `_`-prefixed files are internal to the `snippets/` subtree — importing them from outside `snippets/` is a smell. The `languages/` modules importing `../_styles` and `../_react` is expected (they are within the subtree).
 
 ## `_styles.ts` — string-equality contracts
 
@@ -26,7 +26,7 @@ The remaining HTML tables — `HTML_SCRIPT_IMPORT_OPTIONS` (5 entries), `HTML_IM
 
 Note: there is no `SCSS_IMAGE_IMPORT_OPTIONS` — SCSS image sources reuse `buildCssImageImportSnippet` from `languages/css.ts`, since the `url('…')` syntax is identical between the two languages. The `auto-import.importStatement.styleSheet.scssImageImportStyle` setting still exists in `package.json` for UI parity but is consumed via the CSS table at lookup time.
 
-## JSX/TSX/MDX share `_shared.ts:buildReactImport`
+## JSX/TSX/MDX share `_react.ts:buildReactImport`
 
 Parameterised by `primaryExtensions` / `primarySnippet` (and optional `fallbackExtensions` / `fallbackSnippet`):
 

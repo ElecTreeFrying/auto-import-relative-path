@@ -8,7 +8,7 @@ Per-language snippet builders and the destination-extension dispatch. The public
 |------|---------|
 | `dispatch.ts` | `buildImportSnippet()` — switches on `destinationFileExt` and delegates. The public entry point for the default paste flow. |
 | `variants.ts` | `buildImportSnippetVariants()` — enumerates every applicable style for the current source/destination pair. Consumed by `pasteImportWithStyle` and `setDefaultImportStyle`; renders full-path snippets for insertion and basename-only labels for the QuickPick in parallel. |
-| `_shared.ts` | Internal: `buildReactImport` shared by JSX/TSX/MDX. |
+| `_react.ts` | Internal: `buildReactImport` shared by JSX/TSX/MDX. |
 | `_styles.ts` | Internal: `ImportStyle[]` tables + `resolveStyleIndex` lookup. |
 
 ### `languages/`
@@ -19,15 +19,15 @@ One module per destination language.
 |------|---------|
 | `javascript.ts` | JS shapes (7 styles) via `auto-import.importStatement.script.javascriptImportStyle`. |
 | `typescript.ts` | TS shapes (7 styles), with Angular PascalCase substitution at index 0. |
-| `jsx.ts` | JSX entry — delegates to `_shared.ts:buildReactImport` with JS as primary. |
-| `tsx.ts` | TSX/MDX entry — delegates to `_shared.ts:buildReactImport` with TS primary, JS fallback for `.js` sources. `.mdx` shares this builder via fall-through in `dispatch.ts`. |
+| `jsx.ts` | JSX entry — delegates to `_react.ts:buildReactImport` with JS as primary. |
+| `tsx.ts` | TSX/MDX entry — delegates to `_react.ts:buildReactImport` with TS primary, JS fallback for `.js` sources. `.mdx` shares this builder via fall-through in `dispatch.ts`. |
 | `css.ts` | CSS shapes (2 styles); `buildCssImageImportSnippet` exported for SCSS reuse. |
 | `scss.ts` | SCSS shapes (5 styles), with partial-filename underscore stripping and asymmetric `.css` extension preservation. |
 | `html.ts` | HTML `<script>` (5 styles) / `<img>` (3) / `<video>` (4) / `<audio>` (2) configurable + `<link>` / `<track>` fixed. |
 | `markdown.ts` | Markdown link (fixed) + image (3 configurable styles). |
 | `framework-component.ts` | Vue/Svelte/Astro entry — delegates to `buildTypeScriptImportSnippet` for all sources; strips extension for script sources per preserve setting. All three share identical import semantics. |
 
-`_`-prefixed files are internal to the `snippets/` subtree. Importing them from outside `snippets/` is a smell; `languages/` modules importing `../_styles` and `../_shared` is expected.
+`_`-prefixed files are internal to the `snippets/` subtree. Importing them from outside `snippets/` is a smell; `languages/` modules importing `../_styles` and `../_react` is expected.
 
 ## Where to add new code
 
