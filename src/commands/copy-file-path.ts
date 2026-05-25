@@ -9,8 +9,12 @@ export async function executeCopyFilePath(): Promise<boolean> {
 
   const filePath = await vscode.env.clipboard.readText();
   const trimmed = filePath.trim();
-  if (trimmed === '' || !path.isAbsolute(trimmed) || path.extname(trimmed) === '') {
+  if (trimmed === '' || !path.isAbsolute(trimmed)) {
     showNotification('no-file-to-copy');
+    return false;
+  }
+  if (path.extname(trimmed) === '') {
+    showNotification('no-extension', { basename: path.basename(trimmed) });
     return false;
   }
 

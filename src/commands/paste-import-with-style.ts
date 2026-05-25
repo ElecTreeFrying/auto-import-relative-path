@@ -29,8 +29,11 @@ export async function executePasteImportWithStyle(): Promise<void> {
     await Promise.all([getFilePathInfo(), buildImportSnippetVariants()]);
 
   const trimmedSource = sourceFilePath.trim();
-  if (trimmedSource === '' || !path.isAbsolute(trimmedSource) || path.extname(trimmedSource) === '') {
+  if (trimmedSource === '' || !path.isAbsolute(trimmedSource)) {
     return showNotification('empty-clipboard');
+  }
+  if (path.extname(trimmedSource) === '') {
+    return showNotification('no-extension', { basename: path.basename(sourceFilePath) });
   }
 
   if (sourceFilePath.toLowerCase() === destinationFilePath.toLowerCase()) {

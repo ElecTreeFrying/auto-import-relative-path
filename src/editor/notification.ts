@@ -6,6 +6,7 @@ const SUPPORTED_PAIRS_URL = 'https://github.com/ElecTreeFrying/auto-import-relat
 
 export function showNotification(type: 'same-file-path' | 'no-active-editor' | 'no-file-to-copy' | 'empty-clipboard'): void;
 export function showNotification(type: 'not-supported', payload: { sourceExt: string; destinationExt: string }): void;
+export function showNotification(type: 'no-extension', payload: { basename: string }): void;
 export function showNotification(type: 'source-not-found', payload: { basename: string }): void;
 export function showNotification(type: 'copy-success', payload: { basename: string }): Thenable<string | undefined>;
 export function showNotification(type: 'no-configurable-style', payload: { sourceExt: string; destinationExt: string }): void;
@@ -19,7 +20,7 @@ export function showNotification(
       vscode.window.showWarningMessage('Auto Import: A file cannot import itself.');
       break;
     case 'not-supported':
-      vscode.window.showWarningMessage(
+      void vscode.window.showWarningMessage(
         `Auto Import: Cannot import ${payload!.sourceExt} into ${payload!.destinationExt} files.`,
         'View Supported Files',
       ).then(action => {
@@ -34,6 +35,9 @@ export function showNotification(
     case 'no-file-to-copy':
       vscode.window.showWarningMessage('Auto Import: No file selected to copy.');
       break;
+    case 'no-extension':
+      vscode.window.showWarningMessage(`Auto Import: ${payload!.basename} has no file extension.`);
+      break;
     case 'empty-clipboard':
       vscode.window.showWarningMessage('Auto Import: Clipboard does not contain a file path. Use Auto Import: Copy File Path on a source file first.');
       break;
@@ -47,7 +51,7 @@ export function showNotification(
         'Paste Now',
       );
     case 'no-configurable-style':
-      vscode.window.showWarningMessage(`Auto Import: No configurable style for ${payload!.sourceExt} → ${payload!.destinationExt} files.`,);
+      vscode.window.showWarningMessage(`Auto Import: ${payload!.sourceExt} → ${payload!.destinationExt} imports use a fixed style.`);
       break;
     case 'default-style-saved':
       vscode.window.showInformationMessage(`Auto Import: Default style saved — ${payload!.description}`);
@@ -56,5 +60,5 @@ export function showNotification(
 }
 
 export function clearNotifications(): void {
-  vscode.commands.executeCommand('notifications.clearAll');
+  void vscode.commands.executeCommand('notifications.clearAll');
 }
