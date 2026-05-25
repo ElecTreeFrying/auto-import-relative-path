@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 
 import { buildImportSnippetVariants } from '../../snippets/variants';
 
-const FIXTURE_ROOT = path.resolve(__dirname, '../../../src/test/manual-qa-workspace');
+const FIXTURE_ROOT = path.resolve(__dirname, '../../../qa/workspace');
 
 async function openAndQuery(destFixture: string, sourceName: string) {
   const doc = await vscode.workspace.openTextDocument(

@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 
 import { buildImportSnippet } from '../../snippets/dispatch';
 
-const FIXTURE_ROOT = path.resolve(__dirname, '../../../src/test/manual-qa-workspace');
+const FIXTURE_ROOT = path.resolve(__dirname, '../../../qa/workspace');
 
 async function openFixture(relativePath: string): Promise<void> {
   const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(path.join(FIXTURE_ROOT, relativePath)));

@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 
 import { insertImportSnippet } from '../../editor/insert-snippet';
 
-const FIXTURE_ROOT = path.resolve(__dirname, '../../../src/test/manual-qa-workspace');
+const FIXTURE_ROOT = path.resolve(__dirname, '../../../qa/workspace');
 const SNIPPET_TEXT = "import { test } from './test';";
 
 async function openFixture(relativePath: string): Promise<vscode.TextEditor> {

@@ -3,7 +3,7 @@ import * as path from 'path';
 
 import { extractFirstExportedClassName, readExportedClassName } from '../../snippets/_class-name';
 
-const FIXTURE_ROOT = path.resolve(__dirname, '../../../src/test/manual-qa-workspace');
+const FIXTURE_ROOT = path.resolve(__dirname, '../../../qa/workspace');
 
 describe('class-name', () => {
   describe('extractFirstExportedClassName', () => {

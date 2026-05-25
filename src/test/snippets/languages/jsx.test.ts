@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 
 import { buildSnippet } from '../../../snippets/languages/jsx';
 
-const FIXTURE_ROOT = path.resolve(__dirname, '../../../../src/test/manual-qa-workspace');
+const FIXTURE_ROOT = path.resolve(__dirname, '../../../../qa/workspace');
 const DEST_DIR = path.join(FIXTURE_ROOT, 'src');
 const DEST_FILE = path.join(DEST_DIR, 'foo.ts');
 
