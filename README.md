@@ -1,364 +1,560 @@
 # Auto Import Relative Path
 
-[![Current version of Auto Import Relative Path][version svg]][package] [![Current installs of Auto Import Relative Path][installs svg]][package] [![Current downloads of Auto Import Relative Path][downloads svg]][package] [![Current ratings of Auto Import Relative Path][ratings svg]][package]
+[![version][version svg]][package]
+[![installs][installs svg]][package]
+[![downloads][downloads svg]][package]
+[![ratings][ratings svg]][package]
+[![license][license svg]][package]
+[![vscode][vscode svg]][package]
 
 [version svg]: https://vsmarketplacebadges.dev/version-short/electreefrying.auto-import.png
 [installs svg]: https://vsmarketplacebadges.dev/installs/electreefrying.auto-import.png
 [downloads svg]: https://vsmarketplacebadges.dev/downloads/electreefrying.auto-import.png
 [ratings svg]: https://vsmarketplacebadges.dev/rating-short/ElecTreeFrying.auto-import.png
+[license svg]: https://img.shields.io/github/license/ElecTreeFrying/auto-import-relative-path
+[vscode svg]: https://img.shields.io/badge/vscode-%3E%3D1.118.0-blue
 [package]: https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import
 
-> **Stop typing `../../components/Button` from memory.** Pick the file in the Explorer, press a key, and a fully-formed import lands in your editor — correct path, correct syntax, every time.
+> **Never type an import path again.**
 
-![auto-import-demo][playback]
+**Angular** · **React** · **Vue** · **Svelte** · **Astro** · JS · TS · CSS · SCSS · HTML · Markdown
 
-[playback]: https://res.cloudinary.com/october7/image/upload/v1679982147/github/auto-import-relative-path/playback.gif "Auto Import Relative Path — 30-second tour"
+Pick a file, press a key — the right import lands in your editor. Path, syntax, and placement handled automatically.
 
----
-
-## Table of Contents
-
-- [Auto Import Relative Path](#auto-import-relative-path)
-  - [Table of Contents](#table-of-contents)
-  - [Why this extension?](#why-this-extension)
-  - [Highlights](#highlights)
-  - [Quick Start](#quick-start)
-  - [Commands \& Keybindings](#commands--keybindings)
-  - [Supported source → destination pairs](#supported-source--destination-pairs)
-  - [Examples](#examples)
-    - [TypeScript with Angular auto-fill](#typescript-with-angular-auto-fill)
-    - [JSX importing an image](#jsx-importing-an-image)
-    - [SCSS importing a partial via `@use`](#scss-importing-a-partial-via-use)
-    - [SCSS importing a `.css` file](#scss-importing-a-css-file)
-    - [HTML embedding a script](#html-embedding-a-script)
-    - [Markdown referencing an image](#markdown-referencing-an-image)
-    - [CommonJS require](#commonjs-require)
-  - [Configuration](#configuration)
-    - [Placement](#placement)
-    - [Scripts — JS, JSX, TS, TSX](#scripts--js-jsx-ts-tsx)
-    - [Stylesheets — CSS, SCSS](#stylesheets--css-scss)
-    - [Markup — HTML, Markdown](#markup--html-markdown)
-  - [Tips \& Tricks](#tips--tricks)
-  - [Installation](#installation)
-  - [Compatibility](#compatibility)
-  - [Troubleshooting](#troubleshooting)
-  - [Changelog](#changelog)
-  - [Contributing](#contributing)
-  - [Support the project](#support-the-project)
-  - [Related](#related)
-  - [License](#license)
-
----
-
-## Why this extension?
-
-You know the file you want. You know it's somewhere two folders up and one over. You spend ten seconds counting `..`s — and another ten getting the import-statement shape right for whatever language you're in.
-
-**Auto Import Relative Path** removes that ritual. One keystroke does the whole thing:
-
-- **Computes the relative path** between the file you picked and the file you're editing — handles `./`-prefix edge cases, sibling directories, and absolute-vs-relative mismatches.
-- **Picks the right import shape** for your destination — ES module `import`, CommonJS `require`, dynamic `import()`, SCSS `@use`, HTML `<script>` / `<link>` / `<img>`, Markdown `![](…)`, and more.
-- **Drops it in the right place** — top of your imports, bottom of your imports, or at the cursor (HTML and Markdown automatically use the cursor).
-
-It's a 100% local extension. **No telemetry, no network calls, no AI.** ~11 KB gzipped. Activates on demand.
-
----
-
-## Highlights
-
-- **Five commands, three keystrokes** — Copy / Paste / Auto on the keyboard, plus *Paste (Pick Style)* and *Set Default Import Style* from the Command Palette.
-- **Eight destination languages** — JavaScript, TypeScript, JSX, TSX, CSS, SCSS, HTML, Markdown.
-- **22 configurable import styles** — ES modules, CommonJS, dynamic, `@use`, `@import`, side-effect-only, and more.
-- **Angular-aware naming** — `app-root.component.ts` automatically becomes `import { AppRootComponent } from '...'`.
-- **SCSS partial-aware** — `_variables.scss` becomes `variables` in the import path, matching Sass conventions.
-- **Smart placement** — Top, Bottom (after the last import line), or Cursor — with sensible auto-overrides for HTML / Markdown / non-stylesheet → stylesheet destinations.
-- **Cross-language assets** — Image, font, JSON, YAML, HTML, and Markdown sources can be imported into JSX / TSX as default or side-effect imports.
-- **~11 KB gzipped, zero runtime dependencies** — Activates on first command, vanishes the rest of the time.
+![Auto Import Relative Path demo](assets/demo.gif)
 
 ---
 
 ## Quick Start
 
-1. **Install** the extension (see [Installation](#installation)).
-2. **Open** your project and any source file in the editor.
-3. **Right-click** a file in the Explorer panel and pick **Auto Import: Insert Import from Selected File** — or press <kbd>Alt</kbd>+<kbd>D</kbd> / <kbd>Option</kbd>+<kbd>D</kbd>.
+1. **Install** the extension ([see below](#installation)).
+2. **Click** a file in the Explorer and press <kbd>Option</kbd>+<kbd>D</kbd> (<kbd>Alt</kbd>+<kbd>D</kbd> on Windows/Linux) to auto-import — or use the two-step <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> then <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>I</kbd> workflow.
+3. The import lands in your editor. Your cursor is on the identifier — name it and <kbd>Tab</kbd> out.
 
-That's it. The import lands in your editor and your cursor is positioned at the identifier so you can name it.
+> **Two-step workflow:** <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> to copy a file's path, then <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>I</kbd> in any editor to paste the import. The clipboard holds the path until you copy something else — paste into as many files as you like.
 
-> **Two-step workflow:** Press <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> on a source file to copy its path, then <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>I</kbd> in any editor to paste the import. The clipboard holds the path until you copy something else, so you can paste the same import into many files in a row.
+> **Pick a style on the fly:** Run *Auto Import: Paste as Import (Pick Style)* from the Command Palette, or click **Paste with Style** on the copy toast. Choose an import shape for one paste without changing your default.
 
-> **Pick a style on the fly:** Press <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> and run *Auto Import: Paste as Import (Pick Style)* — or click *Paste with Style* on the "Copied …" toast — to choose an import shape for one paste without changing your default.
+[**See the full specification**][SPEC]
 
-→ [**See the full demo gallery**][DEMO]
+[SPEC]: SPEC.md
 
-[DEMO]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md
+---
+
+## Highlights
+
+- **Five commands, three keystrokes** — Copy, Paste, and Auto on the keyboard; *Pick Style* and *Set Default Style* from the Command Palette
+- **Built for every major framework** — Angular, React, Vue, Svelte, Astro — plus vanilla JS/TS, CSS/SCSS, HTML, and Markdown
+- **35 source extensions** — scripts, stylesheets, images, fonts, video, audio, text tracks, data, documents, components
+- **38 configurable import styles** — ES modules, CommonJS, dynamic `import()`, `@use`, `@forward`, `@import`, HTML tags, Markdown syntax
+- **Framework-aware placement** — imports land inside Astro `---` frontmatter and Vue / Svelte `<script>` blocks automatically
+- **Smart identifiers** — exported class detection for TypeScript, Angular PascalCase auto-fill, CSS Modules `styles` binding
+- **~10 KB gzipped, zero dependencies, no telemetry**
 
 ---
 
 ## Commands & Keybindings
 
-The first three commands are bound to keystrokes; the last two live in the Command Palette (one is also reachable from a button on the "Copied …" toast).
+| Command | macOS | Windows / Linux | What it does |
+|---|---|---|---|
+| **Copy File Path** | <kbd>Cmd+Shift+A</kbd> | <kbd>Ctrl+Shift+A</kbd> | Copies the file path to clipboard. Shows a toast with **Paste Now** and **Paste with Style** buttons. |
+| **Paste as Import** | <kbd>Cmd+I</kbd> | <kbd>Ctrl+I</kbd> | Reads the clipboard path and inserts the import into the active editor. |
+| **Insert Import from Selected File** | <kbd>Option+D</kbd> | <kbd>Alt+D</kbd> | Copy + Paste in one step from the Explorer sidebar. |
+| **Paste as Import (Pick Style)** | Command Palette | Command Palette | Shows a picker of all applicable styles for the current pair, then inserts. Does not change your default. |
+| **Set Default Import Style** | Command Palette | Command Palette | Shows a picker and persists the chosen style to your global settings. The current default is marked with a checkmark. |
 
-| Command (palette title)                              | Windows / Linux             | macOS                       | What it does                                                                                                                                       |
-|------------------------------------------------------|-----------------------------|-----------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Auto Import: Copy File Path**                      | <kbd>Ctrl+Shift+A</kbd>     | <kbd>Cmd+Shift+A</kbd>      | Copies the selected Explorer file's path to the clipboard. Shows a "Copied &lt;basename&gt;" toast with two action buttons: *Paste Now* and *Paste with Style*. |
-| **Auto Import: Paste as Import**                     | <kbd>Ctrl+I</kbd>           | <kbd>Cmd+I</kbd>            | Reads the clipboard path and inserts the language-appropriate import into the active editor.                                                       |
-| **Auto Import: Insert Import from Selected File**    | <kbd>Alt+D</kbd>            | <kbd>Option+D</kbd>         | Copy + Paste in one step from the Explorer. Active editor must be open in the background.                                                          |
-| **Auto Import: Paste as Import (Pick Style)**        | — (Command Palette / toast) | — (Command Palette / toast) | Like Paste, but opens a QuickPick of every import style accepted for the current source/destination pair. Inserts once; does **not** change your default. |
-| **Auto Import: Set Default Import Style**            | — (Command Palette)         | — (Command Palette)         | Opens a QuickPick of styles for the current source/destination pair and writes the chosen one to your global User settings as the new default. The current default is marked with a check and pinned to the top. |
+All five are searchable in the Command Palette (<kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> → `Auto Import`). The three keyboard shortcuts are rebindable from VS Code's keyboard shortcuts editor.
 
-All five commands are available from the command palette (<kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>, search `Auto Import`). The three keyboard commands are rebindable from VS Code's keyboard shortcuts editor.
+See [SPEC — §Commands & Keybindings][SPEC-commands] for command IDs, context clauses, and workflow details.
 
-[Demo — two-step Copy + Paste][demo-twostep] · [Demo — one-step Auto][demo-onestep] · [Demo — copy once, paste many][demo-many]
-
-[demo-twostep]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#two-step-copy--paste
-[demo-onestep]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#one-step-auto
-[demo-many]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/DEMO.md#copy-once-paste-across-tabs
+[SPEC-commands]: SPEC.md#commands--keybindings
 
 ---
 
-## Supported source → destination pairs
+## Supported Languages
 
-The extension is **destination-driven**: the file open in your editor decides which sources are accepted.
+The extension is **destination-driven** — the file open in your editor decides which sources it accepts.
 
-| Active editor (destination) | Accepted source extensions                                                                                          | What gets generated                                                                                                          |
-|-----------------------------|---------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------|
-| **`.js`**                   | `.js`                                                                                                               | One of 9 JavaScript import shapes (configurable).                                                                            |
-| **`.ts`**                   | `.ts`                                                                                                               | One of 5 TypeScript import shapes (configurable). The `import { name }` shape triggers Angular PascalCase auto-fill.         |
-| **`.jsx`**                  | `.jsx`, `.js`, plus images, fonts, JSON, YAML, HTML, Markdown, CSS, SCSS                                            | JS shape for scripts; `import name from '<path>'` for assets; side-effect `import '<path>'` for fonts and stylesheets.        |
-| **`.tsx`**                  | `.tsx`, `.ts`, `.js`, plus images, fonts, JSON, YAML, HTML, Markdown, CSS, SCSS                                     | TS shape for scripts (JS shape for `.js` sources); same asset / stylesheet behaviour as JSX.                                  |
-| **`.css`**                  | `.css`, images                                                                                                      | `@import '...'` (configurable) or `url('<path>')` for images.                                                                 |
-| **`.scss`**                 | `.scss`, `.css`, images                                                                                             | One of 4 SCSS shapes including `@use` (configurable; partial leading `_` stripped). `url('<path>')` for images.               |
-| **`.html`**                 | `.js`, `.css`, images                                                                                               | `<script src="...">`, `<link href="..." rel="stylesheet">`, or `<img src="...">` — inserted at the cursor.                   |
-| **`.md`**                   | `.md`, images                                                                                                       | `[text](<path>)` link or one of 2 image shapes (inline / reference) — inserted at the cursor.                                |
+| Destination | Accepted sources | What gets generated |
+|---|---|---|
+| `.js` | `.js` | JavaScript import style (7 configurable) |
+| `.ts` | `.ts` | TypeScript import style (7 configurable) |
+| `.jsx` | All except `.ts`, `.tsx` | JS style for scripts; per-category dispatch for others |
+| `.tsx` | All 35 extensions | TS style for `.ts`/`.tsx`; JS style for `.js`/`.jsx`; per-category for others |
+| `.mdx` | All 35 extensions | Same as `.tsx` |
+| `.css` | `.css`, images | `@import` style (configurable) or inline `url()` for images |
+| `.scss` | `.scss`, `.css`, images | `@use` / `@forward` / `@import` (configurable) or inline `url()` for images |
+| `.html` | `.js`, `.css`, images, video, audio, `.vtt` | `<script>`, `<link>`, `<img>`, `<video>`, `<audio>`, `<track>` |
+| `.md` | `.md`, images | `[text](path)` or Markdown image syntax |
+| `.vue` | `.vue`, scripts, images, media, data | TypeScript import style |
+| `.svelte` | `.svelte`, scripts, images, media, data | TypeScript import style |
+| `.astro` | `.astro`, `.vue`, `.svelte`, scripts, images, media, data, `.md`, `.mdx` | TypeScript import style |
 
-> **Image extensions:** `.gif`, `.jpeg`, `.jpg`, `.png`, `.webp` &nbsp;·&nbsp; **Font extensions:** `.woff`, `.woff2`, `.ttf`, `.eot` &nbsp;·&nbsp; **Data extensions:** `.json`, `.yaml`, `.yml`.
+See [SPEC — §Supported File Extensions][SPEC-extensions] for the full 35-extension breakdown by category.
 
-> **Plain `.js` / `.ts` are strict same-extension** — no cross-language imports. If you need to import a `.json` or stylesheet asset, the destination must be `.jsx` or `.tsx`.
+[SPEC-extensions]: SPEC.md#supported-file-extensions
+
+<details>
+<summary><strong>Extension groups</strong></summary>
+
+| Group | Extensions |
+|---|---|
+| Scripts | `.ts`, `.tsx`, `.mdx`, `.js`, `.jsx` |
+| Images | `.gif`, `.jpeg`, `.jpg`, `.png`, `.svg`, `.avif`, `.webp` |
+| Fonts | `.woff`, `.woff2`, `.ttf`, `.eot` |
+| Video | `.mp4`, `.webm`, `.mov` |
+| Audio | `.mp3`, `.ogg`, `.wav`, `.m4a` |
+| Text track | `.vtt` |
+| Data | `.json`, `.yaml`, `.yml` |
+| Document | `.pdf` |
+| Stylesheets | `.css`, `.scss` |
+| Markup | `.html`, `.md` |
+| Components | `.vue`, `.svelte`, `.astro` |
+
+</details>
+
+**Rejection rules:**
+
+- **Same file** — a file cannot import itself (case-insensitive path comparison).
+- **Unsupported pair** — source extension not in the destination's accepted list.
+- **`.js` and `.ts` are strict same-extension** — no cross-language imports. Use `.jsx` or `.tsx` destinations for asset imports.
+
+See SPEC: [Rejection Rules][SPEC-reject] · [Cross-Import Compatibility][SPEC-compat]
+
+[SPEC-reject]: SPEC.md#rejection-rules
+[SPEC-compat]: SPEC.md#cross-import-compatibility
 
 ---
 
-## Examples
+## Import Styles
 
-Each example shows what the source and destination files are, what setting is in play, and what the generated snippet looks like.
+Every import-style setting maps to a list of shapes. The default shape is index 0. Change it in VS Code Settings (<kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>,</kbd> → search `auto-import`) or run **Set Default Import Style** from the Command Palette.
 
-### TypeScript with Angular auto-fill
+In the snippets below, `name` is an editable placeholder — your cursor lands there so you can type the identifier and <kbd>Tab</kbd> out. See [SPEC — §Import Statement Styles][SPEC-styles] for every shape with full context.
 
-```ts
-// Source:      src/app/app-root.component.ts
-// Destination: src/app/app.module.ts
-// Setting:     auto-import.importStatement.script.typescriptImportStyle
-//              = "import { name } from '_relativePath_';"
+[SPEC-styles]: SPEC.md#import-statement-styles
 
-import { AppRootComponent } from './app-root.component';
-//        └─ derived from the source basename, automatically
+See also [SPEC — §Snippet Placeholders][SPEC-placeholders] for tab-stop details.
+
+[SPEC-placeholders]: SPEC.md#snippet-placeholders
+
+### Script — JavaScript & TypeScript
+
+**JavaScript — 7 styles**
+
+Setting: `auto-import.importStatement.script.javascriptImportStyle`
+
+Used for `.js` destinations. Also used for `.js`/`.jsx` sources imported into `.jsx`, `.tsx`, and `.mdx` destinations.
+
+| # | Snippet | Description |
+|---|---|---|
+| **0** | `import name from './path';` | Default import **(default)** |
+| 1 | `import { name } from './path';` | Named import |
+| 2 | `import name, { other } from './path';` | Default + named |
+| 3 | `import * as name from './path';` | Namespace |
+| 4 | `import './path';` | Side-effect (no binding) |
+| 5 | `const name = require('./path');` | CommonJS require |
+| 6 | `const name = await import('./path');` | Dynamic import |
+
+**TypeScript — 7 styles**
+
+Setting: `auto-import.importStatement.script.typescriptImportStyle`
+
+Used for `.ts` destinations. Also used for `.ts`/`.tsx` sources imported into `.tsx` and `.mdx` destinations, and for all script sources imported into `.vue`, `.svelte`, and `.astro` destinations.
+
+| # | Snippet | Description |
+|---|---|---|
+| **0** | `import { name } from './path';` | Named import **(default)** |
+| 1 | `import name from './path';` | Default import |
+| 2 | `import * as name from './path';` | Namespace |
+| 3 | `import './path';` | Side-effect (no binding) |
+| 4 | `import type { name } from './path';` | Type-only import (TS 3.8+) |
+| 5 | `import { name, type Type } from './path';` | Mixed value + type (TS 4.5+) |
+| 6 | `const name = await import('./path');` | Dynamic import |
+
+> **Exported class detection** (index 0, `.ts` destinations only): when the source file contains `export class Name` or `export abstract class Name`, the class name pre-fills the `name` placeholder automatically.
+
+> **Angular legacy auto-fill** (index 0): when the source path contains `.component`, `.directive`, `.pipe`, `.service`, or `.module`, the placeholder is pre-filled with a PascalCase identifier — `app-root.component.ts` becomes `import { AppRootComponent } from './app-root.component';`. Class detection takes priority when both apply.
+
+See SPEC: [JavaScript][SPEC-js] · [TypeScript][SPEC-ts]
+
+[SPEC-js]: SPEC.md#javascript
+[SPEC-ts]: SPEC.md#typescript
+
+### Stylesheet — CSS & SCSS
+
+**CSS — 2 styles**
+
+Setting: `auto-import.importStatement.styleSheet.cssImportStyle`
+
+Used for `.css` sources imported into `.css` destinations.
+
+| # | Snippet | Description |
+|---|---|---|
+| **0** | `@import './path';` | Quoted path **(default)** |
+| 1 | `@import url('./path');` | `url()` function |
+
+**CSS / SCSS image — inline `url()`**
+
+Image sources imported into `.css` or `.scss` destinations are inserted **inline at the cursor** as a CSS value fragment, not a standalone statement:
+
+```css
+url('./path')
 ```
 
-The auto-fill triggers on `.component`, `.directive`, `.pipe`, `.service`, and `.module` files. Pick a different TypeScript shape if you don't want it.
+No trailing newline — this is meant to be placed inside a `background-image`, `content`, or similar property.
 
-### JSX importing an image
+**SCSS — 5 styles**
 
-```jsx
-// Source:      assets/logo.png
-// Destination: src/components/Header.jsx
+Setting: `auto-import.importStatement.styleSheet.scssImportStyle`
 
-import logo from '../assets/logo.png';
-//     └─ snippet placeholder; rename and tab out
-```
+Used for `.scss` and `.css` sources imported into `.scss` destinations.
 
-### SCSS importing a partial via `@use`
+| # | Snippet | Description |
+|---|---|---|
+| **0** | `@use './path';` | Sass module system **(default)** |
+| 1 | `@use './path' as *;` | Module with wildcard — no namespace prefix |
+| 2 | `@use './path' as name;` | Module with named alias |
+| 3 | `@forward './path';` | Re-export (barrel pattern) |
+| 4 | `@import './path';` | Legacy `@import` (Sass-deprecated) |
 
-```scss
-// Source:      styles/_variables.scss
-// Destination: styles/main.scss
-// Setting:     auto-import.importStatement.styleSheet.scssImportStyle
-//              = "@use '_relativePath_';"
+> **Partial normalization:** a leading `_` on the last path segment is stripped — `_variables.scss` becomes `@use './variables';`, matching Sass convention.
 
-@use './variables';
-//    └─ leading `_` stripped, matching Sass partial convention
-```
+> **`.css` preservation:** the `.css` extension is always kept on SCSS import paths, even when `preserveStylesheetFileExtension` is off. Sass requires it to recognize a foreign-language import.
 
-### SCSS importing a `.css` file
+See SPEC: [CSS][SPEC-css] · [CSS image][SPEC-css-img] · [SCSS][SPEC-scss]
 
-```scss
-// Source:      vendor/normalize.css
-// Destination: styles/main.scss
+[SPEC-css]: SPEC.md#css-stylesheet
+[SPEC-css-img]: SPEC.md#css-image--hardcoded
+[SPEC-scss]: SPEC.md#scss-stylesheet
 
-@use './vendor/normalize.css';
-//                       └─ extension preserved (Sass requires it for plain-CSS imports)
-```
+### HTML
 
-### HTML embedding a script
+**`<script>` — 5 styles**
+
+Setting: `auto-import.importStatement.markup.htmlScriptImportStyle`
+
+Used for `.js` sources imported into `.html` destinations.
+
+| # | Snippet | Description |
+|---|---|---|
+| **0** | `<script src="./path"></script>` | Modern minimal **(default)** |
+| 1 | `<script src="./path" defer></script>` | Deferred execution |
+| 2 | `<script type="module" src="./path"></script>` | ES module |
+| 3 | `<script src="./path" async></script>` | Async execution |
+| 4 | `<script type="text/javascript" src="./path"></script>` | Legacy |
+
+**`<img>` — 3 styles**
+
+Setting: `auto-import.importStatement.markup.htmlImageImportStyle`
+
+Used for image sources imported into `.html` destinations.
+
+| # | Snippet | Description |
+|---|---|---|
+| **0** | `<img src="./path" alt="sample">` | Standard **(default)** |
+| 1 | `<img src="./path" alt="" loading="lazy">` | Lazy loading |
+| 2 | `<img src="./path" alt="" width="" height="">` | Explicit dimensions (CLS prevention) |
+
+**`<video>` — 4 styles**
+
+Setting: `auto-import.importStatement.markup.htmlVideoImportStyle`
+
+Used for `.mp4`, `.webm`, `.mov` sources imported into `.html` destinations.
+
+| # | Snippet | Description |
+|---|---|---|
+| **0** | `<video src="./path" controls></video>` | Accessible default **(default)** |
+| 1 | `<video src="./path" autoplay muted loop playsinline></video>` | Silent autoplay (hero sections) |
+| 2 | `<video src="./path" controls poster=""></video>` | Custom poster thumbnail |
+| 3 | `<video src="./path" controls preload="metadata"></video>` | Metadata preload (Core Web Vitals) |
+
+**`<audio>` — 2 styles**
+
+Setting: `auto-import.importStatement.markup.htmlAudioImportStyle`
+
+Used for `.mp3`, `.ogg`, `.wav`, `.m4a` sources imported into `.html` destinations.
+
+| # | Snippet | Description |
+|---|---|---|
+| **0** | `<audio src="./path" controls></audio>` | Accessible default **(default)** |
+| 1 | `<audio src="./path" controls preload="metadata"></audio>` | Metadata preload |
+
+**`<link>` — stylesheet (hardcoded)**
 
 ```html
-<!-- Source:      js/app.js -->
-<!-- Destination: index.html -->
-
-<script type="text/javascript" src="./js/app.js"></script>
+<link href="./path" rel="stylesheet">
 ```
 
-### Markdown referencing an image
+**`<track>` — text track (hardcoded)**
+
+```html
+<track src="./path" kind="subtitles" srclang="en" label="English">
+```
+
+`srclang` and `label` are editable placeholders.
+
+See SPEC: [Script][SPEC-html-script] · [Image][SPEC-html-img] · [Video][SPEC-html-video] · [Audio][SPEC-html-audio] · [Stylesheet][SPEC-html-css] · [Text track][SPEC-html-track]
+
+[SPEC-html-script]: SPEC.md#html-script
+[SPEC-html-img]: SPEC.md#html-image
+[SPEC-html-video]: SPEC.md#html-video
+[SPEC-html-audio]: SPEC.md#html-audio
+[SPEC-html-css]: SPEC.md#html-stylesheet--hardcoded
+[SPEC-html-track]: SPEC.md#html-text-track--hardcoded
+
+### Markdown
+
+**Link (hardcoded)**
 
 ```md
-<!-- Source:      docs/diagram.png -->
-<!-- Destination: README.md -->
-
-![alt-text](./docs/diagram.png "Hover text")
+[text](./path)
 ```
 
-### CommonJS require
+Used for `.md` sources imported into `.md` destinations.
 
-```js
-// Source:      lib/util.js
-// Destination: server.js
-// Setting:     auto-import.importStatement.script.javascriptImportStyle
-//              = "const name = require('_relativePath_');"
+**Image — 3 styles**
 
-const util = require('./lib/util');
+Setting: `auto-import.importStatement.markup.markdownImageImportStyle`
+
+Used for image sources imported into `.md` destinations.
+
+| # | Snippet | Description |
+|---|---|---|
+| **0** | `![alt-text](./path)` | Bare inline **(default)** |
+| 1 | `![alt-text](./path "Hover text")` | Inline with hover-text title |
+| 2 | `<img src="./path" alt="" width="" height="">` | HTML embed (sizing control) |
+
+See SPEC: [Link][SPEC-md-link] · [Image][SPEC-md-img]
+
+[SPEC-md-link]: SPEC.md#markdown-link--hardcoded
+[SPEC-md-img]: SPEC.md#markdown-image
+
+### JSX / TSX / MDX — non-script sources
+
+When a non-script source is imported into `.jsx`, `.tsx`, or `.mdx`, the shape is determined by the source category — not a configurable setting. All names are editable placeholders.
+
+| Source category | Extensions | Snippet |
+|---|---|---|
+| CSS Modules | `.module.css`, `.module.scss` | `import styles from './path';` |
+| Image, data, markup, component, document | `.gif`, `.jpg`, `.png`, `.svg`, `.json`, `.html`, `.md`, `.pdf`, `.vue`, `.astro`, ... | `import name from './path';` |
+| Media, text track | `.mp4`, `.webm`, `.mp3`, `.ogg`, `.vtt`, ... | `import url from './path';` |
+| Font, stylesheet | `.woff`, `.woff2`, `.ttf`, `.eot`, `.css`, `.scss` | `import './path';` |
+
+**Script routing** — `.jsx` routes `.js`/`.jsx` sources through the JavaScript style. `.tsx` and `.mdx` route `.ts`/`.tsx` through the TypeScript style and `.js`/`.jsx` through the JavaScript style.
+
+See [SPEC — §JSX / TSX / MDX][SPEC-react] for the full source-category dispatch.
+
+[SPEC-react]: SPEC.md#jsx--tsx--mdx-non-script-sources
+
+### Vue / Svelte / Astro
+
+All source types use the **TypeScript import style**. Non-script sources (images, media, data) use the same TypeScript import builder with the full source extension preserved on the path.
+
+Import placement is constrained to framework-specific regions — see [Placement](#placement).
+
+See [SPEC — §Vue / Svelte / Astro][SPEC-framework] for import routing details.
+
+[SPEC-framework]: SPEC.md#vue--svelte--astro
+
+---
+
+## Placement
+
+Setting: `auto-import.preferences.importStatementPlacement` — default `"Bottom"`
+
+| Mode | Behavior |
+|---|---|
+| **Top** | Insert before the first line (line 0). |
+| **Bottom** | Insert after the last recognized import line. Falls back to line 0 if none found. |
+| **Cursor** | Insert at the current cursor position. |
+
+### Bottom mode — import detection
+
+Bottom mode scans each line for these markers (comment lines starting with `//`, `/*`, or `*` are skipped):
+
 ```
+import       require(       @import '     @import "     @import url(
+@use '       @use "         @forward '    @forward "
+```
+
+The import is placed on the line after the last match.
+
+See [SPEC — §Bottom Mode][SPEC-bottom] for the full marker list and scan logic.
+
+[SPEC-bottom]: SPEC.md#bottom-mode--import-line-detection
+
+### Placement overrides
+
+These take effect regardless of the user's setting:
+
+| Condition | Forced placement | Reason |
+|---|---|---|
+| HTML or Markdown destination | Cursor (line and column) | No canonical import block for embedded tags. |
+| Image into `.css` / `.scss` | Inline at cursor (line and column), no trailing newline | `url()` is a CSS value fragment, not a statement. |
+
+See [SPEC — §Placement Overrides][SPEC-overrides] for the complete override logic.
+
+[SPEC-overrides]: SPEC.md#placement-overrides
+
+### Astro frontmatter
+
+For `.astro` destinations, imports are constrained to within the `---` frontmatter fences.
+
+| Mode | Behavior |
+|---|---|
+| Top | After the opening `---`. |
+| Bottom | After the last import marker inside the frontmatter. Falls back to after opening `---`. |
+| Cursor | At the cursor if inside the fences. Otherwise falls back to Bottom. |
+
+If no `---` frontmatter exists, a new block is created at line 0.
+
+See [SPEC — §Astro Frontmatter][SPEC-astro] for edge cases and cursor rules.
+
+[SPEC-astro]: SPEC.md#astro-frontmatter-constraint
+
+### Vue / Svelte script block
+
+For `.vue` and `.svelte` destinations, imports are constrained to within a `<script>` block. Vue prefers `<script setup>` over bare `<script>` when both exist.
+
+| Mode | Behavior |
+|---|---|
+| Top | After the opening `<script...>` tag. |
+| Bottom | After the last import marker inside the script block. Falls back to after opening tag. |
+| Cursor | At the cursor if inside the block. Otherwise falls back to Bottom. |
+
+If no script block exists, a new `<script>` / `</script>` pair is created at line 0.
+
+See [SPEC — §Vue / Svelte Script Block][SPEC-sfc] for the full constraint logic.
+
+[SPEC-sfc]: SPEC.md#vue--svelte-script-block-constraint
+
+### Insertion column
+
+| Destination type | Column |
+|---|---|
+| Script (`.js`, `.ts`, `.jsx`, `.tsx`, `.mdx`, `.vue`, `.svelte`, `.astro`) | Column 0 |
+| Stylesheet (`.css`, `.scss`) | Column 0 |
+| HTML, Markdown | Cursor's current column |
+
+See [SPEC — §Insertion Column][SPEC-column] for column rules by destination type.
+
+[SPEC-column]: SPEC.md#insertion-column
 
 ---
 
 ## Configuration
 
-All settings live under the `auto-import` namespace. Open VS Code Settings (<kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>,</kbd>) and search `auto-import` to see them all in the GUI editor.
+All settings live under the `auto-import` namespace. Open VS Code Settings (<kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>,</kbd>) and search `auto-import`.
 
-In every template below:
+### Preferences
 
-- `_relativePath_` is replaced with the computed path at insertion time.
-- `name` becomes a snippet placeholder — your cursor lands there so you can type the identifier immediately and tab out.
+| Setting | Type | Default |
+|---|---|---|
+| `auto-import.preferences.importStatementPlacement` | string | `Bottom` |
 
-### Placement
+Values: `Top`, `Bottom`, `Cursor`. See [Placement](#placement).
 
-**`auto-import.preferences.importStatementPlacement`** — *string, default `Bottom`*
+### Script
 
-Where the import lands in the destination file.
+| Setting | Type | Default |
+|---|---|---|
+| `auto-import.importStatement.script.preserveScriptFileExtension` | boolean | `false` |
+| `auto-import.importStatement.script.javascriptImportStyle` | string | `import name from '_relativePath_';` |
+| `auto-import.importStatement.script.typescriptImportStyle` | string | `import { name } from '_relativePath_';` |
 
-| Value     | Behaviour                                                                                                            |
-|-----------|----------------------------------------------------------------------------------------------------------------------|
-| `Top`     | Inserted before the first line.                                                                                      |
-| `Bottom`  | Inserted after the last recognised import line (`import …`, `require(…)`, `@import …`, `@use …`, `@import url(…)`). Falls back to line 0 if no import is found. |
-| `Cursor`  | Inserted at the current cursor position.                                                                             |
+`preserveScriptFileExtension` keeps the `.js` / `.ts` / `.jsx` / `.tsx` extension on the import path. Most module systems resolve without it.
 
-> **Auto-override.** For `.html` and `.md` destinations, and when importing a non-stylesheet into a stylesheet, placement is **forced to `Cursor`** regardless of this setting. Those contexts don't have an "import block" to attach to.
+### Stylesheet
 
-### Scripts — JS, JSX, TS, TSX
+| Setting | Type | Default |
+|---|---|---|
+| `auto-import.importStatement.styleSheet.preserveStylesheetFileExtension` | boolean | `false` |
+| `auto-import.importStatement.styleSheet.cssImportStyle` | string | `@import '_relativePath_';` |
+| `auto-import.importStatement.styleSheet.cssImageImportStyle` | string | `url('_relativePath_')` |
+| `auto-import.importStatement.styleSheet.scssImportStyle` | string | `@use '_relativePath_';` |
+| `auto-import.importStatement.styleSheet.scssImageImportStyle` | string | `url('_relativePath_')` |
 
-| Setting                                                            | Type    | Default                                       | Notes                                                                                                                                                  |
-|--------------------------------------------------------------------|---------|-----------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `auto-import.importStatement.script.preserveScriptFileExtension`   | boolean | `false`                                       | Keep the source `.js` / `.ts` / `.jsx` / `.tsx` extension in the import path. Most module systems omit it.                                              |
-| `auto-import.importStatement.script.javascriptImportStyle`         | string  | `import name from '_relativePath_';`          | One of 9 shapes — see below. Used for `.js` destinations and for `.js` sources dropped into `.jsx` / `.tsx`.                                            |
-| `auto-import.importStatement.script.typescriptImportStyle`         | string  | `import { name } from '_relativePath_';`      | One of 5 shapes — see below. The `import { name }` shape is the trigger for Angular PascalCase auto-fill.                                              |
+`preserveStylesheetFileExtension` keeps `.css` / `.scss` on the import path. Exception: `.css` is always preserved in `.scss` imports — Sass requires it for foreign-language imports.
 
-**JavaScript shapes (9):**
+`cssImageImportStyle` and `scssImageImportStyle` have a single shape and are not configurable at runtime.
 
-```
-import name from '_relativePath_';                 ← ES module default
-import { name } from '_relativePath_';             ← ES module named
-import { default as name } from '_relativePath_';  ← ES module aliased default
-import * as name from '_relativePath_';            ← ES module namespace
-import '_relativePath_';                           ← ES module side-effect (no binding)
-var name = require('_relativePath_');              ← CommonJS, var
-const name = require('_relativePath_');            ← CommonJS, const
-var name = import('_relativePath_');               ← Dynamic, var
-const name = import('_relativePath_');             ← Dynamic, const
-```
+### Markup
 
-**TypeScript shapes (5):**
+| Setting | Type | Default |
+|---|---|---|
+| `auto-import.importStatement.markup.htmlScriptImportStyle` | string | `<script src="_relativePath_"></script>` |
+| `auto-import.importStatement.markup.htmlImageImportStyle` | string | `<img src="_relativePath_" alt="sample">` |
+| `auto-import.importStatement.markup.htmlVideoImportStyle` | string | `<video src="_relativePath_" controls></video>` |
+| `auto-import.importStatement.markup.htmlAudioImportStyle` | string | `<audio src="_relativePath_" controls></audio>` |
+| `auto-import.importStatement.markup.htmlStyleSheetImportStyle` | string | `<link href="_relativePath_" rel="stylesheet">` |
+| `auto-import.importStatement.markup.markdownImportStyle` | string | `[text](_relativePath_)` |
+| `auto-import.importStatement.markup.markdownImageImportStyle` | string | `![alt-text](_relativePath_)` |
 
-```
-import name from '_relativePath_';                 ← ES module default
-import { name } from '_relativePath_';             ← ES module named  ★ Angular-aware
-import { default as name } from '_relativePath_';  ← ES module aliased default
-import * as name from '_relativePath_';            ← ES module namespace
-import '_relativePath_';                           ← ES module side-effect (no binding)
-```
+`htmlStyleSheetImportStyle` and `markdownImportStyle` have a single shape and are not configurable at runtime.
 
-> **Angular auto-fill.** When the `import { name }` style is selected and the source filename contains `.component`, `.directive`, `.pipe`, `.service`, or `.module`, `name` is replaced with a PascalCase identifier derived from the basename. Example: `app-root.component.ts` → `AppRootComponent`.
+See [SPEC — §Configuration Reference][SPEC-config] for every setting with all enum values.
 
-### Stylesheets — CSS, SCSS
+[SPEC-config]: SPEC.md#configuration-reference
 
-| Setting                                                                  | Type    | Default                       | Notes                                                                                                                                                                                                   |
-|--------------------------------------------------------------------------|---------|-------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `auto-import.importStatement.styleSheet.preserveStylesheetFileExtension` | boolean | `false`                       | Keep the source `.css` / `.scss` extension in the import path. **Exception:** `.css` is always preserved inside `.scss` imports — Sass requires the extension to recognise a foreign-language import.   |
-| `auto-import.importStatement.styleSheet.cssImportStyle`                  | string  | `@import '_relativePath_';`   | One of 2 CSS shapes — see below.                                                                                                                                                                        |
-| `auto-import.importStatement.styleSheet.cssImageImportStyle`             | string  | `url('_relativePath_')`       | Single shape — used for background-image / content references inside CSS.                                                                                                                               |
-| `auto-import.importStatement.styleSheet.scssImportStyle`                 | string  | `@import '_relativePath_';`   | One of 4 SCSS shapes — see below. Includes the modern `@use` module system and the `@use … as *` wildcard alias.                                                                                        |
-| `auto-import.importStatement.styleSheet.scssImageImportStyle`            | string  | `url('_relativePath_')`       | Single shape — image references inside SCSS. Reuses the CSS image template (the `url('…')` syntax is identical between the two languages).                                                              |
+---
 
-**CSS shapes (2):**
+## Path Computation
 
-```
-@import '_relativePath_';
-@import url('_relativePath_');
-```
+- **Relative path** — computed from the destination file's directory to the source file. Always uses forward slashes, including on Windows.
+- **`./` prefix** — added when source and destination are in the same directory, or when the computed path doesn't already start with `.`. Ensures ES module compatibility.
+- **Extension stripping** — script and stylesheet extensions are stripped by default. Override with `preserveScriptFileExtension` and `preserveStylesheetFileExtension`. All other source types (images, fonts, media, data, documents, components) always keep the full extension.
+- **SCSS partial normalization** — a leading `_` on the last path segment is stripped. `_variables.scss` becomes `variables` in the import path.
+- **SCSS `.css` preservation** — `.css` is always kept on SCSS import paths regardless of the `preserveStylesheetFileExtension` setting.
+- **Angular PascalCase** — TypeScript index 0 only: source paths containing `.component`, `.directive`, `.pipe`, `.service`, or `.module` get a pre-filled PascalCase identifier. `app-root.component.ts` produces `{ AppRootComponent }`.
+- **Exported class detection** — TypeScript index 0, `.ts` destinations only: `export class Name` or `export abstract class Name` in the source pre-fills the binding. Takes priority over Angular PascalCase.
 
-**SCSS shapes (4):**
+See [SPEC — §Path Computation][SPEC-path] for the complete path logic including edge cases.
 
-```
-@import '_relativePath_';                ← Legacy @import, quoted path
-@import url('_relativePath_');           ← Legacy @import, url() function
-@use '_relativePath_';                   ← Modern Sass module system
-@use '_relativePath_' as *;              ← Modern Sass module system, no namespace prefix
-```
-
-> **SCSS partials.** A leading `_` is stripped from the *last* path segment automatically (`_variables.scss` → `variables`), matching Sass's partial-resolution convention. Applies to both `@import` and `@use`.
-
-### Markup — HTML, Markdown
-
-| Setting                                                          | Type   | Default                                                          | Notes                                                                                          |
-|------------------------------------------------------------------|--------|------------------------------------------------------------------|------------------------------------------------------------------------------------------------|
-| `auto-import.importStatement.markup.htmlScriptImportStyle`       | string | `<script type="text/javascript" src="_relativePath_"></script>`  | Single shape — JavaScript source into HTML destination.                                        |
-| `auto-import.importStatement.markup.htmlImageImportStyle`        | string | `<img src="_relativePath_" alt="sample">`                        | Single shape — image source into HTML destination.                                             |
-| `auto-import.importStatement.markup.htmlStyleSheetImportStyle`   | string | `<link href="_relativePath_" rel="stylesheet">`                  | Single shape — CSS source into HTML destination.                                               |
-| `auto-import.importStatement.markup.markdownImportStyle`         | string | `![text](_relativePath_)`                                        | Single shape — Markdown source into Markdown destination.                                      |
-| `auto-import.importStatement.markup.markdownImageImportStyle`    | string | `![alt-text](_relativePath_ "Hover text")`                       | One of 2 shapes — inline `![alt](path)` or reference-style `![alt][ref] / [ref]: path`.        |
-
-**Markdown image shapes (2):**
-
-```
-![alt-text](_relativePath_ "Hover text")
-![alt-text][image] / [image]: _relativePath_ "Hover text"
-```
+[SPEC-path]: SPEC.md#path-computation
 
 ---
 
 ## Tips & Tricks
 
-- **Paste once into many files.** The clipboard keeps the path until you copy something else. Press <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> once on the source, then <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>I</kbd> in every destination editor.
-- **Skip the named-binding ritual.** With the default `import name from '...'` style, your cursor lands on `name` as a snippet placeholder — type the identifier and tab out, all in one motion.
-- **Same-directory clarity.** A leading `./` is always added for same-directory imports (`./Button`, never `Button`). Required for ES modules and matches what bundlers expect.
-- **Mixing CSS into SCSS just works.** The `.css` extension is preserved on the import path even when `preserveStylesheetFileExtension` is off — Sass needs it to recognise a plain-CSS import.
-- **HTML / Markdown ignore your placement preference.** Insertion is always at the cursor for these languages, so you can leave `importStatementPlacement` set to `Bottom` for your scripts and HTML / Markdown still inserts inline.
-- **Rebind the keys.** `extension.copyFilePath`, `extension.pasteImport`, and `extension.copyPaste` are rebindable from VS Code's keyboard shortcuts editor — useful if `Cmd+I` clashes with another extension you use. The two palette-only commands (`extension.pasteImportWithStyle` and `extension.setDefaultImportStyle`) have no default keybinding; assign one from the same editor if you reach for them often.
+- **Paste into many files.** The clipboard keeps the path until you copy something else. Copy once with <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd>, then <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>I</kbd> in every destination.
+- **Snippet placeholders.** After insertion, your cursor lands on the identifier — type the name and <kbd>Tab</kbd> to the next stop. No need to click or arrow around.
+- **CSS Modules are detected automatically.** Files named `*.module.css` or `*.module.scss` imported into JSX/TSX/MDX produce `import styles from '...'` instead of a side-effect `import '...'`.
+- **Same-directory imports always get `./`.** You'll never see a bare `Button` — it's always `./Button`, which ES modules and bundlers require.
+- **Mixing CSS into SCSS just works.** The `.css` extension is preserved even when `preserveStylesheetFileExtension` is off, because Sass needs it.
+- **HTML and Markdown ignore your placement setting.** Insertion is always at the cursor for these languages. Leave `importStatementPlacement` set to `Bottom` for scripts — it won't affect your markup.
+- **Rebind anything.** `extension.copyFilePath`, `extension.pasteImport`, and `extension.copyPaste` are rebindable from VS Code's keyboard shortcuts editor. The two palette-only commands can be given keybindings from the same editor.
 
 ---
 
 ## Installation
 
-**Requires VS Code v1.118.0 or later.**
+**Requires VS Code 1.118.0 or later.**
 
-- **Marketplace UI:** Open the Extensions view (<kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>), search **Auto Import Relative Path** by *ElecTreeFrying*, and click **Install**.
-- **Command line:** `code --install-extension ElecTreeFrying.auto-import`
-- **Direct link:** [VS Code Marketplace listing](https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import)
+- **Marketplace:** Extensions view (<kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>) → search **Auto Import Relative Path** by *ElecTreeFrying* → **Install**.
+- **CLI:** `code --install-extension ElecTreeFrying.auto-import`
+- **Direct:** [VS Code Marketplace listing][package]
 
 ---
 
 ## Compatibility
 
-- **VS Code:** v1.118.0 or later.
-- **VS Code-compatible hosts:** Cursor, VSCodium, Code Server, and other forks that implement the public VS Code API at the same engine version are supported. The extension uses no proprietary APIs.
-- **Operating systems:** macOS, Windows, Linux. Paths are normalised to forward slashes regardless of platform.
-- **Bundle:** ~11 KB gzipped (~41 KB on disk). No runtime dependencies.
-- **Telemetry / network:** None. Everything happens locally.
+- **VS Code** 1.118.0 or later.
+- **Compatible hosts:** Cursor, VSCodium, Code Server, and other forks that implement the VS Code API at the same engine version.
+- **Platforms:** macOS, Windows, Linux. Paths are normalized to forward slashes on all platforms.
+- **Bundle:** ~10 KB gzipped (~56 KB on disk). Zero runtime dependencies.
+- **Telemetry:** None. Everything runs locally.
 
 ---
 
 ## Troubleshooting
 
-If a keybinding does nothing, an unsupported pair throws a "Not supported" toast, or a generated import looks wrong, see [SUPPORT.md][SUPPORT] — the most common symptoms are diagnosed there as **symptom → cause → fix**.
+If a keybinding does nothing, an import looks wrong, or you see an unexpected warning — see [SUPPORT.md][SUPPORT] for symptom → cause → fix.
 
-[SUPPORT]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/SUPPORT.md
+See [SPEC — §Notification Reference][SPEC-notifications] for a complete list of all warning and info messages.
+
+[SUPPORT]: SUPPORT.md
+[SPEC-notifications]: SPEC.md#notification-reference
 
 ---
 
@@ -366,42 +562,41 @@ If a keybinding does nothing, an unsupported pair throws a "Not supported" toast
 
 See [CHANGELOG.md][CHANGELOG] for full release notes.
 
-[CHANGELOG]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/CHANGELOG.md
-
-**Latest highlight — 0.7.0:** ~11 KB esbuild bundle (down from ~14 KB), full source-tree refactor into seven single-responsibility directories with comprehensive TSDoc on every module, function, type, and constant. Built for AI-assisted maintenance — every invariant is documented inline and surfaces in IntelliSense.
+[CHANGELOG]: CHANGELOG.md
 
 ---
 
 ## Contributing
 
-Contributions, bug reports, and feature requests are welcome. See [SUPPORT.md][SUPPORT-CONTRIB] for build / test commands, the layered source-tree architecture, and the three-site sync rule for adding a new file-type pair.
+Contributions, bug reports, and feature requests are welcome. See [SUPPORT.md][SUPPORT-CONTRIB] for build/test commands and the architecture overview.
 
-[SUPPORT-CONTRIB]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/SUPPORT.md#contributing
+[SUPPORT-CONTRIB]: SUPPORT.md#contributing
 
 ---
 
-## Support the project
+## Support
 
-If this extension saves you time, consider:
+**This extension is free and always will be.** If it's become part of your workflow, here are a few ways to give back:
 
-- ⭐ **Starring** the repo on [GitHub](https://github.com/ElecTreeFrying/auto-import-relative-path)
-- 💬 **Leaving a review** on the [VS Code Marketplace][reviews]
-- **Donating** to one of the addresses below
+- Star the repo on [GitHub][repo]
+- Leave a review on the [VS Code Marketplace][reviews]
+- Send a donation to any address below
 
+[repo]: https://github.com/ElecTreeFrying/auto-import-relative-path
 [reviews]: https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import&ssr=false#review-details
 
-| Network                                                  | Address                                                              |
-| -------------------------------------------------------- | -------------------------------------------------------------------- |
-| **Bitcoin**                                              | `bc1q4j2uewfphjmca83905qv37vcl4jh8va5yupl7w`                         |
-| **Solana**                                               | `EHtTGyRoDAK44KBGrEoypAWyPpResHUqwufKnuLs7Tyy`                       |
-| **Sui**                                                  | `0xcaf8ff4a65d7e35d961abd0203180013b7fe974d4fa0313e880c39c45ada2b09` |
-| **ERC-20: Ethereum / Base / Monad / Polygon / HyperEVM** | `0xd25f84Ed2F76dF2F0C8f1207402eF9e15b5d7855`                         |
+| Network | Address |
+|---|---|
+| **Bitcoin** | `bc1q4j2uewfphjmca83905qv37vcl4jh8va5yupl7w` |
+| **Solana** | `EHtTGyRoDAK44KBGrEoypAWyPpResHUqwufKnuLs7Tyy` |
+| **Sui** | `0xcaf8ff4a65d7e35d961abd0203180013b7fe974d4fa0313e880c39c45ada2b09` |
+| **ERC-20** (Ethereum / Base / Monad / Polygon / HyperEVM) | `0xd25f84Ed2F76dF2F0C8f1207402eF9e15b5d7855` |
 
 ---
 
 ## Related
 
-- **[Drag Import Relative Path][drag]** — sibling extension by the same author. Drag a file from the Explorer onto an editor to insert the same import.
+- **[Drag Import Relative Path][drag]** — companion extension. Drag a file from the Explorer onto an editor to insert the same import via drag-and-drop.
 - **[All extensions by ElecTreeFrying][all]** on the VS Code Marketplace.
 
 [drag]: https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.drag-import-relative-path
@@ -411,6 +606,6 @@ If this extension saves you time, consider:
 
 ## License
 
-[MIT License][MIT]
+[MIT][MIT]
 
 [MIT]: https://marketplace.visualstudio.com/items/ElecTreeFrying.auto-import/license
