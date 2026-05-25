@@ -24,7 +24,7 @@ Every `ImportStyle.description` string is a **byte-exact contract** with `packag
 
 The remaining HTML tables — `HTML_SCRIPT_IMPORT_OPTIONS` (5 entries), `HTML_IMAGE_IMPORT_OPTIONS` (3), `HTML_VIDEO_IMPORT_OPTIONS` (4), `HTML_AUDIO_IMPORT_OPTIONS` (2) — are multi-entry and actively consumed by `resolveStyleIndex` in `languages/html.ts`.
 
-Note: there is no `SCSS_IMAGE_IMPORT_OPTIONS` — SCSS image sources reuse `buildCssImageImportSnippet` from `languages/css.ts`, since the `url('…')` syntax is identical between the two languages. The `auto-import.importStatement.styleSheet.scssImageImportStyle` setting still exists in `package.json` for UI parity but is consumed via the CSS table at lookup time.
+Note: there is no `SCSS_IMAGE_IMPORT_OPTIONS` — SCSS image sources reuse `buildCssImageImportSnippet` from `languages/css.ts`, since the `url('…')` syntax is identical between the two languages. The `auto-import.importStatement.styleSheet.scssImageImportStyle` setting exists in `package.json` for UI parity but is not consumed at runtime — matching the three single-shape settings above, the snippet builder hardcodes the one shape directly.
 
 ## JSX/TSX/MDX share `_react.ts:buildReactImport`
 

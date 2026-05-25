@@ -21,6 +21,8 @@ Four namespaces:
 
 The `Object.freeze` is intentional — mutations throw at runtime. Treat the map as a configuration constant.
 
+Four setting keys are **dormant** — they exist in the map and in `package.json` for UI parity (single-shape settings with only one enum value) but no code path reads them via `getAutoImportSetting` or writes them via `setAutoImportSetting`: `cssImage`, `scssImage`, `htmlStyleSheet`, and `markdown`. The corresponding `*_IMPORT_OPTIONS` tables in `src/snippets/_styles.ts` are likewise dead exports (see `src/snippets/CLAUDE.md` → "Currently unused" tables). The snippet builders hardcode the single shape directly.
+
 ## Three-site byte-exact sync rule
 
 Adding or renaming a setting requires changes in three places that must stay byte-identical:

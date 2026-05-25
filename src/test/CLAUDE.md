@@ -1,21 +1,19 @@
 # src/test/CLAUDE.md
 
-> **DRAFT — DEFERRED.** This entire directory (`src/test/`) is under active drafting by the user. Do not read, grep, edit, or write any file in this tree unless the user explicitly asks you to. Skip this directory in exploratory searches, audits, and refactors. No exceptions.
-
-Mocha BDD tests plus two large sibling directories that are deliberately out of scope for routine reads.
+Mocha BDD tests plus two supporting sibling directories.
 
 ## File
 
 - `extension.test.ts` — `describe('extension activation', () => { it('registers the five auto-import commands', ...) })`.
 
-## Sibling directories — DO NOT read into
+## Sibling directories
 
-Two subdirectories under `src/test/` are large, static, and contain no signal you can't get from this file or the project's main `CLAUDE.md`. **Never `Read`, `cat`, `find`, or `grep` into them, and never list their full trees.** Reading them burns tokens with no payoff. If a task genuinely needs context, read only the named summary file inside each — never the children.
+Two subdirectories under `src/test/` are large and mostly static. Reading their full trees is usually not worth the tokens — start with the summary file inside each and drill into individual files only when a task requires it.
 
-| Directory | What's inside | If you need context, read… | Otherwise |
-|-----------|----------------|-----------------------------|-----------|
-| `manual-qa/` | 20 markdown files: 18 sequential checklists (`00-setup.md` → `18-style-pickers.md`) plus a top-level `README.md` and `CLAUDE.md`. Pure documentation; no code. | `manual-qa/README.md` only. | Skip the individual checklists. |
-| `manual-qa-workspace/` | ~158 fixture files (TS/JS/JSX/TSX/SCSS/CSS/HTML/MD/JSON/YAML plus zero-byte image and font placeholders) used as paste-import sources/destinations inside the Extension Development Host. | `manual-qa-workspace/README.md` only. | Skip every fixture file. The tree is a workspace, not test code. |
+| Directory | What's inside | Summary file |
+|-----------|----------------|--------------|
+| `manual-qa/` | 20 markdown files: 18 sequential checklists (`00-setup.md` → `18-style-pickers.md`) plus a top-level `README.md` and `CLAUDE.md`. Pure documentation; no code. | `manual-qa/README.md` |
+| `manual-qa-workspace/` | ~158 fixture files (TS/JS/JSX/TSX/SCSS/CSS/HTML/MD/JSON/YAML plus zero-byte image and font placeholders) used as paste-import sources/destinations inside the Extension Development Host. | `manual-qa-workspace/README.md` |
 
 The fixture workspace is excluded from both compilation surfaces — `tsconfig.json:exclude` and `eslint.config.mjs:ignores` list `src/test/manual-qa-workspace/**`. **Don't lift those exclusions.** A fixture is allowed to import from packages that aren't installed and to use DOM globals that aren't in `lib`.
 
