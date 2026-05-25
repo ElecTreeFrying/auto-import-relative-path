@@ -1,9 +1,9 @@
 # 13 — Placement settings
 
-Validates `auto-import.preferences.importStatementPlacement`, the inline-snippet override, the two forced-cursor overrides, the insertion-column rule, and the 9-marker Bottom heuristic.
+Validates `auto-import.preferences.importStatementPlacement`, the inline-snippet override, the two forced-cursor overrides, Astro frontmatter placement, Vue/Svelte `<script>` block placement, the insertion-column rule, and the 9-marker Bottom heuristic.
 
 **Sources:**
-- `src/editor/insert-snippet.ts` — `insertImportSnippet`, `isInlineSnippet`, `shouldRepositionCursor`, `insertSnippetAtSfcScript`, `insertSnippetAtBottom`, `determineInsertionColumn`
+- `src/editor/insert-snippet.ts` — `insertImportSnippet`, `isInlineSnippet`, `shouldRepositionCursor`, `insertSnippetAtAstroFrontmatter`, `findAstroFrontmatterBounds`, `insertSnippetAtSfcScript`, `insertSnippetAtBottom`, `determineInsertionColumn`
 - `src/constants/extensions.ts` — `SCRIPT_FILE_EXTENSIONS`, `STYLESHEET_FILE_EXTENSIONS`
 - `package.json` — enum: `Top`, `Bottom`, `Cursor`
 
@@ -123,8 +123,8 @@ Set `placement = Bottom`. The workspace ships purpose-built fixtures whose first
 
 - [ ] **`styles/with-imports.css` (covers `@import '`, `@import "`, `@import url(`).** Open it. Copy `styles/reset.css`. Paste.
   **Expect:** new `@import` lands AFTER the file's last `@import …` line.
-- [ ] **`styles/with-uses.scss` (covers `@use '`, `@use "`, plus existing `@import`).** Open it. Copy `styles/_partial.scss`. Paste.
-  **Expect:** new `@use`/`@import` lands AFTER the file's last `@use`/`@import` line.
+- [ ] **`styles/with-uses.scss` (covers `@use '`, `@use "`, `@forward '`, `@forward "`, plus existing `@import`).** Open it. Copy `styles/_partial.scss`. Paste.
+  **Expect:** new `@use`/`@import` lands AFTER the file's last `@import` line (Bottom picks the LAST indicator match across all types).
 
 ### HTML — Bottom is overridden to Cursor
 
@@ -162,6 +162,49 @@ When inserting at line N (any placement), the column is computed once for the wh
   **Expect:** second insert at Bottom. No reload required.
 
 - [ ] **Different destinations have different rules.** Test in same session: paste into `.ts` (column 0) then paste into `.html` (cursor column). Both behave correctly without restart.
+
+## Astro `---` frontmatter awareness
+
+`insertSnippetAtAstroFrontmatter` constrains placement to within the `---` frontmatter fences. `findAstroFrontmatterBounds` locates both fences (returns `null` if fewer than two exist).
+
+### Astro — frontmatter with existing imports
+
+Temporarily add an import to `src/App.astro` so the frontmatter looks like:
+
+```astro
+---
+import { foo } from './foo';
+---
+```
+
+- [ ] **Top.** Set `placement = Top`. Copy a `.ts` file → paste into the Astro file.
+  **Expect:** new import at the line AFTER the opening `---` (inside the fences), NOT at line 0.
+- [ ] **Bottom.** Set `placement = Bottom`. Same paste.
+  **Expect:** new import AFTER the existing `import { foo }` line (indicator scan within frontmatter).
+- [ ] **Cursor inside frontmatter.** Set `placement = Cursor`. Place cursor between the `---` fences. Paste.
+  **Expect:** import at cursor line.
+- [ ] **Cursor outside frontmatter.** Set `placement = Cursor`. Place cursor below the closing `---` (in the HTML body). Paste.
+  **Expect:** falls back to Bottom within the frontmatter (not at cursor in the body).
+
+Undo the temporary edit after testing.
+
+### Astro — empty frontmatter (no existing imports)
+
+Restore `src/App.astro` to its original state (empty `---` / `---` fences).
+
+- [ ] **Top into empty frontmatter.** Set `placement = Top`. Copy a `.ts` file → paste.
+  **Expect:** import lands after the opening `---`.
+- [ ] **Bottom into empty frontmatter.** Set `placement = Bottom`. Same paste.
+  **Expect:** same landing as Top (no markers to find, falls back to after the opening `---`).
+
+### Astro — no frontmatter
+
+Temporarily remove the `---` fences from `src/App.astro` so only the HTML body remains.
+
+- [ ] Copy a `.ts` file → paste into the fenceless Astro file.
+  **Expect:** a new `---` block is created at line 0, wrapping the import.
+
+Restore the fences after testing.
 
 ## Vue/Svelte `<script>` block awareness
 
@@ -212,6 +255,7 @@ import { ref } from 'vue';
 - [ ] Multiple imports → picks last
 - [ ] No markers → line 0 (2 cases via `empty-file.ts`, `single-char.ts`)
 - [ ] Comment-line filtering (`comments-only.ts` → line 0)
+- [ ] Astro frontmatter awareness (Top, Bottom, Cursor inside, Cursor outside, empty frontmatter, no frontmatter)
 - [ ] Vue/Svelte script block awareness (Top, Bottom, Cursor inside, Cursor outside, no block)
 - [ ] Mid-flight setting change
 

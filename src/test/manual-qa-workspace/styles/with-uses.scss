@@ -1,5 +1,7 @@
 @use './variables' as vars;
-@use './mixins' as mix;
+@use "./mixins" as mix;
+@forward './public-api';
+@forward "./utilities";
 @import './tokens';
 @import "./theme.scss";
 
