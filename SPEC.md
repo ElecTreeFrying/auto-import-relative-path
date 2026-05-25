@@ -14,7 +14,7 @@ A VS Code extension that generates relative-path import statements for JS, TS, J
 | `extension.pasteImportWithStyle` | Auto Import: Paste as Import (Pick Style) | — | — | Command Palette + copy-success toast button |
 | `extension.setDefaultImportStyle` | Auto Import: Set Default Import Style | — | — | Command Palette only |
 
-**Copy** puts the source file's absolute path on the clipboard and shows a "Copied path" toast with two action buttons: **Paste Now** (runs Paste as Import) and **Paste with Style** (runs Paste as Import (Pick Style)). The clipboard write is an explicit re-write after VS Code's built-in `copyFilePath` to guarantee the next paste sees the correct value.
+**Copy** puts the source file's absolute path on the clipboard and shows a "Copied path" toast with two action buttons: **Paste with Style** (runs Paste as Import (Pick Style)) and **Paste Now** (runs Paste as Import). The clipboard write is an explicit re-write after VS Code's built-in `copyFilePath` to guarantee the next paste sees the correct value.
 
 **Paste** reads the clipboard as the source path, takes the active editor's file as the destination, computes the relative path, gates on the source-destination extension pair, and inserts the resulting import snippet.
 
@@ -460,7 +460,7 @@ All commands clear existing notifications before executing. Any toast from a pre
 
 ### Workflow: One-Shot (Copy-Paste)
 
-The user right-clicks a file in the explorer and runs **Insert Import from Selected File** (`Alt+D`). The extension runs Copy then Paste sequentially. Aborts if copy fails.
+The user clicks a file in the explorer and runs **Insert Import from Selected File** (`Alt+D`). The extension runs Copy then Paste sequentially. Aborts if copy fails.
 
 ### Workflow: Pick Style
 
@@ -474,11 +474,8 @@ Same validation as Pick Style. Shows a QuickPick with placeholder "Set default i
 
 Before generating an import, the extension validates the clipboard contents against three checks:
 
-- **Empty**: clipboard text is blank after trimming.
-- **Not an absolute path**: the clipboard text is not an absolute file path (e.g., a relative path or arbitrary text).
-- **No file extension**: the path has no extension (e.g., a directory path).
-
-Any of these triggers the "Clipboard does not contain a file path" warning.
+- **Empty or not an absolute path**: clipboard text is blank after trimming, or is not an absolute file path (e.g., a relative path or arbitrary text). Triggers the "Clipboard does not contain a file path" warning.
+- **No file extension**: the path has no extension (e.g., `Makefile`, `Dockerfile`, a directory path). Triggers the "{basename} has no file extension" warning.
 
 After validation passes, the extension checks that the source file still exists on disk. If it has been deleted or moved, the "Source file no longer exists: {basename}" warning appears.
 
@@ -494,9 +491,10 @@ All messages are prefixed with "Auto Import:".
 | Unsupported pair | Warning | Cannot import {sourceExt} into {destinationExt} files. | **View Supported Files** |
 | No active editor | Warning | Open a file to paste an import. | — |
 | No file to copy | Warning | No file selected to copy. | — |
+| No file extension | Warning | {basename} has no file extension. | — |
 | Empty clipboard | Warning | Clipboard does not contain a file path. Use Auto Import: Copy File Path on a source file first. | — |
 | Source not found | Warning | Source file no longer exists: {basename}. | — |
-| No configurable style | Warning | No configurable style for {sourceExt} → {destinationExt} files. | — |
+| No configurable style | Warning | {sourceExt} → {destinationExt} imports use a fixed style. | — |
 
 ---
 
