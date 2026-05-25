@@ -1,7 +1,9 @@
 import * as assert from 'assert';
+import * as vscode from 'vscode';
 
 import { buildScssImportSnippetByStyle, prepareScssImportPath } from '../../../snippets/languages/scss';
 import { buildCssImageImportSnippet } from '../../../snippets/languages/css';
+import { setAutoImportSetting } from '../../../config/settings';
 
 const PATH = './styles/theme';
 
@@ -57,6 +59,21 @@ describe('scss', () => {
     it('.scss source with default preserve=false strips extension', () => {
       const result = prepareScssImportPath('/project/styles/theme.scss', './styles/theme');
       assert.strictEqual(result, './styles/theme');
+    });
+
+    it('.scss source preserves extension when preserveStylesheetFileExtension=true', async () => {
+      await setAutoImportSetting('stylesheet', 'preserve', true, vscode.ConfigurationTarget.Global);
+      try {
+        const result = prepareScssImportPath('/project/styles/theme.scss', './styles/theme');
+        assert.strictEqual(result, './styles/theme.scss');
+      } finally {
+        await setAutoImportSetting('stylesheet', 'preserve', undefined, vscode.ConfigurationTarget.Global);
+      }
+    });
+
+    it('.css source still preserves .css even when preserveStylesheetFileExtension=false', () => {
+      const result = prepareScssImportPath('/project/styles/reset.css', './styles/reset');
+      assert.strictEqual(result, './styles/reset.css');
     });
   });
 
