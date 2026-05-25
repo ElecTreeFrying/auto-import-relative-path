@@ -25,7 +25,7 @@ Each directory under `src/` has its own pair of nested guides. Read the director
 | `src/constants/` | Runtime gating tables; runtime mirror of `types/file-extension.ts` | [`src/constants/README.md`](src/constants/README.md), [`src/constants/CLAUDE.md`](src/constants/CLAUDE.md) |
 | `src/types/` | Cross-cutting type unions (no enums) | [`src/types/README.md`](src/types/README.md), [`src/types/CLAUDE.md`](src/types/CLAUDE.md) |
 | `src/test/` | Mocha BDD tests; runs from `out/`, not `dist/` | [`src/test/README.md`](src/test/README.md), [`src/test/CLAUDE.md`](src/test/CLAUDE.md) |
-| `qa/` | Manual QA checklists, fixture workspace, demo workspace | [`qa/checklists/README.md`](qa/checklists/README.md), [`qa/checklists/CLAUDE.md`](qa/checklists/CLAUDE.md), [`qa/workspace/README.md`](qa/workspace/README.md), [`qa/workspace/CLAUDE.md`](qa/workspace/CLAUDE.md) |
+| `qa/` | Manual QA checklists, fixture workspace, demo workspace | [`qa/README.md`](qa/README.md), [`qa/CLAUDE.md`](qa/CLAUDE.md), [`qa/checklists/README.md`](qa/checklists/README.md), [`qa/checklists/CLAUDE.md`](qa/checklists/CLAUDE.md), [`qa/workspace/README.md`](qa/workspace/README.md), [`qa/workspace/CLAUDE.md`](qa/workspace/CLAUDE.md) |
 
 The detailed subsections that follow ("End-to-end flow", "Snippet generation", "Cross-import gating", etc.) remain a unified high-level reference for the architecture; the nested guides go deeper on directory-specific invariants.
 
