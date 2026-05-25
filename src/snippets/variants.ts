@@ -131,7 +131,7 @@ function buildTsxVariants(
         'script', 'typescript',
       ));
   }
-  if (sourceFileExt === '.js') {
+  if (sourceFileExt === '.js' || sourceFileExt === '.jsx') {
     return JAVASCRIPT_IMPORT_OPTIONS.map(opt =>
       toStyledVariant(
         opt,

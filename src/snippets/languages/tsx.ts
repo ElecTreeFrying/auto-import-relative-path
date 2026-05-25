@@ -8,7 +8,7 @@ export function buildSnippet(): Promise<vscode.SnippetString> {
   return buildReactImport({
     primaryExtensions: ['.ts', '.tsx'],
     primarySnippet: buildTypeScriptImportSnippet,
-    fallbackExtensions: ['.js'],
+    fallbackExtensions: ['.js', '.jsx'],
     fallbackSnippet: buildJavaScriptImportSnippet,
   });
 }
