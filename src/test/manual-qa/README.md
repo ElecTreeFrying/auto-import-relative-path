@@ -45,7 +45,7 @@ If a checkbox fails, do not proceed past that file. Reproduce the failure, captu
 
 ## Fixtures
 
-Live in [`../manual-qa-workspace/`](../manual-qa-workspace/) — see that folder's `README.md` for the full layout (158 files across `src/`, `styles/`, `pages/`, `docs/`, `assets/`, `data/`, plus edge-case roots `empty-file.ts`, `whitespace-only.ts`, `single-char.ts`, `comments-only.ts`, `with-imports.ts`, `with-requires.js`, `my files/spaced.ts`, `unicode-paths/`, `deeply/...`, `very-deep/...`, `unsupported/`).
+Live in [`../manual-qa-workspace/`](../manual-qa-workspace/) — see that folder's `README.md` for the full layout (~174 files across `src/`, `styles/`, `pages/`, `docs/`, `assets/`, `data/`, plus edge-case roots `empty-file.ts`, `whitespace-only.ts`, `single-char.ts`, `comments-only.ts`, `with-imports.ts`, `with-requires.js`, `my files/spaced.ts`, `unicode-paths/`, `deeply/...`, `very-deep/...`, `unsupported/`).
 
 The checklists below name files relative to that workspace root: when 04 says "copy `src/foo.ts`", it means `manual-qa-workspace/src/foo.ts`. The 37 *baseline* filenames the checklists rely on are listed in the workspace README's "Maintenance notes" section — renaming any of those breaks a test.
 
@@ -95,10 +95,9 @@ All under `auto-import.*` (per `package.json:contributes.configuration`):
 These appear suspicious during testing but are documented intentional behaviour. Do not file them.
 
 - **`.htm` extensions** are unsupported — only `.html`. (`src/types/file-extension.ts:HtmlFileExtension`)
-- **Comments containing `import ` cause Bottom placement to land after the comment.** Heuristic, documented in `src/editor/insert-snippet.ts` module header.
-- **Same-file rejection is case-insensitive on Linux.** Aligns with macOS/Windows behavior. (`src/commands/paste-import.ts:60`)
+- **Same-file rejection is case-insensitive on Linux.** Aligns with macOS/Windows behavior. (`src/commands/paste-import.ts:35`)
 - **`removeFileExtension('foo')` returns `''`** (no-extension input). Unreachable in production; the `./` prefix regression test (CHANGELOG 0.6.1) was written against this behavior.
-- **Empty/garbage clipboards fire the dedicated `empty-clipboard` toast** (`Auto Import: Clipboard does not contain a file path. Use Auto Import: Copy File Path on a source file first.`) — short-circuits before the same-file check via the absolute-path/has-extension guard in `src/commands/paste-import.ts:62`. Plain text, URLs, and numeric strings all land here, not on `not-supported`.
+- **Empty/garbage clipboards fire the dedicated `empty-clipboard` toast** (`Auto Import: Clipboard does not contain a file path. Use Auto Import: Copy File Path on a source file first.`) — short-circuits before the same-file check via the absolute-path/has-extension guard in `src/commands/paste-import.ts:31`. Plain text, URLs, and numeric strings all land here, not on `not-supported`.
 - **JSX→TSX cross-import asymmetry:** `.jsx` source does NOT have a fallback in TSX (only `.js` does). This is intentional — a `.jsx` source is a JavaScript-with-JSX file, and forcing a TSX import shape would be wrong.
 
 ## Master sign-off

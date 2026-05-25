@@ -73,6 +73,6 @@ This directory is one half of a pair; the other half is the fixture workspace.
 | Sibling | Role |
 |---------|------|
 | `manual-qa/` (this dir) | Procedure — 18 sequential checklists, `00-setup.md`, master sign-off matrix |
-| `../manual-qa-workspace/` | Fixtures — ~158 files opened as a folder in the EDH so the procedure has something to paste between |
+| `../manual-qa-workspace/` | Fixtures — ~174 files opened as a folder in the EDH so the procedure has something to paste between |
 
 The two are coupled at the literal filename level: `04-paste-into-javascript.md` says "copy `src/foo.ts`" and means `../manual-qa-workspace/src/foo.ts`. The workspace is excluded from both compilation surfaces — `tsconfig.json:exclude` and `eslint.config.mjs:ignores` list `src/test/manual-qa-workspace/**`. Don't lift those exclusions; fixtures intentionally `import` packages that aren't installed and use DOM globals not in `lib`.

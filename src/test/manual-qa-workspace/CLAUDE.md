@@ -1,12 +1,12 @@
 # src/test/manual-qa-workspace/CLAUDE.md
 
-158 fixture files opened as a folder in the Extension Development Host by a human walking `../manual-qa/`. Never compiled, never linted, never imported by Mocha — every code path *into* this directory is a user pressing **F5**, not the build.
+~174 fixture files opened as a folder in the Extension Development Host by a human walking `../manual-qa/`. Never compiled, never linted, never imported by Mocha — every code path *into* this directory is a user pressing **F5**, not the build.
 
 ## DO NOT scan this tree wholesale
 
 The parent `src/test/CLAUDE.md` already lists this directory under "Sibling directories — DO NOT read into" because the tree is large, static, and yields no signal you can't get from this file or the sibling `README.md`. Repeating the rule locally so it applies even when you arrive here directly:
 
-- **Never** `find`, `grep`, or `ls -R` across the workspace. The 158 files are placeholders — there is no needle in this haystack.
+- **Never** `find`, `grep`, or `ls -R` across the workspace. The ~174 files are placeholders — there is no needle in this haystack.
 - If a task names a specific fixture, `Edit` or `Write` precisely that file. Don't survey the surrounding tree first.
 - If a task asks "where is X covered?", read the sibling `README.md` only. Its `Layout`, `Coverage matrix`, and `Maintenance notes` sections are the index.
 - If a task asks "if I touch *this code*, which fixtures regression-test it?", read the `Fixture roles` table below.
@@ -33,7 +33,7 @@ This table is the unique value of this `CLAUDE.md` versus the sibling `README.md
 | `styles/_*.scss`, `styles/_partials/_nested.scss`, `styles/components/_*.scss` | `src/snippets/languages/scss.ts:normalizePartialFilename` — leading-`_` strip on the *last* path segment |
 | `with-imports.ts`, `with-requires.js`, `styles/with-imports.css`, `styles/with-uses.scss`, `pages/with-resources.html` | `src/editor/insert-snippet.ts:IMPORT_INDICATORS` — Bottom-placement landing across all 9 markers |
 | `unsupported/{Main.java, styles.less, texture.bmp, render.avi, archive.zip}` | `src/commands/paste-import.ts` 11-clause gating conjunction; `texture.bmp` additionally hits the JSX/TSX/MDX `_react.ts:default:` branch |
-| `empty-file.ts`, `whitespace-only.ts`, `single-char.ts`, `comments-only.ts` | Degenerate-document destinations; `comments-only.ts` specifically catches the Bottom-placement heuristic false-positive on the substring `import ` inside a comment |
+| `empty-file.ts`, `whitespace-only.ts`, `single-char.ts`, `comments-only.ts` | Degenerate-document destinations; `comments-only.ts` specifically verifies that comment lines containing `import ` are correctly skipped by Bottom-placement (landing at line 0, not after the comment) |
 | `my files/spaced.ts`, `unicode-paths/{日本語.ts, café-menu.tsx}` | `src/path/relative.ts:computeRelative` — non-ASCII + space-containing path computation |
 | `deeply/nested/components/widgets/*`, `very-deep/level-01/.../level-09/extreme-leaf.ts` | `src/path/relative.ts` — multi-level `../` traversal (4 and 9 levels) |
 | `src/legacy/*.js`, `src/lib/*.js`, `src/sibling.js`, `src/other.js` | JavaScript export-shape coverage for `src/snippets/languages/javascript.ts` (CommonJS `module.exports`, `exports.x`, IIFE, ES-module `export class`, `var require`/`const require`) |
