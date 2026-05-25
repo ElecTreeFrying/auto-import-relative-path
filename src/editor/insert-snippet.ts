@@ -49,7 +49,7 @@ export async function insertImportSnippet(snippet: vscode.SnippetString): Promis
     case 'Cursor':
       return insertSnippetAtCursor(snippet);
     default:
-      return insertSnippetAtCursor(snippet);
+      return insertSnippetAtBottom(snippet);
   }
 }
 
