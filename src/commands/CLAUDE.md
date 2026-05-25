@@ -57,11 +57,11 @@ Mirrors `paste-import.ts` step-by-step (clearNotifications → null-check editor
 - **1** → insert directly via `insertImportSnippet(new vscode.SnippetString(variants[0].snippetText))`. Single-shape destinations (HTML, Markdown text, CSS image, SCSS image, JSX/TSX/MDX non-script source) take this path so the user gets the same silent-insert UX as `cmd+i`.
 - **≥2** → `vscode.window.showQuickPick` with `matchOnDescription: true`. Cancellation (Esc) returns silently — no toast.
 
-The gating mirrors `paste-import.ts` clauses 1-6 (CROSS_IMPORT_DESTINATIONS, `.html → .html`, and the four markup/stylesheet supported-extension checks) but omits the three framework-component clauses (7-9: Vue/Svelte/Astro) — those destinations pass clause 1 and are caught by `isEmptyVariantSet` if the source is unsupported. Clauses 10/11 (the `snippet.value === ''` / `'\n'` checks) collapse to `isEmptyVariantSet` (`variants.length === 0` plus a defensive check on `variants[0].snippetText`). **Persisted style settings are not consulted**; the picker is a one-shot override.
+The gating mirrors `paste-import.ts` clauses 1-9 (CROSS_IMPORT_DESTINATIONS, `.html → .html`, the four markup/stylesheet supported-extension checks, and the three framework-component checks for Vue/Svelte/Astro). Clauses 10/11 (the `snippet.value === ''` / `'\n'` checks) collapse to `isEmptyVariantSet` (`variants.length === 0` plus a defensive check on `variants[0].snippetText`). **Persisted style settings are not consulted**; the picker is a one-shot override.
 
 ## `set-default-import-style.ts` — picker that persists instead of pasting
 
-Mirrors `paste-import-with-style.ts` step-by-step through gating, clipboard checks, parallel fetch, same-file rejection, file-existence stat, and the seven-clause `'not-supported'` rejection. Diverges after gating:
+Mirrors `paste-import-with-style.ts` step-by-step through gating, clipboard checks, parallel fetch, same-file rejection, file-existence stat, and the ten-clause `'not-supported'` rejection. Diverges after gating:
 
 - **0 variants OR empty first variant** → `'not-supported'` toast (defensive).
 - **1 variant OR `variants[0].setting === undefined`** (hardcoded destination — HTML, Markdown text, CSS/SCSS image, JSX/TSX/MDX non-script source) → new `'no-configurable-style'` toast. The matching `*ImportStyle` settings exist in `package.json` for UI parity only and are flagged "Currently unused" in `_styles.ts`; persisting one would be misleading.

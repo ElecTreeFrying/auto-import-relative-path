@@ -17,9 +17,9 @@ Runtime gating tables for source/destination extension pairs.
 | `MARKDOWN_SUPPORTED_EXTENSIONS` | `commands/{paste-import,paste-import-with-style,set-default-import-style}.ts` | Sources accepted for `.md` destinations |
 | `CSS_SUPPORTED_EXTENSIONS` | `commands/{paste-import,paste-import-with-style,set-default-import-style}.ts` | Sources accepted for `.css` destinations |
 | `SCSS_SUPPORTED_EXTENSIONS` | `commands/{paste-import,paste-import-with-style,set-default-import-style}.ts` | Sources accepted for `.scss` destinations |
-| `VUE_SUPPORTED_EXTENSIONS` | `commands/paste-import.ts` clause 7 | Sources accepted for `.vue` destinations |
-| `SVELTE_SUPPORTED_EXTENSIONS` | `commands/paste-import.ts` clause 8 | Sources accepted for `.svelte` destinations |
-| `ASTRO_SUPPORTED_EXTENSIONS` | `commands/paste-import.ts` clause 9 | Sources accepted for `.astro` destinations |
+| `VUE_SUPPORTED_EXTENSIONS` | `commands/{paste-import,paste-import-with-style,set-default-import-style}.ts` | Sources accepted for `.vue` destinations |
+| `SVELTE_SUPPORTED_EXTENSIONS` | `commands/{paste-import,paste-import-with-style,set-default-import-style}.ts` | Sources accepted for `.svelte` destinations |
+| `ASTRO_SUPPORTED_EXTENSIONS` | `commands/{paste-import,paste-import-with-style,set-default-import-style}.ts` | Sources accepted for `.astro` destinations |
 | `CROSS_IMPORT_DESTINATIONS` | `commands/{paste-import,paste-import-with-style,set-default-import-style}.ts` | Destinations allowed to import a *different* extension |
 | `SCRIPT_FILE_EXTENSIONS` | `editor/insert-snippet.ts:determineInsertionColumn` | Force column-0 placement |
 | `STYLESHEET_FILE_EXTENSIONS` | `editor/insert-snippet.ts:determineInsertionColumn`, `editor/insert-snippet.ts:isInlineSnippet` | Force column-0 placement; gate inline `url()` insertion |

@@ -2,11 +2,14 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 
 import {
+  ASTRO_SUPPORTED_EXTENSIONS,
   CSS_SUPPORTED_EXTENSIONS,
   HTML_SUPPORTED_EXTENSIONS,
   MARKDOWN_SUPPORTED_EXTENSIONS,
   CROSS_IMPORT_DESTINATIONS,
   SCSS_SUPPORTED_EXTENSIONS,
+  SVELTE_SUPPORTED_EXTENSIONS,
+  VUE_SUPPORTED_EXTENSIONS,
 } from '../constants/extensions';
 import { getFilePathInfo } from '../editor/file-path-info';
 import { insertImportSnippet } from '../editor/insert-snippet';
@@ -58,6 +61,9 @@ export async function executePasteImportWithStyle(): Promise<void> {
     || (!MARKDOWN_SUPPORTED_EXTENSIONS.includes(sourceFileExt) && destinationFileExt === '.md')
     || (!CSS_SUPPORTED_EXTENSIONS.includes(sourceFileExt) && destinationFileExt === '.css')
     || (!SCSS_SUPPORTED_EXTENSIONS.includes(sourceFileExt) && destinationFileExt === '.scss')
+    || (!VUE_SUPPORTED_EXTENSIONS.includes(sourceFileExt) && destinationFileExt === '.vue')
+    || (!SVELTE_SUPPORTED_EXTENSIONS.includes(sourceFileExt) && destinationFileExt === '.svelte')
+    || (!ASTRO_SUPPORTED_EXTENSIONS.includes(sourceFileExt) && destinationFileExt === '.astro')
     || isEmptyVariantSet
   ) {
     return showNotification('not-supported', { sourceExt: sourceFileExt, destinationExt: destinationFileExt });
