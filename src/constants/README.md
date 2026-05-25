@@ -22,9 +22,9 @@ Runtime gating tables for source/destination extension pairs.
 | `ASTRO_SUPPORTED_EXTENSIONS` | Sources accepted when the destination is `.astro`. |
 | `CROSS_IMPORT_DESTINATIONS` | Destinations allowed to import a *different* extension. Destinations not listed require source extension to equal destination extension. |
 | `SCRIPT_FILE_EXTENSIONS` | Used only by `editor/insert-snippet.ts` to force column-0 placement for script destinations. |
-| `STYLESHEET_FILE_EXTENSIONS` | Used only by `editor/insert-snippet.ts` to force column-0 placement for stylesheet destinations. |
+| `STYLESHEET_FILE_EXTENSIONS` | Used by `editor/insert-snippet.ts` for column-0 placement and inline `url()` insertion gating. |
 
 ## Where to add a new entry
 
 - New accepted source/destination pair → update the matching `*_SUPPORTED_EXTENSIONS` table here AND make sure the relevant per-language module under `src/snippets/` can produce a snippet for that source.
-- New file extension entirely → see `CLAUDE.md` (this directory) for the three-site sync between this file, `src/types/file-extension.ts`, and `src/snippets/`.
+- New file extension entirely → see `CLAUDE.md` (this directory) for the four-site sync between this file, `src/types/file-extension.ts`, `src/snippets/dispatch.ts`, and `src/snippets/variants.ts`.

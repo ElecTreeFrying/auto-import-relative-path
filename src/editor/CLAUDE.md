@@ -13,7 +13,7 @@ Helpers that touch the `vscode` API on behalf of `commands/` and `snippets/`. Th
 - Reads source from clipboard, destination from `vscode.window.activeTextEditor.document.uri.fsPath`.
 - **Caller is responsible for the active-editor null check** — this function dereferences `editor.document.uri.fsPath` unconditionally and will throw otherwise. Every command that starts the calling chain (`commands/paste-import.ts`, `commands/paste-import-with-style.ts`, `commands/set-default-import-style.ts`) does this check.
 - **Each call re-reads the clipboard.** Don't introduce branches that mutate the clipboard between calls. `paste-import.ts`'s `Promise.all` runs two such reads in parallel and relies on both seeing the same value.
-- Called from many sites: every per-language `buildSnippet()`, `_react.ts:buildReactImport`, `dispatch.ts`, `variants.ts`, and `insert-snippet.ts:shouldRepositionCursor`.
+- Called from many sites: most per-language `buildSnippet()` functions (7 of 9 — `jsx.ts` and `tsx.ts` delegate to `_react.ts:buildReactImport`, which calls it on their behalf), `dispatch.ts`, `variants.ts`, and `insert-snippet.ts:insertImportSnippet`.
 
 ## `insert-snippet.ts` — placement rules
 
@@ -29,7 +29,7 @@ Order of precedence:
 
 ### "Bottom" insertion
 
-Walks `document.getText().split('\n')` looking for any of **nine** `importIndicators` markers and inserts after the last match:
+Walks `document.getText().split('\n')` looking for any of **nine** `IMPORT_INDICATORS` markers and inserts after the last match:
 
 ```
 'import ', 'require(',
@@ -58,7 +58,7 @@ Comment lines (starting with `//`, `/*`, or `*` after whitespace) are skipped to
 - Seven variants render via `showWarningMessage`; `'copy-success'` and `'default-style-saved'` render via `showInformationMessage`. The level is hardcoded per-variant inside the `switch`.
 - Two variants surface action buttons:
   - `'not-supported'` adds **View Supported Files** — click handler is self-contained (`vscode.env.openExternal` to the README's supported-pairs anchor); overload still returns `void`.
-  - `'copy-success'` adds **Paste Now** (default paste-import) and **Paste with Style** (style-picker variant). The overload returns `Thenable<string | undefined>` so `commands/copy-file-path.ts` can dispatch on the chosen action — keeps `editor/` from reaching into `commands/`.
+  - `'copy-success'` adds **Paste with Style** (style-picker variant) and **Paste Now** (default paste-import), in that render order (leftmost first). The overload returns `Thenable<string | undefined>` so `commands/copy-file-path.ts` can dispatch on the chosen action — keeps `editor/` from reaching into `commands/`.
 - Producers: `commands/paste-import.ts` raises five (`'same-file-path'`, `'not-supported'`, `'no-active-editor'`, `'empty-clipboard'`, `'source-not-found'`); `commands/paste-import-with-style.ts` raises the same five plus its branch on `variants.length`; `commands/copy-file-path.ts` raises two (`'no-file-to-copy'`, `'copy-success'`); `commands/set-default-import-style.ts` raises seven — the same five rejection variants plus the new `'no-configurable-style'` and `'default-style-saved'`.
 - All messages share the `Auto Import:` prefix — matches the command titles in `package.json`.
 
@@ -71,8 +71,7 @@ Comment lines (starting with `//`, `/*`, or `*` after whitespace) are skipped to
 
 ### Command-name coupling
 
-The `'empty-clipboard'` message references the literal command title `Auto Import: Copy File Path` from `package.json:contributes.commands`. If that title ever changes, three sites must update in lock-step:
+The `'empty-clipboard'` message references the literal command title `Auto Import: Copy File Path` from `package.json:contributes.commands`. If that title ever changes, two sites must update in lock-step:
 
 1. `package.json:contributes.commands[].title` — the canonical command title.
 2. `src/editor/notification.ts` — the `'empty-clipboard'` case's message string.
-3. `src/types/notification.ts` — the TSDoc on the `'empty-clipboard'` variant that quotes the message verbatim.

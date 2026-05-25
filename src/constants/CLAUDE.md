@@ -22,7 +22,7 @@ Runtime gating tables for source/destination extension pairs.
 | `ASTRO_SUPPORTED_EXTENSIONS` | `commands/paste-import.ts` clause 9 | Sources accepted for `.astro` destinations |
 | `CROSS_IMPORT_DESTINATIONS` | `commands/{paste-import,paste-import-with-style,set-default-import-style}.ts` | Destinations allowed to import a *different* extension |
 | `SCRIPT_FILE_EXTENSIONS` | `editor/insert-snippet.ts:determineInsertionColumn` | Force column-0 placement |
-| `STYLESHEET_FILE_EXTENSIONS` | `editor/insert-snippet.ts:determineInsertionColumn` | Force column-0 placement |
+| `STYLESHEET_FILE_EXTENSIONS` | `editor/insert-snippet.ts:determineInsertionColumn`, `editor/insert-snippet.ts:isInlineSnippet` | Force column-0 placement; gate inline `url()` insertion |
 
 ## Why both a runtime table and a compile-time type union exist
 
@@ -32,7 +32,7 @@ Runtime: these tables are the runtime safety net. Keep them in sync with `types/
 
 ## Hidden coupling — touch with care
 
-`SCRIPT_FILE_EXTENSIONS` and `STYLESHEET_FILE_EXTENSIONS` are consumed *only* by `editor/insert-snippet.ts:determineInsertionColumn`. They look like generic categorisation but their sole purpose is forcing column 0 for those destinations. Renaming or repurposing them silently changes insertion behaviour.
+`SCRIPT_FILE_EXTENSIONS` is consumed only by `editor/insert-snippet.ts:determineInsertionColumn`. `STYLESHEET_FILE_EXTENSIONS` is consumed by both `determineInsertionColumn` and `isInlineSnippet` (which gates whether a non-stylesheet source into a stylesheet destination triggers inline `url()` insertion). They look like generic categorisation but changing them silently affects column-0 forcing and inline-insertion gating. Renaming or repurposing them silently changes insertion behaviour.
 
 ## Adding a new accepted source/destination pair
 
@@ -42,4 +42,4 @@ Runtime: these tables are the runtime safety net. Keep them in sync with `types/
 
 ## Adding a new file extension entirely
 
-Three sites must stay in sync — see `src/types/CLAUDE.md` for the full rule.
+Four sites must stay in sync — see `src/types/CLAUDE.md` for the full rule.

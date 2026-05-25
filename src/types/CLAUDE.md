@@ -14,11 +14,12 @@ Category sub-types (`HtmlFileExtension`, `YamlFileExtension`, `MarkdownFileExten
 
 **Conventions:** every value is lowercase and dot-prefixed (`.ts`, `.png`, etc.) so it matches `path.parse(filePath).ext` without normalisation. The `as FileExtension` cast at runtime boundaries (e.g. `extractFileExtension` return) is **erased** — no runtime check.
 
-### Three-site sync when adding/removing an extension
+### Four-site sync when adding/removing an extension
 
 1. The relevant category sub-type here.
 2. Runtime gating tables in `src/constants/extensions.ts`.
 3. The matching `case` in `src/snippets/dispatch.ts` (destination dispatch) or `src/snippets/_react.ts` (JSX/TSX/MDX source dispatch).
+4. The matching `case` in `src/snippets/variants.ts:buildImportSnippetVariants` (so the picker commands work for the new extension).
 
 A missing entry in (2) produces a silent fall-through to a `default:` branch — the cast in (1) won't catch it. Gating is the runtime safety net.
 

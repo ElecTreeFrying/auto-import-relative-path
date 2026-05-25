@@ -10,6 +10,7 @@ Per-language snippet builders and the destination-extension dispatch. The public
 | `variants.ts` | `buildImportSnippetVariants()` — enumerates every applicable style for the current source/destination pair. Consumed by `pasteImportWithStyle` and `setDefaultImportStyle`; renders full-path snippets for insertion and basename-only labels for the QuickPick in parallel. |
 | `_react.ts` | Internal: `buildReactImport` shared by JSX/TSX/MDX. |
 | `_styles.ts` | Internal: `ImportStyle[]` tables + `resolveStyleIndex` lookup. |
+| `_class-name.ts` | Internal: reads source files for exported class names; consumed by `typescript.ts` and `variants.ts`. |
 
 ### `languages/`
 
@@ -27,7 +28,7 @@ One module per destination language.
 | `markdown.ts` | Markdown link (fixed) + image (3 configurable styles). |
 | `framework-component.ts` | Vue/Svelte/Astro entry — delegates to `buildTypeScriptImportSnippet` for all sources; strips extension for script sources per preserve setting. All three share identical import semantics. |
 
-`_`-prefixed files are internal to the `snippets/` subtree. Importing them from outside `snippets/` is a smell; `languages/` modules importing `../_styles` and `../_react` is expected.
+`_`-prefixed files are internal to the `snippets/` subtree. Importing them from outside `snippets/` is a smell; `languages/` modules importing `../_styles`, `../_react`, and `../_class-name` is expected.
 
 ## Where to add new code
 

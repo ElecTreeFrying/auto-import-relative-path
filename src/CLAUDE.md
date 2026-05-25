@@ -31,7 +31,7 @@ extension.ts                 # entry: activate/deactivate
 - **Naming.** Files use noun-only kebab-case (`relative-path.ts`, `file-path-info.ts`). Don't reintroduce suffixes like `.command.ts`, `.util.ts`, `-fn.ts`, `.types.ts`, `.enums.ts`, `.interface.ts` — the parent directory carries the kind signal.
 - **Internal modules.** A leading underscore (`_styles.ts`, `_react.ts`) marks a directory-internal module; importing one from outside its directory is a smell.
 - **The only barrel.** `commands/index.ts` is the only re-export-only file. Other directories use direct imports so dependency direction stays visible at every call site.
-- **TSDoc invariant.** Every module, exported function, type, interface property, and constant has TSDoc. New files must follow.
+- **TSDoc invariant.** New modules, exported functions, types, interface properties, and constants must have TSDoc. Existing code is being backfilled — `snippets/_class-name.ts` and `editor/insert-snippet.ts` (private helpers) are the current reference for style.
 - **No `vscode` import in `path/` or `types/`.** Those layers stay Node-testable.
 
 ## Per-directory invariants
@@ -46,5 +46,5 @@ See each directory's `CLAUDE.md` for the deep rules:
 | `path/` | Pure path math | No `vscode` import; `./` prefix rule is regression-tested |
 | `config/` | Workspace config | Three-site byte-exact sync (`package.json` ↔ `_styles.ts` ↔ per-language `switch`) |
 | `constants/` | Gating tables | Runtime mirror of `types/file-extension.ts`; the `as FileExtension` cast at boundaries is erased |
-| `types/` | Type unions (no enums) | Adding/removing an extension is a 3-site sync (this dir + `constants/` + `snippets/`) |
+| `types/` | Type unions (no enums) | Adding/removing an extension is a 4-site sync (this dir + `constants/` + `snippets/dispatch.ts` + `snippets/variants.ts`) |
 | `test/` | Mocha BDD tests | Run from `out/` (compile-tests, NOT esbuild) |
