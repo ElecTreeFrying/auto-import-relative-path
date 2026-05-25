@@ -6,6 +6,13 @@ import { SCRIPT_FILE_EXTENSIONS, STYLESHEET_FILE_EXTENSIONS } from '../constants
 import { FileExtension } from '../types/file-extension';
 import { getFilePathInfo } from './file-path-info';
 
+/** Markers used by Bottom placement to find the last import line. */
+const IMPORT_INDICATORS = [
+  'import ', 'var name = require(', 'const name = require(', 'require(',
+  "@import '", '@import "', '@import url(', '@import (', "@use '", '@use "',
+  "@forward '", '@forward "'
+];
+
 export async function insertImportSnippet(snippet: vscode.SnippetString): Promise<void> {
   snippet = snippet.appendText('\n');
 
@@ -14,7 +21,8 @@ export async function insertImportSnippet(snippet: vscode.SnippetString): Promis
   }
 
   if (await shouldUseAstroFrontmatter()) {
-    return insertSnippetAtAstroFrontmatter(snippet);
+    const placement = getAutoImportSetting<string>('preferences', 'placement');
+    return insertSnippetAtAstroFrontmatter(snippet, placement);
   }
 
   const placement = getAutoImportSetting('preferences', 'placement');
@@ -54,15 +62,10 @@ function insertSnippetAtCursor(snippet: vscode.SnippetString): void {
 function insertSnippetAtBottom(snippet: vscode.SnippetString): void {
   const editor = vscode.window.activeTextEditor;
   const documentText = editor.document.getText();
-  const importIndicators = [
-    'import ', 'var name = require(', 'const name = require(', 'require(',
-    "@import '", '@import "', '@import url(', '@import (', "@use '", '@use "',
-    "@forward '", '@forward "'
-  ];
 
   let insertionLine = 0;
   documentText.split('\n').forEach((lineContent, index) => {
-    if (importIndicators.some(indicator => lineContent.includes(indicator))) {
+    if (IMPORT_INDICATORS.some(indicator => lineContent.includes(indicator))) {
       insertionLine = index + 1;
     }
   });
@@ -91,23 +94,61 @@ async function shouldUseAstroFrontmatter(): Promise<boolean> {
   return destinationFileExt === '.astro';
 }
 
-function insertSnippetAtAstroFrontmatter(snippet: vscode.SnippetString): void {
-  const editor = vscode.window.activeTextEditor;
-  const lines = editor.document.getText().split('\n');
-
-  let openingFenceLine = -1;
+/** Finds the opening and closing `---` fence lines. Returns `null` if fewer than two fences exist. */
+function findAstroFrontmatterBounds(lines: string[]): { openingLine: number; closingLine: number } | null {
+  let openingLine = -1;
   for (let i = 0; i < lines.length; i++) {
     if (lines[i].trim() === '---') {
-      openingFenceLine = i;
-      break;
+      if (openingLine === -1) {
+        openingLine = i;
+      } else {
+        return { openingLine, closingLine: i };
+      }
     }
   }
+  return null;
+}
 
-  if (openingFenceLine === -1) {
+/** Finds the insertion line for Bottom placement within a frontmatter region. */
+function findAstroBottomLine(lines: string[], openingLine: number, closingLine: number): number {
+  let insertionLine = openingLine + 1;
+  for (let i = openingLine + 1; i < closingLine; i++) {
+    if (IMPORT_INDICATORS.some(indicator => lines[i].includes(indicator))) {
+      insertionLine = i + 1;
+    }
+  }
+  return insertionLine;
+}
+
+function insertSnippetAtAstroFrontmatter(snippet: vscode.SnippetString, placement: string | undefined): void {
+  const editor = vscode.window.activeTextEditor;
+  const lines = editor.document.getText().split('\n');
+  const bounds = findAstroFrontmatterBounds(lines);
+
+  if (!bounds) {
     const wrappedSnippet = new vscode.SnippetString(`---\n${snippet.value}---\n`);
     editor.insertSnippet(wrappedSnippet, new vscode.Position(0, 0));
     return;
   }
 
-  editor.insertSnippet(snippet, new vscode.Position(openingFenceLine + 1, 0));
+  const { openingLine, closingLine } = bounds;
+
+  switch (placement) {
+    case 'Top':
+      insertSnippetAtPosition(snippet, openingLine + 1);
+      return;
+    case 'Cursor': {
+      const cursorLine = editor.selection.anchor.line;
+      if (cursorLine > openingLine && cursorLine < closingLine) {
+        insertSnippetAtPosition(snippet, cursorLine);
+        return;
+      }
+      insertSnippetAtPosition(snippet, findAstroBottomLine(lines, openingLine, closingLine));
+      return;
+    }
+    case 'Bottom':
+    default:
+      insertSnippetAtPosition(snippet, findAstroBottomLine(lines, openingLine, closingLine));
+      return;
+  }
 }
