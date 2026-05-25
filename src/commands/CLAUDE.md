@@ -21,7 +21,7 @@ The five commands registered in `src/extension.ts`. The clipboard is the data ch
 
 Delegates to VS Code's built-in `copyFilePath`, then reads the clipboard and re-writes the same string. The round-trip is deliberate: the built-in command's clipboard write is timing/focus-sensitive — re-writing guarantees the next paste-import sees what we just announced.
 
-Calls `clearNotifications()` first, then `showNotification('copy-success', { basename })` on success or `showNotification('no-file-to-copy')` on failure. Both helpers live in `editor/notification.ts`.
+Calls `clearNotifications()` first. Three outcomes: `showNotification('copy-success', { basename })` on success; `showNotification('no-file-to-copy')` when the clipboard is empty or not an absolute path; `showNotification('no-extension', { basename })` when the copied file has no extension (e.g. `Makefile`, `Dockerfile`). All helpers live in `editor/notification.ts`.
 
 On success, the `copy-success` toast carries two action buttons — **Paste with Style** and **Paste Now** (in that render order, leftmost first) — and the post-toast `.then` handler dispatches `extension.pasteImportWithStyle` / `extension.pasteImport` based on which the user clicked. **Two-site byte-exact contract**: the button label string in `editor/notification.ts` and the `switch` case in this file must match character-for-character — `showInformationMessage` resolves with the literal clicked label, so any drift silently no-ops.
 
@@ -29,6 +29,7 @@ On success, the `copy-success` toast carries two action buttons — **Paste with
 
 - Aborts if there's no `activeTextEditor`.
 - **Parallel fetch.** `getFilePathInfo()` and `buildImportSnippet()` run together via `Promise.all`. They share no state and both internally read clipboard + active editor; running concurrently halves latency. Don't introduce a code path that mutates the clipboard between them.
+- **Clipboard validation** rejects with `'empty-clipboard'` when empty or not absolute; rejects with `'no-extension'` when the source path has no file extension (e.g. `Makefile`).
 - **Same-file rejection** runs before gating: `sourceFilePath.toLowerCase() === destinationFilePath.toLowerCase()` → `'same-file-path'` toast.
 - **Eleven-clause gating conjunction** rejects with `'not-supported'` toast if any clause matches:
   1. Destination not in `CROSS_IMPORT_DESTINATIONS` AND source ≠ destination extension

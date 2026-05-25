@@ -48,18 +48,19 @@ Comment lines (starting with `//`, `/*`, or `*` after whitespace) are skipped to
 ### `showNotification(type, payload?)`
 
 - Overloaded function dispatching on `NotificationType` (string-literal union from `types/notification.ts`).
-- Nine variants. Four are payload-less; five interpolate values into the message:
+- Ten variants. Four are payload-less; six interpolate values into the message:
   - `'not-supported'` takes `{ sourceExt, destinationExt }` — emits `Auto Import: Cannot import .X into .Y files.`
+  - `'no-extension'` takes `{ basename }` — emits `Auto Import: <basename> has no file extension.`
   - `'source-not-found'` takes `{ basename }` — emits `Auto Import: Source file no longer exists: <basename>.`
   - `'copy-success'` takes `{ basename }` — emits `Auto Import: Copied path — <basename>` (info toast, not warning)
-  - `'no-configurable-style'` takes `{ sourceExt, destinationExt }` — emits `Auto Import: No configurable style for .X → .Y files.`
+  - `'no-configurable-style'` takes `{ sourceExt, destinationExt }` — emits `Auto Import: .X → .Y imports use a fixed style.`
   - `'default-style-saved'` takes `{ description }` — emits `Auto Import: Default style saved — <description>` (info toast, not warning)
 - TypeScript overload resolution enforces the right payload (or no payload) at every call site. The implementation signature uses a wide payload type and `!` non-null assertions because the overloads are the type-safety boundary.
-- Seven variants render via `showWarningMessage`; `'copy-success'` and `'default-style-saved'` render via `showInformationMessage`. The level is hardcoded per-variant inside the `switch`.
+- Eight variants render via `showWarningMessage`; `'copy-success'` and `'default-style-saved'` render via `showInformationMessage`. The level is hardcoded per-variant inside the `switch`.
 - Two variants surface action buttons:
   - `'not-supported'` adds **View Supported Files** — click handler is self-contained (`vscode.env.openExternal` to the README's supported-pairs anchor); overload still returns `void`.
   - `'copy-success'` adds **Paste with Style** (style-picker variant) and **Paste Now** (default paste-import), in that render order (leftmost first). The overload returns `Thenable<string | undefined>` so `commands/copy-file-path.ts` can dispatch on the chosen action — keeps `editor/` from reaching into `commands/`.
-- Producers: `commands/paste-import.ts` raises five (`'same-file-path'`, `'not-supported'`, `'no-active-editor'`, `'empty-clipboard'`, `'source-not-found'`); `commands/paste-import-with-style.ts` raises the same five plus its branch on `variants.length`; `commands/copy-file-path.ts` raises two (`'no-file-to-copy'`, `'copy-success'`); `commands/set-default-import-style.ts` raises seven — the same five rejection variants plus the new `'no-configurable-style'` and `'default-style-saved'`.
+- Producers: `commands/paste-import.ts` raises six (`'same-file-path'`, `'not-supported'`, `'no-active-editor'`, `'no-extension'`, `'empty-clipboard'`, `'source-not-found'`); `commands/paste-import-with-style.ts` raises the same six plus its branch on `variants.length`; `commands/copy-file-path.ts` raises three (`'no-file-to-copy'`, `'no-extension'`, `'copy-success'`); `commands/set-default-import-style.ts` raises eight — the same six rejection variants plus `'no-configurable-style'` and `'default-style-saved'`.
 - All messages share the `Auto Import:` prefix — matches the command titles in `package.json`.
 
 ### `clearNotifications()`
