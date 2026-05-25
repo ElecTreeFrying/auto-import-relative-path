@@ -47,41 +47,34 @@ export type AutoImportConfigNamespace =
   | 'stylesheet'
   | 'markup';
 
-export type AutoImportSettingKey =
-  | 'placement'
-  | 'preserve'
-  | 'javascript'
-  | 'typescript'
-  | 'css'
-  | 'cssImage'
-  | 'scss'
-  | 'scssImage'
-  | 'htmlScript'
-  | 'htmlImage'
-  | 'htmlVideo'
-  | 'htmlAudio'
-  | 'htmlStyleSheet'
-  | 'markdown'
-  | 'markdownImage';
+type SettingsKeyMap = {
+  preferences: 'placement';
+  script: 'preserve' | 'javascript' | 'typescript';
+  stylesheet: 'preserve' | 'css' | 'cssImage' | 'scss' | 'scssImage';
+  markup: 'htmlScript' | 'htmlImage' | 'htmlVideo' | 'htmlAudio'
+        | 'htmlStyleSheet' | 'markdown' | 'markdownImage';
+};
 
-export function getAutoImportSetting<T = unknown>(
-  namespaceKey: AutoImportConfigNamespace,
-  settingKey: AutoImportSettingKey
+export type AutoImportSettingKey = SettingsKeyMap[AutoImportConfigNamespace];
+
+export function getAutoImportSetting<T = unknown, N extends AutoImportConfigNamespace = AutoImportConfigNamespace>(
+  namespaceKey: N,
+  settingKey: SettingsKeyMap[N]
 ): T | undefined {
   const { namespace, settings } = AUTO_IMPORT_CONFIG[namespaceKey];
   const configuration = vscode.workspace.getConfiguration(namespace);
-  const settingProperty = (settings as Record<AutoImportSettingKey, string>)[settingKey];
+  const settingProperty = (settings as Record<string, string>)[settingKey];
   return configuration.get<T>(settingProperty);
 }
 
-export function setAutoImportSetting<T = unknown>(
-  namespaceKey: AutoImportConfigNamespace,
-  settingKey: AutoImportSettingKey,
+export function setAutoImportSetting<T = unknown, N extends AutoImportConfigNamespace = AutoImportConfigNamespace>(
+  namespaceKey: N,
+  settingKey: SettingsKeyMap[N],
   value: T,
   target: vscode.ConfigurationTarget = vscode.ConfigurationTarget.Global,
 ): Thenable<void> {
   const { namespace, settings } = AUTO_IMPORT_CONFIG[namespaceKey];
   const configuration = vscode.workspace.getConfiguration(namespace);
-  const settingProperty = (settings as Record<AutoImportSettingKey, string>)[settingKey];
+  const settingProperty = (settings as Record<string, string>)[settingKey];
   return configuration.update(settingProperty, value, target);
 }
