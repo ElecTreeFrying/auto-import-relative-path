@@ -8,7 +8,7 @@ Helpers that touch the `vscode` API on behalf of `commands/` and `snippets/`. Th
 |------|-----------------|---------|
 | `file-path-info.ts` | `getFilePathInfo(): Promise<FilePathInfo>` | Returns `{ relativePath, sourceFilePath, destinationFilePath, sourceFileExt, destinationFileExt }` from clipboard + active editor. |
 | `insert-snippet.ts` | `insertImportSnippet(snippet: SnippetString): Promise<void>` | Chooses Top / Bottom / Cursor placement (or forces Cursor for HTML/MD/non-stylesheet → stylesheet) and sets the insertion column. |
-| `notification.ts` | `showNotification(type, payload?)` / `clearNotifications()` | Centralized notification surface. Raises one of nine toasts (seven warning, two info) and dismisses prior toasts before a fresh one fires. |
+| `notification.ts` | `showNotification(type, payload?)` / `clearNotifications()` | Centralized notification surface. Raises one of ten toasts (eight warning, two info) and dismisses prior toasts before a fresh one fires. |
 
 ## Where to add new code
 

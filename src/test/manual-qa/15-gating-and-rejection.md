@@ -1,6 +1,6 @@
 # 15 — Gating & rejection
 
-Validates every rejection path: no active editor, empty/garbage clipboard, same-file, source-not-found, the eleven not-supported clauses, and seven of the nine notification variants (the remaining two — `no-configurable-style` and `default-style-saved` — are covered in `18-style-pickers.md`).
+Validates every rejection path: no active editor, empty/garbage clipboard, same-file, source-not-found, the eleven not-supported clauses, and eight of the ten notification variants (the remaining two — `no-configurable-style` and `default-style-saved` — are covered in `18-style-pickers.md`).
 
 **Sources:**
 - `src/commands/paste-import.ts` — order-of-checks: `no-active-editor` → `empty-clipboard` → `same-file-path` → `source-not-found` → 11-clause `not-supported`
@@ -8,7 +8,7 @@ Validates every rejection path: no active editor, empty/garbage clipboard, same-
 - `src/constants/extensions.ts` — `CROSS_IMPORT_DESTINATIONS`, `HTML/MARKDOWN/CSS/SCSS/VUE/SVELTE/ASTRO_SUPPORTED_EXTENSIONS`
 - `src/snippets/dispatch.ts` — empty `SnippetString('')` for unhandled destination
 - `src/snippets/_react.ts` — empty for unhandled JSX/TSX/MDX source
-- `src/editor/notification.ts` — nine `NotificationType` variants (seven warning + two info); this file covers the seven paste/copy variants
+- `src/editor/notification.ts` — ten `NotificationType` variants (eight warning + two info); this file covers the seven paste/copy warning variants
 - `src/types/notification.ts` — the string-literal union (no enum)
 
 ## Setup

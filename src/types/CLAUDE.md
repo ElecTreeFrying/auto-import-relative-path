@@ -6,7 +6,7 @@ Cross-cutting type unions used across the codebase. **String-literal unions, not
 
 - `file-extension.ts` — `FileExtension` union (the only export from this file).
 - `import-type.ts` — `ImportType` seven-way classifier.
-- `notification.ts` — `NotificationType` nine-way notification kind (seven warning, two info).
+- `notification.ts` — `NotificationType` ten-variant notification kind (eight warning, two info).
 
 ## `file-extension.ts` — only `FileExtension` is exported
 

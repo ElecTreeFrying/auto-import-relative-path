@@ -6,7 +6,7 @@ A complete, sequential manual-QA pass for every code path in the extension. Walk
 
 Four real bugs were fixed in `src/snippets/languages/scss.ts`, `src/snippets/languages/typescript.ts`, `src/snippets/languages/javascript.ts`, and `src/commands/copy-file-path.ts`. Before shipping, every code path is verified end-to-end — both the four fixes and every adjacent behavior they could have touched.
 
-0.7.0 also replaced the two generic warning toasts (`Same file path.`, `Not supported.`) with **nine specific, parameterized notifications** (seven warning + two info) — see `src/editor/notification.ts` for the canonical text. Every test below quotes the *exact* expected toast string; testers should compare strings byte-for-byte, not just toast presence.
+0.7.0 also replaced the two generic warning toasts (`Same file path.`, `Not supported.`) with **ten specific, parameterized notifications** (eight warning + two info) — see `src/editor/notification.ts` for the canonical text. Every test below quotes the *exact* expected toast string; testers should compare strings byte-for-byte, not just toast presence.
 
 ## How to run this
 
@@ -36,7 +36,7 @@ If a checkbox fails, do not proceed past that file. Reproduce the failure, captu
 | 10 | `10-paste-into-html.md` | `<script>` / `<img>` / `<link>` |
 | 11 | `11-paste-into-markdown.md` | Markdown link + image (inline & reference) |
 | 12 | `12-auto-command.md` | Sequential copy+paste; verifies Bug #3 fix |
-| 13 | `13-settings-placement.md` | Top/Bottom/Cursor + 4 forced-cursor overrides + Astro frontmatter + insertion column |
+| 13 | `13-settings-placement.md` | Top/Bottom/Cursor + 2 forced-cursor overrides + Astro frontmatter + SFC script block + insertion column |
 | 14 | `14-settings-preserve-extension.md` | Both preserve flags + SCSS `.css` asymmetry |
 | 15 | `15-gating-and-rejection.md` | All 11 gating clauses isolated |
 | 16 | `16-path-computation.md` | `./`, `../`, partials, spaces/unicode |

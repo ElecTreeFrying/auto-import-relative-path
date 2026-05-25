@@ -15,9 +15,9 @@ Sequential markdown checklists driving the human manual-QA pass before each rele
 | `03-copy-command.md` | `extension.copyFilePath` round-trip + `copy-success` toast buttons |
 | `04-paste-into-javascript.md` … `11-paste-into-markdown.md` | One per destination extension (`.js`, `.ts`, `.jsx`, `.tsx`, `.css`, `.scss`, `.html`, `.md`) |
 | `12-auto-command.md` | `extension.copyPaste` (alt+d): sequential copy→paste, race stress, copy-fail short-circuit |
-| `13-settings-placement.md` | `importStatementPlacement` + the inline-snippet override + the 2 forced-cursor overrides + the 9 Bottom-marker indicators |
+| `13-settings-placement.md` | `importStatementPlacement` + the inline-snippet override + the 2 forced-cursor overrides + Astro frontmatter + SFC script block + the 9 Bottom-marker indicators |
 | `14-settings-preserve-extension.md` | `preserve{Script,Stylesheet}FileExtension` + the `.css → .scss` asymmetry |
-| `15-gating-and-rejection.md` | 11-clause gating conjunction + 9 byte-exact notification variants |
+| `15-gating-and-rejection.md` | 11-clause gating conjunction + 8 of 10 notification variants (remaining 2 in `18`) |
 | `16-path-computation.md` | `./` prefix rule (CHANGELOG 0.6.1), `../`, partial `_` stripping, spaces, unicode |
 | `17-edge-cases-and-regression.md` | Degenerate files, multi-root, multi-cursor, stress, regression re-checks |
 | `18-style-pickers.md` | `extension.pasteImportWithStyle` + `extension.setDefaultImportStyle` picker UX, persistence, hardcoded-destination rejection |
@@ -43,7 +43,7 @@ Every numbered file (`01-…` onward) follows the same skeleton:
 ## Cross-file invariants — drift breaks tests silently
 
 - **Notification text is byte-exact with `src/editor/notification.ts`.** Every toast string a checklist quotes must match the constant character-for-character — `Auto Import:` prefix, parameter interpolations (`${sourceExt}`, `${destinationExt}`, `${basename}`), trailing punctuation. `15-gating-and-rejection.md` is the canonical reference; the same strings recur in `02`, `03`, `11`, `12`, `18`. When `notification.ts` changes, grep `manual-qa/` for the old string and update every occurrence — also bump the variant count in `README.md` "Why this exists" if the total changed.
-- **"Settings under test" in `README.md:72–89` mirrors `package.json:contributes.configuration.properties` exactly.** Adding or renaming a setting requires updating the README list and every checklist that exercises it (typically `04`, `05`, `08`, `09`, `13`, `14`, `18`).
+- **"Settings under test" in `README.md:72–91` mirrors `package.json:contributes.configuration.properties` exactly.** Adding or renaming a setting requires updating the README list and every checklist that exercises it (typically `04`, `05`, `08`, `09`, `13`, `14`, `18`).
 - **Enum `description` strings in `package.json` are byte-exact contracts** with `src/snippets/_styles.ts` *and* with what `18-style-pickers.md` quotes as expected picker labels and persisted-setting templates, and what `04–11` quote as expected emitted snippet shapes. A drift here fails no automated test — only a human running the checklist catches it.
 - **Fixture filenames are locked.** The 37 baseline names in `../manual-qa-workspace/README.md` ("Maintenance notes") are referenced literally by checklists. Renaming a baseline file produces a silent ghost reference — the tester pastes against a *different* file and the test still appears to pass. Add new fixtures alongside instead.
 - **File numbers grow monotonically.** Never re-number an existing checklist. The master sign-off matrix and run-order table reference the integer, and partial sign-offs from prior testers would become ambiguous. Insert at the next free integer (current high-water mark: `18`).
@@ -62,7 +62,7 @@ Every numbered file (`01-…` onward) follows the same skeleton:
 ## Updating existing checklists by change category
 
 - **Notification text changed in `src/editor/notification.ts`** → grep `manual-qa/` for the old string; update everywhere it appears. If the total notification count changed, bump it in `README.md` "Why this exists".
-- **Setting renamed or added in `package.json`** → update `README.md:72–89`, then the per-destination checklist (`04–11`) and settings checklists (`13`, `14`, `18`) that exercise it.
+- **Setting renamed or added in `package.json`** → update `README.md:72–91`, then the per-destination checklist (`04–11`) and settings checklists (`13`, `14`, `18`) that exercise it.
 - **New session bug fixed** → add a `Bug #N` sub-section in `02-bug-fix-verification.md` (full end-to-end verification) *and* a re-check stanza in `17-edge-cases-and-regression.md` under "Regression — current-session fixes".
 - **CHANGELOG-pinned regression (like 0.6.1's `./` prefix)** → add a stanza in `17-edge-cases-and-regression.md` under "Regression — pinned", keyed by the CHANGELOG version.
 
