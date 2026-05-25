@@ -37,7 +37,7 @@ export function buildMarkdownImageImportSnippetByStyle(
     case 0:
       return new vscode.SnippetString(`![\${1:alt-text}](${relativePath})`);
     case 1:
-      return new vscode.SnippetString(`![alt-text](${relativePath} "Hover text")`);
+      return new vscode.SnippetString(`![\${1:alt-text}](${relativePath} "\${2:Hover text}")`);
     case 2:
       return new vscode.SnippetString(`<img src="${relativePath}" alt="$1" width="$2" height="$3">`);
     default:

@@ -358,6 +358,6 @@ function toHardcodedVariant(
 
 function renderLabel(snippetText: string): string {
   return snippetText
-    .replace(/\$\{1:([^}]+)\}/g, '$1')
-    .replace(/\$1/g, 'name');
+    .replace(/\$\{\d+:([^}]+)\}/g, '$1')
+    .replace(/\$\d+/g, 'name');
 }
