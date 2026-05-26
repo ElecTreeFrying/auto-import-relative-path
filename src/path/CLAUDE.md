@@ -44,6 +44,6 @@ Maps file extension to one of seven buckets, with two `null` returns:
 | `.scss` | `null` (so `snippets/languages/scss.ts` falls through its `switch` to its SCSS-specific default that handles `@use`/partial filenames) |
 | anything else | `'image'` (`default:` catch-all) |
 
-The `'image'` branch is **not** a guarantee that the source is image-like — it's a default. The runtime gating in `commands/paste-import.ts` is what makes that safe.
+The `'image'` branch is **not** a guarantee that the source is image-like — it's a default. The runtime gating in `src/gating.ts:isPairSupported` is what makes that safe.
 
 Consumers: `snippets/languages/{css,scss,html,markdown}.ts` and `snippets/variants.ts`. JSX/TSX/MDX don't consult this — they branch on the raw source extension via `_react.ts`.

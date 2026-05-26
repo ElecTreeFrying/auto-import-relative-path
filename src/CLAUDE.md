@@ -6,8 +6,10 @@ Source root for the extension. The codebase is layered by responsibility, with s
 
 ```
 extension.ts                 # entry: activate/deactivate
+gating.ts                    # shared isPairSupported() — nine-clause extension-pair check
 ├── commands/                # public command surface (5 commands)
-├── editor/                  # vscode-API helpers (clipboard, snippets, notification)
+├── drop/                    # DocumentDropEditProvider (drag-from-Explorer imports)
+├── editor/                  # vscode-API helpers (clipboard, snippets, notification, placement)
 ├── snippets/                # per-language snippet builders + dispatch
 ├── path/                    # pure path math (no `vscode` import)
 ├── config/                  # workspace-config access
@@ -18,7 +20,9 @@ extension.ts                 # entry: activate/deactivate
 
 **Allowed dependency direction (lower never imports higher):**
 
-- `commands → editor, snippets, constants, types`
+- `commands → gating, editor, snippets, constants, types`
+- `drop → gating, editor, snippets, constants, types`
+- `gating → editor, constants, types`
 - `snippets → config, path, editor, types, constants`
 - `editor → config, path, constants, types`
 - `path → types`
@@ -41,6 +45,7 @@ See each directory's `CLAUDE.md` for the deep rules:
 | Directory | What it owns | Key invariant |
 |-----------|--------------|---------------|
 | `commands/` | The five registered commands | Clipboard is the data channel; failure paths return void, never throw |
+| `drop/` | DocumentDropEditProvider | Same gating as commands (`isPairSupported`); same snippet pipeline; placement via `computeImportPlacement` |
 | `editor/` | vscode-API helpers | Inline insertion for non-stylesheet → stylesheet (`url()` at exact cursor, no `\n`); forced-cursor for HTML/MD; Astro frontmatter constrains to `---` fences; Vue/Svelte constrains to `<script>` block |
 | `snippets/` | Per-language builders + dispatch | Style `description` strings are byte-exact contracts with `package.json` enums |
 | `path/` | Pure path math | No `vscode` import; `./` prefix rule is regression-tested |

@@ -5,19 +5,20 @@ Helpers that touch the `vscode` API on behalf of `commands/` and `snippets/`. Th
 ## Files
 
 - `file-path-info.ts` — single source of truth for `{ relativePath, sourceFilePath, destinationFilePath, sourceFileExt, destinationFileExt }`.
-- `insert-snippet.ts` — placement logic (Top/Bottom/Cursor + forced overrides + column 0/cursor column).
+- `placement.ts` — placement-rule helpers (`isInlineSnippet`, `shouldRepositionCursor`, `findAstroFrontmatterBounds`, `findSfcScriptBounds`, `findBottomLineInRange`, `computeImportPlacement`, `IMPORT_INDICATORS`, etc.). Consumed by `insert-snippet.ts` and `drop/provider.ts`.
+- `insert-snippet.ts` — snippet-insertion orchestrator. Delegates to `placement.ts` for placement decisions, then calls `editor.insertSnippet` at the computed position.
 - `notification.ts` — single switch on `NotificationType` plus a `clearNotifications()` helper.
 
 ## `file-path-info.ts:getFilePathInfo()`
 
 - Reads source from clipboard, destination from `vscode.window.activeTextEditor.document.uri.fsPath`.
 - **Caller is responsible for the active-editor null check** — this function dereferences `editor.document.uri.fsPath` unconditionally and will throw otherwise. Every command that starts the calling chain (`commands/paste-import.ts`, `commands/paste-import-with-style.ts`, `commands/set-default-import-style.ts`) does this check.
-- **Each call re-reads the clipboard.** Don't introduce branches that mutate the clipboard between calls. `paste-import.ts`'s `Promise.all` runs two such reads in parallel and relies on both seeing the same value.
-- Called from many sites: most per-language `buildSnippet()` functions (7 of 9 — `jsx.ts` and `tsx.ts` delegate to `_react.ts:buildReactImport`, which calls it on their behalf), `dispatch.ts`, `variants.ts`, and `insert-snippet.ts:insertImportSnippet`.
+- **Async variant re-reads the clipboard on every call.** `getFilePathInfoFromPaths` (sync) is called by `drop/provider.ts` with explicit paths — no clipboard read.
+- Called from: `commands/{paste-import,paste-import-with-style,set-default-import-style}.ts` and `drop/provider.ts` (via the sync variant `getFilePathInfoFromPaths`). Language modules, `dispatch.ts`, `variants.ts`, and `insert-snippet.ts` all receive `FilePathInfo` as a parameter — they do not call this function themselves.
 
-## `insert-snippet.ts` — placement rules
+## `placement.ts` and `insert-snippet.ts` — placement rules
 
-All overrides are resolved from a single `getFilePathInfo()` call at the top of `insertImportSnippet` — no redundant clipboard re-reads.
+`insertImportSnippet(snippet, info)` receives a pre-computed `FilePathInfo` from the calling command — it does not call `getFilePathInfo()` itself. Placement-rule helpers live in `placement.ts`; `insert-snippet.ts` orchestrates the insertion by calling those helpers and then `editor.insertSnippet`.
 
 Order of precedence:
 
@@ -60,7 +61,7 @@ Comment lines (starting with `//`, `/*`, or `*` after whitespace) are skipped to
 - Two variants surface action buttons:
   - `'not-supported'` adds **View Supported Files** — click handler is self-contained (`vscode.env.openExternal` to the README's supported-pairs anchor); overload still returns `void`.
   - `'copy-success'` adds **Paste with Style** (style-picker variant) and **Paste Now** (default paste-import), in that render order (leftmost first). The overload returns `Thenable<string | undefined>` so `commands/copy-file-path.ts` can dispatch on the chosen action — keeps `editor/` from reaching into `commands/`.
-- Producers: `commands/paste-import.ts` raises six (`'same-file-path'`, `'not-supported'`, `'no-active-editor'`, `'no-extension'`, `'empty-clipboard'`, `'source-not-found'`); `commands/paste-import-with-style.ts` raises the same six plus its branch on `variants.length`; `commands/copy-file-path.ts` raises three (`'no-file-to-copy'`, `'no-extension'`, `'copy-success'`); `commands/set-default-import-style.ts` raises eight — the same six rejection variants plus `'no-configurable-style'` and `'default-style-saved'`.
+- Producers: `commands/paste-import.ts` raises six (`'same-file-path'`, `'not-supported'`, `'no-active-editor'`, `'no-extension'`, `'empty-clipboard'`, `'source-not-found'`); `commands/paste-import-with-style.ts` raises the same six plus its branch on `variants.length`; `commands/copy-file-path.ts` raises three (`'no-file-to-copy'`, `'no-extension'`, `'copy-success'`); `commands/set-default-import-style.ts` raises eight — the same six rejection variants plus `'no-configurable-style'` and `'default-style-saved'`; `drop/provider.ts` raises two (`'same-file-path'`, `'not-supported'`).
 - All messages share the `Auto Import:` prefix — matches the command titles in `package.json`.
 
 ### `clearNotifications()`

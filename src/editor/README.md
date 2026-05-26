@@ -6,8 +6,9 @@ Helpers that touch the `vscode` API on behalf of `commands/` and `snippets/`. Th
 
 | File | Public function | Purpose |
 |------|-----------------|---------|
-| `file-path-info.ts` | `getFilePathInfo(): Promise<FilePathInfo>` | Returns `{ relativePath, sourceFilePath, destinationFilePath, sourceFileExt, destinationFileExt }` from clipboard + active editor. |
-| `insert-snippet.ts` | `insertImportSnippet(snippet: SnippetString): Promise<void>` | Chooses Top / Bottom / Cursor placement (or forces Cursor for HTML/MD/non-stylesheet → stylesheet) and sets the insertion column. |
+| `file-path-info.ts` | `getFilePathInfo(): Promise<FilePathInfo>`, `getFilePathInfoFromPaths(src, dest): FilePathInfo` | Returns `{ relativePath, sourceFilePath, destinationFilePath, sourceFileExt, destinationFileExt }`. Async variant reads clipboard + active editor; sync variant takes explicit paths (used by `drop/provider.ts`). |
+| `placement.ts` | `computeImportPlacement(...)`, `isInlineSnippet(...)`, `IMPORT_INDICATORS`, etc. | Placement-rule helpers: inline-snippet detection, forced-cursor check, Astro frontmatter / SFC script bounds, Bottom-placement indicator scan. |
+| `insert-snippet.ts` | `insertImportSnippet(snippet: SnippetString, info: FilePathInfo): void` | Orchestrates snippet insertion: delegates to `placement.ts` for placement decisions, then calls `editor.insertSnippet` at the computed position. |
 | `notification.ts` | `showNotification(type, payload?)` / `clearNotifications()` | Centralized notification surface. Raises one of ten toasts (eight warning, two info) and dismisses prior toasts before a fresh one fires. |
 
 ## Where to add new code

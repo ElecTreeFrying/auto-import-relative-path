@@ -30,11 +30,11 @@ Seven buckets: `'script' | 'stylesheet' | 'markdown' | 'image' | 'video' | 'audi
 - **Producer**: `path/import-type.ts:determineImportType` (which returns `ImportType | null` — see that file's CLAUDE.md for the two intentional `null` returns).
 - **Consumers**: `snippets/languages/{css,scss,html,markdown}.ts` and `snippets/variants.ts`. JSX/TSX/MDX **do not** consult this — they branch on the raw source extension via `_react.ts`.
 
-The `'image'` value is the catch-all default for unrecognised extensions — *not* a guarantee that the source is image-like. Gating in `commands/paste-import.ts` is what makes the catch-all safe.
+The `'image'` value is the catch-all default for unrecognised extensions — *not* a guarantee that the source is image-like. Gating in `src/gating.ts:isPairSupported` is what makes the catch-all safe.
 
 ## `notification.ts` — `NotificationType`
 
-Ten variants: `'same-file-path' | 'not-supported' | 'no-active-editor' | 'no-file-to-copy' | 'no-extension' | 'empty-clipboard' | 'source-not-found' | 'copy-success' | 'no-configurable-style' | 'default-style-saved'`. Five are raised from `commands/paste-import.ts` (also re-raised from `commands/paste-import-with-style.ts` and `commands/set-default-import-style.ts` for shared gating); `'no-file-to-copy'` and `'copy-success'` are raised from `commands/copy-file-path.ts`; `'no-extension'` is raised from all four command files that validate clipboard paths; the last two are raised exclusively from `commands/set-default-import-style.ts`. Messages live in `editor/notification.ts`.
+Ten variants: `'same-file-path' | 'not-supported' | 'no-active-editor' | 'no-file-to-copy' | 'no-extension' | 'empty-clipboard' | 'source-not-found' | 'copy-success' | 'no-configurable-style' | 'default-style-saved'`. Five are raised from `commands/paste-import.ts` (also re-raised from `commands/paste-import-with-style.ts` and `commands/set-default-import-style.ts` for shared gating); `'no-file-to-copy'` and `'copy-success'` are raised from `commands/copy-file-path.ts`; `'no-extension'` is raised from all four command files that validate clipboard paths; the last two are raised exclusively from `commands/set-default-import-style.ts`. `drop/provider.ts` raises two (`'same-file-path'`, `'not-supported'`). Messages live in `editor/notification.ts`.
 
 Six variants are parameterized — see the overload signatures on `editor/notification.ts:showNotification`:
 - `'not-supported'` takes `{ sourceExt, destinationExt }` — interpolated as `Cannot import .X into .Y files.`

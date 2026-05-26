@@ -13,16 +13,16 @@ Runtime gating tables for source/destination extension pairs.
 | `IMAGE_FILE_EXTENSIONS` | The seven `*_SUPPORTED_EXTENSIONS` lists | Base set spread via `...IMAGE_FILE_EXTENSIONS` |
 | `MEDIA_FILE_EXTENSIONS` | The four `*_SUPPORTED_EXTENSIONS` lists that accept media (HTML, Vue, Svelte, Astro) | Video + audio extensions spread via `...MEDIA_FILE_EXTENSIONS` |
 | `TEXT_TRACK_FILE_EXTENSIONS` | The four `*_SUPPORTED_EXTENSIONS` lists that accept media (HTML, Vue, Svelte, Astro) | `.vtt` spread via `...TEXT_TRACK_FILE_EXTENSIONS` |
-| `HTML_SUPPORTED_EXTENSIONS` | `commands/{paste-import,paste-import-with-style,set-default-import-style}.ts` | Sources accepted for `.html` destinations |
-| `MARKDOWN_SUPPORTED_EXTENSIONS` | `commands/{paste-import,paste-import-with-style,set-default-import-style}.ts` | Sources accepted for `.md` destinations |
-| `CSS_SUPPORTED_EXTENSIONS` | `commands/{paste-import,paste-import-with-style,set-default-import-style}.ts` | Sources accepted for `.css` destinations |
-| `SCSS_SUPPORTED_EXTENSIONS` | `commands/{paste-import,paste-import-with-style,set-default-import-style}.ts` | Sources accepted for `.scss` destinations |
-| `VUE_SUPPORTED_EXTENSIONS` | `commands/{paste-import,paste-import-with-style,set-default-import-style}.ts` | Sources accepted for `.vue` destinations |
-| `SVELTE_SUPPORTED_EXTENSIONS` | `commands/{paste-import,paste-import-with-style,set-default-import-style}.ts` | Sources accepted for `.svelte` destinations |
-| `ASTRO_SUPPORTED_EXTENSIONS` | `commands/{paste-import,paste-import-with-style,set-default-import-style}.ts` | Sources accepted for `.astro` destinations |
-| `CROSS_IMPORT_DESTINATIONS` | `commands/{paste-import,paste-import-with-style,set-default-import-style}.ts` | Destinations allowed to import a *different* extension |
-| `SCRIPT_FILE_EXTENSIONS` | `editor/insert-snippet.ts:determineInsertionColumn` | Force column-0 placement |
-| `STYLESHEET_FILE_EXTENSIONS` | `editor/insert-snippet.ts:determineInsertionColumn`, `editor/insert-snippet.ts:isInlineSnippet` | Force column-0 placement; gate inline `url()` insertion |
+| `HTML_SUPPORTED_EXTENSIONS` | `gating.ts:isPairSupported` | Sources accepted for `.html` destinations |
+| `MARKDOWN_SUPPORTED_EXTENSIONS` | `gating.ts:isPairSupported` | Sources accepted for `.md` destinations |
+| `CSS_SUPPORTED_EXTENSIONS` | `gating.ts:isPairSupported` | Sources accepted for `.css` destinations |
+| `SCSS_SUPPORTED_EXTENSIONS` | `gating.ts:isPairSupported` | Sources accepted for `.scss` destinations |
+| `VUE_SUPPORTED_EXTENSIONS` | `gating.ts:isPairSupported` | Sources accepted for `.vue` destinations |
+| `SVELTE_SUPPORTED_EXTENSIONS` | `gating.ts:isPairSupported` | Sources accepted for `.svelte` destinations |
+| `ASTRO_SUPPORTED_EXTENSIONS` | `gating.ts:isPairSupported` | Sources accepted for `.astro` destinations |
+| `CROSS_IMPORT_DESTINATIONS` | `gating.ts:isPairSupported` | Destinations allowed to import a *different* extension |
+| `SCRIPT_FILE_EXTENSIONS` | `editor/insert-snippet.ts:determineInsertionColumn`, `editor/placement.ts:determineInsertionColumn` | Force column-0 placement |
+| `STYLESHEET_FILE_EXTENSIONS` | `editor/placement.ts:isInlineSnippet`, `editor/insert-snippet.ts:determineInsertionColumn`, `editor/placement.ts:determineInsertionColumn` | Gate inline `url()` insertion; force column-0 placement |
 
 ## Why both a runtime table and a compile-time type union exist
 
@@ -32,7 +32,7 @@ Runtime: these tables are the runtime safety net. Keep them in sync with `types/
 
 ## Hidden coupling — touch with care
 
-`SCRIPT_FILE_EXTENSIONS` is consumed only by `editor/insert-snippet.ts:determineInsertionColumn`. `STYLESHEET_FILE_EXTENSIONS` is consumed by both `determineInsertionColumn` and `isInlineSnippet` (which gates whether a non-stylesheet source into a stylesheet destination triggers inline `url()` insertion). They look like generic categorisation but changing them silently affects column-0 forcing and inline-insertion gating. Renaming or repurposing them silently changes insertion behaviour.
+`SCRIPT_FILE_EXTENSIONS` is consumed by `editor/insert-snippet.ts:determineInsertionColumn` and `editor/placement.ts:determineInsertionColumn`. `STYLESHEET_FILE_EXTENSIONS` is consumed by `editor/placement.ts:isInlineSnippet` (which gates whether a non-stylesheet source into a stylesheet destination triggers inline `url()` insertion) and both `determineInsertionColumn` implementations. They look like generic categorisation but changing them silently affects column-0 forcing and inline-insertion gating. Renaming or repurposing them silently changes insertion behaviour.
 
 ## Adding a new accepted source/destination pair
 

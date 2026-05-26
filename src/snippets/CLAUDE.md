@@ -4,7 +4,7 @@ Per-language snippet builders + the destination-extension dispatch in `dispatch.
 
 ## Files
 
-- `dispatch.ts` — single-level destination-extension switch consumed by `extension.pasteImport`.
+- `dispatch.ts` — single-level destination-extension switch consumed by `commands/paste-import.ts` and `drop/provider.ts`.
 - `variants.ts` — parallel aggregator that enumerates every applicable style for the current paste, consumed by `extension.pasteImportWithStyle` and `extension.setDefaultImportStyle`. Mirrors `dispatch.ts`'s destination switch and the per-language source classification, but calls each language's `buildXImportSnippetByStyle` **twice** per `*_IMPORT_OPTIONS` entry — once with the full relative path (for `snippetText`, the insertion payload) and once with `path.basename(...)` of that path (for `label`, the picker preview). The basename render keeps QuickPick labels short and width-stable regardless of source nesting depth (`'../../components/widget'` → `'widget'`). Each styled variant also carries a `setting?: { namespace, key, value }` triple pointing at the backing `package.json` setting, so `set-default-import-style.ts` can persist the chosen style via `setAutoImportSetting` without re-deriving the destination → table mapping. Hardcoded variants leave `setting` undefined.
 - `_react.ts` — internal: `buildReactImport` shared by JSX/TSX/MDX.
 - `_styles.ts` — internal: `ImportStyle[]` tables + `resolveStyleIndex`. Each entry on the nine active tables also carries an optional `tag` (free-form short label) used by the QuickPick rendered in `paste-import-with-style.ts`.
@@ -32,7 +32,7 @@ Note: there is no `SCSS_IMAGE_IMPORT_OPTIONS` — SCSS image sources reuse `buil
 Parameterised by `primaryExtensions` / `primarySnippet` (and optional `fallbackExtensions` / `fallbackSnippet`):
 
 - **JSX**: `primaryExtensions: ['.js', '.jsx']` → `buildJavaScriptImportSnippet`. No fallback.
-- **TSX**: `primaryExtensions: ['.ts', '.tsx']` → `buildTypeScriptImportSnippet`. `fallbackExtensions: ['.js']` → `buildJavaScriptImportSnippet` (a `.js` source dropped into a TSX file should emit a JS-shaped import, not TS).
+- **TSX**: `primaryExtensions: ['.ts', '.tsx']` → `buildTypeScriptImportSnippet`. `fallbackExtensions: ['.js', '.jsx']` → `buildJavaScriptImportSnippet` (a `.js` source dropped into a TSX file should emit a JS-shaped import, not TS).
 - **MDX**: identical to TSX — `primaryExtensions: ['.ts', '.tsx']` + TS primary + JS fallback for `.js` sources. MDX content is JSX-with-Markdown-syntax and canonically imports `.tsx` / `.ts` components.
 
 Non-script sources fall through to a hardcoded `switch` with four groups:
@@ -41,7 +41,7 @@ Non-script sources fall through to a hardcoded `switch` with four groups:
 - `.gif`/`.jpeg`/`.jpg`/`.png`/`.svg`/`.avif`/`.webp`/`.json`/`.html`/`.yml`/`.yaml`/`.md`/`.mdx`/`.pdf`/`.vue`/`.svelte`/`.astro` → `import ${1:name} from '<path>';`
 - `.mp4`/`.webm`/`.mov`/`.mp3`/`.ogg`/`.wav`/`.m4a`/`.vtt` → `import ${1:url} from '<path>';`
 - `.woff`/`.woff2`/`.ttf`/`.eot`/`.css`/`.scss` → `import '<path>';` (side-effect)
-- `default:` → empty `SnippetString` (means an unsupported extension slipped through gating in `commands/paste-import.ts`).
+- `default:` → empty `SnippetString` (means an unsupported extension slipped through gating in `src/gating.ts`).
 
 ## Language quirks
 
@@ -79,3 +79,5 @@ Markdown emits `[text](path)` for Markdown-to-Markdown links (fixed), with three
 4. New `case` in `types/file-extension.ts:ScriptFileExtension` (if scripty) or the relevant category type.
 5. New gating table or entry in `constants/extensions.ts`.
 6. New `*_IMPORT_OPTIONS` table in `_styles.ts` and matching `package.json` enum (three-site sync).
+7. New `if` clause in `gating.ts:isPairSupported` checking the gating table from step 5.
+8. New `{ language, scheme: 'file' }` entry in `drop/selector.ts:DROP_LANGUAGE_SELECTORS`.
