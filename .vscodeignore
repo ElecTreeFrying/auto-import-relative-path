@@ -4,10 +4,7 @@ out/**
 node_modules/**
 src/**
 .gitignore
-.yarnrc
 esbuild.js
-vsc-extension-quickstart.md
-IMPORT-STATEMENTS-AUDIT.md
 **/tsconfig.json
 **/eslint.config.mjs
 **/*.map
@@ -15,5 +12,9 @@ IMPORT-STATEMENTS-AUDIT.md
 **/.vscode-test.*
 qa/**
 CLAUDE.md
+SPEC.md
+SUPPORT.md
+package-lock.json
 process/**
 .claude/**
+assets/*.gif

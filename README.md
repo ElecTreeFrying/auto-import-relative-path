@@ -21,7 +21,7 @@
 
 Pick a file, press a key — the right import lands in your editor. Path, syntax, and placement handled automatically.
 
-![Auto Import Relative Path demo](assets/demo.gif)
+![Auto Import Relative Path demo](https://raw.githubusercontent.com/ElecTreeFrying/auto-import-relative-path/master/assets/demo.gif)
 
 ---
 
@@ -75,7 +75,7 @@ See [SPEC — §Commands & Keybindings][SPEC-commands] for command IDs, context 
 
 Drag a file from the Explorer into any supported editor. The import snippet is generated with the same styles and settings as the paste commands, and inserted at the drop position. No keybinding needed.
 
-![Drag-and-drop demo](assets/demo-drag.gif)
+![Drag-and-drop demo](https://raw.githubusercontent.com/ElecTreeFrying/auto-import-relative-path/master/assets/demo-drag.gif)
 
 - Uses the same gating, snippet styles, and configuration as paste commands.
 - Follows the same Top / Bottom / Cursor placement setting as paste commands — the drop position is used as the Cursor input.
