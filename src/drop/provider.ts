@@ -7,6 +7,9 @@ import { computeImportPlacement } from '../editor/placement';
 import { isPairSupported } from '../gating';
 import { buildImportSnippet } from '../snippets/dispatch';
 
+const EDIT_KIND = vscode.DocumentDropOrPasteEditKind.TextUpdateImports.append('autoImport');
+const EDIT_TITLE = 'Auto Import';
+
 /** Offers an import snippet when a file is dragged from the Explorer onto a supported editor. */
 export class AutoImportOnDropProvider implements vscode.DocumentDropEditProvider {
   async provideDocumentDropEdits(
@@ -50,14 +53,14 @@ export class AutoImportOnDropProvider implements vscode.DocumentDropEditProvider
     );
 
     if (placement.isInline) {
-      return new vscode.DocumentDropEdit(snippet);
+      return new vscode.DocumentDropEdit(snippet, EDIT_TITLE, EDIT_KIND);
     }
 
     const finalValue = placement.wrapperPrefix
       ? placement.wrapperPrefix + placement.indentation + snippet.value + '\n' + (placement.wrapperSuffix || '')
       : placement.indentation + snippet.value + '\n';
 
-    const dropEdit = new vscode.DocumentDropEdit('');
+    const dropEdit = new vscode.DocumentDropEdit(new vscode.SnippetString(''), EDIT_TITLE, EDIT_KIND);
     const edit = new vscode.WorkspaceEdit();
     edit.set(document.uri, [
       vscode.SnippetTextEdit.insert(

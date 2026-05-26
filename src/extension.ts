@@ -16,7 +16,11 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.commands.registerCommand('extension.copyPaste', () => executeCopyPaste()),
     vscode.commands.registerCommand('extension.pasteImportWithStyle', () => executePasteImportWithStyle()),
     vscode.commands.registerCommand('extension.setDefaultImportStyle', () => executeSetDefaultImportStyle()),
-    vscode.languages.registerDocumentDropEditProvider(DROP_LANGUAGE_SELECTORS, new AutoImportOnDropProvider()),
+    vscode.languages.registerDocumentDropEditProvider(
+      DROP_LANGUAGE_SELECTORS,
+      new AutoImportOnDropProvider(),
+      { dropMimeTypes: [ 'text/uri-list' ] },
+    ),
   );
 }
 
