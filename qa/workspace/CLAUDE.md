@@ -50,7 +50,7 @@ When refactoring any of the code sites above, run the matching manual-QA checkli
 
 ## Baseline filenames are immutable
 
-The ~37-name baseline list in [`README.md`](README.md):Maintenance notes is referenced by every checklist in `../checklists/` ([`01-sanity-and-keybindings.md`](../checklists/01-sanity-and-keybindings.md) through [`18-style-pickers.md`](../checklists/18-style-pickers.md)). Renaming a baseline produces a *silent* test break: the checklist will instruct the tester to copy a file that no longer exists at the named path, and nothing in the toolchain will warn.
+The ~37-name baseline list in [`README.md`](README.md):Maintenance notes is referenced by every checklist in `../checklists/` ([`01-sanity-and-keybindings.md`](../checklists/01-sanity-and-keybindings.md) through [`21-paste-into-framework-components.md`](../checklists/21-paste-into-framework-components.md)). Renaming a baseline produces a *silent* test break: the checklist will instruct the tester to copy a file that no longer exists at the named path, and nothing in the toolchain will warn.
 
 **Workflow when a baseline must change:**
 
