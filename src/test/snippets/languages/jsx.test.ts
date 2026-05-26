@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import { buildSnippet } from '../../../snippets/languages/jsx';
+import { getFilePathInfo } from '../../../editor/file-path-info';
 
 const FIXTURE_ROOT = path.resolve(__dirname, '../../../../qa/workspace');
 const DEST_DIR = path.join(FIXTURE_ROOT, 'src');
@@ -24,49 +25,57 @@ describe('jsx', () => {
 
   it('.js source routes through JS import style (default)', async () => {
     await vscode.env.clipboard.writeText(source('bar.js'));
-    const result = await buildSnippet();
+    const info = await getFilePathInfo();
+    const result = buildSnippet(info);
     assert.strictEqual(result.value, "import $1 from './bar';");
   });
 
   it('.jsx source routes through JS import style (primary match)', async () => {
     await vscode.env.clipboard.writeText(source('App.jsx'));
-    const result = await buildSnippet();
+    const info = await getFilePathInfo();
+    const result = buildSnippet(info);
     assert.strictEqual(result.value, "import $1 from './App';");
   });
 
   it('CSS Module .module.css produces styles import', async () => {
     await vscode.env.clipboard.writeText(source('app.module.css'));
-    const result = await buildSnippet();
+    const info = await getFilePathInfo();
+    const result = buildSnippet(info);
     assert.strictEqual(result.value, "import ${1:styles} from './app.module.css';");
   });
 
   it('image .png produces name import', async () => {
     await vscode.env.clipboard.writeText(source('logo.png'));
-    const result = await buildSnippet();
+    const info = await getFilePathInfo();
+    const result = buildSnippet(info);
     assert.strictEqual(result.value, "import ${1:name} from './logo.png';");
   });
 
   it('data .json produces name import', async () => {
     await vscode.env.clipboard.writeText(source('config.json'));
-    const result = await buildSnippet();
+    const info = await getFilePathInfo();
+    const result = buildSnippet(info);
     assert.strictEqual(result.value, "import ${1:name} from './config.json';");
   });
 
   it('media .mp4 produces url import', async () => {
     await vscode.env.clipboard.writeText(source('clip.mp4'));
-    const result = await buildSnippet();
+    const info = await getFilePathInfo();
+    const result = buildSnippet(info);
     assert.strictEqual(result.value, "import ${1:url} from './clip.mp4';");
   });
 
   it('text track .vtt produces url import', async () => {
     await vscode.env.clipboard.writeText(source('subs.vtt'));
-    const result = await buildSnippet();
+    const info = await getFilePathInfo();
+    const result = buildSnippet(info);
     assert.strictEqual(result.value, "import ${1:url} from './subs.vtt';");
   });
 
   it('non-module stylesheet .css produces side-effect import', async () => {
     await vscode.env.clipboard.writeText(source('styles.css'));
-    const result = await buildSnippet();
+    const info = await getFilePathInfo();
+    const result = buildSnippet(info);
     assert.strictEqual(result.value, "import './styles.css';");
   });
 });

@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import { buildImportSnippetVariants } from '../../snippets/variants';
+import { getFilePathInfo } from '../../editor/file-path-info';
 
 const FIXTURE_ROOT = path.resolve(__dirname, '../../../qa/workspace');
 
@@ -14,7 +15,8 @@ async function openAndQuery(destFixture: string, sourceName: string) {
   await vscode.env.clipboard.writeText(
     path.join(FIXTURE_ROOT, path.dirname(destFixture), sourceName)
   );
-  return buildImportSnippetVariants();
+  const info = await getFilePathInfo();
+  return buildImportSnippetVariants(info);
 }
 
 async function closeEditor(): Promise<void> {
