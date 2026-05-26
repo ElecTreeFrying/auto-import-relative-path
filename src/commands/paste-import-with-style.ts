@@ -1,19 +1,10 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 
-import {
-  ASTRO_SUPPORTED_EXTENSIONS,
-  CSS_SUPPORTED_EXTENSIONS,
-  HTML_SUPPORTED_EXTENSIONS,
-  MARKDOWN_SUPPORTED_EXTENSIONS,
-  CROSS_IMPORT_DESTINATIONS,
-  SCSS_SUPPORTED_EXTENSIONS,
-  SVELTE_SUPPORTED_EXTENSIONS,
-  VUE_SUPPORTED_EXTENSIONS,
-} from '../constants/extensions';
 import { getFilePathInfo } from '../editor/file-path-info';
 import { insertImportSnippet } from '../editor/insert-snippet';
 import { clearNotifications, showNotification } from '../editor/notification';
+import { isPairSupported } from '../gating';
 import { buildImportSnippetVariants, ImportSnippetVariant } from '../snippets/variants';
 
 interface ImportStyleQuickPickItem extends vscode.QuickPickItem {
@@ -28,8 +19,8 @@ export async function executePasteImportWithStyle(): Promise<void> {
     return showNotification('no-active-editor');
   }
 
-  const [{ sourceFilePath, destinationFilePath, sourceFileExt, destinationFileExt }, variants] =
-    await Promise.all([getFilePathInfo(), buildImportSnippetVariants()]);
+  const info = await getFilePathInfo();
+  const { sourceFilePath, destinationFilePath, sourceFileExt, destinationFileExt } = info;
 
   const trimmedSource = sourceFilePath.trim();
   if (trimmedSource === '' || !path.isAbsolute(trimmedSource)) {
@@ -49,28 +40,19 @@ export async function executePasteImportWithStyle(): Promise<void> {
     return showNotification('source-not-found', { basename: path.basename(sourceFilePath) });
   }
 
+  const variants = await buildImportSnippetVariants(info);
+
   const isEmptyVariantSet =
     variants.length === 0
     || variants[0].snippetText === ''
     || variants[0].snippetText === '\n';
 
-  if (
-    (!CROSS_IMPORT_DESTINATIONS.includes(destinationFileExt) && sourceFileExt !== destinationFileExt)
-    || (sourceFileExt === '.html' && destinationFileExt === '.html')
-    || (!HTML_SUPPORTED_EXTENSIONS.includes(sourceFileExt) && destinationFileExt === '.html')
-    || (!MARKDOWN_SUPPORTED_EXTENSIONS.includes(sourceFileExt) && destinationFileExt === '.md')
-    || (!CSS_SUPPORTED_EXTENSIONS.includes(sourceFileExt) && destinationFileExt === '.css')
-    || (!SCSS_SUPPORTED_EXTENSIONS.includes(sourceFileExt) && destinationFileExt === '.scss')
-    || (!VUE_SUPPORTED_EXTENSIONS.includes(sourceFileExt) && destinationFileExt === '.vue')
-    || (!SVELTE_SUPPORTED_EXTENSIONS.includes(sourceFileExt) && destinationFileExt === '.svelte')
-    || (!ASTRO_SUPPORTED_EXTENSIONS.includes(sourceFileExt) && destinationFileExt === '.astro')
-    || isEmptyVariantSet
-  ) {
+  if (!isPairSupported(info) || isEmptyVariantSet) {
     return showNotification('not-supported', { sourceExt: sourceFileExt, destinationExt: destinationFileExt });
   }
 
   if (variants.length === 1) {
-    return insertImportSnippet(new vscode.SnippetString(variants[0].snippetText));
+    return insertImportSnippet(new vscode.SnippetString(variants[0].snippetText), info);
   }
 
   const picked = await vscode.window.showQuickPick(toQuickPickItems(variants), {
@@ -80,7 +62,7 @@ export async function executePasteImportWithStyle(): Promise<void> {
   if (!picked) {
     return;
   }
-  return insertImportSnippet(new vscode.SnippetString(picked.snippetText));
+  return insertImportSnippet(new vscode.SnippetString(picked.snippetText), info);
 }
 
 function toQuickPickItems(variants: ImportSnippetVariant[]): ImportStyleQuickPickItem[] {

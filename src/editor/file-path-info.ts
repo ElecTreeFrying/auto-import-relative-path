@@ -12,12 +12,7 @@ export interface FilePathInfo {
   sourceFileExt: FileExtension;
 }
 
-export async function getFilePathInfo(): Promise<FilePathInfo> {
-  const editor = vscode.window.activeTextEditor;
-
-  const sourceFilePath = await vscode.env.clipboard.readText();
-  const destinationFilePath = editor.document.uri.fsPath;
-
+export function getFilePathInfoFromPaths(sourceFilePath: string, destinationFilePath: string): FilePathInfo {
   const relativePath = computeRelative(sourceFilePath, destinationFilePath);
   const sourceFileExt = extractFileExtension(sourceFilePath);
   const destinationFileExt = extractFileExtension(destinationFilePath);
@@ -29,4 +24,13 @@ export async function getFilePathInfo(): Promise<FilePathInfo> {
     destinationFileExt,
     sourceFileExt,
   };
+}
+
+export async function getFilePathInfo(): Promise<FilePathInfo> {
+  const editor = vscode.window.activeTextEditor;
+
+  const sourceFilePath = await vscode.env.clipboard.readText();
+  const destinationFilePath = editor.document.uri.fsPath;
+
+  return getFilePathInfoFromPaths(sourceFilePath, destinationFilePath);
 }

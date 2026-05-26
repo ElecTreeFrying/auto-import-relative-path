@@ -2,11 +2,11 @@ import * as vscode from 'vscode';
 
 import { getAutoImportSetting } from '../../config/settings';
 import { extractFileExtension } from '../../path/extension';
-import { getFilePathInfo } from '../../editor/file-path-info';
+import { FilePathInfo } from '../../editor/file-path-info';
 import { JAVASCRIPT_IMPORT_OPTIONS, resolveStyleIndex } from '../_styles';
 
-export async function buildSnippet(): Promise<vscode.SnippetString> {
-  const { sourceFilePath, relativePath } = await getFilePathInfo();
+export function buildSnippet(info: FilePathInfo): vscode.SnippetString {
+  const { sourceFilePath, relativePath } = info;
 
   const shouldPreserveExtension = getAutoImportSetting('script', 'preserve');
   const fileExtension = shouldPreserveExtension ? extractFileExtension(sourceFilePath) : '';

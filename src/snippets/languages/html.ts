@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 import { getAutoImportSetting } from '../../config/settings';
 import { extractFileExtension } from '../../path/extension';
 import { determineImportType } from '../../path/import-type';
-import { getFilePathInfo } from '../../editor/file-path-info';
+import { FilePathInfo } from '../../editor/file-path-info';
 import {
   HTML_AUDIO_IMPORT_OPTIONS,
   HTML_IMAGE_IMPORT_OPTIONS,
@@ -12,8 +12,8 @@ import {
   resolveStyleIndex,
 } from '../_styles';
 
-export async function buildSnippet(): Promise<vscode.SnippetString> {
-  const { sourceFilePath, relativePath } = await getFilePathInfo();
+export function buildSnippet(info: FilePathInfo): vscode.SnippetString {
+  const { sourceFilePath, relativePath } = info;
   const fullPath = relativePath + extractFileExtension(sourceFilePath);
 
   switch (determineImportType(sourceFilePath)) {

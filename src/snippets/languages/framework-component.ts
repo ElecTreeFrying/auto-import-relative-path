@@ -2,14 +2,14 @@ import * as vscode from 'vscode';
 
 import { FileExtension } from '../../types/file-extension';
 import { extractFileExtension } from '../../path/extension';
-import { getFilePathInfo } from '../../editor/file-path-info';
+import { FilePathInfo } from '../../editor/file-path-info';
 import { getAutoImportSetting } from '../../config/settings';
 import { buildTypeScriptImportSnippet } from './typescript';
 
 const SCRIPT_SOURCE_EXTENSIONS: ReadonlyArray<FileExtension> = [ '.ts', '.tsx', '.js', '.jsx' ];
 
-export async function buildSnippet(): Promise<vscode.SnippetString> {
-  const { sourceFilePath, relativePath } = await getFilePathInfo();
+export function buildSnippet(info: FilePathInfo): vscode.SnippetString {
+  const { sourceFilePath, relativePath } = info;
 
   const sourceFileExt = extractFileExtension(sourceFilePath) as FileExtension;
 

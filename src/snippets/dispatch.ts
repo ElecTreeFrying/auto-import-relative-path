@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 
-import { extractFileExtension } from '../path/extension';
-import { getFilePathInfo } from '../editor/file-path-info';
+import { FilePathInfo } from '../editor/file-path-info';
 
 import * as javascript from './languages/javascript';
 import * as typescript from './languages/typescript';
@@ -13,31 +12,29 @@ import * as html from './languages/html';
 import * as markdown from './languages/markdown';
 import * as frameworkComponent from './languages/framework-component';
 
-export async function buildImportSnippet(): Promise<vscode.SnippetString> {
-  const { destinationFilePath } = await getFilePathInfo();
-
-  switch (extractFileExtension(destinationFilePath)) {
+export async function buildImportSnippet(info: FilePathInfo): Promise<vscode.SnippetString> {
+  switch (info.destinationFileExt) {
     case '.js':
-      return javascript.buildSnippet();
+      return javascript.buildSnippet(info);
     case '.jsx':
-      return jsx.buildSnippet();
+      return jsx.buildSnippet(info);
     case '.ts':
-      return typescript.buildSnippet();
+      return typescript.buildSnippet(info);
     case '.tsx':
     case '.mdx':
-      return tsx.buildSnippet();
+      return tsx.buildSnippet(info);
     case '.css':
-      return css.buildSnippet();
+      return css.buildSnippet(info);
     case '.scss':
-      return scss.buildSnippet();
+      return scss.buildSnippet(info);
     case '.html':
-      return html.buildSnippet();
+      return html.buildSnippet(info);
     case '.md':
-      return markdown.buildSnippet();
+      return markdown.buildSnippet(info);
     case '.vue':
     case '.svelte':
     case '.astro':
-      return frameworkComponent.buildSnippet();
+      return frameworkComponent.buildSnippet(info);
     default:
       return new vscode.SnippetString('');
   }

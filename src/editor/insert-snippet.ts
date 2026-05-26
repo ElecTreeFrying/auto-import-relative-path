@@ -4,38 +4,22 @@ import * as path from 'path';
 import { getAutoImportSetting } from '../config/settings';
 import { SCRIPT_FILE_EXTENSIONS, STYLESHEET_FILE_EXTENSIONS } from '../constants/extensions';
 import { FileExtension } from '../types/file-extension';
-import { getFilePathInfo } from './file-path-info';
+import { FilePathInfo } from './file-path-info';
+import {
+  IMPORT_INDICATORS,
+  adjustForCommentBlock,
+  detectBlockIndentation,
+  findAstroFrontmatterBounds,
+  findBottomLineInRange,
+  findSfcScriptBounds,
+  getLineIndentation,
+  isCommentLine,
+  isInlineSnippet,
+  shouldRepositionCursor,
+} from './placement';
 
-/** Markers used by Bottom placement to find the last import line. */
-const IMPORT_INDICATORS = [
-  'import ', 'require(',
-  "@import '", '@import "', '@import url(', "@use '", '@use "',
-  "@forward '", '@forward "'
-];
-
-function isCommentLine(line: string): boolean {
-  const trimmed = line.trimStart();
-  return trimmed.startsWith('//') || trimmed.startsWith('/*') || trimmed.startsWith('*');
-}
-
-/** Extracts leading whitespace (spaces or tabs) from a line. */
-function getLineIndentation(line: string): string {
-  const match = line.match(/^(\s*)/);
-  return match ? match[1] : '';
-}
-
-/** Returns the indentation of the first non-empty content line within a bounded block. */
-function detectBlockIndentation(lines: string[], openingLine: number, closingLine: number): string {
-  for (let i = openingLine + 1; i < closingLine; i++) {
-    if (lines[i].trim().length > 0) {
-      return getLineIndentation(lines[i]);
-    }
-  }
-  return '';
-}
-
-export async function insertImportSnippet(snippet: vscode.SnippetString): Promise<void> {
-  const { sourceFileExt, destinationFileExt } = await getFilePathInfo();
+export function insertImportSnippet(snippet: vscode.SnippetString, info: FilePathInfo): void {
+  const { sourceFileExt, destinationFileExt } = info;
 
   if (isInlineSnippet(sourceFileExt, destinationFileExt)) {
     return insertSnippetInline(snippet);
@@ -69,17 +53,6 @@ export async function insertImportSnippet(snippet: vscode.SnippetString): Promis
   }
 }
 
-/** Non-stylesheet source into a stylesheet destination produces an inline `url()` snippet. */
-function isInlineSnippet(sourceFileExt: FileExtension, destinationFileExt: FileExtension): boolean {
-  return (
-    !STYLESHEET_FILE_EXTENSIONS.includes(sourceFileExt) && STYLESHEET_FILE_EXTENSIONS.includes(destinationFileExt)
-  );
-}
-
-function shouldRepositionCursor(destinationFileExt: FileExtension): boolean {
-  return destinationFileExt === '.html' || destinationFileExt === '.md';
-}
-
 /** Inserts at the exact cursor position (line and column) without a trailing newline. */
 function insertSnippetInline(snippet: vscode.SnippetString): void {
   const editor = vscode.window.activeTextEditor;
@@ -92,7 +65,8 @@ function insertSnippetAtTop(snippet: vscode.SnippetString): void {
 
 function insertSnippetAtCursor(snippet: vscode.SnippetString): void {
   const editor = vscode.window.activeTextEditor;
-  const currentLine = editor.selection.anchor.line;
+  const lines = editor.document.getText().split('\n');
+  const currentLine = adjustForCommentBlock(lines, editor.selection.anchor.line);
   insertSnippetAtPosition(snippet, currentLine);
 }
 
@@ -129,38 +103,6 @@ function determineInsertionColumn(editor: vscode.TextEditor): number {
   return isScriptOrStylesheet ? 0 : currentColumn;
 }
 
-/** Finds the opening and closing `---` fence lines. Returns `null` if fewer than two fences exist. */
-function findAstroFrontmatterBounds(lines: string[]): { openingLine: number; closingLine: number } | null {
-  let openingLine = -1;
-  for (let i = 0; i < lines.length; i++) {
-    if (lines[i].trim() === '---') {
-      if (openingLine === -1) {
-        openingLine = i;
-      } else {
-        return { openingLine, closingLine: i };
-      }
-    }
-  }
-  return null;
-}
-
-/** Finds the insertion line for Bottom placement within a bounded region (Astro frontmatter or SFC script block). */
-function findBottomLineInRange(
-  lines: string[],
-  openingLine: number,
-  closingLine: number,
-): { line: number; indentation: string } {
-  let insertionLine = openingLine + 1;
-  let lastImportIndentation = '';
-  for (let i = openingLine + 1; i < closingLine; i++) {
-    if (!isCommentLine(lines[i]) && IMPORT_INDICATORS.some(indicator => lines[i].includes(indicator))) {
-      insertionLine = i + 1;
-      lastImportIndentation = getLineIndentation(lines[i]);
-    }
-  }
-  const indentation = lastImportIndentation || detectBlockIndentation(lines, openingLine, closingLine);
-  return { line: insertionLine, indentation };
-}
 
 function insertSnippetAtAstroFrontmatter(snippet: vscode.SnippetString, placement: string | undefined): void {
   const editor = vscode.window.activeTextEditor;
@@ -182,9 +124,10 @@ function insertSnippetAtAstroFrontmatter(snippet: vscode.SnippetString, placemen
       return;
     }
     case 'Cursor': {
-      const cursorLine = editor.selection.anchor.line;
-      if (cursorLine > openingLine && cursorLine < closingLine) {
-        const indentation = getLineIndentation(lines[cursorLine]) || detectBlockIndentation(lines, openingLine, closingLine);
+      const rawCursorLine = editor.selection.anchor.line;
+      if (rawCursorLine > openingLine && rawCursorLine < closingLine) {
+        const cursorLine = adjustForCommentBlock(lines, rawCursorLine);
+        const indentation = getLineIndentation(lines[cursorLine] || '') || detectBlockIndentation(lines, openingLine, closingLine);
         insertSnippetAtPosition(snippet, cursorLine, indentation);
         return;
       }
@@ -199,26 +142,6 @@ function insertSnippetAtAstroFrontmatter(snippet: vscode.SnippetString, placemen
       return;
     }
   }
-}
-
-/** Finds a `<script...>` / `</script>` pair. Prefers `<script setup` (Vue composition API) over bare `<script`. */
-function findSfcScriptBounds(lines: string[]): { openingLine: number; closingLine: number } | null {
-  return findScriptBlock(lines, '<script setup') ?? findScriptBlock(lines, '<script');
-}
-
-function findScriptBlock(lines: string[], openingTag: string): { openingLine: number; closingLine: number } | null {
-  let openingLine = -1;
-  for (let i = 0; i < lines.length; i++) {
-    const trimmed = lines[i].trim();
-    if (openingLine === -1) {
-      if (trimmed.startsWith(openingTag)) {
-        openingLine = i;
-      }
-    } else if (trimmed === '</script>') {
-      return { openingLine, closingLine: i };
-    }
-  }
-  return null;
 }
 
 function insertSnippetAtSfcScript(snippet: vscode.SnippetString, placement: string | undefined): void {
@@ -241,9 +164,10 @@ function insertSnippetAtSfcScript(snippet: vscode.SnippetString, placement: stri
       return;
     }
     case 'Cursor': {
-      const cursorLine = editor.selection.anchor.line;
-      if (cursorLine > openingLine && cursorLine < closingLine) {
-        const indentation = getLineIndentation(lines[cursorLine]) || detectBlockIndentation(lines, openingLine, closingLine);
+      const rawCursorLine = editor.selection.anchor.line;
+      if (rawCursorLine > openingLine && rawCursorLine < closingLine) {
+        const cursorLine = adjustForCommentBlock(lines, rawCursorLine);
+        const indentation = getLineIndentation(lines[cursorLine] || '') || detectBlockIndentation(lines, openingLine, closingLine);
         insertSnippetAtPosition(snippet, cursorLine, indentation);
         return;
       }

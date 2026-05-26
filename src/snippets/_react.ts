@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 
 import { FileExtension } from '../types/file-extension';
 import { extractFileExtension } from '../path/extension';
-import { getFilePathInfo } from '../editor/file-path-info';
+import { FilePathInfo } from '../editor/file-path-info';
 import { getAutoImportSetting } from '../config/settings';
 
 export type BuildScriptSnippet = (relativePath: string) => vscode.SnippetString;
@@ -14,8 +14,8 @@ export interface ReactImportOptions {
   fallbackSnippet?: BuildScriptSnippet;
 }
 
-export async function buildReactImport(opts: ReactImportOptions): Promise<vscode.SnippetString> {
-  const { sourceFilePath, relativePath } = await getFilePathInfo();
+export function buildReactImport(opts: ReactImportOptions, info: FilePathInfo): vscode.SnippetString {
+  const { sourceFilePath, relativePath } = info;
 
   const shouldPreserveExtension = getAutoImportSetting('script', 'preserve');
   const fileExtension = shouldPreserveExtension ? extractFileExtension(sourceFilePath) : '';

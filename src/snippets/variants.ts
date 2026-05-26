@@ -4,7 +4,7 @@ import * as path from 'path';
 import { FileExtension } from '../types/file-extension';
 import { AutoImportConfigNamespace, AutoImportSettingKey, getAutoImportSetting } from '../config/settings';
 import { determineImportType } from '../path/import-type';
-import { getFilePathInfo } from '../editor/file-path-info';
+import { FilePathInfo } from '../editor/file-path-info';
 
 import {
   ImportStyle,
@@ -44,8 +44,8 @@ export interface ImportSnippetVariant {
   };
 }
 
-export async function buildImportSnippetVariants(): Promise<ImportSnippetVariant[]> {
-  const { sourceFilePath, sourceFileExt, destinationFileExt, relativePath } = await getFilePathInfo();
+export async function buildImportSnippetVariants(info: FilePathInfo): Promise<ImportSnippetVariant[]> {
+  const { sourceFilePath, sourceFileExt, destinationFileExt, relativePath } = info;
 
   const shouldPreserveScriptExtension = getAutoImportSetting<boolean>('script', 'preserve');
   const scriptPath = relativePath + (shouldPreserveScriptExtension ? sourceFileExt : '');

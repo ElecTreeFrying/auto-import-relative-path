@@ -3,7 +3,7 @@ import * as path from 'path';
 
 import { getAutoImportSetting } from '../../config/settings';
 import { extractFileExtension } from '../../path/extension';
-import { getFilePathInfo } from '../../editor/file-path-info';
+import { FilePathInfo } from '../../editor/file-path-info';
 import { TYPESCRIPT_IMPORT_OPTIONS, resolveStyleIndex } from '../_styles';
 import { readExportedClassName } from '../_class-name';
 
@@ -15,8 +15,8 @@ const LEGACY_ANGULAR_FILE_SUFFIXES = [
   '.module',
 ];
 
-export async function buildSnippet(): Promise<vscode.SnippetString> {
-  const { sourceFilePath, relativePath } = await getFilePathInfo();
+export async function buildSnippet(info: FilePathInfo): Promise<vscode.SnippetString> {
+  const { sourceFilePath, relativePath } = info;
 
   const shouldPreserveExtension = getAutoImportSetting('script', 'preserve');
   const fileExtension = shouldPreserveExtension ? extractFileExtension(sourceFilePath) : '';
