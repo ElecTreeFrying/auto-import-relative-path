@@ -17,6 +17,8 @@
 - **Two new commands.**
   - **Auto Import: Paste as Import (Pick Style)** — opens a QuickPick listing every applicable import shape for the current source/destination pair. Reachable from the Command Palette and from the "Paste with Style" button on the copy-success toast. Single-shape destinations insert directly without showing the picker.
   - **Auto Import: Set Default Import Style** — same picker, but persists the chosen shape to User (Global) settings instead of inserting a snippet. The current default is marked with a checkmark icon and appears first in the list.
+- **Drag-and-drop import from Explorer.** Drag any supported source file from the Explorer sidebar into an open editor — the extension generates the same import snippet as the paste commands and inserts it at the drop position. Registered as a `DocumentDropEditProvider` for all 12 supported destination languages. No keybinding needed; no new settings — uses the same styles and configuration as the paste commands. Unsupported pairs show the same "Cannot import" warning as paste commands.
+- **`onLanguage` activation events.** The extension now activates when any supported language file is opened (12 `onLanguage:*` entries in `package.json`), ensuring the drop provider is registered before the user's first drag.
 - **Smart placement for component files.** Astro imports land inside `---` frontmatter fences. Vue and Svelte imports land inside `<script>` blocks (prefers `<script setup>` in Vue). CSS/SCSS `url()` values insert inline at the exact cursor position. All modes respect the Top/Bottom/Cursor placement setting. Indentation automatically matches the surrounding block.
 - **Actionable error and confirmation toasts.** Two generic warnings ("Same file path", "Not supported") replaced by five specific messages: *"A file cannot import itself"*, *"This file type can't be imported into the current file"*, *"Open a file to paste an import"*, *"No file selected to copy"*, and *"Clipboard does not contain a file path"*. Three toast action buttons added: "Paste with Style", "Paste Now", and "View Supported Files". Two new confirmation toasts for the Set Default flow: *"No configurable style"* warning and *"Default style saved"* confirmation. Plus a *"No file extension"* warning when copying extensionless files.
 - **Class-name detection for TypeScript.** The named-import shape (`import { Name } from '…'`) now auto-fills the identifier from the source file's `export class Name` declaration when available. Falls back to Angular-convention PascalCase derivation (`.component`, `.directive`, `.pipe`, `.service`, `.module` suffixes), then to a `$1` tab-stop placeholder.
@@ -31,6 +33,8 @@
 - **Settings panel rewritten.** Every setting has a precise top-level description plus per-choice `enumDescriptions`. TypeScript documents the Angular auto-fill behavior; SCSS labels `@use` as "modern (recommended)" and `@import` as "legacy".
 - **Marketplace metadata overhauled.** Description, keywords, and categories updated for the full 12-destination, 35-extension, 5-command scope.
 - **Source layout restructured.** Seven single-responsibility directories (`commands/`, `editor/`, `snippets/`, `path/`, `config/`, `constants/`, `types/`) with strict layered dependency direction.
+- **Snippet pipeline parameterized.** All per-language `buildSnippet()` functions, `buildImportSnippet()`, `buildImportSnippetVariants()`, and `insertImportSnippet()` now receive `FilePathInfo` as a parameter. Clipboard-reading is isolated to the command layer — reduces clipboard reads from N per operation to exactly 1.
+- **Gating logic extracted.** The nine-clause extension-pair check is now a shared `isPairSupported()` function in `src/gating.ts`, reused by both commands and the drop provider.
 - **Documentation rewritten.** README.md restructured for quick-start onboarding with framework badges and inline demo; SUPPORT.md rewritten for the expanded command and language surface.
 
 ### Fixed
@@ -53,6 +57,7 @@
 - `vscode-test` — legacy duplicate of `@vscode/test-cli`.
 - Six legacy import shapes removed from style pickers: 4 JavaScript shapes (`{ default as name }`, `var = require()`, `var = import()`, `const = import()`), 1 TypeScript shape (`{ $1 as $2 }`), and 1 SCSS shape (`@import url(…)`).
 - `DEMO.md` — demo content consolidated into the README.
+- `extensionPack` dependency on `drag-import-relative-path` — drag-and-drop is now built-in.
 
 ## [0.6.1] - 2025-03-28
 

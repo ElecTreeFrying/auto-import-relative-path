@@ -1,6 +1,6 @@
 # Auto Import Relative Path — Functionality Specification
 
-A VS Code extension that generates relative-path import statements for JS, TS, JSX, TSX, MDX, CSS, SCSS, HTML, Markdown, Vue, Svelte, and Astro files. The user copies a source file's path, opens a destination file, and pastes — the extension computes the relative path and inserts the correctly-shaped import statement for that language pair. Five commands, three keybindings, sixteen configuration settings.
+A VS Code extension that generates relative-path import statements for JS, TS, JSX, TSX, MDX, CSS, SCSS, HTML, Markdown, Vue, Svelte, and Astro files. Two input gestures: **copy-paste** (copy a source file's path, open a destination, paste) and **drag-and-drop** (drag a file from the Explorer into an open editor). Both compute the relative path and insert the correctly-shaped import statement for that language pair. Five commands, three keybindings, one drop provider, sixteen configuration settings.
 
 ---
 
@@ -23,6 +23,36 @@ A VS Code extension that generates relative-path import statements for JS, TS, J
 **Paste as Import (Pick Style)** performs the same validation as Paste, but shows a QuickPick listing all applicable import styles for the source-destination pair. If only one style applies, the import is inserted directly without showing the picker.
 
 **Set Default Import Style** shows a QuickPick listing all applicable styles. The current default is marked with a checkmark icon and appears first. Selecting a style persists the choice to VS Code global settings instead of inserting an import. Destinations that have only one hardcoded shape show a "No configurable style" warning instead.
+
+---
+
+## Drag-and-Drop Import
+
+Dragging a file from VS Code's Explorer tree into a supported editor generates the same import snippet as the paste commands. The drop provider activates for all 12 supported destination languages and uses the same snippet styles, gating rules, and configuration settings — no separate configuration is needed.
+
+### Supported destination languages
+
+The provider registers against: JavaScript, JavaScriptReact, TypeScript, TypeScriptReact, CSS, SCSS, HTML, Markdown, Vue, Svelte, Astro, and MDX.
+
+### Behavior
+
+1. The source file's absolute path is resolved from the drag payload (`text/uri-list` with `text/plain` fallback).
+2. The destination is the file receiving the drop.
+3. **Same-file check**: if source equals destination (case-insensitive), a "same file" toast appears and nothing is inserted.
+4. **Pair gating**: if the source-destination extension pair is unsupported, a "Cannot import" toast appears and nothing is inserted (the provider returns `null`).
+5. **Snippet generation**: the import snippet is produced by the same per-language dispatch used by the paste commands. All configurable styles and settings apply.
+6. **Insertion**: the snippet's final position is determined by `computeImportPlacement()` — the same Top / Bottom / Cursor logic used by the paste commands, parameterized with the drop position as the cursor input. For inline snippets (e.g., images into CSS/SCSS), the `DocumentDropEdit` places the snippet directly at the drop coordinates. For non-inline snippets, a `WorkspaceEdit` via `additionalEdit` places the import at the computed position (not the drop position).
+
+### Differences from paste commands
+
+| Aspect | Paste commands | Drag-and-drop |
+|---|---|---|
+| Source path origin | System clipboard | DataTransfer from Explorer drag |
+| Insertion position | Configurable (Top / Bottom / Cursor) | Computed by `computeImportPlacement()` (Top / Bottom / Cursor) — drop position used as Cursor input |
+| Astro / Vue / Svelte constraint | Frontmatter / script block | Same constraint (frontmatter / script block via `computeImportPlacement`) |
+| Clipboard validation | Checks for empty/non-absolute/no-extension | Not applicable (Explorer provides a valid file URI) |
+| Source file existence check | `vscode.workspace.fs.stat` before generating | Not performed (Explorer only offers existing files) |
+| Unsupported pair fallback | Warning toast, no insertion | Warning toast, no insertion (provider returns `null`) |
 
 ---
 
@@ -544,6 +574,6 @@ HTML image index 0 uses the literal word `sample` as alt text — this is static
 
 ---
 
-## Companion Extension
+## Activation
 
-The extension pack includes **Drag Import Relative Path** (`ElecTreeFrying.drag-import-relative-path`), which provides drag-and-drop import generation using the same import logic.
+The extension activates on any of the 12 supported destination languages (`onLanguage:javascript`, `onLanguage:typescriptreact`, etc.) so the drop provider is registered before the user's first drag. The paste commands also trigger activation when invoked.

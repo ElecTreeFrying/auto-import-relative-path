@@ -29,7 +29,8 @@ Pick a file, press a key — the right import lands in your editor. Path, syntax
 
 1. **Install** the extension ([see below](#installation)).
 2. **Click** a file in the Explorer and press <kbd>Option</kbd>+<kbd>D</kbd> (<kbd>Alt</kbd>+<kbd>D</kbd> on Windows/Linux) to auto-import — or use the two-step <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> then <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>I</kbd> workflow.
-3. The import lands in your editor. Your cursor is on the identifier — name it and <kbd>Tab</kbd> out.
+3. **Or drag** a file from the Explorer directly into an open editor — the import appears at the drop position.
+4. The import lands in your editor. Your cursor is on the identifier — name it and <kbd>Tab</kbd> out.
 
 > **Two-step workflow:** <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> to copy a file's path, then <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>I</kbd> in any editor to paste the import. The clipboard holds the path until you copy something else — paste into as many files as you like.
 
@@ -44,6 +45,7 @@ Pick a file, press a key — the right import lands in your editor. Path, syntax
 ## Highlights
 
 - **Five commands, three keystrokes** — Copy, Paste, and Auto on the keyboard; *Pick Style* and *Set Default Style* from the Command Palette
+- **Drag-and-drop from Explorer** — drag any supported file into an editor to insert the import at the drop position, no keyboard required
 - **Built for every major framework** — Angular, React, Vue, Svelte, Astro — plus vanilla JS/TS, CSS/SCSS, HTML, and Markdown
 - **35 source extensions** — scripts, stylesheets, images, fonts, video, audio, text tracks, data, documents, components
 - **38 configurable import styles** — ES modules, CommonJS, dynamic `import()`, `@use`, `@forward`, `@import`, HTML tags, Markdown syntax
@@ -68,6 +70,19 @@ All five are searchable in the Command Palette (<kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<
 See [SPEC — §Commands & Keybindings][SPEC-commands] for command IDs, context clauses, and workflow details.
 
 [SPEC-commands]: SPEC.md#commands--keybindings
+
+### Drag-and-Drop
+
+Drag a file from the Explorer into any supported editor. The import snippet is generated with the same styles and settings as the paste commands, and inserted at the drop position. No keybinding needed.
+
+![Drag-and-drop demo](assets/demo-drag.gif)
+
+- Uses the same gating, snippet styles, and configuration as paste commands.
+- Follows the same Top / Bottom / Cursor placement setting as paste commands — the drop position is used as the Cursor input.
+- Unsupported pairs show the same "Cannot import" warning as paste commands (the provider returns no edit).
+- See [SPEC — §Drag-and-Drop Import][SPEC-drop] for full behavior and differences from paste.
+
+[SPEC-drop]: SPEC.md#drag-and-drop-import
 
 ---
 
@@ -521,6 +536,7 @@ See [SPEC — §Path Computation][SPEC-path] for the complete path logic includi
 - **Snippet placeholders.** After insertion, your cursor lands on the identifier — type the name and <kbd>Tab</kbd> to the next stop. No need to click or arrow around.
 - **CSS Modules are detected automatically.** Files named `*.module.css` or `*.module.scss` imported into JSX/TSX/MDX produce `import styles from '...'` instead of a side-effect `import '...'`.
 - **Same-directory imports always get `./`.** You'll never see a bare `Button` — it's always `./Button`, which ES modules and bundlers require.
+- **Drag from Explorer for zero-keystroke imports.** Drag a file from the sidebar directly into your editor — the import lands at the drop position with the same style as paste. Great for quickly pulling in components or assets without touching the keyboard.
 - **Mixing CSS into SCSS just works.** The `.css` extension is preserved even when `preserveStylesheetFileExtension` is off, because Sass needs it.
 - **HTML and Markdown ignore your placement setting.** Insertion is always at the cursor for these languages. Leave `importStatementPlacement` set to `Bottom` for scripts — it won't affect your markup.
 - **Rebind anything.** `extension.copyFilePath`, `extension.pasteImport`, and `extension.copyPaste` are rebindable from VS Code's keyboard shortcuts editor. The two palette-only commands can be given keybindings from the same editor.
@@ -596,10 +612,8 @@ Contributions, bug reports, and feature requests are welcome. See [SUPPORT.md][S
 
 ## Related
 
-- **[Drag Import Relative Path][drag]** — companion extension. Drag a file from the Explorer onto an editor to insert the same import via drag-and-drop.
 - **[All extensions by ElecTreeFrying][all]** on the VS Code Marketplace.
 
-[drag]: https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.drag-import-relative-path
 [all]: https://marketplace.visualstudio.com/publishers/ElecTreeFrying
 
 ---

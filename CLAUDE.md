@@ -8,7 +8,7 @@ Do NOT append a `Co-Authored-By: Claude ...` trailer (or any other Claude/AI att
 
 ## Project
 
-VS Code extension that generates relative-path import statements for JS/TS/JSX/TSX/MDX/CSS/SCSS/HTML/Markdown/Vue/Svelte/Astro. Five commands (`extension.copyFilePath`, `extension.pasteImport`, `extension.copyPaste`, `extension.pasteImportWithStyle`, `extension.setDefaultImportStyle`) are registered in `src/extension.ts`. The first three are bound to keybindings in `package.json` (`cmd/ctrl+shift+a`, `cmd/ctrl+i`, and `alt+d` in the explorer respectively); the latter two are reachable via the Command Palette (and `pasteImportWithStyle` also via the `copy-success` toast button).
+VS Code extension that generates relative-path import statements for JS/TS/JSX/TSX/MDX/CSS/SCSS/HTML/Markdown/Vue/Svelte/Astro. Two input gestures: **copy-paste** (five commands) and **drag-and-drop** (a `DocumentDropEditProvider` for all 12 destination languages). The five commands (`extension.copyFilePath`, `extension.pasteImport`, `extension.copyPaste`, `extension.pasteImportWithStyle`, `extension.setDefaultImportStyle`) are registered in `src/extension.ts`. The first three are bound to keybindings in `package.json` (`cmd/ctrl+shift+a`, `cmd/ctrl+i`, and `alt+d` in the explorer respectively); the latter two are reachable via the Command Palette (and `pasteImportWithStyle` also via the `copy-success` toast button). The drop provider is registered alongside the commands in `activate()` and uses the same snippet pipeline.
 
 ## Subdirectory guides
 
@@ -17,7 +17,8 @@ Each directory under `src/` has its own pair of nested guides. Read the director
 | Directory | Scope | Guides |
 |-----------|-------|--------|
 | `src/` | Source-tree overview, dependency layering, naming conventions | [`src/README.md`](src/README.md), [`src/CLAUDE.md`](src/CLAUDE.md) |
-| `src/commands/` | The five commands; clipboard data channel, parallel fetch, eleven-clause gating | [`src/commands/README.md`](src/commands/README.md), [`src/commands/CLAUDE.md`](src/commands/CLAUDE.md) |
+| `src/commands/` | The five commands; clipboard data channel, eleven-clause gating | [`src/commands/README.md`](src/commands/README.md), [`src/commands/CLAUDE.md`](src/commands/CLAUDE.md) |
+| `src/drop/` | DocumentDropEditProvider; drag-from-Explorer import generation | [`src/drop/README.md`](src/drop/README.md), [`src/drop/CLAUDE.md`](src/drop/CLAUDE.md) |
 | `src/editor/` | VS Code-API helpers (clipboard, snippet insertion, notifications) | [`src/editor/README.md`](src/editor/README.md), [`src/editor/CLAUDE.md`](src/editor/CLAUDE.md) |
 | `src/snippets/` | Per-language snippet builders + dispatch; style sync rules; JSX/TSX/MDX shared algorithm | [`src/snippets/README.md`](src/snippets/README.md), [`src/snippets/CLAUDE.md`](src/snippets/CLAUDE.md) |
 | `src/path/` | Pure path math (no `vscode` import); `./` prefix rule | [`src/path/README.md`](src/path/README.md), [`src/path/CLAUDE.md`](src/path/CLAUDE.md) |
@@ -52,8 +53,10 @@ The source tree is layered by responsibility, with strict directional dependenci
 
 ```
 src/
-├── extension.ts                # activate/deactivate; registers the 5 commands
+├── extension.ts                # activate/deactivate; registers 5 commands + drop provider
+├── gating.ts                   # shared isPairSupported() — nine-clause extension-pair check
 ├── commands/                   # public command surface (one file per command)
+├── drop/                       # DocumentDropEditProvider (drag-from-Explorer imports)
 ├── editor/                     # VS Code-API touching helpers (clipboard, snippets, notifications)
 ├── snippets/                   # per-language snippet builders + dispatch
 ├── path/                       # pure path math (no `vscode` import; Node-testable)
@@ -62,7 +65,7 @@ src/
 └── types/                      # cross-cutting type unions
 ```
 
-Allowed dependency direction: `commands → editor, snippets, constants, types`; `snippets → config, path, editor, types, constants`; `editor → config, path, constants, types`; `path → types`. Lower layers never import from higher layers. Internal-only sibling modules in `snippets/` are prefixed with `_` (`_styles.ts`, `_react.ts`, `_class-name.ts`).
+Allowed dependency direction: `commands → gating, editor, snippets, constants, types`; `drop → gating, editor, snippets, constants, types`; `gating → editor, constants, types`; `snippets → config, path, editor, types, constants`; `editor → config, path, constants, types`; `path → types`. Lower layers never import from higher layers. Internal-only sibling modules in `snippets/` are prefixed with `_` (`_styles.ts`, `_react.ts`, `_class-name.ts`).
 
 ## Cross-cutting sync rules
 

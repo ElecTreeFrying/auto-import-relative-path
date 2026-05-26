@@ -73,6 +73,10 @@ HTML stylesheet (`<link>`), Markdown link (`[text](path)`), and CSS/SCSS image (
 
 Because the **destination decides the syntax**. Pasting into `.scss` produces `@use`; pasting into `.html` produces `<script>` or `<link>`; pasting into `.tsx` produces an ES module `import`. The source extension is one input; the destination is the other. The extension's job is to pick the right shape automatically.
 
+### Does drag-and-drop work from the Explorer?
+
+**Yes.** Drag any supported source file from the Explorer sidebar and drop it into an open editor. The extension generates the same import snippet as the paste commands. Unsupported pairs are rejected with the same "Cannot import" warning. No keybinding or setting needed — it uses the same style configuration and placement setting as the paste commands.
+
 ### Can I rebind `Ctrl+I` / `Cmd+I` / `Alt+D`?
 
 **Yes.** Open VS Code's keyboard shortcuts editor (<kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>K</kbd> <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>S</kbd>), search for `extension.copyFilePath`, `extension.pasteImport`, or `extension.copyPaste`, and rebind. Useful if `Cmd+I` clashes with another extension you use.
@@ -107,6 +111,17 @@ Note: `.css` extensions are **always** preserved inside `.scss` imports — Sass
 ## Troubleshooting
 
 Each section below is **symptom → cause → fix**. If your issue isn't here, [open an issue][issues].
+
+### Drag-and-drop doesn't generate an import
+
+**Causes:**
+
+- The destination file language isn't in the 12 supported destination languages.
+- The source/destination pair isn't supported — the same gating rules apply as for the paste commands.
+
+**Fix:** Check the [supported languages table][langs]. The drop provider uses the same gating as the paste commands.
+
+---
 
 ### Nothing happens when I press the keybinding
 
@@ -248,16 +263,18 @@ See [README — §Commands & Keybindings](README.md#commands--keybindings) for t
 To accept a new source extension for an existing destination (e.g. `.yaml` for `.html`):
 
 1. **`src/constants/extensions.ts`** — add the source to the matching `*_SUPPORTED_EXTENSIONS` table (`HTML_SUPPORTED_EXTENSIONS`, `MARKDOWN_SUPPORTED_EXTENSIONS`, `CSS_SUPPORTED_EXTENSIONS`, `SCSS_SUPPORTED_EXTENSIONS`, `VUE_SUPPORTED_EXTENSIONS`, `SVELTE_SUPPORTED_EXTENSIONS`, or `ASTRO_SUPPORTED_EXTENSIONS`).
-2. **`src/snippets/languages/<destination>.ts`** — make sure the per-language `buildSnippet` knows how to handle that source. The gating in `commands/paste-import.ts` won't catch a source that lands at the per-language `switch`'s `default:` and emits an empty snippet.
+2. **`src/snippets/languages/<destination>.ts`** — make sure the per-language `buildSnippet` knows how to handle that source. The shared gating in `src/gating.ts` won't catch a source that lands at the per-language `switch`'s `default:` and emits an empty snippet.
 
 ### Adding a new file extension
 
-To add a new file extension entirely (e.g. accepting `.bmp` everywhere `.png` is accepted), four sites must stay in sync:
+To add a new file extension entirely (e.g. accepting `.bmp` everywhere `.png` is accepted), five sites must stay in sync:
 
 1. **`src/types/file-extension.ts`** — add to the relevant category sub-type (`ImageFileExtension`, `ScriptFileExtension`, `StyleSheetFileExtension`, etc).
 2. **`src/constants/extensions.ts`** — add to the matching runtime gating table (`IMAGE_FILE_EXTENSIONS` mirrors `ImageFileExtension`).
 3. **`src/snippets/dispatch.ts`** (if it's a new destination) or the relevant `src/snippets/languages/*.ts` / `src/snippets/_react.ts` (if it's a new source for JSX/TSX/MDX).
 4. **`src/snippets/variants.ts`** — add a matching `case` so the picker commands (`pasteImportWithStyle`, `setDefaultImportStyle`) work for the new extension.
+
+5. **`src/drop/selector.ts`** — add the new destination language to `DROP_LANGUAGE_SELECTORS` so the drop provider activates for the new file type.
 
 Drift between these sites is **silent** — a missing gating entry produces a fall-through to a `default:` branch rather than a type error. The runtime cast `as FileExtension` at boundaries is erased.
 
