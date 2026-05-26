@@ -33,32 +33,32 @@ Validates the `.mdx` destination via the React import algorithm shared with TSX.
 `.ts` and `.tsx` sources route through `buildTypeScriptImportSnippet`. The configurable `typescriptImportStyle` setting applies. Extension stripping respects `preserveScriptFileExtension`.
 
 - [ ] **`.ts` source (default TS style).** Copy `src/foo.ts` → paste.
-  **Expect:** `import { $1 } from './foo';` (extension stripped, TS named import).
+  **Expect:** `import { $1 } from '../src/foo';` (extension stripped, TS named import).
 
 - [ ] **`.tsx` source.** Copy `src/widget.tsx` → paste.
-  **Expect:** `import { $1 } from './widget';` (extension stripped).
+  **Expect:** `import { $1 } from '../src/widget';` (extension stripped).
 
 - [ ] **TS style override.** Set `typescriptImportStyle` to `import name from '_relativePath_';`. Copy `src/foo.ts` → paste.
-  **Expect:** `import $1 from './foo';` (default import shape, extension stripped).
+  **Expect:** `import $1 from '../src/foo';` (default import shape, extension stripped).
 
 - [ ] **`preserveScriptFileExtension = true` for TS source.** Enable. Copy `src/foo.ts` → paste.
-  **Expect:** `import { $1 } from './foo.ts';` (extension preserved). Reset setting.
+  **Expect:** `import { $1 } from '../src/foo.ts';` (extension preserved). Reset setting.
 
 ## Fallback script sources — JavaScript import style
 
 `.js` and `.jsx` sources route through `buildJavaScriptImportSnippet`. The configurable `javascriptImportStyle` setting applies.
 
 - [ ] **`.js` source.** Copy `src/sibling.js` → paste.
-  **Expect:** `import $1 from './sibling';` (default JS style = default import, extension stripped).
+  **Expect:** `import $1 from '../src/sibling';` (default JS style = default import, extension stripped).
 
 - [ ] **`.jsx` source (JS fallback).** Copy `src/badge.jsx` → paste.
-  **Expect:** `import $1 from './badge';` (JS style, extension stripped). `.jsx` is in TSX/MDX fallback list.
+  **Expect:** `import $1 from '../src/badge';` (JS style, extension stripped). `.jsx` is in TSX/MDX fallback list.
 
 - [ ] **JS style override.** Set `javascriptImportStyle` to `import { name } from '_relativePath_';`. Copy `src/sibling.js` → paste.
-  **Expect:** `import { $1 } from './sibling';` (named import shape). Reset setting.
+  **Expect:** `import { $1 } from '../src/sibling';` (named import shape). Reset setting.
 
 - [ ] **`preserveScriptFileExtension = true` for JS source.** Enable. Copy `src/sibling.js` → paste.
-  **Expect:** `import $1 from './sibling.js';` (extension preserved). Reset setting.
+  **Expect:** `import $1 from '../src/sibling.js';` (extension preserved). Reset setting.
 
 ## Non-script sources — hardcoded React-style imports
 
@@ -69,61 +69,58 @@ Extension is ALWAYS preserved for non-script sources (regardless of `preserveScr
 CSS Module detection is path-based (`.module.css` or `.module.scss` suffix), checked before the `switch`.
 
 - [ ] **CSS Module.** Copy `styles/theme.module.css` → paste.
-  **Expect:** `import ${1:styles} from './styles/theme.module.css';` (cursor on `styles` placeholder).
+  **Expect:** `import ${1:styles} from '../styles/theme.module.css';` (cursor on `styles` placeholder).
 
 ### Images, data, markup, components — `import name from '…'`
 
 - [ ] **Image (`.png`).** Copy `assets/logo.png` → paste.
-  **Expect:** `import ${1:name} from './assets/logo.png';`
+  **Expect:** `import ${1:name} from '../assets/logo.png';`
 
 - [ ] **JSON data.** Copy `data/config.json` → paste.
-  **Expect:** `import ${1:name} from './data/config.json';`
+  **Expect:** `import ${1:name} from '../data/config.json';`
 
 - [ ] **YAML data.** Copy `data/config.yaml` → paste.
-  **Expect:** `import ${1:name} from './data/config.yaml';`
+  **Expect:** `import ${1:name} from '../data/config.yaml';`
 
 - [ ] **HTML source.** Copy `pages/index.html` → paste.
-  **Expect:** `import ${1:name} from './pages/index.html';`
+  **Expect:** `import ${1:name} from '../pages/index.html';`
 
 - [ ] **Markdown source.** Copy `docs/README.md` → paste.
-  **Expect:** `import ${1:name} from './docs/README.md';`
+  **Expect:** `import ${1:name} from './README.md';`
 
-- [ ] **MDX source (self-type).** Copy a different `.mdx` file → paste.
-  **Expect:** `import ${1:name} from './<other>.mdx';`
-
-- [ ] **PDF document.** Copy `docs/report.pdf` → paste (if fixture exists).
-  **Expect:** `import ${1:name} from './<path>.pdf';`
+- [ ] **PDF document.** Copy `data/document.pdf` → paste.
+  **Expect:** `import ${1:name} from '../data/document.pdf';`
 
 - [ ] **Vue component.** Copy `src/App.vue` → paste.
-  **Expect:** `import ${1:name} from './src/App.vue';`
+  **Expect:** `import ${1:name} from '../src/App.vue';`
 
 - [ ] **Svelte component.** Copy `src/App.svelte` → paste.
-  **Expect:** `import ${1:name} from './src/App.svelte';`
+  **Expect:** `import ${1:name} from '../src/App.svelte';`
 
 - [ ] **Astro component.** Copy `src/App.astro` → paste.
-  **Expect:** `import ${1:name} from './src/App.astro';`
+  **Expect:** `import ${1:name} from '../src/App.astro';`
 
 ### Media and text-track — `import url from '…'`
 
-- [ ] **Video (`.mp4`).** Copy `assets/clip.mp4` → paste.
-  **Expect:** `import ${1:url} from './assets/clip.mp4';`
+- [ ] **Video (`.mp4`).** Copy `assets/media/clip.mp4` → paste.
+  **Expect:** `import ${1:url} from '../assets/media/clip.mp4';`
 
-- [ ] **Audio (`.mp3`).** Copy `assets/sound.mp3` → paste.
-  **Expect:** `import ${1:url} from './assets/sound.mp3';`
+- [ ] **Audio (`.mp3`).** Copy `assets/media/song.mp3` → paste.
+  **Expect:** `import ${1:url} from '../assets/media/song.mp3';`
 
-- [ ] **Text track (`.vtt`).** Copy `assets/subtitles.vtt` → paste.
-  **Expect:** `import ${1:url} from './assets/subtitles.vtt';`
+- [ ] **Text track (`.vtt`).** Copy `assets/media/captions.vtt` → paste.
+  **Expect:** `import ${1:url} from '../assets/media/captions.vtt';`
 
 ### Fonts and non-module stylesheets — `import '…'` (side-effect)
 
 - [ ] **Font (`.woff2`).** Copy `assets/font.woff2` → paste.
-  **Expect:** `import './assets/font.woff2';` (no binding, side-effect only).
+  **Expect:** `import '../assets/font.woff2';` (no binding, side-effect only).
 
 - [ ] **Stylesheet (`.css`, non-module).** Copy `styles/global.css` → paste.
-  **Expect:** `import './styles/global.css';` (side-effect — non-module CSS/SCSS uses bare import).
+  **Expect:** `import '../styles/global.css';` (side-effect — non-module CSS/SCSS uses bare import).
 
 - [ ] **SCSS (non-module).** Copy `styles/main.scss` → paste.
-  **Expect:** `import './styles/main.scss';` (side-effect).
+  **Expect:** `import '../styles/main.scss';` (side-effect).
 
 ## Same-file rejection
 

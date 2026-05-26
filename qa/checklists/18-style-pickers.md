@@ -39,7 +39,7 @@ For each pair below, run **both** commands back-to-back without changing the sou
 
 - [ ] `.ts → .ts`: copy `src/foo.ts`, focus `src/bar.ts`. **Expect:** 7 items, top entry `import { name } from 'foo';` (TS named-import shape — note basename, not `'./foo'`).
 - [ ] `.js → .js`: copy `src/sibling.js`, focus a `.js` file (`with-requires.js`). **Expect:** 7 items, top entry `import name from 'sibling';` (basename only).
-- [ ] `.css → .css`: copy `styles/global.css`, focus `styles/main.css` (or another `.css`). **Expect:** 2 items: `@import 'global.css';` and `@import url('global.css');` (basename includes `.css` since stylesheets always preserve the extension on the path).
+- [ ] `.css → .css`: copy `styles/global.css`, focus `styles/reset.css` (or another `.css`). **Expect:** 2 items: `@import 'global.css';` and `@import url('global.css');` (basename includes `.css` since stylesheets always preserve the extension on the path).
 - [ ] `.scss → .scss`: copy `styles/_partial.scss`, focus `styles/main.scss`. **Expect:** 5 items, all rendering the partial as `'partial'` (leading `_` stripped *and* basename collapsed): `@use 'partial';`, `@use 'partial' as *;`, `@use 'partial' as name;`, `@forward 'partial';`, `@import 'partial';`.
 - [ ] `.png → .md`: copy `assets/logo.png`, focus `docs/README.md` (Markdown image branch). **Expect:** 3 items — bare inline `![alt-text](logo.png)`, inline with title `![alt-text](logo.png "Hover text")`, HTML embed `<img src="logo.png" alt="" width="" height="">`.
 - [ ] `.mp4 → .html`: copy `assets/media/clip.mp4`, focus `pages/index.html`. **Expect:** 4 items (video styles: controls, autoplay muted loop, controls + poster, controls + preload metadata).
@@ -77,7 +77,7 @@ For these source/destination pairs, the picker short-circuits and inserts direct
 
 - [ ] **HTML stylesheet destination.** Copy `styles/global.css`, focus `pages/index.html` (cursor on a blank line inside `<body>`). Run `pasteImportWithStyle`. **Expect:** `<link href="../styles/global.css" rel="stylesheet">` inserted; **no picker shown** (1 hardcoded stylesheet variant).
 - [ ] **HTML text-track destination.** Copy `assets/media/captions.vtt`, focus `pages/index.html`. Run. **Expect:** `<track src="..." kind="subtitles" srclang="en" label="English">` inserted; no picker (1 hardcoded text-track variant).
-- [ ] **CSS image (url).** Copy `assets/logo.png`, focus `styles/main.css` (cursor on a blank line). Run. **Expect:** `url('../assets/logo.png')` inserted; no picker.
+- [ ] **CSS image (url).** Copy `assets/logo.png`, focus `styles/global.css` (cursor on a blank line). Run. **Expect:** `url('../assets/logo.png')` inserted; no picker.
 - [ ] **SCSS image (reuses CSS url).** Copy `assets/logo.png`, focus `styles/main.scss`. Run. **Expect:** `url('../assets/logo.png')` inserted; no picker.
 - [ ] **JSX non-script (image).** Copy `assets/logo.png`, focus `src/badge.jsx`. Run. **Expect:** `import ${1:name} from '../assets/logo.png';` inserted; no picker.
 - [ ] **TSX non-script (font).** Copy any `.woff`/`.woff2`/`.ttf`/`.eot` fixture if available, focus `src/widget.tsx`. Run. **Expect:** `import '<path>';` (side-effect) inserted; no picker.
@@ -111,13 +111,13 @@ For each test, **verify the editor body is unchanged** and the persisted setting
 
 These hit the `variants[0].setting === undefined` branch in `set-default-import-style.ts:99`. The matching `*ImportStyle` settings exist in `package.json` for UI parity only and are never read at runtime. **No setting is mutated**, no snippet is inserted.
 
-- [ ] **HTML, stylesheet source.** Copy `styles/global.css`, focus `pages/index.html`. Run `setDefaultImportStyle`. **Expect:** warning toast `Auto Import: No configurable style for .css → .html files.` Settings unchanged. Editor unchanged. (1 hardcoded `<link>` variant — `setting` is `undefined`.)
-- [ ] **HTML, text-track source.** Copy `assets/media/captions.vtt`, focus `pages/index.html`. Run. **Expect:** `Auto Import: No configurable style for .vtt → .html files.` (1 hardcoded `<track>` variant.)
-- [ ] **Markdown text.** Copy `docs/README.md`, focus another `.md`. **Expect:** `Auto Import: No configurable style for .md → .md files.`
-- [ ] **CSS image.** Copy `assets/logo.png`, focus `styles/main.css`. **Expect:** `Auto Import: No configurable style for .png → .css files.`
-- [ ] **SCSS image.** Copy `assets/logo.png`, focus `styles/main.scss`. **Expect:** `Auto Import: No configurable style for .png → .scss files.`
-- [ ] **JSX non-script (image).** Copy `assets/logo.png`, focus `src/badge.jsx`. **Expect:** `Auto Import: No configurable style for .png → .jsx files.`
-- [ ] **TSX non-script (json).** Copy `data/config.json`, focus `src/widget.tsx`. **Expect:** `Auto Import: No configurable style for .json → .tsx files.`
+- [ ] **HTML, stylesheet source.** Copy `styles/global.css`, focus `pages/index.html`. Run `setDefaultImportStyle`. **Expect:** warning toast `Auto Import: .css → .html imports use a fixed style.` Settings unchanged. Editor unchanged. (1 hardcoded `<link>` variant — `setting` is `undefined`.)
+- [ ] **HTML, text-track source.** Copy `assets/media/captions.vtt`, focus `pages/index.html`. Run. **Expect:** `Auto Import: .vtt → .html imports use a fixed style.` (1 hardcoded `<track>` variant.)
+- [ ] **Markdown text.** Copy `docs/README.md`, focus another `.md`. **Expect:** `Auto Import: .md → .md imports use a fixed style.`
+- [ ] **CSS image.** Copy `assets/logo.png`, focus `styles/global.css`. **Expect:** `Auto Import: .png → .css imports use a fixed style.`
+- [ ] **SCSS image.** Copy `assets/logo.png`, focus `styles/main.scss`. **Expect:** `Auto Import: .png → .scss imports use a fixed style.`
+- [ ] **JSX non-script (image).** Copy `assets/logo.png`, focus `src/badge.jsx`. **Expect:** `Auto Import: .png → .jsx imports use a fixed style.`
+- [ ] **TSX non-script (json).** Copy `data/config.json`, focus `src/widget.tsx`. **Expect:** `Auto Import: .json → .tsx imports use a fixed style.`
 
 ## Gating mirrors `paste-import.ts` (both commands)
 

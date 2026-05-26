@@ -1,6 +1,6 @@
 # 11 — Paste into `.md` destination
 
-Validates Markdown-snippet generation. Markdown emits one of two shapes: inline link `![text](path)` for Markdown sources, or one of two image shapes for image sources. Cursor placement is **always** forced for `.md` destinations.
+Validates Markdown-snippet generation. Markdown emits one of two kinds: inline link `[text](path)` for Markdown sources, or one of three configurable image shapes for image sources. Cursor placement is **always** forced for `.md` destinations.
 
 **Sources:**
 - `src/snippets/languages/markdown.ts` — `buildMarkdownImportSnippet` + `buildMarkdownImageImportSnippet`
@@ -47,29 +47,37 @@ Validates Markdown-snippet generation. Markdown emits one of two shapes: inline 
 `markdownImportStyle` setting exists in package.json for UI parity but is unused at runtime.
 
 - [ ] **Markdown source.** Copy `docs/guide.md` → paste into `docs/README.md`.
-  **Expect:** `![text](./guide.md)`
+  **Expect:** `[text](./guide.md)`
   - Full `.md` extension preserved on the path
-  - No placeholder tabstops in this shape (literal `text` — see Known limitations)
+  - Cursor lands on `text` (tabstop 1 with default value `text`)
 
-## Image-source shape — both `markdownImageImportStyle` enum values
+## Image-source shapes — all three `markdownImageImportStyle` enum values
 
-### Style 0 — `![alt-text](_relativePath_ "Hover text")`
+### Style 0 — `![alt-text](_relativePath_)`
 
-Set `auto-import.importStatement.markup.markdownImageImportStyle` to this value.
+Set `auto-import.importStatement.markup.markdownImageImportStyle` to this value (the default).
 
-- [ ] `assets/logo.png` → `![alt-text](../assets/logo.png "Hover text")`
-- [ ] `assets/icon.gif` → `![alt-text](../assets/icon.gif "Hover text")`
-- [ ] `assets/photo.jpeg` → `![alt-text](../assets/photo.jpeg "Hover text")`
-- [ ] `assets/photo.jpg` → `![alt-text](../assets/photo.jpg "Hover text")`
-- [ ] `assets/thumb.webp` → `![alt-text](../assets/thumb.webp "Hover text")`
+- [ ] `assets/logo.png` → `![alt-text](../assets/logo.png)`
+- [ ] `assets/icon.gif` → `![alt-text](../assets/icon.gif)`
+- [ ] `assets/photo.jpeg` → `![alt-text](../assets/photo.jpeg)`
+- [ ] `assets/photo.jpg` → `![alt-text](../assets/photo.jpg)`
+- [ ] `assets/thumb.webp` → `![alt-text](../assets/thumb.webp)`
 
-### Style 1 — `![alt-text][image] / [image]: _relativePath_ "Hover text"`
+### Style 1 — `![alt-text](_relativePath_ "Hover text")`
 
 Set the setting to the second enum value.
 
-- [ ] `assets/logo.png` → `![alt-text][image] / [image]: ../assets/logo.png "Hover text"`
+- [ ] `assets/logo.png` → `![alt-text](../assets/logo.png "Hover text")`
 - [ ] Other images analogous.
-- [ ] **Note:** This is one literal line (with `/` separator) — the user is expected to manually split it into the two-line reference syntax in their document. Documented behavior.
+- [ ] Two tabstops: `alt-text` (tabstop 1) then `Hover text` (tabstop 2).
+
+### Style 2 — `<img src="_relativePath_" alt="" width="" height="">`
+
+Set the setting to the third enum value.
+
+- [ ] `assets/logo.png` → `<img src="../assets/logo.png" alt="" width="" height="">`
+- [ ] Other images analogous.
+- [ ] Three tabstops: `alt` (tabstop 1), `width` (tabstop 2), `height` (tabstop 3).
 
 ## Forced-cursor placement (always wins for `.md`)
 
@@ -90,7 +98,7 @@ Set the setting to the second enum value.
   **Expect:** image syntax inserted at the cursor's column, mid-line. The text before/after stays intact.
 
 - [ ] **Indent preserved.** Cursor at column 4 (4-space indent). Paste a Markdown source.
-  **Expect:** `![text](./...)` starts at column 4.
+  **Expect:** `[text](./...)` starts at column 4.
 
 ## Path computation
 
@@ -108,14 +116,13 @@ Set the setting to the second enum value.
 ## Known limitations / not bugs
 
 - The `markdownImportStyle` setting (for `.md` source) has only one enum value and is hardcoded in `buildMarkdownImportSnippet`. UI parity only.
-- The Markdown inline link shape `![text](path)` uses literal `text` (not a snippet placeholder). The user types over `text` manually if they want a different label.
-- The reference-style image (style 1) emits as a single line with `/` separator — the user splits it manually. This matches the `package.json` enum description.
+- The Markdown inline link shape `[text](path)` pre-fills `text` as a snippet tabstop (tabstop 1). The cursor lands on it and the user can type over it.
 
 ## Sign-off
 
 - [ ] Cross-import matrix (17 cases)
 - [ ] Markdown source → inline link
-- [ ] Both image styles (10 cases)
+- [ ] All three image styles (12+ cases)
 - [ ] Forced-cursor placement (3 overrides)
 - [ ] Insertion column = cursor
 - [ ] Path computation (3 cases)

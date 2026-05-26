@@ -29,7 +29,7 @@ Active editor: `src/App.vue`
 ### Gating — `VUE_SUPPORTED_EXTENSIONS`
 
 Accepts: `.vue`, `.ts`, `.js`, `.jsx`, `.tsx`, `.json`, `.yml`, `.yaml`, 7 images, 7 media, `.vtt`.
-Rejects: `.scss`, `.css`, `.html`, `.md`, `.mdx`, `.astro`, `.svelte`, fonts, documents.
+Rejects: `.scss`, `.css`, `.html`, `.md`, `.mdx`, `.astro`, `.svelte`, fonts, `.pdf`.
 
 - [ ] **Rejected: `.scss`** → Copy `styles/main.scss`. Paste.
   **Expect:** `Auto Import: Cannot import .scss into .vue files.`
@@ -56,17 +56,17 @@ Rejects: `.scss`, `.css`, `.html`, `.md`, `.mdx`, `.astro`, `.svelte`, fonts, do
 ### Non-script sources — TypeScript import with extension preserved
 
 - [ ] **Image.** Copy `assets/logo.png` → paste.
-  **Expect:** `import { $1 } from './assets/logo.png';` (TS named import, extension preserved).
+  **Expect:** `import { $1 } from '../assets/logo.png';` (TS named import, extension preserved).
 - [ ] **JSON data.** Copy `data/config.json` → paste.
-  **Expect:** `import { $1 } from './data/config.json';`
+  **Expect:** `import { $1 } from '../data/config.json';`
 - [ ] **YAML data.** Copy `data/config.yaml` → paste.
-  **Expect:** `import { $1 } from './data/config.yaml';`
-- [ ] **Video.** Copy `assets/clip.mp4` → paste.
-  **Expect:** `import { $1 } from './assets/clip.mp4';`
-- [ ] **Audio.** Copy `assets/sound.mp3` → paste.
-  **Expect:** `import { $1 } from './assets/sound.mp3';`
-- [ ] **Text track.** Copy `assets/subtitles.vtt` → paste.
-  **Expect:** `import { $1 } from './assets/subtitles.vtt';`
+  **Expect:** `import { $1 } from '../data/config.yaml';`
+- [ ] **Video.** Copy `assets/media/clip.mp4` → paste.
+  **Expect:** `import { $1 } from '../assets/media/clip.mp4';`
+- [ ] **Audio.** Copy `assets/media/song.mp3` → paste.
+  **Expect:** `import { $1 } from '../assets/media/song.mp3';`
+- [ ] **Text track.** Copy `assets/media/captions.vtt` → paste.
+  **Expect:** `import { $1 } from '../assets/media/captions.vtt';`
 
 ### Settings interaction
 
@@ -75,7 +75,7 @@ Rejects: `.scss`, `.css`, `.html`, `.md`, `.mdx`, `.astro`, `.svelte`, fonts, do
 - [ ] **`preserveScriptFileExtension = true`.** Enable. Copy `src/foo.ts` → paste.
   **Expect:** `import { $1 } from './foo.ts';` (extension preserved for script). Reset setting.
 - [ ] **`preserveScriptFileExtension` does NOT affect non-script.** Enable. Copy `assets/logo.png` → paste.
-  **Expect:** `import { $1 } from './assets/logo.png';` (extension always preserved for non-script regardless). Reset setting.
+  **Expect:** `import { $1 } from '../assets/logo.png';` (extension always preserved for non-script regardless). Reset setting.
 
 ---
 
@@ -106,9 +106,9 @@ Rejects: `.scss`, `.css`, `.html`, `.md`, `.mdx`, `.astro`, `.vue`, fonts, docum
 ### Non-script sources
 
 - [ ] **Image.** Copy `assets/logo.png` → paste.
-  **Expect:** `import { $1 } from './assets/logo.png';`
+  **Expect:** `import { $1 } from '../assets/logo.png';`
 - [ ] **JSON.** Copy `data/config.json` → paste.
-  **Expect:** `import { $1 } from './data/config.json';`
+  **Expect:** `import { $1 } from '../data/config.json';`
 
 ---
 
@@ -136,9 +136,9 @@ Rejects: `.scss`, `.css`, `.html`, fonts, documents.
 - [ ] **`.svelte` source.** Copy `src/App.svelte` → paste.
   **Expect:** `import { $1 } from './App.svelte';`
 - [ ] **`.md` source.** Copy `docs/README.md` → paste.
-  **Expect:** `import { $1 } from './docs/README.md';`
+  **Expect:** `import { $1 } from '../docs/README.md';`
 - [ ] **`.mdx` source.** Copy `docs/example.mdx` → paste.
-  **Expect:** `import { $1 } from './docs/example.mdx';`
+  **Expect:** `import { $1 } from '../docs/example.mdx';`
 - [ ] **`.astro` source (self-type, different file).** Copy a different `.astro` file → paste.
   **Expect:** `import { $1 } from './<other>.astro';`
 
@@ -152,11 +152,11 @@ Rejects: `.scss`, `.css`, `.html`, fonts, documents.
 ### Non-script sources (shared with Vue/Svelte)
 
 - [ ] **Image.** Copy `assets/logo.png` → paste.
-  **Expect:** `import { $1 } from './assets/logo.png';`
+  **Expect:** `import { $1 } from '../assets/logo.png';`
 - [ ] **JSON.** Copy `data/config.json` → paste.
-  **Expect:** `import { $1 } from './data/config.json';`
+  **Expect:** `import { $1 } from '../data/config.json';`
 - [ ] **YAML.** Copy `data/config.yaml` → paste.
-  **Expect:** `import { $1 } from './data/config.yaml';`
+  **Expect:** `import { $1 } from '../data/config.yaml';`
 
 ---
 

@@ -4,7 +4,7 @@ Validates every rejection path: no active editor, empty/garbage clipboard, same-
 
 **Sources:**
 - `src/commands/paste-import.ts` — order-of-checks: `no-active-editor` → `empty-clipboard` → `same-file-path` → `source-not-found` → `isPairSupported()` → empty/newline snippet → insert
-- `src/gating.ts` — `isPairSupported(info)`: the 11-clause gating extracted into a shared function (used by both commands and the DnD provider in `src/drop/provider.ts`)
+- `src/gating.ts` — `isPairSupported(info)`: nine of the eleven gating clauses (the remaining two — empty/newline snippet checks — are inline in the command and drop flows); shared by both commands and the DnD provider in `src/drop/provider.ts`
 - `src/commands/copy-file-path.ts` — post-condition guard fires `no-file-to-copy` and returns `false`; `commands/copy-paste.ts` short-circuits on that return
 - `src/constants/extensions.ts` — `CROSS_IMPORT_DESTINATIONS`, `HTML/MARKDOWN/CSS/SCSS/VUE/SVELTE/ASTRO_SUPPORTED_EXTENSIONS`
 - `src/snippets/dispatch.ts` — empty `SnippetString('')` for unhandled destination
