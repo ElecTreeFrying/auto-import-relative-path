@@ -15,8 +15,8 @@ Manual QA suite and fixture workspaces for the Auto Import Relative Path extensi
 1. `npm run compile` from the project root.
 2. Press **F5** to launch the Extension Development Host.
 3. In the EDH window, **File > Open Folder...** > `qa/workspace/`.
-4. Walk `checklists/00-setup.md` through `checklists/19-drag-and-drop.md` in order.
-5. Sign off in the master matrix at the bottom of `checklists/README.md`.
+4. Walk [`checklists/00-setup.md`](checklists/00-setup.md) through [`checklists/19-drag-and-drop.md`](checklists/19-drag-and-drop.md) in order.
+5. Sign off in the master matrix at the bottom of [`checklists/README.md`](checklists/README.md).
 
 ## See also
 
