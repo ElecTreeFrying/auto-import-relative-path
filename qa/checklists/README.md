@@ -14,7 +14,7 @@ Four real bugs were fixed in `src/snippets/languages/scss.ts`, `src/snippets/lan
 2. **Compile:** `npm run compile` (must succeed before testing).
 3. **Launch the Extension Development Host:** press **F5** in the main project's VS Code window. A second VS Code window opens with the extension loaded from `dist/extension.js`.
 4. **Open the fixture workspace:** in the EDH window, **File → Open Folder…** → `<this-repo>/qa/workspace/`. (Step-by-step in `00-setup.md`.) The fixtures are pre-built — you don't construct anything.
-5. **Walk files `01-…` → `18-…` in order.** Each file is self-contained: setup, tests, expected outcomes, optional "known limitations" callouts, and a per-file sign-off. Every path quoted in a checklist is **relative to the workspace root** (`src/foo.ts` means `qa/workspace/src/foo.ts`).
+5. **Walk files `01-…` → `21-…` in order.** Each file is self-contained: setup, tests, expected outcomes, optional "known limitations" callouts, and a per-file sign-off. Every path quoted in a checklist is **relative to the workspace root** (`src/foo.ts` means `qa/workspace/src/foo.ts`).
 6. **Sign off** in the master matrix at the bottom of this README.
 
 If a checkbox fails, do not proceed past that file. Reproduce the failure, capture the steps, then triage.
@@ -42,6 +42,9 @@ If a checkbox fails, do not proceed past that file. Reproduce the failure, captu
 | 16 | `16-path-computation.md` | `./`, `../`, partials, spaces/unicode |
 | 17 | `17-edge-cases-and-regression.md` | Empty file, untitled, multi-root, stress, 0.6.1 regression |
 | 18 | `18-style-pickers.md` | `pasteImportWithStyle` + `setDefaultImportStyle` — picker UX, persistence, hardcoded-destination rejection |
+| 19 | `19-drag-and-drop.md` | DnD import via `DocumentDropEditProvider`; shared gating + placement |
+| 20 | `20-paste-into-mdx.md` | MDX destination — React algorithm (same as TSX) with full source matrix |
+| 21 | `21-paste-into-framework-components.md` | Vue, Svelte, Astro destinations — framework-component algorithm |
 
 ## Fixtures
 
@@ -97,8 +100,8 @@ These appear suspicious during testing but are documented intentional behaviour.
 - **`.htm` extensions** are unsupported — only `.html`. (`src/types/file-extension.ts:HtmlFileExtension`)
 - **Same-file rejection is case-insensitive on Linux.** Aligns with macOS/Windows behavior. (`src/commands/paste-import.ts:35`)
 - **`removeFileExtension('foo')` returns `''`** (no-extension input). Unreachable in production; the `./` prefix regression test (CHANGELOG 0.6.1) was written against this behavior.
-- **Empty/garbage clipboards fire the dedicated `empty-clipboard` toast** (`Auto Import: Clipboard does not contain a file path. Use Auto Import: Copy File Path on a source file first.`) — short-circuits before the same-file check via the absolute-path/has-extension guard in `src/commands/paste-import.ts:31`. Plain text, URLs, and numeric strings all land here, not on `not-supported`.
-- **JSX→TSX cross-import asymmetry:** `.jsx` source does NOT have a fallback in TSX (only `.js` does). This is intentional — a `.jsx` source is a JavaScript-with-JSX file, and forcing a TSX import shape would be wrong.
+- **Empty/garbage clipboards fire `'empty-clipboard'` or `'no-extension'`** — `paste-import.ts` has two sequential guards: (1) empty/non-absolute → `'empty-clipboard'`; (2) absolute but no file extension → `'no-extension'`. Plain text, URLs, and numeric strings fire `'empty-clipboard'`; absolute paths without extensions (e.g. `/Users/me/Makefile`) fire `'no-extension'`.
+- **`.jsx` → TSX/MDX uses the JavaScript fallback** — `.jsx` IS in the TSX/MDX fallback extension list (`_react.ts`); it produces a JS-style import, not a rejection. Only `.tsx → .jsx` is rejected (JSX has no fallback).
 
 ## Master sign-off
 
@@ -122,6 +125,9 @@ Tick when each file is fully passed.
 - [ ] 16 — Path computation
 - [ ] 17 — Edge cases & regression
 - [ ] 18 — Style pickers (paste-with-style + set-default-style)
+- [ ] 19 — Drag & drop
+- [ ] 20 — Paste into MDX
+- [ ] 21 — Paste into framework components (Vue / Svelte / Astro)
 
 **Tester:** ____________________
 **Date:** ____________________

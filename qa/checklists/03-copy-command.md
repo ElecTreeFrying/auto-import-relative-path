@@ -47,6 +47,16 @@ The post-condition guard in `commands/copy-file-path.ts:31-34` rejects any clipb
 - [ ] **Alt+D short-circuits paste when copy fails.** Same setup as above (no Explorer selection). Open `src/bar.ts` as the active editor. Press `Alt+D`.
   **Expect:** warning toast `Auto Import: No file selected to copy.` AND `bar.ts` is unchanged — paste was never invoked because `commands/copy-paste.ts:6-8` short-circuits when `executeCopyFilePath` returns `false`.
 
+### Extensionless file — `'no-extension'` toast
+
+The guard in `commands/copy-file-path.ts` rejects clipboard reads where `path.extname(trimmed) === ''`, fires `'no-extension'`, and returns `false`.
+
+- [ ] **Extensionless file.** Create `touch Makefile` at the workspace root. In Explorer, click `Makefile` (single click — selected, not opened). Press `Cmd/Ctrl+Shift+A`.
+  **Expect:** warning toast `Auto Import: Makefile has no file extension.` Clipboard unchanged. Cleanup: `rm Makefile`.
+
+- [ ] **Alt+D short-circuits when copy rejects extensionless.** Same setup (Makefile selected in Explorer). Open `src/bar.ts` as the active editor. Press `Alt+D`.
+  **Expect:** warning toast `Auto Import: Makefile has no file extension.` AND `bar.ts` unchanged — paste never invoked. Cleanup: `rm Makefile`.
+
 ### Re-copy overwrites clipboard
 
 - [ ] **Sequential copies.** Copy `src/foo.ts`. Then copy `src/bar.ts`. Then paste in an external app.
@@ -74,6 +84,18 @@ For each of these, the toast should match the basename verbatim:
 - [ ] `assets/logo.png` → `Auto Import: Copied path — logo.png`
 - [ ] `data/config.json` → `Auto Import: Copied path — config.json`
 
+### Copy-success toast action buttons
+
+The `'copy-success'` toast carries two action buttons: **Paste with Style** and **Paste Now** (in that render order, leftmost first). Clicking one dispatches the corresponding command.
+
+- [ ] **"Paste Now" button inserts import.** Copy `src/foo.ts`. When the info toast appears (`Auto Import: Copied path — foo.ts`), open `src/bar.ts` as the active editor, then click **Paste Now**.
+  **Expect:** import snippet inserted into `bar.ts` (same result as pressing `Cmd/Ctrl+I`).
+
+- [ ] **"Paste with Style" button opens picker.** Copy `src/foo.ts`. When the toast appears, with `src/bar.ts` open, click **Paste with Style**.
+  **Expect:** QuickPick opens listing the applicable TS import styles (same as running `Auto Import: Paste as Import (Pick Style)` from the Palette).
+
+- [ ] **Dismissing the toast without clicking.** Copy `src/foo.ts`. Let the toast auto-dismiss (or close notifications). Verify no side effect — no import inserted, no picker opened.
+
 ## Known limitations / not bugs
 
 - The toast uses `path.basename()` which preserves the entire trailing extension (including double-extensions like `.component.ts`). This is intentional — the toast is for user confirmation, not for snippet generation.
@@ -85,6 +107,8 @@ For each of these, the toast should match the basename verbatim:
 - [ ] `clearAll` works
 - [ ] Explorer-only copy works
 - [ ] No-file-to-copy toast fires (2 cases: Palette and Alt+D short-circuit)
+- [ ] No-extension toast fires (2 cases: Palette and Alt+D short-circuit)
+- [ ] Copy-success toast buttons work (Paste Now, Paste with Style, dismiss)
 - [ ] Re-copy overwrites
 - [ ] Special-character paths work
 - [ ] All extension types tested

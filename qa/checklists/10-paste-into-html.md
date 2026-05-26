@@ -5,7 +5,7 @@ Validates HTML-snippet generation. HTML emits one of six tag types (`<script>`, 
 **Sources:**
 - `src/snippets/languages/html.ts` — six builders (four configurable, two fixed)
 - `src/path/import-type.ts` — `determineImportType` (`.html → null` defensively)
-- `src/commands/paste-import.ts` — gating clauses 2 & 3
+- `src/gating.ts` — isPairSupported clauses 2 & 3
 - `src/constants/extensions.ts` — `HTML_SUPPORTED_EXTENSIONS = .js + .css + 7 images + 7 media + 1 text-track`
 
 ## Setup

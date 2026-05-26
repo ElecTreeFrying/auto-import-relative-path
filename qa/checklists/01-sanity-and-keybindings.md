@@ -12,15 +12,22 @@ Verify the extension loads and every entry point works. If any of these fail, st
 
 ### Activation
 
-- [ ] **Output channel shows activation.** View → Output → select "Log (Extension Host)". Search for `auto-import` or run any command below — the extension activates lazily on first command. **Expect:** no errors logged.
+- [ ] **Output channel shows activation.** View → Output → select "Log (Extension Host)". Search for `auto-import` — the extension activates when a supported file is opened (`onLanguage` activation). If no supported file is open yet, running any Auto Import command also activates it. **Expect:** no errors logged.
+
+### Drop Provider
+
+- [ ] **DnD edit offered.** Open `src/bar.ts`. Drag `src/foo.ts` from the Explorer sidebar and drop it into the editor. VS Code's drop-edit widget offers an "Auto Import" entry. Accept it.
+  **Expect:** import snippet inserted (same as Paste behavior). Confirms `DocumentDropEditProvider` is registered alongside the 5 commands.
 
 ### Command Palette
 
-- [ ] **All 3 commands are listed.** `Cmd/Ctrl+Shift+P` → type `Auto Import`.
-  **Expect:** three entries (titles match `package.json:contributes.commands` byte-exactly):
+- [ ] **All 5 commands are listed.** `Cmd/Ctrl+Shift+P` → type `Auto Import`.
+  **Expect:** five entries (titles match `package.json:contributes.commands` byte-exactly):
   - `Auto Import: Copy File Path`
   - `Auto Import: Paste as Import`
   - `Auto Import: Insert Import from Selected File`
+  - `Auto Import: Paste as Import (Pick Style)`
+  - `Auto Import: Set Default Import Style`
 
 ### Keybinding — Copy (`cmd/ctrl+shift+a`)
 
@@ -69,7 +76,7 @@ Paste's keybinding `when: editorTextFocus` blocks the keystroke when no editor i
 
 ## Sign-off
 
-- [ ] All commands listed
+- [ ] All 5 commands listed
 - [ ] All 3 keybindings work in their correct contexts and not outside them
 - [ ] No errors in Output → Log (Extension Host)
 

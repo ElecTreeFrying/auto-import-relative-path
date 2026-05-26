@@ -5,7 +5,7 @@ Validates CSS-snippet generation. CSS supports two `@import` shapes plus the `ur
 **Sources:**
 - `src/snippets/languages/css.ts` — snippet builder + `buildCssImageImportSnippet`
 - `src/path/import-type.ts` — `determineImportType` routes images vs stylesheets
-- `src/commands/paste-import.ts` — gating clause 5 (CSS_SUPPORTED_EXTENSIONS)
+- `src/gating.ts` — isPairSupported clause 5 (CSS_SUPPORTED_EXTENSIONS)
 - `src/constants/extensions.ts` — `CSS_SUPPORTED_EXTENSIONS = ['.css', ...IMAGE_FILE_EXTENSIONS]`
 
 ## Setup

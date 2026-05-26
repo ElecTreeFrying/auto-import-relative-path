@@ -3,7 +3,8 @@
 Validates `auto-import.preferences.importStatementPlacement`, the inline-snippet override, the two forced-cursor overrides, Astro frontmatter placement, Vue/Svelte `<script>` block placement, the insertion-column rule, and the 9-marker Bottom heuristic.
 
 **Sources:**
-- `src/editor/insert-snippet.ts` — `insertImportSnippet`, `isInlineSnippet`, `shouldRepositionCursor`, `insertSnippetAtAstroFrontmatter`, `findAstroFrontmatterBounds`, `insertSnippetAtSfcScript`, `insertSnippetAtBottom`, `determineInsertionColumn`
+- `src/editor/placement.ts` — `computeImportPlacement`, `isInlineSnippet`, `shouldRepositionCursor`, `findAstroFrontmatterBounds`, `findSfcScriptBounds`, `findBottomLineInRange`, `IMPORT_INDICATORS`, `adjustForCommentBlock`
+- `src/editor/insert-snippet.ts` — `insertImportSnippet` (delegates to `placement.ts` for position computation)
 - `src/constants/extensions.ts` — `SCRIPT_FILE_EXTENSIONS`, `STYLESHEET_FILE_EXTENSIONS`
 - `package.json` — enum: `Top`, `Bottom`, `Cursor`
 
@@ -258,5 +259,9 @@ import { ref } from 'vue';
 - [ ] Astro frontmatter awareness (Top, Bottom, Cursor inside, Cursor outside, empty frontmatter, no frontmatter)
 - [ ] Vue/Svelte script block awareness (Top, Bottom, Cursor inside, Cursor outside, no block)
 - [ ] Mid-flight setting change
+
+## Cross-reference: Drag & drop uses `computeImportPlacement()`
+
+The `AutoImportOnDropProvider` (`src/drop/provider.ts`) uses the same placement logic extracted to `src/editor/placement.ts`. The function `computeImportPlacement()` implements all the rules tested above — Top/Bottom/Cursor, inline override, forced-cursor for HTML/MD, Astro frontmatter, SFC script block, comment-block adjustment, Bottom-marker detection. DnD-specific placement tests live in `19-drag-and-drop.md`.
 
 Tester / date: ___________________

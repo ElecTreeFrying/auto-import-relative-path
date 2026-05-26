@@ -6,7 +6,7 @@ Validates SCSS-snippet generation. SCSS supports five shapes (`@use`, `@use as *
 - `src/snippets/languages/scss.ts` — snippet builder, `normalizePartialFilename`, `determineScssExtension`
 - `src/snippets/languages/css.ts` — image branch reuses `buildCssImageImportSnippet`
 - `src/path/import-type.ts` — `.scss → null` so destination handler picks the SCSS-specific default branch
-- `src/commands/paste-import.ts` — gating clause 6 (SCSS_SUPPORTED_EXTENSIONS)
+- `src/gating.ts` — isPairSupported clause 6 (SCSS_SUPPORTED_EXTENSIONS)
 - `src/constants/extensions.ts` — `SCSS_SUPPORTED_EXTENSIONS = .scss + .css + 7 images`
 
 ## Setup

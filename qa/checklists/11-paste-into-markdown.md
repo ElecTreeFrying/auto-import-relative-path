@@ -5,7 +5,7 @@ Validates Markdown-snippet generation. Markdown emits one of two shapes: inline 
 **Sources:**
 - `src/snippets/languages/markdown.ts` — `buildMarkdownImportSnippet` + `buildMarkdownImageImportSnippet`
 - `src/path/import-type.ts` — `determineImportType`
-- `src/commands/paste-import.ts` — gating clause 4
+- `src/gating.ts` — isPairSupported clause 4
 - `src/constants/extensions.ts` — `MARKDOWN_SUPPORTED_EXTENSIONS = .md + 7 images`
 
 ## Setup

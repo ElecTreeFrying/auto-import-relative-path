@@ -6,6 +6,8 @@ The fixtures already live at `../workspace/` (sibling of `checklists/`). You don
 
 1. **Open this project** (`auto-import-relative-path`) in VS Code.
 2. **Press F5.** A second VS Code window opens — this is the Extension Development Host with the extension loaded from `dist/extension.js`. (The default build task `npm: watch` runs automatically; if it fails, run `npm run compile` once and try again.)
+
+> **Activation:** The extension activates on file open (`onLanguage:*` for 12 languages) rather than waiting for the first command invocation. Drag-and-drop import is available immediately once the EDH opens any supported file.
 3. **In the EDH window: File → Open Folder…** and pick `<this-repo>/qa/workspace/`.
 4. The window reloads with the fixture workspace open. Every checklist now references files inside this folder.
 
@@ -40,6 +42,7 @@ Some scenarios are inherently transient (read-only files, multi-root workspaces,
 - [ ] EDH window is open with `qa/workspace/` as the folder.
 - [ ] You can open `src/foo.ts` from the Explorer and it renders normally.
 - [ ] `Cmd/Ctrl+Shift+P` → typing `Auto Import` shows the three commands (`Copy File Path`, `Paste as Import`, `Insert Import from Selected File`).
+- [ ] Drag any `.ts` file from Explorer into an open `.ts` editor — the drop-edit widget appears (confirms DnD provider is active without running a command).
 
 ## Sign-off
 

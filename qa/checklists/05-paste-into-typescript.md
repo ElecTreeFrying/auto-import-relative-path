@@ -4,7 +4,7 @@ Validates TS-snippet generation, `.ts`-as-destination gating, and the Angular Pa
 
 **Sources:**
 - `src/snippets/languages/typescript.ts` — snippet builder + `generateAngularLegacyImportName`
-- `src/commands/paste-import.ts` — gating
+- `src/gating.ts` — isPairSupported (same-extension bypass)
 - `src/constants/extensions.ts` — `.ts` NOT in `CROSS_IMPORT_DESTINATIONS`
 
 ## Setup

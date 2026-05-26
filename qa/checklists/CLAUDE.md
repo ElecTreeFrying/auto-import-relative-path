@@ -4,7 +4,7 @@ Sequential markdown checklists driving the human manual-QA pass before each rele
 
 ## Files
 
-20 markdown files, flat directory:
+23 markdown files, flat directory:
 
 | File(s) | Role |
 |---------|------|
@@ -21,6 +21,9 @@ Sequential markdown checklists driving the human manual-QA pass before each rele
 | `16-path-computation.md` | `./` prefix rule (CHANGELOG 0.6.1), `../`, partial `_` stripping, spaces, unicode |
 | `17-edge-cases-and-regression.md` | Degenerate files, multi-root, multi-cursor, stress, regression re-checks |
 | `18-style-pickers.md` | `extension.pasteImportWithStyle` + `extension.setDefaultImportStyle` picker UX, persistence, hardcoded-destination rejection |
+| `19-drag-and-drop.md` | `DocumentDropEditProvider`: drag file from Explorer → import inserted. Same gating (`src/gating.ts`), same placement (`src/editor/placement.ts`), different source (DataTransfer, not clipboard) |
+| `20-paste-into-mdx.md` | One per destination extension (`.mdx`) — React algorithm, same as TSX |
+| `21-paste-into-framework-components.md` | Three destinations (`.vue`, `.svelte`, `.astro`) — shared framework-component algorithm |
 
 ## Read the named file, not the tree
 
@@ -46,7 +49,7 @@ Every numbered file (`01-…` onward) follows the same skeleton:
 - **"Settings under test" in `README.md:72–91` mirrors `package.json:contributes.configuration.properties` exactly.** Adding or renaming a setting requires updating the README list and every checklist that exercises it (typically `04`, `05`, `08`, `09`, `13`, `14`, `18`).
 - **Enum `description` strings in `package.json` are byte-exact contracts** with `src/snippets/_styles.ts` *and* with what `18-style-pickers.md` quotes as expected picker labels and persisted-setting templates, and what `04–11` quote as expected emitted snippet shapes. A drift here fails no automated test — only a human running the checklist catches it.
 - **Fixture filenames are locked.** The 37 baseline names in `../workspace/README.md` ("Maintenance notes") are referenced literally by checklists. Renaming a baseline file produces a silent ghost reference — the tester pastes against a *different* file and the test still appears to pass. Add new fixtures alongside instead.
-- **File numbers grow monotonically.** Never re-number an existing checklist. The master sign-off matrix and run-order table reference the integer, and partial sign-offs from prior testers would become ambiguous. Insert at the next free integer (current high-water mark: `18`).
+- **File numbers grow monotonically.** Never re-number an existing checklist. The master sign-off matrix and run-order table reference the integer, and partial sign-offs from prior testers would become ambiguous. Insert at the next free integer (current high-water mark: `21`).
 
 ## Adding a new checklist
 
@@ -72,7 +75,7 @@ This directory is one half of a pair; the other half is the fixture workspace.
 
 | Sibling | Role |
 |---------|------|
-| `checklists/` (this dir) | Procedure — 18 sequential checklists, `00-setup.md`, master sign-off matrix |
+| `checklists/` (this dir) | Procedure — 21 sequential checklists, `00-setup.md`, master sign-off matrix |
 | `../workspace/` | Fixtures — ~174 files opened as a folder in the EDH so the procedure has something to paste between |
 
 The two are coupled at the literal filename level: `04-paste-into-javascript.md` says "copy `src/foo.ts`" and means `../workspace/src/foo.ts`. The workspace is excluded from linting — `eslint.config.mjs:ignores` lists `qa/workspace/**`. It falls outside `tsconfig.json`'s `include` glob (`src/**/*`), so tsc never sees it either. Don't lift those exclusions; fixtures intentionally `import` packages that aren't installed and use DOM globals not in `lib`.

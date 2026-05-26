@@ -3,7 +3,8 @@
 Validates every rejection path: no active editor, empty/garbage clipboard, same-file, source-not-found, the eleven not-supported clauses, and eight of the ten notification variants (the remaining two — `no-configurable-style` and `default-style-saved` — are covered in `18-style-pickers.md`).
 
 **Sources:**
-- `src/commands/paste-import.ts` — order-of-checks: `no-active-editor` → `empty-clipboard` → `same-file-path` → `source-not-found` → 11-clause `not-supported`
+- `src/commands/paste-import.ts` — order-of-checks: `no-active-editor` → `empty-clipboard` → `same-file-path` → `source-not-found` → `isPairSupported()` → empty/newline snippet → insert
+- `src/gating.ts` — `isPairSupported(info)`: the 11-clause gating extracted into a shared function (used by both commands and the DnD provider in `src/drop/provider.ts`)
 - `src/commands/copy-file-path.ts` — post-condition guard fires `no-file-to-copy` and returns `false`; `commands/copy-paste.ts` short-circuits on that return
 - `src/constants/extensions.ts` — `CROSS_IMPORT_DESTINATIONS`, `HTML/MARKDOWN/CSS/SCSS/VUE/SVELTE/ASTRO_SUPPORTED_EXTENSIONS`
 - `src/snippets/dispatch.ts` — empty `SnippetString('')` for unhandled destination
@@ -18,20 +19,21 @@ Validates every rejection path: no active editor, empty/garbage clipboard, same-
 
 ## Order of checks (paste-import.ts)
 
-The order matters because earlier checks can mask later ones. Per `paste-import.ts:50-89`:
+The order matters because earlier checks can mask later ones. Per `paste-import.ts`:
 
 1. `!editor` → `'no-active-editor'` warning
-2. clipboard fails `trim() !== ''` AND `path.isAbsolute()` AND `path.extname() !== ''` → `'empty-clipboard'` warning
-3. `sourceFilePath.toLowerCase() === destinationFilePath.toLowerCase()` → `'same-file-path'` warning
-4. `vscode.workspace.fs.stat(source)` throws → `'source-not-found'` warning
-5. eleven-clause gating fails → `'not-supported'` warning (parameterized with `sourceExt`/`destinationExt`)
-6. otherwise → snippet inserted
+2. `trimmedSource === '' || !path.isAbsolute(trimmedSource)` → `'empty-clipboard'` warning
+3. `path.extname(trimmedSource) === ''` → `'no-extension'` warning (parameterized with `{ basename }`)
+4. `sourceFilePath.toLowerCase() === destinationFilePath.toLowerCase()` → `'same-file-path'` warning
+5. `vscode.workspace.fs.stat(source)` throws → `'source-not-found'` warning
+6. eleven-clause gating fails → `'not-supported'` warning (parameterized with `sourceExt`/`destinationExt`)
+7. otherwise → snippet inserted
 
 When testing each clause below, ensure the test setup *only* trips that clause — earlier clauses will short-circuit before later ones run.
 
-## Same-file rejection (check #3)
+## Same-file rejection (check #4)
 
-`sourceFilePath.toLowerCase() === destinationFilePath.toLowerCase()` runs after the empty-clipboard guard.
+`sourceFilePath.toLowerCase() === destinationFilePath.toLowerCase()` runs after the no-extension guard.
 
 - [ ] **Identical path.** Open `src/foo.ts`. Copy. Paste.
   **Expect:** warning toast `Auto Import: A file cannot import itself.` Editor unchanged.
@@ -40,7 +42,7 @@ When testing each clause below, ensure the test setup *only* trips that clause �
 
 ## Empty / non-path clipboard (check #2)
 
-The guard runs `trimmedSource === '' || !path.isAbsolute(trimmedSource) || path.extname(trimmedSource) === ''` BEFORE the same-file check, so even a clipboard that "looks" like the destination's name lands here when it's not an absolute path.
+The guard runs `trimmedSource === '' || !path.isAbsolute(trimmedSource)` BEFORE the no-extension check and the same-file check, so even a clipboard that "looks" like the destination's name lands here when it's not an absolute path.
 
 - [ ] **Empty clipboard.** Clear clipboard (copy empty text from another app). Open `src/foo.ts`. Paste.
   **Expect:** warning toast `Auto Import: Clipboard does not contain a file path. Use Auto Import: Copy File Path on a source file first.`
@@ -48,10 +50,17 @@ The guard runs `trimmedSource === '' || !path.isAbsolute(trimmedSource) || path.
   **Expect:** same `'empty-clipboard'` toast (trim drops it to `''`).
 - [ ] **Relative path in clipboard.** Copy `./foo.ts` (the literal text) from another app. Paste.
   **Expect:** `'empty-clipboard'` toast — `path.isAbsolute('./foo.ts')` is `false`, so the guard fires before any extension check.
-- [ ] **Path without extension.** Copy `/Users/me/project/somefile` (literal text, no `.ext`). Paste.
-  **Expect:** `'empty-clipboard'` toast — `path.extname()` is `''`.
 
-## Source-file-deleted (check #4)
+## No-extension clipboard (check #3)
+
+`path.extname(trimmedSource) === ''` fires `'no-extension'` with `{ basename: path.basename(sourceFilePath) }`. Runs after the absolute-path guard passes — catches absolute paths that point to extensionless files (e.g. `Makefile`, `Dockerfile`, directory paths).
+
+- [ ] **Absolute path, no extension.** Copy `/Users/me/project/Makefile` (literal text in clipboard). Open `src/foo.ts`. Paste.
+  **Expect:** warning toast `Auto Import: Makefile has no file extension.` Editor unchanged.
+- [ ] **Absolute path pointing to a directory.** Copy `/Users/me/project` (literal text). Paste.
+  **Expect:** warning toast `Auto Import: project has no file extension.` (basename is `project`; extname is empty).
+
+## Source-file-deleted (check #5)
 
 After the same-file check passes, `vscode.workspace.fs.stat` verifies the source still exists on disk.
 
@@ -60,7 +69,7 @@ After the same-file check passes, `vscode.workspace.fs.stat` verifies the source
 - [ ] **Move during edit.** Copy `src/helpers.ts`. Rename it: `mv src/helpers.ts src/helpers-renamed.ts`. Paste into `src/bar.ts`.
   **Expect:** `Auto Import: Source file no longer exists: helpers.ts.` (the basename in the toast matches the *original* — the clipboard wasn't aware of the rename). Cleanup.
 
-## The 11 not-supported gating clauses (paste-import.ts, check #5)
+## The 11 not-supported gating clauses (paste-import.ts, check #6)
 
 Each clause should be testable in isolation. Set `placement = Cursor` for predictability. The `'not-supported'` toast is parameterized — the source and destination extensions appear verbatim:
 `Auto Import: Cannot import ${sourceExt} into ${destinationExt} files.`
@@ -163,7 +172,7 @@ Empty snippet. Most direct path: a destination not handled by dispatch.
 
 - [ ] **JSX/TSX/MDX with unsupported source.** `unsupported/texture.bmp` → `src/badge.jsx`. **Expect:** `Auto Import: Cannot import .bmp into .jsx files.` (`.bmp` isn't in primary or fallback or the hardcoded switch → `_react.ts` `default:` returns empty.)
 
-- [ ] **TSX with .jsx source.** `src/badge.jsx` → `src/widget.tsx`. **Expect:** `Auto Import: Cannot import .jsx into .tsx files.` (`.jsx` not in primary `[.ts,.tsx]` or fallback `[.js]`.)
+- [ ] **TSX with .jsx source.** `src/badge.jsx` → `src/widget.tsx`. **Expect:** JS-style import inserted (`.jsx` is in TSX/MDX fallback `[.js, .jsx]` → `buildJavaScriptImportSnippet`). NOT rejected.
 
 ## Garbage clipboard text — fires `'empty-clipboard'` (not `'not-supported'`)
 
@@ -182,8 +191,8 @@ The clipboard guard runs *before* the same-file check, gating, and snippet build
   **Expect:** same `'empty-clipboard'` toast.
 
 - [ ] **Absolute path with no extension.** Copy `/Users/me` (literal text). Paste.
-  - Absolute, but `path.extname()` is `''`.
-  **Expect:** same `'empty-clipboard'` toast.
+  - `path.isAbsolute()` is `true`, so passes check #2. But `path.extname('/Users/me')` is `''`, hitting check #3.
+  **Expect:** warning toast `Auto Import: me has no file extension.` (the `'no-extension'` variant, NOT `'empty-clipboard'`).
 
 ## No active editor — fires `'no-active-editor'` (not silent)
 
@@ -195,7 +204,7 @@ The first check in `paste-import.ts:53-56`. Was previously a silent return; now 
 - [ ] **Welcome page focused (not an editor).** Quit and relaunch the Extension Development Host so the Welcome page is visible. Without opening any file, run `Auto Import: Paste as Import` from the Palette.
   **Expect:** same `'no-active-editor'` toast.
 
-## Notification messages — exact text (7 of 9 variants)
+## Notification messages — exact text (8 of 10 variants)
 
 Every toast must match `src/editor/notification.ts:17-54` byte-for-byte. All are prefixed with `Auto Import:` (no more `Auto Import Relative Path:` prefix anywhere). The remaining 2 variants (`no-configurable-style` and `default-style-saved`) are covered in `18-style-pickers.md`.
 
@@ -205,13 +214,14 @@ Every toast must match `src/editor/notification.ts:17-54` byte-for-byte. All are
 | `not-supported` | `Auto Import: Cannot import ${sourceExt} into ${destinationExt} files.` | warning |
 | `no-active-editor` | `Auto Import: Open a file to paste an import.` | warning |
 | `no-file-to-copy` | `Auto Import: No file selected to copy.` | warning |
+| `no-extension` | `Auto Import: ${basename} has no file extension.` | warning |
 | `empty-clipboard` | `Auto Import: Clipboard does not contain a file path. Use Auto Import: Copy File Path on a source file first.` | warning |
 | `source-not-found` | `Auto Import: Source file no longer exists: ${basename}.` | warning |
 | `copy-success` | `Auto Import: Copied path — ${basename}` | info |
 
-- [ ] All six warning toasts render as warning (yellow/orange icon), not error (red).
+- [ ] All seven warning toasts render as warning (yellow/orange icon), not error (red).
 - [ ] `copy-success` is the only **info** toast in this set (blue/neutral icon, no warning glyph).
-- [ ] `not-supported`, `source-not-found`, and `copy-success` interpolate their payload — verify the dynamic value (e.g., `.png`, `foo.ts`) appears verbatim in the rendered toast.
+- [ ] `not-supported`, `no-extension`, `source-not-found`, and `copy-success` interpolate their payload — verify the dynamic value (e.g., `.png`, `Makefile`, `foo.ts`) appears verbatim in the rendered toast.
 
 ## `notifications.clearAll` clears prior warnings on the next command
 
@@ -223,7 +233,7 @@ Every toast must match `src/editor/notification.ts:17-54` byte-for-byte. All are
 - [ ] Trigger an `'empty-clipboard'` warning. Don't dismiss. Run Paste again with a valid clipboard.
   **Expect:** prior warning dismissed; new snippet inserted (no second toast on success — the only success notification is for Copy).
 
-## Notification flow coverage — provoke each of the 7 paste/copy variants
+## Notification flow coverage — provoke each of the 8 paste/copy variants
 
 A single end-to-end pass that fires every notification at least once. Tick when each variant has been observed with the exact text from the table above.
 
@@ -231,9 +241,25 @@ A single end-to-end pass that fires every notification at least once. Tick when 
 - [ ] `not-supported` — copy `src/foo.ts`, paste into `src/sibling.js` (clause 1).
 - [ ] `no-active-editor` — close all editors, run Paste from Palette.
 - [ ] `no-file-to-copy` — close all editors AND deselect Explorer, run Copy from Palette.
+- [ ] `no-extension` — copy `/Users/me/Makefile` (literal text into clipboard), run Paste in any editor.
 - [ ] `empty-clipboard` — copy `Hello world` plain text, run Paste in any editor.
 - [ ] `source-not-found` — copy `src/foo.ts`, delete it, run Paste in `src/bar.ts`. Cleanup: `git checkout src/foo.ts`.
 - [ ] `copy-success` — copy any file. Verify info-level (blue), not warning (yellow).
+
+## `'not-supported'` toast action button — "View Supported Files"
+
+The `'not-supported'` warning toast carries a **View Supported Files** button (rendered alongside the toast text). Clicking it opens the extension's supported-pairs documentation in the default browser.
+
+- [ ] **Button visible.** Trigger any `'not-supported'` toast (e.g., copy `src/foo.ts`, paste into `src/sibling.js`). Verify the toast has a clickable **View Supported Files** button alongside the warning text.
+
+- [ ] **Button opens URL.** Click **View Supported Files** on the toast.
+  **Expect:** the default browser opens `https://github.com/ElecTreeFrying/auto-import-relative-path#supported-source--destination-pairs`.
+
+- [ ] **Dismissing without clicking.** Trigger the toast again. Let it auto-dismiss or close the notification center. Verify no browser window opened.
+
+## Cross-reference: Drag & drop uses the same gating
+
+The `AutoImportOnDropProvider` (`src/drop/provider.ts`) calls `isPairSupported(info)` identically — same 11 clauses, same `'not-supported'` toast with `sourceExt`/`destinationExt` interpolation. DnD-specific tests (representative rejection cases + behavioral differences) live in `19-drag-and-drop.md`. Any change to `src/gating.ts` affects both command and DnD flows.
 
 ## Cleanup
 
@@ -247,7 +273,8 @@ rm -f foo.unknown
 
 - [ ] Order-of-checks understood
 - [ ] Same-file rejection (2 cases)
-- [ ] Empty / non-path clipboard (4 cases)
+- [ ] Empty / non-path clipboard (3 cases)
+- [ ] No-extension clipboard (2 cases)
 - [ ] Source-file-deleted (2 cases)
 - [ ] Clause 1 (6 cases incl. arbitrary unsupported, binary, negative)
 - [ ] Clause 2: `.html → .html`
@@ -259,10 +286,11 @@ rm -f foo.unknown
 - [ ] Clause 8: Svelte gating (3 cases)
 - [ ] Clause 9: Astro gating (3 cases)
 - [ ] Clause 10/11: empty/newline snippet (3 cases)
-- [ ] Garbage clipboard fires `empty-clipboard` (4 cases)
+- [ ] Garbage clipboard — 3 fire `'empty-clipboard'`, 1 fires `'no-extension'` (4 cases)
 - [ ] No-active-editor fires `no-active-editor` toast (2 cases)
-- [ ] All 7 paste/copy notification texts exact (warning vs info levels correct)
+- [ ] All 8 paste/copy notification texts exact (warning vs info levels correct)
+- [ ] `'not-supported'` View Supported Files button (3 cases)
 - [ ] clearAll behavior (2 cases)
-- [ ] Notification flow coverage — every paste/copy variant observed (7 cases)
+- [ ] Notification flow coverage — every paste/copy variant observed (8 cases)
 
 Tester / date: ___________________

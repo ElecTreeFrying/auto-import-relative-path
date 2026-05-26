@@ -92,7 +92,7 @@ workspace/
 
 ## Coverage matrix
 
-Every cell of the source-extension × destination-extension matrix is reachable from this fixture. Each gating clause in `commands/paste-import.ts` has at least one positive and one negative fixture.
+Every cell of the source-extension × destination-extension matrix is reachable from this fixture. Each gating clause in `src/gating.ts:isPairSupported` has at least one positive and one negative fixture.
 
 | Capability | Where to look |
 |------------|---------------|

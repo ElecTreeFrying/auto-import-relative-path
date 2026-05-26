@@ -4,7 +4,7 @@ Validates JS-snippet generation and `.js`-as-destination gating.
 
 **Sources:**
 - `src/snippets/languages/javascript.ts` — snippet builder
-- `src/commands/paste-import.ts` — gating
+- `src/gating.ts` — isPairSupported (same-extension bypass)
 - `src/constants/extensions.ts` — `CROSS_IMPORT_DESTINATIONS` does NOT include `.js`
 
 ## Setup
