@@ -1,15 +1,14 @@
 # 00 — Open the fixture workspace
 
-The fixtures already live at `../workspace/` (sibling of `checklists/`). You don't build anything — you just open that folder in the Extension Development Host. All subsequent checklists 01–17 use paths *relative to that workspace root*.
+The fixtures already live in the `qa/workspace/` folder the developer shared with you. You don't build anything — you just open that folder in VS Code with the extension already installed. All subsequent checklists 01–21 use paths *relative to that workspace root*.
 
 ## Steps
 
-1. **Open this project** (`auto-import-relative-path`) in VS Code.
-2. **Press F5.** A second VS Code window opens — this is the Extension Development Host with the extension loaded from `dist/extension.js`. (The default build task `npm: watch` runs automatically; if it fails, run `npm run compile` once and try again.)
+1. **Make sure the extension is installed.** If you haven't already, install the `.vsix` file the developer sent you: **Cmd+Shift+P** (macOS) or **Ctrl+Shift+P** (Windows / Linux) → **Extensions: Install from VSIX…** → browse to the file → **Install** → **Reload**.
+2. **File → Open Folder…** → select the `qa/workspace/` folder.
+3. The window reloads with the fixture workspace open. Every checklist now references files inside this folder.
 
-> **Activation:** The extension activates on file open (`onLanguage:*` for 12 languages) rather than waiting for the first command invocation. Drag-and-drop import is available immediately once the EDH opens any supported file.
-3. **In the EDH window: File → Open Folder…** and pick `<this-repo>/qa/workspace/`.
-4. The window reloads with the fixture workspace open. Every checklist now references files inside this folder.
+> **Activation:** The extension activates on file open (`onLanguage:*` for 12 languages) rather than waiting for the first command invocation. Drag-and-drop import is available immediately once VS Code opens any supported file.
 
 > **Heads up**: when you copy a file from the Explorer with `Cmd/Ctrl+Shift+A`, the toast and clipboard contain the *absolute* path of the file inside `qa/workspace/` — that's expected. The relative paths inside generated import snippets are computed from there.
 
@@ -46,7 +45,7 @@ Some scenarios are inherently transient (read-only files, multi-root workspaces,
 
 ## Sign-off
 
-- [ ] Fixture workspace open in EDH
+- [ ] Fixture workspace open in VS Code with the extension installed
 - [ ] No files were modified to bootstrap (everything was already there)
 
 Tester / date: ___________________

@@ -4,18 +4,32 @@ A complete, sequential manual-QA pass for every code path in the extension. Walk
 
 ## Why this exists
 
-Four real bugs were fixed in `src/snippets/languages/scss.ts`, `src/snippets/languages/typescript.ts`, `src/snippets/languages/javascript.ts`, and `src/commands/copy-file-path.ts`. Before shipping, every code path is verified end-to-end — both the four fixes and every adjacent behavior they could have touched.
+Three real bugs were fixed in `src/snippets/languages/scss.ts`, `src/snippets/languages/typescript.ts`, and `src/commands/copy-file-path.ts`. Before shipping, every code path is verified end-to-end — both the three fixes and every adjacent behavior they could have touched.
 
 0.7.0 also replaced the two generic warning toasts (`Same file path.`, `Not supported.`) with **ten specific, parameterized notifications** (eight warning + two info) — see `src/editor/notification.ts` for the canonical text. Every test below quotes the *exact* expected toast string; testers should compare strings byte-for-byte, not just toast presence.
 
 ## How to run this
 
-1. **Install:** `npm install` (root of the project).
-2. **Compile:** `npm run compile` (must succeed before testing).
-3. **Launch the Extension Development Host:** press **F5** in the main project's VS Code window. A second VS Code window opens with the extension loaded from `dist/extension.js`.
-4. **Open the fixture workspace:** in the EDH window, **File → Open Folder…** → `<this-repo>/qa/workspace/`. (Step-by-step in [`00-setup.md`](00-setup.md).) The fixtures are pre-built — you don't construct anything.
-5. **Walk files `01-…` → `21-…` in order.** Each file is self-contained: setup, tests, expected outcomes, optional "known limitations" callouts, and a per-file sign-off. Every path quoted in a checklist is **relative to the workspace root** (`src/foo.ts` means `qa/workspace/src/foo.ts`).
-6. **Sign off** in the master matrix at the bottom of this README.
+### What you need
+
+- **Visual Studio Code** — download from [code.visualstudio.com](https://code.visualstudio.com/) if you don't have it.
+- **The `.vsix` file** — the developer will send you a file like `auto-import-relative-path-0.7.0.vsix`. This is the extension package.
+- **The test workspace** — the developer will also share the `qa/workspace/` folder (a set of ~174 pre-built fixture files the checklists test against).
+
+### Install the extension
+
+1. Open VS Code.
+2. Press **Cmd+Shift+P** (macOS) or **Ctrl+Shift+P** (Windows / Linux) to open the Command Palette.
+3. Type **Extensions: Install from VSIX…** and select it.
+4. Browse to the `.vsix` file and click **Install**.
+5. Click **Reload** when VS Code prompts you.
+
+### Open the test workspace and start testing
+
+1. **File → Open Folder…** → select the `qa/workspace/` folder you received. (Step-by-step in [`00-setup.md`](00-setup.md).)
+2. Verify the extension is active: **Cmd/Ctrl+Shift+P** → type `Auto Import` — you should see three commands (`Copy File Path`, `Paste as Import`, `Insert Import from Selected File`).
+3. **Walk files `01-…` → `21-…` in order.** Each file is self-contained: setup, tests, expected outcomes, optional "known limitations" callouts, and a per-file sign-off. Every path quoted in a checklist is **relative to the workspace root** (`src/foo.ts` means the `src/foo.ts` inside the workspace folder).
+4. **Sign off** in the master matrix at the bottom of this README.
 
 If a checkbox fails, do not proceed past that file. Reproduce the failure, capture the steps, then triage.
 
@@ -25,7 +39,7 @@ If a checkbox fails, do not proceed past that file. Reproduce the failure, captu
 |---|------|-----|
 | — | [`00-setup.md`](00-setup.md) | Open the pre-built fixture workspace in the EDH |
 | 01 | [`01-sanity-and-keybindings.md`](01-sanity-and-keybindings.md) | If activation/keybindings are broken, nothing downstream is meaningful |
-| 02 | [`02-bug-fix-verification.md`](02-bug-fix-verification.md) | Priority 1 — verify the 4 fixes from this session |
+| 02 | [`02-bug-fix-verification.md`](02-bug-fix-verification.md) | Priority 1 — verify the 3 fixes from this session |
 | 03 | [`03-copy-command.md`](03-copy-command.md) | Copy is the prerequisite for every Paste test |
 | 04 | [`04-paste-into-javascript.md`](04-paste-into-javascript.md) | Each destination type, full source matrix |
 | 05 | [`05-paste-into-typescript.md`](05-paste-into-typescript.md) | TS + Angular naming suite |
@@ -108,7 +122,7 @@ These appear suspicious during testing but are documented intentional behaviour.
 Tick when each file is fully passed.
 
 - [ ] [01](01-sanity-and-keybindings.md) — Sanity & keybindings
-- [ ] [02](02-bug-fix-verification.md) — Bug-fix verification (4 bugs)
+- [ ] [02](02-bug-fix-verification.md) — Bug-fix verification (3 bugs)
 - [ ] [03](03-copy-command.md) — Copy command
 - [ ] [04](04-paste-into-javascript.md) — Paste into JavaScript
 - [ ] [05](05-paste-into-typescript.md) — Paste into TypeScript (+ Angular)
@@ -128,10 +142,3 @@ Tick when each file is fully passed.
 - [ ] [19](19-drag-and-drop.md) — Drag & drop
 - [ ] [20](20-paste-into-mdx.md) — Paste into MDX
 - [ ] [21](21-paste-into-framework-components.md) — Paste into framework components (Vue / Svelte / Astro)
-
-**Tester:** ____________________
-**Date:** ____________________
-**Build:** `dist/extension.js` from commit ____________________
-**Result:** ☐ PASS · ☐ FAIL (notes below)
-
-### Failure notes
