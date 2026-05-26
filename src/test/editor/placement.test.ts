@@ -119,6 +119,42 @@ describe('editor/placement', () => {
       const lines = [ '<template>', '<div>Hello</div>', '</template>' ];
       assert.strictEqual(findSfcScriptBounds(lines), null);
     });
+
+    it('prefers instance <script> over <script context="module"> (Svelte)', () => {
+      const lines = [
+        '<script context="module">',
+        '  export const metadata = {};',
+        '</script>',
+        '<script>',
+        "  import { onMount } from 'svelte';",
+        '</script>',
+      ];
+      const result = findSfcScriptBounds(lines);
+      assert.deepStrictEqual(result, { openingLine: 3, closingLine: 5 });
+    });
+
+    it('falls back to <script context="module"> when no instance script exists', () => {
+      const lines = [
+        '<script context="module">',
+        '  export const x = 1;',
+        '</script>',
+        '<div>Hello</div>',
+      ];
+      const result = findSfcScriptBounds(lines);
+      assert.deepStrictEqual(result, { openingLine: 0, closingLine: 2 });
+    });
+
+    it('finds <script lang="ts"> (Svelte common pattern)', () => {
+      const lines = [ '<script lang="ts">', "  import { onMount } from 'svelte';", '</script>' ];
+      const result = findSfcScriptBounds(lines);
+      assert.deepStrictEqual(result, { openingLine: 0, closingLine: 2 });
+    });
+
+    it('finds <script setup lang="ts"> (Vue common pattern)', () => {
+      const lines = [ '<script setup lang="ts">', "import { ref } from 'vue';", '</script>' ];
+      const result = findSfcScriptBounds(lines);
+      assert.deepStrictEqual(result, { openingLine: 0, closingLine: 2 });
+    });
   });
 
   describe('findBottomLineInRange', () => {
@@ -362,6 +398,95 @@ describe('editor/placement', () => {
         1, 0,
       );
       assert.strictEqual(result.line, 0);
+    });
+
+    it('Svelte: inserts after last import in script block (Bottom)', () => {
+      const text = [
+        '<script lang="ts">',
+        "  import { onMount } from 'svelte';",
+        "  import { fade } from 'svelte/transition';",
+        '',
+        '  let visible = false;',
+        '</script>',
+        '<div>Hello</div>',
+      ].join('\n');
+      const result = computeImportPlacement(
+        text,
+        '.svelte' as FileExtension,
+        '.ts' as FileExtension,
+        6, 0,
+      );
+      assert.strictEqual(result.isInline, false);
+      assert.strictEqual(result.line, 3);
+      assert.strictEqual(result.indentation, '  ');
+    });
+
+    it('Svelte: prefers instance script over module script', () => {
+      const text = [
+        '<script context="module">',
+        '  export const metadata = {};',
+        '</script>',
+        '<script>',
+        "  import { onMount } from 'svelte';",
+        '</script>',
+        '<div>Hello</div>',
+      ].join('\n');
+      const result = computeImportPlacement(
+        text,
+        '.svelte' as FileExtension,
+        '.ts' as FileExtension,
+        6, 0,
+      );
+      assert.strictEqual(result.isInline, false);
+      assert.strictEqual(result.line, 5);
+      assert.strictEqual(result.indentation, '  ');
+    });
+
+    it('Vue: drop outside script block still inserts inside it (Bottom)', () => {
+      const text = [
+        '<script setup>',
+        "import { ref } from 'vue';",
+        '</script>',
+        '<template>',
+        '  <div>Hello</div>',
+        '</template>',
+      ].join('\n');
+      const result = computeImportPlacement(
+        text,
+        '.vue' as FileExtension,
+        '.ts' as FileExtension,
+        4, 5,
+      );
+      assert.strictEqual(result.isInline, false);
+      assert.strictEqual(result.line, 2);
+      assert.strictEqual(result.column, 0);
+    });
+
+    it('Vue: empty script block inserts after opening tag', () => {
+      const text = '<script setup>\n</script>\n<template></template>';
+      const result = computeImportPlacement(
+        text,
+        '.vue' as FileExtension,
+        '.ts' as FileExtension,
+        0, 0,
+      );
+      assert.strictEqual(result.isInline, false);
+      assert.strictEqual(result.line, 1);
+    });
+
+    it('Svelte: preserves indentation from existing imports', () => {
+      const text = [
+        '<script>',
+        "  import { writable } from 'svelte/store';",
+        '</script>',
+      ].join('\n');
+      const result = computeImportPlacement(
+        text,
+        '.svelte' as FileExtension,
+        '.ts' as FileExtension,
+        0, 0,
+      );
+      assert.strictEqual(result.indentation, '  ');
     });
   });
 });

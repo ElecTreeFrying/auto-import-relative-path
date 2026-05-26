@@ -46,17 +46,26 @@ export function findAstroFrontmatterBounds(lines: string[]): { openingLine: numb
   return null;
 }
 
-/** Finds a `<script...>` / `</script>` pair. Prefers `<script setup` (Vue composition API) over bare `<script`. */
+/**
+ * Finds a `<script...>` / `</script>` pair.
+ * Preference: `<script setup` > instance `<script` (no `context=`) > any `<script`.
+ */
 export function findSfcScriptBounds(lines: string[]): { openingLine: number; closingLine: number } | null {
-  return findScriptBlock(lines, '<script setup') ?? findScriptBlock(lines, '<script');
+  return findScriptBlock(lines, '<script setup')
+    ?? findScriptBlock(lines, '<script', 'context=')
+    ?? findScriptBlock(lines, '<script');
 }
 
-function findScriptBlock(lines: string[], openingTag: string): { openingLine: number; closingLine: number } | null {
+function findScriptBlock(
+  lines: string[],
+  openingTag: string,
+  excludePattern?: string,
+): { openingLine: number; closingLine: number } | null {
   let openingLine = -1;
   for (let i = 0; i < lines.length; i++) {
     const trimmed = lines[i].trim();
     if (openingLine === -1) {
-      if (trimmed.startsWith(openingTag)) {
+      if (trimmed.startsWith(openingTag) && (!excludePattern || !trimmed.includes(excludePattern))) {
         openingLine = i;
       }
     } else if (trimmed === '</script>') {
