@@ -12,7 +12,7 @@
 [downloads svg]: https://vsmarketplacebadges.dev/downloads/electreefrying.auto-import.png
 [ratings svg]: https://vsmarketplacebadges.dev/rating-short/ElecTreeFrying.auto-import.png
 [license svg]: https://img.shields.io/github/license/ElecTreeFrying/auto-import-relative-path
-[vscode svg]: https://img.shields.io/badge/vscode-%3E%3D1.118.0-blue
+[vscode svg]: https://img.shields.io/badge/vscode-%3E%3D1.115.0-blue
 [package]: https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import
 
 > **Never type an import path again.**
@@ -545,7 +545,7 @@ See [SPEC — §Path Computation][SPEC-path] for the complete path logic includi
 
 ## Installation
 
-**Requires VS Code 1.118.0 or later.**
+**Requires VS Code 1.115.0 or later.**
 
 - **Marketplace:** Extensions view (<kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>) → search **Auto Import Relative Path** by *ElecTreeFrying* → **Install**.
 - **CLI:** `code --install-extension ElecTreeFrying.auto-import`
@@ -555,7 +555,7 @@ See [SPEC — §Path Computation][SPEC-path] for the complete path logic includi
 
 ## Compatibility
 
-- **VS Code** 1.118.0 or later.
+- **VS Code** 1.115.0 or later.
 - **Compatible hosts:** Cursor, VSCodium, Code Server, and other forks that implement the VS Code API at the same engine version.
 - **Platforms:** macOS, Windows, Linux. Paths are normalized to forward slashes on all platforms.
 - **Bundle:** ~10 KB gzipped (~56 KB on disk). Zero runtime dependencies.
