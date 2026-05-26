@@ -1,7 +1,7 @@
 {
   "name": "auto-import",
   "displayName": "Auto Import Relative Path",
-  "description": "Generate relative-path imports with one keystroke — JS, TS, JSX, TSX, MDX, CSS, SCSS, HTML, Markdown, Vue, Svelte, and Astro. 35 source extensions, 38 configurable styles, exported-class detection, framework-aware placement.",
+  "description": "Generate relative-path imports by keystroke or drag-and-drop — JS, TS, JSX, TSX, MDX, CSS, SCSS, HTML, Markdown, Vue, Svelte, and Astro. 35 source extensions, 38 configurable styles, exported-class detection, framework-aware placement.",
   "publisher": "ElecTreeFrying",
   "version": "0.6.1",
   "author": {

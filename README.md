@@ -19,7 +19,7 @@
 
 **Angular** · **React** · **Vue** · **Svelte** · **Astro** · JS · TS · CSS · SCSS · HTML · Markdown
 
-Pick a file, press a key — the right import lands in your editor. Path, syntax, and placement handled automatically.
+Drag a file or press a key — the right import lands in your editor. Path, syntax, and placement handled automatically.
 
 ![Auto Import Relative Path demo](https://raw.githubusercontent.com/ElecTreeFrying/auto-import-relative-path/master/assets/demo.gif)
 
