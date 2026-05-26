@@ -85,7 +85,13 @@ For each, copy → paste into `src/bar.ts`:
 - [ ] `src/components/trim.pipe.ts` → `import { TrimPipe } from './components/trim.pipe.ts';` — NOT `TrimPipeTs`
 - [ ] `src/components/user.service.ts` → `import { UserService } from './components/user.service.ts';` — NOT `UserServiceTs`
 
-### Non-Angular fallback (style 0, no auto-naming)
+### Exported class detection (style 0, non-Angular sources)
+
+`readExportedClassName` in `src/snippets/_class-name.ts` reads the source file and pre-fills the identifier when it finds `export class` or `export abstract class`. This takes priority over Angular naming.
+
+- [ ] `src/lib/event-bus.ts` → `import { ${1:EventBus} } from './lib/event-bus';` — pre-filled with `EventBus` (from `export abstract class EventBus` at line 3), NOT `$1`
+
+### Non-Angular fallback (style 0, no auto-naming, no exported class)
 
 - [ ] `src/foo.ts` → `import { $1 } from './foo';` — `$1` placeholder, NOT `Foo`
 - [ ] `src/helpers.ts` → `import { $1 } from './helpers';` — placeholder, NOT `Helpers`
@@ -122,6 +128,7 @@ Auto-naming is keyed off the basename, so it must work the same with `'./X'` as 
 - [ ] All 7 style options
 - [ ] Angular suite preserveScriptFileExtension=FALSE (5 cases)
 - [ ] Angular suite preserveScriptFileExtension=TRUE (5 cases) — Bug #2 verified
+- [ ] Exported class detection (1 case)
 - [ ] Non-Angular fallback (2 cases)
 - [ ] Path computation (3 cases)
 - [ ] Edge cases (3 cases)

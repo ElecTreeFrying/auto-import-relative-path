@@ -85,6 +85,9 @@ Same as JSX (since `_react.ts` is shared):
 - [ ] `assets/font.woff2` → `import './assets/font.woff2';`
 - [ ] `assets/regular.ttf` → `import './assets/regular.ttf';`
 
+### CSS Module → `import styles from '…'`
+- [ ] `styles/theme.module.css` → `import ${1:styles} from './styles/theme.module.css';` (cursor on `styles` placeholder)
+
 ### Stylesheet → side-effect
 - [ ] `styles/global.css` → `import './styles/global.css';`
 - [ ] `styles/main.scss` → `import './styles/main.scss';`
@@ -144,7 +147,7 @@ No persistent fixtures to remove — `src/components/Button.tsx` and `src/compon
 - [ ] Fallback `.js` → JS snippet (1)
 - [ ] `.jsx` source rejected (1)
 - [ ] Angular suite (5 conventions × 2 preserve states + 1 .tsx case)
-- [ ] Non-script sources (15 cases)
+- [ ] Non-script sources (16 cases incl. CSS Module)
 - [ ] All 7 TS + all 7 JS styles propagate
 - [ ] preserveScriptFileExtension across script and non-script
 - [ ] Edge cases

@@ -66,6 +66,12 @@ JSX has no TS handling. `.ts`/`.tsx` sources fall through to `_react.ts` switch'
 
 (If you have `.woff` or `.eot` fixtures, add: `touch assets/legacy.woff assets/legacy.eot` and verify each emits a side-effect `import '...';`.)
 
+#### CSS Modules → `import styles from '…'`
+
+CSS Module detection is path-based (`.module.css` or `.module.scss` suffix), checked before the `switch` in `_react.ts`.
+
+- [ ] `styles/theme.module.css` → `import ${1:styles} from './styles/theme.module.css';` (cursor on `styles` placeholder)
+
 #### Stylesheet sources → side-effect import
 
 - [ ] `styles/global.css` → `import './styles/global.css';`
@@ -124,6 +130,7 @@ No persistent fixtures to remove — the only construct-on-fly file (`src/empty.
 - [ ] Data/markup/YAML (5)
 - [ ] Media sources (3)
 - [ ] Font sources (2+)
+- [ ] CSS Module (1)
 - [ ] Stylesheet sources (2)
 - [ ] Unsupported source (1)
 - [ ] All 7 JS styles propagate
