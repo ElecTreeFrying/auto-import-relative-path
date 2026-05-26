@@ -262,6 +262,6 @@ import { ref } from 'vue';
 
 ## Cross-reference: Drag & drop uses `computeImportPlacement()`
 
-The `AutoImportOnDropProvider` (`src/drop/provider.ts`) uses the same placement logic extracted to `src/editor/placement.ts`. The function `computeImportPlacement()` implements all the rules tested above — Top/Bottom/Cursor, inline override, forced-cursor for HTML/MD, Astro frontmatter, SFC script block, comment-block adjustment, Bottom-marker detection. DnD-specific placement tests live in `19-drag-and-drop.md`.
+The `AutoImportOnDropProvider` (`src/drop/provider.ts`) uses the same placement logic extracted to `src/editor/placement.ts`. The function `computeImportPlacement()` implements all the rules tested above — Top/Bottom/Cursor, inline override, forced-cursor for HTML/MD, Astro frontmatter, SFC script block, comment-block adjustment, Bottom-marker detection. DnD-specific placement tests live in [`19-drag-and-drop.md`](19-drag-and-drop.md).
 
 Tester / date: ___________________

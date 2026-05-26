@@ -15,4 +15,4 @@ Pure path helpers. **No `vscode` import** — fully Node-testable. New helpers i
 - Pure path helper → here.
 - Anything that touches `vscode` or workspace config → `src/editor/` or `src/config/` instead.
 
-See `CLAUDE.md` (this directory) for the `./` prefix rule, the empty-string-on-no-extension quirk, and why `determineImportType` returns `null` for `.html` / `.scss`.
+See [`CLAUDE.md`](CLAUDE.md) (this directory) for the `./` prefix rule, the empty-string-on-no-extension quirk, and why `determineImportType` returns `null` for `.html` / `.scss`.

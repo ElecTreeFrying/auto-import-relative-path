@@ -15,4 +15,4 @@ All values are lowercase, dot-prefixed where they correspond to file extensions.
 ## Where to add new code
 
 - New cross-cutting union → here.
-- Adding a new file extension is a four-site sync (this directory + `src/constants/extensions.ts` + `src/snippets/dispatch.ts` + `src/snippets/variants.ts`). See `CLAUDE.md` here for the rule.
+- Adding a new file extension is a four-site sync (this directory + `src/constants/extensions.ts` + `src/snippets/dispatch.ts` + `src/snippets/variants.ts`). See [`CLAUDE.md`](CLAUDE.md) here for the rule.

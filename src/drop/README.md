@@ -22,4 +22,4 @@ vscode.languages.registerDocumentDropEditProvider(DROP_LANGUAGE_SELECTORS, new A
 - New drop-related provider or helper → here.
 - New destination language → add a `{ language, scheme: 'file' }` entry in `selector.ts` in addition to the four-site sync (`types/`, `constants/`, `dispatch.ts`, `variants.ts`).
 
-See `CLAUDE.md` (this directory) for the full flow, unsupported-pair handling, and how the drop flow differs from the command flow.
+See [`CLAUDE.md`](CLAUDE.md) (this directory) for the full flow, unsupported-pair handling, and how the drop flow differs from the command flow.

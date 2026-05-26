@@ -1,6 +1,6 @@
 # 15 — Gating & rejection
 
-Validates every rejection path: no active editor, empty/garbage clipboard, same-file, source-not-found, the eleven not-supported clauses, and eight of the ten notification variants (the remaining two — `no-configurable-style` and `default-style-saved` — are covered in `18-style-pickers.md`).
+Validates every rejection path: no active editor, empty/garbage clipboard, same-file, source-not-found, the eleven not-supported clauses, and eight of the ten notification variants (the remaining two — `no-configurable-style` and `default-style-saved` — are covered in [`18-style-pickers.md`](18-style-pickers.md)).
 
 **Sources:**
 - `src/commands/paste-import.ts` — order-of-checks: `no-active-editor` → `empty-clipboard` → `same-file-path` → `source-not-found` → `isPairSupported()` → empty/newline snippet → insert
@@ -206,7 +206,7 @@ The first check in `paste-import.ts:53-56`. Was previously a silent return; now 
 
 ## Notification messages — exact text (8 of 10 variants)
 
-Every toast must match `src/editor/notification.ts:17-54` byte-for-byte. All are prefixed with `Auto Import:` (no more `Auto Import Relative Path:` prefix anywhere). The remaining 2 variants (`no-configurable-style` and `default-style-saved`) are covered in `18-style-pickers.md`.
+Every toast must match `src/editor/notification.ts:17-54` byte-for-byte. All are prefixed with `Auto Import:` (no more `Auto Import Relative Path:` prefix anywhere). The remaining 2 variants (`no-configurable-style` and `default-style-saved`) are covered in [`18-style-pickers.md`](18-style-pickers.md).
 
 | Type | Rendered text | Toast level |
 |------|---------------|-------------|
@@ -259,7 +259,7 @@ The `'not-supported'` warning toast carries a **View Supported Files** button (r
 
 ## Cross-reference: Drag & drop uses the same gating
 
-The `AutoImportOnDropProvider` (`src/drop/provider.ts`) calls `isPairSupported(info)` identically — same 11 clauses, same `'not-supported'` toast with `sourceExt`/`destinationExt` interpolation. DnD-specific tests (representative rejection cases + behavioral differences) live in `19-drag-and-drop.md`. Any change to `src/gating.ts` affects both command and DnD flows.
+The `AutoImportOnDropProvider` (`src/drop/provider.ts`) calls `isPairSupported(info)` identically — same 11 clauses, same `'not-supported'` toast with `sourceExt`/`destinationExt` interpolation. DnD-specific tests (representative rejection cases + behavioral differences) live in [`19-drag-and-drop.md`](19-drag-and-drop.md). Any change to `src/gating.ts` affects both command and DnD flows.
 
 ## Cleanup
 

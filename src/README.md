@@ -34,5 +34,5 @@ Match the layered dependency direction: `commands → editor, snippets → path 
 
 ## See also
 
-- Project root `README.md` and `CLAUDE.md` for cross-cutting docs (commands, build, test, publish).
+- Project root [`README.md`](../README.md) and [`CLAUDE.md`](../CLAUDE.md) for cross-cutting docs (commands, build, test, publish).
 - Each subdirectory has its own `README.md` (overview + file map) and `CLAUDE.md` (invariants and gotchas).

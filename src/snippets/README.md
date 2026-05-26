@@ -33,4 +33,4 @@ One module per destination language.
 ## Where to add new code
 
 - **New destination language** → new module in `languages/` + `case` in `dispatch.ts` + `case` in `variants.ts` + `case` in `src/types/file-extension.ts` + a gating table in `src/constants/extensions.ts`.
-- **New style for an existing language** → entry in the relevant `*_IMPORT_OPTIONS` table in `_styles.ts` + matching `enum` value in `package.json` + matching `case` in the per-language `switch`. See three-site sync in `CLAUDE.md` (this directory) and `src/config/CLAUDE.md`.
+- **New style for an existing language** → entry in the relevant `*_IMPORT_OPTIONS` table in `_styles.ts` + matching `enum` value in `package.json` + matching `case` in the per-language `switch`. See three-site sync in [`CLAUDE.md`](CLAUDE.md) (this directory) and [`src/config/CLAUDE.md`](../config/CLAUDE.md).

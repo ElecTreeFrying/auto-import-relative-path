@@ -4,11 +4,11 @@
 
 ## DO NOT scan this tree wholesale
 
-The tree is large, static, and yields no signal you can't get from this file or the sibling `README.md`:
+The tree is large, static, and yields no signal you can't get from this file or the sibling [`README.md`](README.md):
 
 - **Never** `find`, `grep`, or `ls -R` across the workspace. The ~174 files are placeholders — there is no needle in this haystack.
 - If a task names a specific fixture, `Edit` or `Write` precisely that file. Don't survey the surrounding tree first.
-- If a task asks "where is X covered?", read the sibling `README.md` only. Its `Layout`, `Coverage matrix`, and `Maintenance notes` sections are the index.
+- If a task asks "where is X covered?", read the sibling [`README.md`](README.md) only. Its `Layout`, `Coverage matrix`, and `Maintenance notes` sections are the index.
 - If a task asks "if I touch *this code*, which fixtures regression-test it?", read the `Fixture roles` table below.
 
 ## Excluded from every toolchain surface
@@ -25,7 +25,7 @@ This directory must remain a *folder of files*, not a sub-project. **Don't** add
 
 ## Fixture roles → code paths they exercise
 
-This table is the unique value of this `CLAUDE.md` versus the sibling `README.md`. The README answers "where do I find a fixture for X?"; this one answers "if I touch *this code*, which fixture group regression-tests it?".
+This table is the unique value of this `CLAUDE.md` versus the sibling [`README.md`](README.md). The README answers "where do I find a fixture for X?"; this one answers "if I touch *this code*, which fixture group regression-tests it?".
 
 | Fixture group | Code site it exercises |
 |---------------|------------------------|
@@ -50,12 +50,12 @@ When refactoring any of the code sites above, run the matching manual-QA checkli
 
 ## Baseline filenames are immutable
 
-The ~37-name baseline list in `README.md:Maintenance notes` is referenced by every checklist in `../checklists/` (`01-sanity-and-keybindings.md` through `18-style-pickers.md`). Renaming a baseline produces a *silent* test break: the checklist will instruct the tester to copy a file that no longer exists at the named path, and nothing in the toolchain will warn.
+The ~37-name baseline list in [`README.md`](README.md):Maintenance notes is referenced by every checklist in `../checklists/` ([`01-sanity-and-keybindings.md`](../checklists/01-sanity-and-keybindings.md) through [`18-style-pickers.md`](../checklists/18-style-pickers.md)). Renaming a baseline produces a *silent* test break: the checklist will instruct the tester to copy a file that no longer exists at the named path, and nothing in the toolchain will warn.
 
 **Workflow when a baseline must change:**
 
 1. Rename / remove the file inside this workspace.
-2. Update its entry in `README.md:Maintenance notes`.
+2. Update its entry in [`README.md`](README.md):Maintenance notes.
 3. Grep `../checklists/` for every reference to the old name and update each checklist.
 
 Realistic-sibling fixtures (e.g., `api-client.ts`, the `Button.tsx` family, `_mixins.scss`, `data/feature-flags.json`) are *not* on the baseline list and are free to rename — they exist for ad-hoc exploratory QA only and are never quoted by a checklist.
@@ -66,7 +66,7 @@ Images (`.png` / `.jpg` / `.jpeg` / `.gif` / `.webp` / `.svg`) and fonts (`.woff
 
 ## Adding a new fixture
 
-1. **Baseline fixture** (will be quoted by a checklist): add the file → append its name to `README.md:Maintenance notes` → reference it from the relevant `../checklists/NN-*.md`.
+1. **Baseline fixture** (will be quoted by a checklist): add the file → append its name to [`README.md`](README.md):Maintenance notes → reference it from the relevant `../checklists/NN-*.md`.
 2. **Realistic sibling** (ad-hoc exploratory QA only, not quoted by any checklist): just add the file. No doc updates needed.
-3. **Fixture for a brand-new file extension** (one not already in `src/types/file-extension.ts`): the four-site sync described in `src/types/CLAUDE.md` applies first — the type union (`src/types/file-extension.ts`), gating tables (`src/constants/extensions.ts`), destination dispatch (`src/snippets/dispatch.ts`), and style-picker variants (`src/snippets/variants.ts`) must accept the new extension *before* any fixture is meaningful. Otherwise the fixture exists but the snippet builders silently fall through to their `default:` branch and the QA tester sees empty output.
+3. **Fixture for a brand-new file extension** (one not already in `src/types/file-extension.ts`): the four-site sync described in [`src/types/CLAUDE.md`](../../src/types/CLAUDE.md) applies first — the type union (`src/types/file-extension.ts`), gating tables (`src/constants/extensions.ts`), destination dispatch (`src/snippets/dispatch.ts`), and style-picker variants (`src/snippets/variants.ts`) must accept the new extension *before* any fixture is meaningful. Otherwise the fixture exists but the snippet builders silently fall through to their `default:` branch and the QA tester sees empty output.
 4. Never add a `package.json`, `tsconfig.json`, `.eslintrc`, or `.vscode/` inside this directory — see "Excluded from every toolchain surface" above.

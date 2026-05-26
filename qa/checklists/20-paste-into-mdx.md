@@ -11,8 +11,8 @@ Validates the `.mdx` destination via the React import algorithm shared with TSX.
 
 ## Prerequisites
 
-- `00-setup.md` complete
-- `01-sanity-and-keybindings.md` passed
+- [`00-setup.md`](00-setup.md) complete
+- [`01-sanity-and-keybindings.md`](01-sanity-and-keybindings.md) passed
 
 ## Setup
 

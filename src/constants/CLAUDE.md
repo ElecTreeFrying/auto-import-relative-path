@@ -42,4 +42,4 @@ Runtime: these tables are the runtime safety net. Keep them in sync with `types/
 
 ## Adding a new file extension entirely
 
-Four sites must stay in sync — see `src/types/CLAUDE.md` for the full rule.
+Four sites must stay in sync — see [`src/types/CLAUDE.md`](../types/CLAUDE.md) for the full rule.

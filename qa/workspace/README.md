@@ -124,4 +124,4 @@ Every cell of the source-extension × destination-extension matrix is reachable 
 - Realistic siblings (`api-client.ts`, the `Button.tsx` family, `_mixins.scss`, etc.) are free to rename — they're for ad-hoc exploratory QA.
 - Image and font files are zero-byte placeholders. The extension only inspects file extensions, so real binary content is unnecessary.
 
-See `CLAUDE.md` in this directory for fixture-role mappings (which code path each fixture group exercises) and the "baselines are immutable" invariant. See `../checklists/README.md` for the checklist run-order and master sign-off.
+See [`CLAUDE.md`](CLAUDE.md) in this directory for fixture-role mappings (which code path each fixture group exercises) and the "baselines are immutable" invariant. See [`../checklists/README.md`](../checklists/README.md) for the checklist run-order and master sign-off.

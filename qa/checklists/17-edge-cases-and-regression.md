@@ -113,7 +113,7 @@ This was the original 0.6.1 fix — verify it still works after our changes.
 
 ## Regression — the 3 fixes from this session
 
-Re-verify (this is duplicated from `02-bug-fix-verification.md` as a final regression check before sign-off):
+Re-verify (this is duplicated from [`02-bug-fix-verification.md`](02-bug-fix-verification.md) as a final regression check before sign-off):
 
 - [ ] **Bug #1.** SCSS style 1 → `@use './partial' as ${1:*};` with `*` default and `;`. (Pick one case.)
 - [ ] **Bug #2.** TS style 0, preserveScriptFileExtension=true, `app-root.component.ts` → `import { AppRootComponent } from './components/app-root.component.ts';` (NOT `AppRootComponentTs`).
@@ -159,7 +159,7 @@ A quick final smoke pass to confirm nothing broke:
 
 ## Final master sign-off
 
-After all 17 checklists pass, return to `README.md` and complete the master sign-off matrix.
+After all 17 checklists pass, return to [`README.md`](README.md) and complete the master sign-off matrix.
 
 **Tester:** ____________________
 **Date:** ____________________

@@ -35,4 +35,4 @@ Keybindings live in `package.json:contributes.keybindings`.
 4. Register in `src/extension.ts`.
 5. Add to `package.json:contributes.commands` (and optionally `keybindings`).
 
-See `CLAUDE.md` in this directory for invariants (sequential fetch, gating, error semantics).
+See [`CLAUDE.md`](CLAUDE.md) in this directory for invariants (sequential fetch, gating, error semantics).

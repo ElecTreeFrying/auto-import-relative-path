@@ -43,7 +43,7 @@ Drag-and-drop import provider registered via the VS Code `DocumentDropEditProvid
 
 ## `selector.ts` — `DROP_LANGUAGE_SELECTORS`
 
-Twelve entries covering every supported destination language: `javascript`, `javascriptreact`, `typescript`, `typescriptreact`, `css`, `scss`, `html`, `markdown`, `vue`, `svelte`, `astro`, `mdx`. All entries use `scheme: 'file'`. Adding a new destination language requires a new entry here in addition to the four-site sync described in `src/types/CLAUDE.md`.
+Twelve entries covering every supported destination language: `javascript`, `javascriptreact`, `typescript`, `typescriptreact`, `css`, `scss`, `html`, `markdown`, `vue`, `svelte`, `astro`, `mdx`. All entries use `scheme: 'file'`. Adding a new destination language requires a new entry here in addition to the four-site sync described in [`src/types/CLAUDE.md`](../types/CLAUDE.md).
 
 ## Architectural position
 

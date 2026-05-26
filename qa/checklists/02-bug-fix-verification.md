@@ -4,7 +4,7 @@ Verify every fix from this session. **If any of these fails, the fix has regress
 
 ## Setup
 
-- `00-setup.md` complete
+- [`00-setup.md`](00-setup.md) complete
 - Extension Development Host running with `qa/workspace/` open as the folder
 - 01-sanity-and-keybindings passed
 
@@ -84,7 +84,7 @@ Now flip `preserveScriptFileExtension` to **FALSE**.
 
 **File:** `src/commands/copy-file-path.ts:27,37`. `executeCommand('copyFilePath')` and `clipboard.writeText` are now awaited, eliminating a race where the read could resolve before the built-in command finished writing.
 
-The same file was further hardened to validate the post-condition: when the round-tripped clipboard is not an absolute path with an extension, copy fires the `'no-file-to-copy'` warning and returns `false`. `commands/copy-paste.ts:6-8` then short-circuits before paste-import runs against stale clipboard contents — verify that branch separately in `03-copy-command.md` and `12-auto-command.md`.
+The same file was further hardened to validate the post-condition: when the round-tripped clipboard is not an absolute path with an extension, copy fires the `'no-file-to-copy'` warning and returns `false`. `commands/copy-paste.ts:6-8` then short-circuits before paste-import runs against stale clipboard contents — verify that branch separately in [`03-copy-command.md`](03-copy-command.md) and [`12-auto-command.md`](12-auto-command.md).
 
 ### Tests — single-shot
 

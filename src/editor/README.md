@@ -16,4 +16,4 @@ Helpers that touch the `vscode` API on behalf of `commands/` and `snippets/`. Th
 - New helper that touches the `vscode` API → here.
 - New helper that's pure (no `vscode` import) → `src/path/` instead.
 
-See `CLAUDE.md` (this directory) for the placement-rules deep dive (the nine `IMPORT_INDICATORS`, the inline-snippet and forced-cursor overrides).
+See [`CLAUDE.md`](CLAUDE.md) (this directory) for the placement-rules deep dive (the nine `IMPORT_INDICATORS`, the inline-snippet and forced-cursor overrides).

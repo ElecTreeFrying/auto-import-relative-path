@@ -11,14 +11,14 @@ Validates the `.vue`, `.svelte`, and `.astro` destinations, which share `src/sni
 
 ## Prerequisites
 
-- `00-setup.md` complete
-- `01-sanity-and-keybindings.md` passed
+- [`00-setup.md`](00-setup.md) complete
+- [`01-sanity-and-keybindings.md`](01-sanity-and-keybindings.md) passed
 
 ## Setup
 
 - Extension Development Host with `qa/workspace/` open
 - Default settings (`typescriptImportStyle = import { name } from '…';`, `preserveScriptFileExtension = false`)
-- `placement = Cursor` for predictability (avoids Astro frontmatter / Vue+Svelte script block placement rules — those are tested in `13-settings-placement.md`)
+- `placement = Cursor` for predictability (avoids Astro frontmatter / Vue+Svelte script block placement rules — those are tested in [`13-settings-placement.md`](13-settings-placement.md))
 
 ---
 
@@ -173,7 +173,7 @@ Rejects: `.scss`, `.css`, `.html`, fonts, documents.
 
 - All three destinations use the **TypeScript import style** for ALL sources (script and non-script). There is no separate JS import style for `.js`/`.jsx` sources in framework components (unlike TSX/MDX which has a JS fallback).
 - Non-script sources always preserve the full extension — `preserveScriptFileExtension` only affects the 4 script extensions.
-- Placement rules (Astro frontmatter, Vue/Svelte script block) are tested in `13-settings-placement.md`, not here.
+- Placement rules (Astro frontmatter, Vue/Svelte script block) are tested in [`13-settings-placement.md`](13-settings-placement.md), not here.
 
 ## Sign-off
 

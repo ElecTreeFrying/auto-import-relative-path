@@ -21,4 +21,4 @@ Each maps to a `vscode.workspace.getConfiguration(...)` namespace and a set of p
 
 ## Where to add a new setting
 
-See the three-site sync rule in `CLAUDE.md` (this directory) — adding a setting requires synchronised changes in `package.json`, `src/snippets/_styles.ts`, and the relevant per-language module under `src/snippets/`.
+See the three-site sync rule in [`CLAUDE.md`](CLAUDE.md) (this directory) — adding a setting requires synchronised changes in `package.json`, `src/snippets/_styles.ts`, and the relevant per-language module under `src/snippets/`.

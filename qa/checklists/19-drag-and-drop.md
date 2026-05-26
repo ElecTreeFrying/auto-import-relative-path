@@ -5,15 +5,15 @@ Validates the `DocumentDropEditProvider` registered in `src/extension.ts`. Drag 
 **Sources:**
 - `src/drop/provider.ts` — `AutoImportOnDropProvider`: source resolution from `DataTransfer`, same-file check, gating, snippet build, placement computation, `additionalEdit` insertion
 - `src/drop/selector.ts` — `DROP_LANGUAGE_SELECTORS` (12 destination languages, all `scheme: 'file'`)
-- `src/gating.ts` — `isPairSupported(info)` (shared with commands; same 11-clause logic tested exhaustively in `15-gating-and-rejection.md`)
-- `src/editor/placement.ts` — `computeImportPlacement()` (shared placement logic tested exhaustively in `13-settings-placement.md`)
+- `src/gating.ts` — `isPairSupported(info)` (shared with commands; same 11-clause logic tested exhaustively in [`15-gating-and-rejection.md`](15-gating-and-rejection.md))
+- `src/editor/placement.ts` — `computeImportPlacement()` (shared placement logic tested exhaustively in [`13-settings-placement.md`](13-settings-placement.md))
 - `src/snippets/dispatch.ts` — `buildImportSnippet(info)` (shared snippet builder)
 - `src/editor/notification.ts` — `'same-file-path'` and `'not-supported'` toast variants
 
 ## Prerequisites
 
-- `00-setup.md` complete
-- `01-sanity-and-keybindings.md` passed (extension activated, drop provider registered)
+- [`00-setup.md`](00-setup.md) complete
+- [`01-sanity-and-keybindings.md`](01-sanity-and-keybindings.md) passed (extension activated, drop provider registered)
 
 ## Setup
 

@@ -27,4 +27,4 @@ Runtime gating tables for source/destination extension pairs.
 ## Where to add a new entry
 
 - New accepted source/destination pair → update the matching `*_SUPPORTED_EXTENSIONS` table here AND make sure the relevant per-language module under `src/snippets/` can produce a snippet for that source.
-- New file extension entirely → see `CLAUDE.md` (this directory) for the four-site sync between this file, `src/types/file-extension.ts`, `src/snippets/dispatch.ts`, and `src/snippets/variants.ts`.
+- New file extension entirely → see [`CLAUDE.md`](CLAUDE.md) (this directory) for the four-site sync between this file, `src/types/file-extension.ts`, `src/snippets/dispatch.ts`, and `src/snippets/variants.ts`.

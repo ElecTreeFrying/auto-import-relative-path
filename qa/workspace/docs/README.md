@@ -15,4 +15,4 @@ This is a manual-QA fixture workspace for the **Auto Import Relative Path** VS C
 
 ## How to use
 
-Open this folder as a workspace inside the Extension Development Host (F5 from the parent project) and follow `../../checklists/00-setup.md` onwards.
+Open this folder as a workspace inside the Extension Development Host (F5 from the parent project) and follow [`../../checklists/00-setup.md`](../../checklists/00-setup.md) onwards.

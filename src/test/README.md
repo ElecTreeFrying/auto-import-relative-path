@@ -30,4 +30,4 @@ npm run watch-tests              # tsc watch for the test build
 2. Use Mocha BDD style (`describe`/`it`) and Node `assert`.
 3. Run `npm run compile-tests` before `npm test` — the runner picks up `out/test/**/*.test.js`.
 
-See `CLAUDE.md` (this directory) for conventions and gotchas.
+See [`CLAUDE.md`](CLAUDE.md) (this directory) for conventions and gotchas.

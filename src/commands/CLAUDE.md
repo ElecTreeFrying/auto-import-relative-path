@@ -32,10 +32,10 @@ On success, the `copy-success` toast carries two action buttons — **Paste with
 - **Clipboard validation** rejects with `'empty-clipboard'` when empty or not absolute; rejects with `'no-extension'` when the source path has no file extension (e.g. `Makefile`).
 - **Same-file rejection** runs before gating: `sourceFilePath.toLowerCase() === destinationFilePath.toLowerCase()` → `'same-file-path'` toast.
 - **Eleven-clause gating conjunction** rejects with `'not-supported'` toast if any clause matches. The first nine clauses are delegated to `src/gating.ts:isPairSupported(info)`; the last two are checked inline:
-  1–9. `isPairSupported(info)` — see `src/gating.ts` for the nine extension-pair clauses (`CROSS_IMPORT_DESTINATIONS`, `.html → .html`, and the seven destination-specific supported-extension checks). See `src/constants/CLAUDE.md` for the gating tables.
+  1–9. `isPairSupported(info)` — see `src/gating.ts` for the nine extension-pair clauses (`CROSS_IMPORT_DESTINATIONS`, `.html → .html`, and the seven destination-specific supported-extension checks). See [`src/constants/CLAUDE.md`](../constants/CLAUDE.md) for the gating tables.
   10. `snippet.value === '\n'` (empty snippet — no language module handled this destination)
   11. `snippet.value === ''` (same)
-- See `src/snippets/CLAUDE.md` for what builds the snippet.
+- See [`src/snippets/CLAUDE.md`](../snippets/CLAUDE.md) for what builds the snippet.
 
 ## `copy-paste.ts` — sequential composition
 
@@ -59,9 +59,9 @@ Mirrors `paste-import-with-style.ts` step-by-step through gating, clipboard chec
 - **1 variant OR `variants[0].setting === undefined`** (hardcoded destination — HTML, Markdown text, CSS/SCSS image, JSX/TSX/MDX non-script source) → new `'no-configurable-style'` toast. The matching `*ImportStyle` settings exist in `package.json` for UI parity only and are flagged "Currently unused" in `_styles.ts`; persisting one would be misleading.
 - **≥2 styled variants** → `vscode.window.showQuickPick`. On pick, calls `setAutoImportSetting(namespace, key, value)` (writer in `config/settings.ts`, mirror of `getAutoImportSetting`) with `vscode.ConfigurationTarget.Global` and emits `'default-style-saved'` info toast.
 
-The `(namespace, key, value)` triple comes from the new `setting?` field on `ImportSnippetVariant` (see `snippets/CLAUDE.md`). All styled variants in a single picker invocation share one `(namespace, key)` because the destination switch in `snippets/variants.ts` enumerates from one table per branch — the pair varies between picker runs but never within one. Cancellation (Esc) returns silently — no toast.
+The `(namespace, key, value)` triple comes from the new `setting?` field on `ImportSnippetVariant` (see [`snippets/CLAUDE.md`](../snippets/CLAUDE.md)). All styled variants in a single picker invocation share one `(namespace, key)` because the destination switch in `snippets/variants.ts` enumerates from one table per branch — the pair varies between picker runs but never within one. Cancellation (Esc) returns silently — no toast.
 
-**Current-default indicator.** Before opening the picker, the command reads the persisted value via `getAutoImportSetting(namespace, key)` (`vscode.workspace.getConfiguration().get(...)` falls back to the `package.json` default when no user override exists). The variant whose `setting.value` matches the result is moved to position 0 and its `description` gets `$(check) Current default` appended (rendered as a checkmark icon by VS Code's QuickPick). If no variant matches — e.g. the user typed a custom value into `settings.json` that isn't in `_styles.ts` — the picker renders in natural order with no indicator. Byte-exact comparison is safe because `ImportStyle.description` strings are byte-exact contracts with `package.json:enum` per `config/CLAUDE.md`.
+**Current-default indicator.** Before opening the picker, the command reads the persisted value via `getAutoImportSetting(namespace, key)` (`vscode.workspace.getConfiguration().get(...)` falls back to the `package.json` default when no user override exists). The variant whose `setting.value` matches the result is moved to position 0 and its `description` gets `$(check) Current default` appended (rendered as a checkmark icon by VS Code's QuickPick). If no variant matches — e.g. the user typed a custom value into `settings.json` that isn't in `_styles.ts` — the picker renders in natural order with no indicator. Byte-exact comparison is safe because `ImportStyle.description` strings are byte-exact contracts with `package.json:enum` per [`config/CLAUDE.md`](../config/CLAUDE.md).
 
 The same picker items appear in both `pasteImportWithStyle` and `setDefaultImportStyle` for the same source/destination pair — `buildImportSnippetVariants` is the shared aggregator.
 

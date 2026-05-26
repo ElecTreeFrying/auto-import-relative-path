@@ -4,7 +4,7 @@ Verify the extension loads and every entry point works. If any of these fail, st
 
 ## Setup
 
-- `00-setup.md` complete
+- [`00-setup.md`](00-setup.md) complete
 - Extension Development Host running with `qa/workspace/` open as the folder
 - No prior toasts on screen (close VS Code's notifications panel if needed)
 

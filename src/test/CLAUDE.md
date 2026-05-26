@@ -1,6 +1,6 @@
 # src/test/CLAUDE.md
 
-Mocha BDD tests that run from `out/`, not `dist/`. Manual QA checklists and fixture workspaces live in the top-level `qa/` directory — see `qa/checklists/CLAUDE.md` and `qa/workspace/CLAUDE.md`.
+Mocha BDD tests that run from `out/`, not `dist/`. Manual QA checklists and fixture workspaces live in the top-level `qa/` directory — see [`qa/checklists/CLAUDE.md`](../../qa/checklists/CLAUDE.md) and [`qa/workspace/CLAUDE.md`](../../qa/workspace/CLAUDE.md).
 
 ## Conventions
 
