@@ -23,28 +23,28 @@ If a checkbox fails, do not proceed past that file. Reproduce the failure, captu
 
 | # | File | Why |
 |---|------|-----|
-| — | `00-setup.md` | Open the pre-built fixture workspace in the EDH |
-| 01 | `01-sanity-and-keybindings.md` | If activation/keybindings are broken, nothing downstream is meaningful |
-| 02 | `02-bug-fix-verification.md` | Priority 1 — verify the 4 fixes from this session |
-| 03 | `03-copy-command.md` | Copy is the prerequisite for every Paste test |
-| 04 | `04-paste-into-javascript.md` | Each destination type, full source matrix |
-| 05 | `05-paste-into-typescript.md` | TS + Angular naming suite |
-| 06 | `06-paste-into-jsx.md` | React algorithm, primary-only |
-| 07 | `07-paste-into-tsx.md` | React algorithm with `.js` fallback |
-| 08 | `08-paste-into-css.md` | CSS @import + image url() |
-| 09 | `09-paste-into-scss.md` | SCSS partial + `.css` preserve asymmetry |
-| 10 | `10-paste-into-html.md` | `<script>` / `<img>` / `<link>` |
-| 11 | `11-paste-into-markdown.md` | Markdown link + image (inline & reference) |
-| 12 | `12-auto-command.md` | Sequential copy+paste; verifies Bug #3 fix |
-| 13 | `13-settings-placement.md` | Top/Bottom/Cursor + 2 forced-cursor overrides + Astro frontmatter + SFC script block + insertion column |
-| 14 | `14-settings-preserve-extension.md` | Both preserve flags + SCSS `.css` asymmetry |
-| 15 | `15-gating-and-rejection.md` | All 11 gating clauses isolated |
-| 16 | `16-path-computation.md` | `./`, `../`, partials, spaces/unicode |
-| 17 | `17-edge-cases-and-regression.md` | Empty file, untitled, multi-root, stress, 0.6.1 regression |
-| 18 | `18-style-pickers.md` | `pasteImportWithStyle` + `setDefaultImportStyle` — picker UX, persistence, hardcoded-destination rejection |
-| 19 | `19-drag-and-drop.md` | DnD import via `DocumentDropEditProvider`; shared gating + placement |
-| 20 | `20-paste-into-mdx.md` | MDX destination — React algorithm (same as TSX) with full source matrix |
-| 21 | `21-paste-into-framework-components.md` | Vue, Svelte, Astro destinations — framework-component algorithm |
+| — | [`00-setup.md`](00-setup.md) | Open the pre-built fixture workspace in the EDH |
+| 01 | [`01-sanity-and-keybindings.md`](01-sanity-and-keybindings.md) | If activation/keybindings are broken, nothing downstream is meaningful |
+| 02 | [`02-bug-fix-verification.md`](02-bug-fix-verification.md) | Priority 1 — verify the 4 fixes from this session |
+| 03 | [`03-copy-command.md`](03-copy-command.md) | Copy is the prerequisite for every Paste test |
+| 04 | [`04-paste-into-javascript.md`](04-paste-into-javascript.md) | Each destination type, full source matrix |
+| 05 | [`05-paste-into-typescript.md`](05-paste-into-typescript.md) | TS + Angular naming suite |
+| 06 | [`06-paste-into-jsx.md`](06-paste-into-jsx.md) | React algorithm, primary-only |
+| 07 | [`07-paste-into-tsx.md`](07-paste-into-tsx.md) | React algorithm with `.js` fallback |
+| 08 | [`08-paste-into-css.md`](08-paste-into-css.md) | CSS @import + image url() |
+| 09 | [`09-paste-into-scss.md`](09-paste-into-scss.md) | SCSS partial + `.css` preserve asymmetry |
+| 10 | [`10-paste-into-html.md`](10-paste-into-html.md) | `<script>` / `<img>` / `<link>` |
+| 11 | [`11-paste-into-markdown.md`](11-paste-into-markdown.md) | Markdown link + image (inline & reference) |
+| 12 | [`12-auto-command.md`](12-auto-command.md) | Sequential copy+paste; verifies Bug #3 fix |
+| 13 | [`13-settings-placement.md`](13-settings-placement.md) | Top/Bottom/Cursor + 2 forced-cursor overrides + Astro frontmatter + SFC script block + insertion column |
+| 14 | [`14-settings-preserve-extension.md`](14-settings-preserve-extension.md) | Both preserve flags + SCSS `.css` asymmetry |
+| 15 | [`15-gating-and-rejection.md`](15-gating-and-rejection.md) | All 11 gating clauses isolated |
+| 16 | [`16-path-computation.md`](16-path-computation.md) | `./`, `../`, partials, spaces/unicode |
+| 17 | [`17-edge-cases-and-regression.md`](17-edge-cases-and-regression.md) | Empty file, untitled, multi-root, stress, 0.6.1 regression |
+| 18 | [`18-style-pickers.md`](18-style-pickers.md) | `pasteImportWithStyle` + `setDefaultImportStyle` — picker UX, persistence, hardcoded-destination rejection |
+| 19 | [`19-drag-and-drop.md`](19-drag-and-drop.md) | DnD import via `DocumentDropEditProvider`; shared gating + placement |
+| 20 | [`20-paste-into-mdx.md`](20-paste-into-mdx.md) | MDX destination — React algorithm (same as TSX) with full source matrix |
+| 21 | [`21-paste-into-framework-components.md`](21-paste-into-framework-components.md) | Vue, Svelte, Astro destinations — framework-component algorithm |
 
 ## Fixtures
 
@@ -107,27 +107,27 @@ These appear suspicious during testing but are documented intentional behaviour.
 
 Tick when each file is fully passed.
 
-- [ ] 01 — Sanity & keybindings
-- [ ] 02 — Bug-fix verification (4 bugs)
-- [ ] 03 — Copy command
-- [ ] 04 — Paste into JavaScript
-- [ ] 05 — Paste into TypeScript (+ Angular)
-- [ ] 06 — Paste into JSX
-- [ ] 07 — Paste into TSX
-- [ ] 08 — Paste into CSS
-- [ ] 09 — Paste into SCSS
-- [ ] 10 — Paste into HTML
-- [ ] 11 — Paste into Markdown
-- [ ] 12 — Auto command
-- [ ] 13 — Placement settings
-- [ ] 14 — Preserve-extension settings
-- [ ] 15 — Gating & rejection
-- [ ] 16 — Path computation
-- [ ] 17 — Edge cases & regression
-- [ ] 18 — Style pickers (paste-with-style + set-default-style)
-- [ ] 19 — Drag & drop
-- [ ] 20 — Paste into MDX
-- [ ] 21 — Paste into framework components (Vue / Svelte / Astro)
+- [ ] [01](01-sanity-and-keybindings.md) — Sanity & keybindings
+- [ ] [02](02-bug-fix-verification.md) — Bug-fix verification (4 bugs)
+- [ ] [03](03-copy-command.md) — Copy command
+- [ ] [04](04-paste-into-javascript.md) — Paste into JavaScript
+- [ ] [05](05-paste-into-typescript.md) — Paste into TypeScript (+ Angular)
+- [ ] [06](06-paste-into-jsx.md) — Paste into JSX
+- [ ] [07](07-paste-into-tsx.md) — Paste into TSX
+- [ ] [08](08-paste-into-css.md) — Paste into CSS
+- [ ] [09](09-paste-into-scss.md) — Paste into SCSS
+- [ ] [10](10-paste-into-html.md) — Paste into HTML
+- [ ] [11](11-paste-into-markdown.md) — Paste into Markdown
+- [ ] [12](12-auto-command.md) — Auto command
+- [ ] [13](13-settings-placement.md) — Placement settings
+- [ ] [14](14-settings-preserve-extension.md) — Preserve-extension settings
+- [ ] [15](15-gating-and-rejection.md) — Gating & rejection
+- [ ] [16](16-path-computation.md) — Path computation
+- [ ] [17](17-edge-cases-and-regression.md) — Edge cases & regression
+- [ ] [18](18-style-pickers.md) — Style pickers (paste-with-style + set-default-style)
+- [ ] [19](19-drag-and-drop.md) — Drag & drop
+- [ ] [20](20-paste-into-mdx.md) — Paste into MDX
+- [ ] [21](21-paste-into-framework-components.md) — Paste into framework components (Vue / Svelte / Astro)
 
 **Tester:** ____________________
 **Date:** ____________________
