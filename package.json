@@ -44,8 +44,19 @@
       "href": "https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import"
     }
   ],
-  "extensionPack": [
-    "ElecTreeFrying.drag-import-relative-path"
+  "activationEvents": [
+    "onLanguage:javascript",
+    "onLanguage:javascriptreact",
+    "onLanguage:typescript",
+    "onLanguage:typescriptreact",
+    "onLanguage:css",
+    "onLanguage:scss",
+    "onLanguage:html",
+    "onLanguage:markdown",
+    "onLanguage:vue",
+    "onLanguage:svelte",
+    "onLanguage:astro",
+    "onLanguage:mdx"
   ],
   "galleryBanner": {
     "color": "#494949",
@@ -67,6 +78,9 @@
     "paste import",
     "copy path",
     "copy file path",
+    "drag import",
+    "drop import",
+    "drag and drop",
     "explorer import",
     "javascript",
     "typescript",
