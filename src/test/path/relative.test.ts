@@ -55,7 +55,7 @@ describe('computeRelative', () => {
   });
 
   it('handles Unicode path segments', () => {
-    const result = computeRelative(`${BASE}/unicode-paths/cafe-menu.tsx`, `${BASE}/src/bar.ts`);
-    assert.strictEqual(result, '../unicode-paths/cafe-menu');
+    const result = computeRelative(`${BASE}/unicode-paths/café-menu.tsx`, `${BASE}/src/bar.ts`);
+    assert.strictEqual(result, '../unicode-paths/café-menu');
   });
 });
