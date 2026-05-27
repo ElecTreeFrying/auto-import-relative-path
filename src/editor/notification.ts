@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 
 import { NotificationType } from '../types/notification';
 
-const SUPPORTED_PAIRS_URL = 'https://github.com/ElecTreeFrying/auto-import-relative-path#supported-source--destination-pairs';
+const SUPPORTED_PAIRS_URL = 'https://github.com/ElecTreeFrying/auto-import-relative-path#supported-languages';
 
 export function showNotification(type: 'same-file-path' | 'no-active-editor' | 'no-file-to-copy' | 'empty-clipboard'): void;
 export function showNotification(type: 'not-supported', payload: { sourceExt: string; destinationExt: string }): void;
