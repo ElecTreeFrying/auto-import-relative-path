@@ -54,6 +54,14 @@ describe('buildImportSnippet', () => {
     assert.strictEqual(result.value, "import { $1 } from './widget';");
   });
 
+  it('.tsx destination skips class detection for source with export class', async () => {
+    await openFixture('src/widget.tsx');
+    await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'src/lib/event-bus.ts'));
+    const info = await getFilePathInfo();
+    const result = await buildImportSnippet(info);
+    assert.strictEqual(result.value, "import { $1 } from './lib/event-bus';");
+  });
+
   it('.mdx destination routes to TSX builder (same case as .tsx)', async () => {
     await openFixture('docs/example.mdx');
     await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'docs/helper.ts'));

@@ -389,6 +389,40 @@ describe('editor/placement', () => {
       assert.strictEqual(result.column, 0);
     });
 
+    it('Bottom placement finds require() as import indicator', () => {
+      const text = "import { A } from './a';\nconst fs = require('fs');\n\nconst x = 1;";
+      const result = computeImportPlacement(
+        text,
+        '.ts' as FileExtension,
+        '.ts' as FileExtension,
+        3, 0,
+      );
+      assert.strictEqual(result.line, 2);
+      assert.strictEqual(result.column, 0);
+    });
+
+    it('Bottom placement skips commented import lines', () => {
+      const text = "// import { old } from './old';\nimport { A } from './a';\n\nconst x = 1;";
+      const result = computeImportPlacement(
+        text,
+        '.ts' as FileExtension,
+        '.ts' as FileExtension,
+        3, 0,
+      );
+      assert.strictEqual(result.line, 2);
+    });
+
+    it('Bottom placement falls back to line 0 for whitespace-only text', () => {
+      const text = '   \n  \n    ';
+      const result = computeImportPlacement(
+        text,
+        '.ts' as FileExtension,
+        '.ts' as FileExtension,
+        2, 0,
+      );
+      assert.strictEqual(result.line, 0);
+    });
+
     it('Bottom placement falls back to line 0 when no indicators', () => {
       const text = 'const x = 1;\nconst y = 2;';
       const result = computeImportPlacement(
