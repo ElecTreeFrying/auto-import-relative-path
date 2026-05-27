@@ -1,0 +1,1 @@
+const Widget = () => <div />;

@@ -11,6 +11,7 @@ esbuild.js
 **/*.ts
 **/.vscode-test.*
 qa/**
+qa.new/**
 CLAUDE.md
 SPEC.md
 SUPPORT.md
