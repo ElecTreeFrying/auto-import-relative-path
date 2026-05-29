@@ -26,12 +26,12 @@ typescript/
 │   │   ├── default-class.ts    export default class Widget (NOT detected)
 │   │   └── app-root.component.ts     export class AppRoot (Angular name WITH class)
 │   ├── components/
-│   │   ├── widget.ts           Child-directory source for path tests
+│   │   ├── widget.ts           Extra fixture, not directly referenced
 │   │   └── ui/
-│   │       └── button.ts       Deep-traversal destination for path tests
+│   │       └── button.ts       Extra fixture, not directly referenced
 │   └── utils/
 │       └── helpers/
-│           └── format.ts       Deep-traversal source for path tests
+│           └── format.ts       Extra fixture, not directly referenced
 ├── destinations/               Pre-filled paste destinations (placement tests)
 │   ├── empty.ts                0 bytes
 │   ├── whitespace-only.ts      Blank lines only

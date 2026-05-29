@@ -314,7 +314,7 @@ Style must be set to index 0. Source files must NOT contain `export class` (othe
   // import { bar } from '../src/bar';
   import { foo } from '../src/foo';
   ```
-- [ ] The commented line is skipped — import inserted on line 1 (after the real import, NOT after the comment)
+- [ ] The commented line is skipped — import inserted on line 2 (after the real import, NOT after the comment)
 
 #### 7.1.5 — File with only comments
 
@@ -550,7 +550,7 @@ Drag a file from the Explorer sidebar into an open `.ts` editor. Universal DnD b
 ### 11.3 — Large file (500+ lines)
 
 - [ ] Copy `typescript/src/foo.ts`, paste into `typescript/destinations/large-file.ts` (520 lines, imports at top)
-- [ ] Bottom mode still finds the last import correctly (inserts on line 4, after the three imports)
+- [ ] Bottom mode still finds the last import correctly (inserts on line 3, after the three imports)
 
 ### 11.4 — Import inside a string literal (Bottom mode)
 

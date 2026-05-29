@@ -10,7 +10,7 @@ Covers shared infrastructure that behaves identically regardless of which destin
 - `src/commands/paste-import-with-style.ts` — Paste as Import (Pick Style) command
 - `src/commands/set-default-import-style.ts` — Set Default Import Style command
 - `src/editor/notification.ts` — all toast messages and button actions
-- `src/path/relative-path.ts` — relative path computation
+- `src/path/relative.ts` — relative path computation
 - `src/drop/provider.ts` — `AutoImportOnDropProvider` (drag-and-drop)
 - `src/config/settings.ts` — `getAutoImportSetting` / `setAutoImportSetting`
 
@@ -270,7 +270,7 @@ Verify exact wording for every toast the extension can produce.
 
 ## 7 — Path computation
 
-The relative-path algorithm in `src/path/relative-path.ts` is universal — it produces the same output regardless of destination language. These tests verify the core path mechanics using `general/source.ts` → `general/destination.ts` as the default pair.
+The relative-path algorithm in `src/path/relative.ts` is universal — it produces the same output regardless of destination language. These tests verify the core path mechanics using `general/source.ts` → `general/destination.ts` as the default pair.
 
 All tests use `preserveScriptFileExtension = false` (default) unless noted. Verify via the extension settings (see [How to change extension settings](#how-to-change-extension-settings)).
 
