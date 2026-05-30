@@ -1,6 +1,9 @@
 import * as assert from 'assert';
+import * as fs from 'fs';
+import * as path from 'path';
 
 import {
+  ImportStyle,
   resolveStyleIndex,
   JAVASCRIPT_IMPORT_OPTIONS,
   TYPESCRIPT_IMPORT_OPTIONS,
@@ -124,5 +127,59 @@ describe('snippets/styles', () => {
         "@use '_relativePath_';"
       );
     });
+  });
+
+  // The load-bearing three-site sync contract: ImportStyle.description strings must be
+  // byte-identical to the package.json enum, since resolveStyleIndex matches by string equality.
+  // (The previous block only self-compared 3 hardcoded strings; a real enum drift passed silently.)
+  describe('package.json enum ↔ _styles.ts byte-equality (all styled settings)', () => {
+    interface PackageSetting {
+      type: string;
+      default?: unknown;
+      enum?: string[];
+    }
+
+    const pkg = JSON.parse(
+      fs.readFileSync(path.resolve(__dirname, '../../../package.json'), 'utf-8')
+    ) as { contributes: { configuration: Array<{ properties: Record<string, PackageSetting> }> } };
+
+    const properties = pkg.contributes.configuration[0].properties;
+
+    // SCSS image reuses the CSS image table (no SCSS_IMAGE_IMPORT_OPTIONS exists) — see snippets/CLAUDE.md.
+    const CASES: Array<{ setting: string; table: ImportStyle[] }> = [
+      { setting: 'auto-import.importStatement.script.javascriptImportStyle', table: JAVASCRIPT_IMPORT_OPTIONS },
+      { setting: 'auto-import.importStatement.script.typescriptImportStyle', table: TYPESCRIPT_IMPORT_OPTIONS },
+      { setting: 'auto-import.importStatement.styleSheet.cssImportStyle', table: CSS_IMPORT_OPTIONS },
+      { setting: 'auto-import.importStatement.styleSheet.cssImageImportStyle', table: CSS_IMAGE_IMPORT_OPTIONS },
+      { setting: 'auto-import.importStatement.styleSheet.scssImportStyle', table: SCSS_IMPORT_OPTIONS },
+      { setting: 'auto-import.importStatement.styleSheet.scssImageImportStyle', table: CSS_IMAGE_IMPORT_OPTIONS },
+      { setting: 'auto-import.importStatement.markup.htmlScriptImportStyle', table: HTML_SCRIPT_IMPORT_OPTIONS },
+      { setting: 'auto-import.importStatement.markup.htmlImageImportStyle', table: HTML_IMAGE_IMPORT_OPTIONS },
+      { setting: 'auto-import.importStatement.markup.htmlVideoImportStyle', table: HTML_VIDEO_IMPORT_OPTIONS },
+      { setting: 'auto-import.importStatement.markup.htmlAudioImportStyle', table: HTML_AUDIO_IMPORT_OPTIONS },
+      { setting: 'auto-import.importStatement.markup.htmlStyleSheetImportStyle', table: HTML_STYLESHEET_IMPORT_OPTIONS },
+      { setting: 'auto-import.importStatement.markup.markdownImportStyle', table: MARKDOWN_IMPORT_OPTIONS },
+      { setting: 'auto-import.importStatement.markup.markdownImageImportStyle', table: MARKDOWN_IMAGE_IMPORT_OPTIONS },
+    ];
+
+    for (const { setting, table } of CASES) {
+      it(`${setting} enum equals table descriptions`, () => {
+        const property = properties[setting];
+        assert.ok(property, `package.json is missing setting ${setting}`);
+        assert.deepStrictEqual(
+          table.map(option => option.description),
+          property.enum,
+          `enum drift between package.json and _styles.ts for ${setting}`
+        );
+      });
+
+      it(`${setting} default is one of the table descriptions`, () => {
+        const property = properties[setting];
+        assert.ok(
+          table.some(option => option.description === property.default),
+          `package.json default "${String(property.default)}" not found in ${setting} table`
+        );
+      });
+    }
   });
 });
