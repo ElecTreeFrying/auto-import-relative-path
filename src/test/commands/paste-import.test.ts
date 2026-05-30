@@ -123,6 +123,22 @@ describe('executePasteImport', () => {
       const changed = await waitForDocumentChange(() => executePasteImport());
       assert.strictEqual(changed, false, 'expected no document change for .scss into .astro');
     });
+
+    // The only gating-passes-but-empty-snippet pair: .jsx accepts cross-imports, but the JSX
+    // builder has no .ts/.tsx branch, so the snippet is empty and clauses 10/11 reject it.
+    it('.ts into .jsx triggers not-supported (gating passes, empty snippet)', async () => {
+      await openFixture('src/badge.jsx');
+      await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'src/bar.ts'));
+      const changed = await waitForDocumentChange(() => executePasteImport());
+      assert.strictEqual(changed, false, 'expected no document change for .ts into .jsx');
+    });
+
+    it('.tsx into .jsx triggers not-supported (gating passes, empty snippet)', async () => {
+      await openFixture('src/badge.jsx');
+      await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'src/widget.tsx'));
+      const changed = await waitForDocumentChange(() => executePasteImport());
+      assert.strictEqual(changed, false, 'expected no document change for .tsx into .jsx');
+    });
   });
 
   describe('successful insertion', () => {

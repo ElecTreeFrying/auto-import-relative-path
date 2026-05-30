@@ -133,4 +133,22 @@ describe('buildImportSnippet', () => {
     const result = await buildImportSnippet(info);
     assert.strictEqual(result.value, '');
   });
+
+  // .jsx passes gating (cross-import destination) but the JSX builder has no .ts/.tsx branch —
+  // the empty snippet is what the clause 10/11 backstop relies on.
+  it('.ts source into .jsx destination produces empty SnippetString (gating-passes backstop)', async () => {
+    await openFixture('src/badge.jsx');
+    await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'src/bar.ts'));
+    const info = await getFilePathInfo();
+    const result = await buildImportSnippet(info);
+    assert.strictEqual(result.value, '');
+  });
+
+  it('.tsx source into .jsx destination produces empty SnippetString (gating-passes backstop)', async () => {
+    await openFixture('src/badge.jsx');
+    await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'src/widget.tsx'));
+    const info = await getFilePathInfo();
+    const result = await buildImportSnippet(info);
+    assert.strictEqual(result.value, '');
+  });
 });
