@@ -9,10 +9,17 @@ export const IMPORT_INDICATORS = [
   "@forward '", '@forward "'
 ];
 
-/** Returns `true` when the line starts with `//`, `/*`, or `*` (after leading whitespace). */
-export function isCommentLine(line: string): boolean {
+/**
+ * Returns `true` when the line starts with `//`, `/*`, or `*` (after leading whitespace).
+ * For Markdown destinations (`isMarkdown`), a leading `*` is treated as content — bullets,
+ * `*italic*`, `**bold**`, `***` — not a block-comment continuation.
+ */
+export function isCommentLine(line: string, isMarkdown = false): boolean {
   const trimmed = line.trimStart();
-  return trimmed.startsWith('//') || trimmed.startsWith('/*') || trimmed.startsWith('*');
+  if (trimmed.startsWith('//') || trimmed.startsWith('/*')) {
+    return true;
+  }
+  return !isMarkdown && trimmed.startsWith('*');
 }
 
 /** Extracts leading whitespace (spaces or tabs) from a line. */
@@ -105,16 +112,22 @@ export function shouldRepositionCursor(destinationFileExt: FileExtension): boole
   return destinationFileExt === '.html' || destinationFileExt === '.md';
 }
 
+/** Returns `true` for Markdown destinations (`.md`, `.mdx`) where a leading `*` is content, not a comment. */
+export function isMarkdownDestination(destinationFileExt: FileExtension): boolean {
+  return destinationFileExt === '.md' || destinationFileExt === '.mdx';
+}
+
 /**
  * Scans upward from a line inside a comment block to find the first line above the block.
- * Returns the original line if it is not a comment.
+ * Returns the original line if it is not a comment. Pass `isMarkdown` so Markdown `*` lines
+ * (bullets / emphasis) are not mistaken for comment continuations.
  */
-export function adjustForCommentBlock(lines: string[], line: number): number {
-  if (line >= lines.length || !isCommentLine(lines[line])) {
+export function adjustForCommentBlock(lines: string[], line: number, isMarkdown = false): number {
+  if (line >= lines.length || !isCommentLine(lines[line], isMarkdown)) {
     return line;
   }
   let start = line;
-  while (start > 0 && isCommentLine(lines[start - 1])) {
+  while (start > 0 && isCommentLine(lines[start - 1], isMarkdown)) {
     start--;
   }
   return start;
@@ -160,7 +173,7 @@ export function computeImportPlacement(
   }
 
   if (shouldRepositionCursor(destinationFileExt)) {
-    const adjustedLine = adjustForCommentBlock(lines, dropLine);
+    const adjustedLine = adjustForCommentBlock(lines, dropLine, isMarkdownDestination(destinationFileExt));
     const column = determineInsertionColumn(destinationFileExt, dropColumn);
     return { line: adjustedLine, column, indentation: '', isInline: false };
   }
@@ -179,7 +192,7 @@ export function computeImportPlacement(
     case 'Top':
       return { line: 0, column: 0, indentation: '', isInline: false };
     case 'Cursor': {
-      const adjustedLine = adjustForCommentBlock(lines, dropLine);
+      const adjustedLine = adjustForCommentBlock(lines, dropLine, isMarkdownDestination(destinationFileExt));
       return { line: adjustedLine, column: 0, indentation: '', isInline: false };
     }
     case 'Bottom':

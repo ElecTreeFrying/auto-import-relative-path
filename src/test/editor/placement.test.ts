@@ -40,6 +40,21 @@ describe('editor/placement', () => {
     it('rejects empty lines', () => {
       assert.strictEqual(isCommentLine(''), false);
     });
+
+    it('treats * as a comment for non-Markdown destinations (default)', () => {
+      assert.strictEqual(isCommentLine(' * bullet'), true);
+    });
+
+    it('treats * as content (not a comment) for Markdown destinations', () => {
+      assert.strictEqual(isCommentLine('* milk', true), false);
+      assert.strictEqual(isCommentLine('  **bold**', true), false);
+      assert.strictEqual(isCommentLine('***', true), false);
+    });
+
+    it('still treats // and /* as comments for Markdown destinations', () => {
+      assert.strictEqual(isCommentLine('// comment', true), true);
+      assert.strictEqual(isCommentLine('/* comment */', true), true);
+    });
   });
 
   describe('getLineIndentation', () => {
@@ -208,6 +223,16 @@ describe('editor/placement', () => {
       const lines = [ 'import x;' ];
       assert.strictEqual(adjustForCommentBlock(lines, 5), 5);
     });
+
+    it('does not walk up Markdown * bullets when isMarkdown is true (cursor stays put)', () => {
+      const lines = [ '# Shopping list', '', '* milk', '* eggs', '* bread' ];
+      assert.strictEqual(adjustForCommentBlock(lines, 4, true), 4);
+    });
+
+    it('still walks up a JS * block-comment continuation (isMarkdown false)', () => {
+      const lines = [ '/**', ' * doc', ' * more', 'export const x = 1;' ];
+      assert.strictEqual(adjustForCommentBlock(lines, 2), 0);
+    });
   });
 
   describe('isInlineSnippet', () => {
@@ -311,6 +336,18 @@ describe('editor/placement', () => {
       );
       assert.strictEqual(result.isInline, false);
       assert.strictEqual(result.line, 2);
+    });
+
+    it('Markdown cursor on a * bullet lands AT the cursor, not the top of the run', () => {
+      const text = '# Shopping list\n\n* milk\n* eggs\n* bread';
+      const result = computeImportPlacement(
+        text,
+        '.md' as FileExtension,
+        '.md' as FileExtension,
+        4, 0,
+      );
+      assert.strictEqual(result.isInline, false);
+      assert.strictEqual(result.line, 4, `expected cursor line 4 ('* bread'), got ${result.line}`);
     });
 
     it('returns wrapperPrefix for Astro without frontmatter', () => {
