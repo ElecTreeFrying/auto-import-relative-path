@@ -51,7 +51,7 @@ Drag a file or press a key — the right import lands in your editor. Path, synt
 - **38 configurable import styles** — ES modules, CommonJS, dynamic `import()`, `@use`, `@forward`, `@import`, HTML tags, Markdown syntax
 - **Framework-aware placement** — imports land inside Astro `---` frontmatter and Vue / Svelte `<script>` blocks automatically
 - **Smart identifiers** — exported class detection for TypeScript, Angular PascalCase auto-fill, CSS Modules `styles` binding
-- **~10 KB gzipped, zero dependencies, no telemetry**
+- **~8 KB gzipped, zero dependencies, no telemetry**
 
 ---
 
@@ -558,7 +558,7 @@ See [SPEC — §Path Computation][SPEC-path] for the complete path logic includi
 - **VS Code** 1.115.0 or later.
 - **Compatible hosts:** Cursor, VSCodium, Code Server, and other forks that implement the VS Code API at the same engine version.
 - **Platforms:** macOS, Windows, Linux. Paths are normalized to forward slashes on all platforms.
-- **Bundle:** ~10 KB gzipped (~56 KB on disk). Zero runtime dependencies.
+- **Bundle:** ~8 KB gzipped (~31 KB minified). Zero runtime dependencies.
 - **Telemetry:** None. Everything runs locally.
 
 ---
