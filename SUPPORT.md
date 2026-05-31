@@ -43,13 +43,13 @@ Where to get help, how to diagnose common issues, and how to contribute. For fea
 
 ### Does this extension send my data anywhere?
 
-**No.** It is 100% local — no telemetry, no network calls, no AI. The whole bundle is ~10 KB gzipped, and you can read every line of the [source on GitHub][source].
+**No.** It is 100% local — no telemetry, no network calls, no AI. The whole bundle is ~8 KB gzipped, and you can read every line of the [source on GitHub][source].
 
 [source]: https://github.com/ElecTreeFrying/auto-import-relative-path/tree/master/src
 
 ### Is it compatible with Cursor / VSCodium / Code Server?
 
-**Yes.** The extension uses only the public VS Code API. It runs in any host that implements the API at engine `^1.118.0` or later — including Cursor, VSCodium, Code Server, and other forks.
+**Yes.** The extension uses only the public VS Code API. It runs in any host that implements the API at engine `^1.115.0` or later — including Cursor, VSCodium, Code Server, and other forks.
 
 ### Does it work in monorepos / pnpm / Yarn workspaces?
 
@@ -91,7 +91,7 @@ Run **Auto Import: Paste as Import (Pick Style)** from the Command Palette (<kbd
 
 Run **Auto Import: Set Default Import Style** from the Command Palette. The QuickPick lists every style for the current source/destination pair (e.g. open a `.ts` file with a `.ts` source on the clipboard to set your TypeScript default). Your current default is marked with a check and pinned to the top. The chosen style is written to your global VS Code User settings.
 
-Some destinations don't have a configurable default — HTML stylesheet, Markdown link, and CSS/SCSS image references all use a single hardcoded shape. The command shows a "no configurable style" notice in those cases.
+Some destinations don't have a configurable default — HTML stylesheet, Markdown link, and CSS/SCSS image references all use a single hardcoded shape. The command shows a "No configurable style" warning in those cases.
 
 ### Can I import a folder (barrel) instead of a file?
 
@@ -128,7 +128,7 @@ Each section below is **symptom → cause → fix**. If your issue isn't here, [
 **Causes:**
 
 - No file is **selected** in the Explorer panel (click a file — having one visible isn't enough).
-- For `Paste` and `Auto`, no editor tab is open or focused.
+- For `Paste as Import` and `Insert Import from Selected File`, no editor tab is open or focused.
 - The source / destination extension pair isn't supported.
 
 **Fix:** Select a file in the Explorer, make sure an editor tab is focused, and check the [supported languages table][langs] in the README. If your pair *should* be supported, [open an issue][issues].
@@ -137,7 +137,7 @@ Each section below is **symptom → cause → fix**. If your issue isn't here, [
 
 ---
 
-### "Not supported" notification appears
+### "Cannot import … into … files" notification appears
 
 **Cause:** The source extension is not allowed for the active editor's destination. The most common cases:
 
@@ -149,7 +149,7 @@ Each section below is **symptom → cause → fix**. If your issue isn't here, [
 
 ---
 
-### "Same file path" notification appears
+### "A file cannot import itself" notification appears
 
 **Cause:** The file selected in the Explorer is the same file open in the active editor (case-insensitive comparison).
 
@@ -169,7 +169,7 @@ Each section below is **symptom → cause → fix**. If your issue isn't here, [
 
 ### "Bottom" placement always lands at line 0
 
-**Cause:** "Bottom" appends after the *last recognised* import line. The detector looks for `import …`, `var/const x = require(…)`, `@import '…'`, `@import url(…)`, `@use '…'`, and `@forward '…'`. If none are found, it falls back to line 0.
+**Cause:** "Bottom" appends after the *last recognised* import line. The detector looks for any of nine markers — `import `, `require(`, `@import '`, `@import "`, `@import url(`, `@use '`, `@use "`, `@forward '`, `@forward "` (single- and double-quote variants both count) — skipping comment lines that start with `//`, `/*`, or `*`. If none are found, it falls back to line 0.
 
 **Fix:** Add at least one import line manually to seed the file. Subsequent inserts will then anchor correctly to the bottom of the import block.
 
