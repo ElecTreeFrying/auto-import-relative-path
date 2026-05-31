@@ -23,7 +23,7 @@ Source root for the Auto Import Relative Path VS Code extension.
 | What | Where |
 |------|-------|
 | New command | `commands/` (new file + register in `extension.ts` + `package.json`) |
-| New language snippet | `snippets/` (new file + `case` in `dispatch.ts` + `case` in `variants.ts`) |
+| New destination language | 8-site change — follow the [checklist in `snippets/CLAUDE.md`](snippets/CLAUDE.md#adding-a-new-destination-language) (file in `languages/`, `dispatch.ts`, `variants.ts`, `types/file-extension.ts`, `constants/extensions.ts`, `_styles.ts` + `package.json`, `gating.ts`, `drop/selector.ts`) |
 | New pure helper | `path/` |
 | New `vscode` API helper | `editor/` |
 | New cross-cutting type | `types/` |

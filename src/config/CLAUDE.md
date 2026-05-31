@@ -2,7 +2,7 @@
 
 Workspace-config access for the extension.
 
-## File
+## Files
 
 - `settings.ts` — the only file; `getAutoImportSetting(namespaceKey, settingKey)` reads, `setAutoImportSetting(namespaceKey, settingKey, value, target?)` writes. Both consult the same `AUTO_IMPORT_CONFIG` alias map; the writer defaults to `vscode.ConfigurationTarget.Global` because no `package.json` setting declares a `scope` field. The two helpers and the `AutoImportConfigNamespace` / `AutoImportSettingKey` type aliases are the only exports.
 
@@ -21,7 +21,7 @@ Four namespaces:
 
 The `Object.freeze` is intentional — mutations throw at runtime. Treat the map as a configuration constant.
 
-Four setting keys are **dormant** — they exist in the map and in `package.json` for UI parity (single-shape settings with only one enum value) but no code path reads them via `getAutoImportSetting` or writes them via `setAutoImportSetting`: `cssImage`, `scssImage`, `htmlStyleSheet`, and `markdown`. The corresponding `*_IMPORT_OPTIONS` tables in `src/snippets/_styles.ts` are likewise dead exports (see [`src/snippets/CLAUDE.md`](../snippets/CLAUDE.md) → "Currently unused" tables). The snippet builders hardcode the single shape directly.
+Four setting keys are **dormant** — they exist in the map and in `package.json` for UI parity (single-shape settings with only one enum value) but no code path reads them via `getAutoImportSetting` or writes them via `setAutoImportSetting`: `cssImage`, `scssImage`, `htmlStyleSheet`, and `markdown`. Three of these back a single-entry `*_IMPORT_OPTIONS` table in `src/snippets/_styles.ts` that is a dead export: `cssImage` → `CSS_IMAGE_IMPORT_OPTIONS`, `htmlStyleSheet` → `HTML_STYLESHEET_IMPORT_OPTIONS`, `markdown` → `MARKDOWN_IMPORT_OPTIONS`. `scssImage` has no dedicated table — SCSS image sources reuse `buildCssImageImportSnippet` from `languages/css.ts`. Either way the snippet builders hardcode the single shape directly and never call `resolveStyleIndex` (see [`src/snippets/CLAUDE.md`](../snippets/CLAUDE.md) → "Currently unused" tables, and the SCSS note below it).
 
 ## Three-site byte-exact sync rule
 

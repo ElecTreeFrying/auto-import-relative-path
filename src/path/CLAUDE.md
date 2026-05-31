@@ -19,9 +19,9 @@ Returns a Unix-style path (`toUnixPath` replaces `\` with `/`) with the file ext
 ## `extension.ts` — the empty-string-on-no-extension quirk
 
 - `extractFileExtension(filePath)` returns the trailing extension (e.g. `'.ts'`) or `''` when there is none. Thin wrapper over `path.parse(filePath).ext`.
-- `removeFileExtension(filePath)` returns `filePath.slice(0, -ext.length)`. **When `ext` is `''`, `slice(0, -0)` is `''`** — the function returns an empty string for any path with no extension.
+- `removeFileExtension(filePath)` returns `filePath.slice(0, -ext.length)`. **When `ext` is `''`, `slice(0, -0)` is `''`** (because `-0 === 0`) — the function returns an empty string for any path with no extension.
 
-This quirk is unreachable in practice: the only caller (`computeRelative`) always passes paths produced from real files with extensions. **Don't add a guard** without re-running the `./` prefix regression test — the unguarded behaviour is what the test was written against.
+This behaviour is intentional and regression-tested with extensionless paths (e.g. `Makefile` → `''`, in `test/path/extension.test.ts`). The test suite expects it — **don't add a guard** without re-running all path tests.
 
 ## `determineImportType` — `ImportType | null`, not just `ImportType`
 

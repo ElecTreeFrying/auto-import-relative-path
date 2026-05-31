@@ -18,7 +18,7 @@ Category sub-types (`HtmlFileExtension`, `YamlFileExtension`, `MarkdownFileExten
 
 1. The relevant category sub-type here.
 2. Runtime gating tables in `src/constants/extensions.ts`.
-3. The matching `case` in `src/snippets/dispatch.ts` (destination dispatch) or `src/snippets/_react.ts` (JSX/TSX/MDX source dispatch).
+3. The matching `case` in `src/snippets/dispatch.ts` (destination dispatch). For JSX/TSX/MDX source dispatch, add cases to BOTH `src/snippets/_react.ts:buildReactImport` (lines 37-75, default paste flow) AND `src/snippets/variants.ts:buildReactNonScriptVariant` (lines 180-226, variant-picker commands) — both functions have independent `sourceFileExt` switches that must stay synchronized.
 4. The matching `case` in `src/snippets/variants.ts:buildImportSnippetVariants` (so the picker commands work for the new extension).
 
 A missing entry in (2) produces a silent fall-through to a `default:` branch — the cast in (1) won't catch it. Gating is the runtime safety net.
@@ -28,7 +28,7 @@ A missing entry in (2) produces a silent fall-through to a `default:` branch —
 Seven buckets: `'script' | 'stylesheet' | 'markdown' | 'image' | 'video' | 'audio' | 'text-track'`.
 
 - **Producer**: `path/import-type.ts:determineImportType` (which returns `ImportType | null` — see that file's CLAUDE.md for the two intentional `null` returns).
-- **Consumers**: `snippets/languages/{css,scss,html,markdown}.ts` and `snippets/variants.ts`. JSX/TSX/MDX **do not** consult this — they branch on the raw source extension via `_react.ts`.
+- **Consumers**: `snippets/languages/{css,scss,html,markdown}.ts` and `snippets/variants.ts`. JSX/TSX/MDX **do not** consult `ImportType` in the default snippet flow — they branch on the raw source extension via `_react.ts`. In the `variants.ts` picker flow, JSX/TSX/MDX sources branch on the raw source extension via the `buildReactNonScriptVariant` switch (lines 180-226 in `variants.ts`) instead of consulting `ImportType`.
 
 The `'image'` value is the catch-all default for unrecognised extensions — *not* a guarantee that the source is image-like. Gating in `src/gating.ts:isPairSupported` is what makes the catch-all safe.
 

@@ -20,6 +20,7 @@ vscode.languages.registerDocumentDropEditProvider(DROP_LANGUAGE_SELECTORS, new A
 ## Where to add new code
 
 - New drop-related provider or helper → here.
-- New destination language → add a `{ language, scheme: 'file' }` entry in `selector.ts` in addition to the four-site sync (`types/`, `constants/`, `dispatch.ts`, `variants.ts`).
+- New language ID for an existing file extension → add a `{ language, scheme: 'file' }` entry in `selector.ts` only. The four-site sync is keyed on the file extension (which already flows through `dispatch.ts`), so it needs no change.
+- New file extension (e.g. `.rs`) → add the `{ language, scheme: 'file' }` entry in `selector.ts` (unless its language ID is already listed) in addition to the four-site sync (`types/`, `constants/`, `dispatch.ts`, `variants.ts`).
 
 See [`CLAUDE.md`](CLAUDE.md) (this directory) for the full flow, unsupported-pair handling, and how the drop flow differs from the command flow.

@@ -8,8 +8,9 @@ Mocha BDD tests. Manual QA checklists and fixture workspaces live in the top-lev
 |------|---------|
 | `extension.test.ts` | Activation smoke test |
 | `gating.test.ts` | Extension-pair gating tests (`isPairSupported`) |
-| `commands/` | Command-level tests (`paste-import`) |
-| `editor/` | Editor-helper tests (`insert-snippet` placement) |
+| `commands/` | Command-level tests (`paste-import` only — the other four commands have no test file) |
+| `drop/` | Drag-and-drop provider tests (`provider`) |
+| `editor/` | Editor-helper tests (`insert-snippet`, `notification`, `placement`) |
 | `path/` | Pure path-math tests (`relative`, `extension`, `import-type`) |
 | `constants/` | Gating-table tests (`extensions`) |
 | `snippets/` | Snippet builder, dispatch, variants, class-name, and styles tests |

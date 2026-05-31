@@ -10,9 +10,9 @@ Cross-cutting type unions used across the codebase. **String-literal unions, not
 | `import-type.ts` | `ImportType` | Seven-way classifier: `'script' \| 'stylesheet' \| 'markdown' \| 'image' \| 'video' \| 'audio' \| 'text-track'`. |
 | `notification.ts` | `NotificationType` | Ten-variant notification kind (eight warning, two info). |
 
-All values are lowercase, dot-prefixed where they correspond to file extensions. Compare with `===` against the literal — there are no enums here.
+`FileExtension` values are lowercase and dot-prefixed (`.ts`, `.css`, `.png`) to match `path.parse(filePath).ext`. `ImportType` and `NotificationType` values are lowercase but carry no dot — `ImportType` uses plain names (`'script'`, `'stylesheet'`) and `NotificationType` uses hyphenated names (`'same-file-path'`, `'not-supported'`). Compare with `===` against the literal — there are no enums here.
 
 ## Where to add new code
 
 - New cross-cutting union → here.
-- Adding a new file extension is a four-site sync (this directory + `src/constants/extensions.ts` + `src/snippets/dispatch.ts` + `src/snippets/variants.ts`). See [`CLAUDE.md`](CLAUDE.md) here for the rule.
+- Adding a new file extension is a four-site sync (this directory + `src/constants/extensions.ts` + snippet dispatch in `src/snippets/` + `src/snippets/variants.ts`). The dispatch site depends on usage: a new destination language touches `src/snippets/dispatch.ts`; a new JSX/TSX/MDX source extension touches the parallel source switches in both `src/snippets/_react.ts` and `src/snippets/variants.ts:buildReactNonScriptVariant`. See [`CLAUDE.md`](CLAUDE.md) here for the full rule.
