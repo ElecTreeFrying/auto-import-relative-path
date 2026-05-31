@@ -20,7 +20,7 @@ Covers shared infrastructure that behaves identically regardless of which destin
 
 - Extension Development Host launched (F5)
 - QA workspace open as a folder — open `qa.new/workspace/` in the EDH via **File > Open Folder**
-- Any supported file open as the active editor (e.g., `general/destination.ts`)
+- `general/destination.ts` open as the active editor
 
 **Workspace layout** — all fixture files live under `general/`:
 
@@ -58,7 +58,7 @@ The extension has three main commands. Each interacts with the **active editor**
 
 ### 1.1 — Happy path
 
-- [ ] Select any file in the Explorer (e.g., `general/source.ts`), press `Cmd+Shift+A`
+- [ ] Select `general/source.ts` in the Explorer, press `Cmd+Shift+A`
 - [ ] Info toast appears: `Auto Import: Copied path — {basename}` (e.g., `Auto Import: Copied path — source.ts`)
 - [ ] Toast has two buttons: **Paste with Style** (left) and **Paste Now** (right)
 
@@ -74,7 +74,7 @@ The extension has three main commands. Each interacts with the **active editor**
 
 ### 1.4 — Previous notifications cleared
 
-- [ ] Trigger any warning toast (e.g., unsupported pair), then run Copy again
+- [ ] Copy `general/unsupported.js`, open `general/destination.ts`, press `Cmd+I` (triggers the unsupported-pair warning). Then select `general/source.ts` in the Explorer and press `Cmd+Shift+A`
 - [ ] Previous toast is dismissed before the new one appears
 
 ---
@@ -85,22 +85,22 @@ These tests verify the shared validation in `commands/paste-import.ts` that runs
 
 ### 2.1 — Empty clipboard
 
-- [ ] Copy some non-path text to clipboard (e.g., `hello world`), press `Cmd+I` in any supported file
+- [ ] Copy the text `hello world` to the clipboard, open `general/destination.ts`, press `Cmd+I`
 - [ ] Warning toast: `Auto Import: Clipboard does not contain a file path. Use Auto Import: Copy File Path on a source file first.`
 
 ### 2.2 — Relative path on clipboard
 
-- [ ] Copy text `./relative/path.ts` to clipboard, press `Cmd+I`
+- [ ] Copy the text `./relative/path.ts` to the clipboard, open `general/destination.ts`, press `Cmd+I`
 - [ ] Warning toast: `Auto Import: Clipboard does not contain a file path. Use Auto Import: Copy File Path on a source file first.`
 
 ### 2.3 — No file extension on clipboard path
 
-- [ ] Copy an absolute path with no extension (e.g., `/Users/me/project/Makefile`) to clipboard, press `Cmd+I`
+- [ ] In the Explorer, right-click `general/Makefile` → **Copy Path** (puts its absolute path on the clipboard). Open `general/destination.ts`, press `Cmd+I`
 - [ ] Warning toast: `Auto Import: Makefile has no file extension.`
 
 ### 2.4 — Source file deleted
 
-- [ ] Copy a file path with `Cmd+Shift+A`, then delete that file from disk, then press `Cmd+I`
+- [ ] Copy `general/source.ts` with `Cmd+Shift+A`, delete `general/source.ts` from disk (right-click → Delete in the Explorer), open `general/destination.ts`, press `Cmd+I`. Recreate `general/source.ts` afterward (undo the delete).
 - [ ] Warning toast: `Auto Import: Source file no longer exists: {basename}.`
 
 ### 2.5 — No active editor
@@ -110,7 +110,7 @@ These tests verify the shared validation in `commands/paste-import.ts` that runs
 
 ### 2.6 — Previous notifications cleared
 
-- [ ] Trigger a warning toast, then run Paste
+- [ ] Copy `general/unsupported.js`, open `general/destination.ts`, press `Cmd+I` (unsupported-pair warning). Then copy `general/source.ts` and press `Cmd+I` in `general/destination.ts` again
 - [ ] Previous toast is dismissed before the paste toast/result
 
 ---
@@ -119,12 +119,12 @@ These tests verify the shared validation in `commands/paste-import.ts` that runs
 
 ### 3.1 — Same file
 
-- [ ] Open any file, copy that same file with `Cmd+Shift+A`, paste into it with `Cmd+I`
+- [ ] Open `general/destination.ts`, copy `general/destination.ts` with `Cmd+Shift+A`, press `Cmd+I` in `general/destination.ts`
 - [ ] Warning toast: `Auto Import: A file cannot import itself.`
 
 ### 3.2 — Same file (case mismatch)
 
-- [ ] Copy a file path, manually alter the case of the path on clipboard (if OS allows), paste into the same file
+- [ ] Copy `general/source.ts` with `Cmd+Shift+A`. Manually edit the clipboard path to change its case (e.g. `SOURCE.ts`). Open `general/source.ts`, press `Cmd+I`
 - [ ] Warning toast: `Auto Import: A file cannot import itself.` (comparison is case-insensitive)
 
 ---
@@ -203,8 +203,8 @@ Verify exact wording for every toast the extension can produce.
 
 #### 5.8 — Empty clipboard
 
-- [ ] Copy any plain text to the system clipboard (e.g., select text in an editor and `Cmd+C`)
-- [ ] Open any supported file, press `Cmd+I`
+- [ ] Copy the text `hello world` to the system clipboard (e.g., select it in an editor and `Cmd+C`)
+- [ ] Open `general/destination.ts`, press `Cmd+I`
 - [ ] Warning toast: `Auto Import: Clipboard does not contain a file path. Use Auto Import: Copy File Path on a source file first.`
 
 #### 5.9 — Source not found
@@ -248,23 +248,23 @@ Verify exact wording for every toast the extension can produce.
 
 ### 6.1 — Multiple rapid pastes
 
-- [ ] Copy a source file, paste 3 times rapidly into the active editor
+- [ ] Copy `general/source.ts`, paste 3 times rapidly into `general/destination.ts`
 - [ ] Each import is inserted, stacking correctly (Bottom mode places each after the previous)
 
 ### 6.2 — Paste into many files
 
-- [ ] Copy a file once with `Cmd+Shift+A`, then `Cmd+I` in 3 different destination files
+- [ ] Copy `general/source.ts` once with `Cmd+Shift+A`, then press `Cmd+I` in `general/destination.ts`, `general/components/child.ts`, and `general/edge-cases/komponent-日本語.ts`
 - [ ] The clipboard retains the path — all 3 pastes succeed
 
 ### 6.3 — Unicode characters in filename
 
-- [ ] Copy `general/edge-cases/komponent-日本語.ts`, paste into any supported destination
-- [ ] Path is computed correctly with the unicode characters preserved
+- [ ] Copy `general/edge-cases/komponent-日本語.ts`, paste into `general/destination.ts`
+- [ ] Path is `'./edge-cases/komponent-日本語'` — unicode characters preserved
 
 ### 6.4 — Spaces in path
 
-- [ ] Copy `general/edge-cases/my folder/spaced.ts`, paste into any supported destination
-- [ ] Path is computed correctly with spaces preserved
+- [ ] Copy `general/edge-cases/my folder/spaced.ts`, paste into `general/destination.ts`
+- [ ] Path is `'./edge-cases/my folder/spaced'` — spaces preserved
 
 ---
 
@@ -324,8 +324,8 @@ These behaviors are identical across all 12 destination languages.
 
 ### 8.2 — DnD does NOT clear previous notifications
 
-- [ ] Trigger any warning toast (e.g., paste an unsupported pair via `Cmd+I`)
-- [ ] Then drag a valid source file from the Explorer into an open editor
+- [ ] Copy `general/unsupported.js`, open `general/destination.ts`, press `Cmd+I` (triggers the unsupported-pair warning toast)
+- [ ] Then drag `general/source.ts` from the Explorer into the `general/destination.ts` editor
 - [ ] Previous toast is NOT dismissed — unlike the paste commands, DnD does not call `clearNotifications()`
 
 ---
@@ -356,7 +356,7 @@ These tests verify QuickPick behaviors that are identical regardless of which de
 
 ### 9.4 — Clipboard validation applies before picker opens
 
-- [ ] Copy any plain text to the system clipboard, run Paste as Import (Pick Style)
+- [ ] Copy the text `hello world` to the system clipboard, run Paste as Import (Pick Style)
 - [ ] Warning toast: `Auto Import: Clipboard does not contain a file path...` — picker does NOT open
 - [ ] Copy `general/source.ts`, open that same file, run Paste as Import (Pick Style)
 - [ ] Warning toast: `Auto Import: A file cannot import itself.` — picker does NOT open
@@ -411,7 +411,7 @@ These tests verify QuickPick behaviors that are identical regardless of which de
 
 ### 10.7 — Clipboard validation applies before picker opens
 
-- [ ] Copy any plain text to the system clipboard, run Set Default Import Style
+- [ ] Copy the text `hello world` to the system clipboard, run Set Default Import Style
 - [ ] Warning toast: `Auto Import: Clipboard does not contain a file path...` — picker does NOT open
 - [ ] Copy `general/source.ts`, open that same file, run Set Default Import Style
 - [ ] Warning toast: `Auto Import: A file cannot import itself.` — picker does NOT open
