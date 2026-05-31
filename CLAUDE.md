@@ -21,6 +21,7 @@ Each directory under `src/` has its own pair of nested guides. Read the director
 | `src/drop/` | DocumentDropEditProvider; drag-from-Explorer import generation | [`src/drop/README.md`](src/drop/README.md), [`src/drop/CLAUDE.md`](src/drop/CLAUDE.md) |
 | `src/editor/` | VS Code-API helpers (clipboard, snippet insertion, notifications) | [`src/editor/README.md`](src/editor/README.md), [`src/editor/CLAUDE.md`](src/editor/CLAUDE.md) |
 | `src/snippets/` | Per-language snippet builders + dispatch; style sync rules; JSX/TSX/MDX shared algorithm | [`src/snippets/README.md`](src/snippets/README.md), [`src/snippets/CLAUDE.md`](src/snippets/CLAUDE.md) |
+| `src/snippets/languages/` | The nine per-language leaf builders; config/pure split, intra-directory delegation, source-classification routing | [`src/snippets/languages/README.md`](src/snippets/languages/README.md), [`src/snippets/languages/CLAUDE.md`](src/snippets/languages/CLAUDE.md) |
 | `src/path/` | Pure path math (no `vscode` import); `./` prefix rule | [`src/path/README.md`](src/path/README.md), [`src/path/CLAUDE.md`](src/path/CLAUDE.md) |
 | `src/config/` | Workspace-config access; three-site sync rule | [`src/config/README.md`](src/config/README.md), [`src/config/CLAUDE.md`](src/config/CLAUDE.md) |
 | `src/constants/` | Runtime gating tables; runtime mirror of `types/file-extension.ts` | [`src/constants/README.md`](src/constants/README.md), [`src/constants/CLAUDE.md`](src/constants/CLAUDE.md) |
@@ -74,7 +75,7 @@ These multi-site contracts silently break on drift. The linked guides have the f
 - **Four-site extension sync** — adding a file extension requires updates in `types/file-extension.ts` → `constants/extensions.ts` → `snippets/dispatch.ts` → `snippets/variants.ts`. See [`src/types/CLAUDE.md`](src/types/CLAUDE.md).
 - **Three-site config sync** — setting enum strings must be byte-identical across `package.json` → `snippets/_styles.ts` → per-language `switch`. See [`src/config/CLAUDE.md`](src/config/CLAUDE.md).
 - **Two-site button-label sync** — toast action button labels in `editor/notification.ts` must match the `switch` cases in `commands/copy-file-path.ts` character-for-character. See [`src/commands/CLAUDE.md`](src/commands/CLAUDE.md).
-- **Runtime-type mirror sync** — `IMAGE_FILE_EXTENSIONS`, `MEDIA_FILE_EXTENSIONS`, and `TEXT_TRACK_FILE_EXTENSIONS` in `constants/extensions.ts` must mirror the matching type unions in `types/file-extension.ts`. See [`src/constants/CLAUDE.md`](src/constants/CLAUDE.md).
+- **Runtime-type mirror sync** — `IMAGE_FILE_EXTENSIONS` (mirrors `ImageFileExtension`) and `TEXT_TRACK_FILE_EXTENSIONS` (mirrors `TextTrackFileExtension`) in `constants/extensions.ts` track their type unions; `MEDIA_FILE_EXTENSIONS` holds video + audio only (`.vtt` lives in `TEXT_TRACK_FILE_EXTENSIONS`, and both are spread together into the destination lists). See [`src/constants/CLAUDE.md`](src/constants/CLAUDE.md).
 
 ## Build/test layout quirks
 
