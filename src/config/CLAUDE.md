@@ -40,7 +40,7 @@ Adding or renaming a setting requires changes in three places that must stay byt
 ## Adding a new setting key
 
 1. New entry in the relevant `AUTO_IMPORT_CONFIG[namespaceKey].settings` object.
-2. Add the alias as a literal in the `AutoImportSettingKey` union type.
+2. Add the alias as a literal to the matching property in the `SettingsKeyMap` type (e.g. `SettingsKeyMap['stylesheet']`); `AutoImportSettingKey` is derived from it automatically.
 3. Then complete the three-site sync above.
 
 If you forget step 2, the call site won't type-check.

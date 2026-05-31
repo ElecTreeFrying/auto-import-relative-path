@@ -32,7 +32,7 @@ On success, the `copy-success` toast carries two action buttons — **Paste with
 - **Clipboard validation** rejects with `'empty-clipboard'` when empty or not absolute; rejects with `'no-extension'` when the source path has no file extension (e.g. `Makefile`).
 - **Same-file rejection** runs before gating: `sourceFilePath.toLowerCase() === destinationFilePath.toLowerCase()` → `'same-file-path'` toast.
 - **File-existence check:** verifies the source file exists via `vscode.workspace.fs.stat()`; aborts with `'source-not-found'` notification if the file is not found.
-- **Eleven-clause gating conjunction** rejects with `'not-supported'` toast if any clause matches. The first nine clauses are delegated to `src/gating.ts:isPairSupported(info)`; the last two are checked inline:
+- **Eleven-clause gating disjunction** rejects with `'not-supported'` toast if any clause matches. The first nine clauses are delegated to `src/gating.ts:isPairSupported(info)`; the last two are checked inline:
   1–9. `isPairSupported(info)` — see `src/gating.ts` for the nine extension-pair clauses (`CROSS_IMPORT_DESTINATIONS`, `.html → .html`, and the seven destination-specific supported-extension checks). See [`src/constants/CLAUDE.md`](../constants/CLAUDE.md) for the gating tables.
   10. `snippet.value === '\n'` (empty snippet — no language module handled this destination)
   11. `snippet.value === ''` (same)

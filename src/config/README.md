@@ -8,6 +8,8 @@ Reads user settings from VS Code's workspace configuration.
 |------|------------------|---------|
 | `settings.ts` | `getAutoImportSetting<T>(namespaceKey, settingKey): T \| undefined`, `setAutoImportSetting<T>(namespaceKey, settingKey, value, target?): Thenable<void>` | Reader/writer pair over the frozen `AUTO_IMPORT_CONFIG` map. Writer defaults to `ConfigurationTarget.Global` (no `scope` field on any `package.json` setting). |
 
+Also exported: the type aliases `AutoImportConfigNamespace` (the four namespace keys) and `AutoImportSettingKey` (all valid setting keys, derived from the internal `SettingsKeyMap`).
+
 ## Namespaces
 
 The map has four top-level groups:

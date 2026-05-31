@@ -12,9 +12,9 @@ One module per destination language — the leaf builders `dispatch.ts` and `var
 | `tsx.ts` | `buildSnippet` | TSX/MDX entry — TS primary + JS fallback for `.js`/`.jsx` sources, via `../_react.ts`. `.mdx` reaches here through fall-through in `dispatch.ts`. |
 | `css.ts` | `buildSnippet`, `buildCssImportSnippet`, `…ByStyle`, `buildCssImageImportSnippet` | CSS `@import` (2 styles) + `url()` for image sources. `buildCssImageImportSnippet` is reused by `scss.ts`. |
 | `scss.ts` | `buildSnippet`, `buildScssImportSnippetByStyle`, `prepareScssImportPath` | SCSS `@use`/`@forward`/`@import` (5 styles); strips partial underscores, always keeps `.css`. Image sources defer to `css.ts`. Unlike CSS/JS/TS, config is resolved inline in `buildSnippet` — there is no `buildScssImportSnippet` wrapper. |
-| `html.ts` | `buildSnippet` + six `buildHtml…` builders | `<script>` (5) / `<img>` (3) / `<video>` (4) / `<audio>` (2) configurable; `<link>` / `<track>` fixed. |
+| `html.ts` | `buildSnippet`, four `buildHtml…ImportSnippetByStyle` (script/image/video/audio) + `buildHtmlStylesheetImportSnippet` / `buildHtmlTextTrackImportSnippet` | `<script>` (5) / `<img>` (3) / `<video>` (4) / `<audio>` (2) configurable; `<link>` / `<track>` fixed. |
 | `markdown.ts` | `buildSnippet`, `buildMarkdownImportSnippet`, `buildMarkdownImageImportSnippetByStyle` | `[text](path)` link (fixed) + image (3 styles). |
-| `framework-component.ts` | `buildSnippet` | Vue/Svelte/Astro entry — defers to `buildTypeScriptImportSnippet` for every source; strips the script extension per the preserve setting. All three share identical semantics. Unlike `typescript.ts`, it does not run class-name pre-fill, so style 0 emits `$1` (or the Angular fallback) rather than a detected class name. |
+| `framework-component.ts` | `buildSnippet` | Vue/Svelte/Astro entry — defers to `buildTypeScriptImportSnippet` for every source; for script extensions (`.ts`/`.tsx`/`.js`/`.jsx`) it respects the preserve-extension setting, otherwise it always keeps the full extension. All three share identical semantics. Unlike `typescript.ts`, it does not run class-name pre-fill, so style 0 emits `$1` (or the Angular fallback) rather than a detected class name. |
 
 ## Intra-directory delegation
 

@@ -4,8 +4,8 @@ Pure path math. **No `vscode` import** — every file here is Node-testable. Don
 
 ## Files
 
-- `relative.ts` — `computeRelative(source, destination)` returns the import-ready relative path.
-- `extension.ts` — `extractFileExtension` / `removeFileExtension` thin wrappers over `path.parse`.
+- `relative.ts` — `computeRelative(sourceFilePath, destinationFilePath)` returns the import-ready relative path.
+- `extension.ts` — `extractFileExtension` is a thin wrapper over `path.parse`; `removeFileExtension` strips the extension via string slicing.
 - `import-type.ts` — `determineImportType(filePath)` seven-way classifier with two intentional `null` returns.
 
 ## `computeRelative` — the `./` prefix rule

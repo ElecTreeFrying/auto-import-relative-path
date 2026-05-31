@@ -6,7 +6,7 @@ The nine leaf snippet builders — one per destination language. Each takes an a
 
 The full inventory with one-line purposes is in [`README.md`](README.md). For editing, the modules fall into three contract shapes:
 
-- **Styled languages** (`javascript.ts`, `typescript.ts`, `css.ts`, `scss.ts`, `html.ts`, `markdown.ts`) — each exposes a pure `buildXImportSnippetByStyle(styleIndex, relativePath)` switch, with the config lookup sitting above it. See the config/pure split below.
+- **Styled languages** (`javascript.ts`, `typescript.ts`, `css.ts`, `scss.ts`, `html.ts`, `markdown.ts`) — each exposes a pure `buildXImportSnippetByStyle(styleIndex, relativePath)` switch, with the config lookup sitting above it. (`scss.ts` additionally exports `prepareScssImportPath`, a path-normalizer called by `variants.ts`.) See the config/pure split below.
 - **React entries** (`jsx.ts`, `tsx.ts`) — thin; each only exports `buildSnippet` and delegates the algorithm to `../_react.ts`. The `.mdx` destination reuses `tsx.ts`.
 - **Component frameworks** (`framework-component.ts`) — only exports `buildSnippet`; defers to `typescript.ts` for Vue/Svelte/Astro alike.
 
