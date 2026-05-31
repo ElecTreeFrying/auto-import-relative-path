@@ -63,7 +63,7 @@ All three are fully supported destinations. They use the **TypeScript import sty
 - **Vue** — inside the `<script setup>` block (or `<script>` if no setup block exists)
 - **Svelte** — inside the `<script>` block
 
-If no frontmatter or script block exists, one is created at line 0 automatically. See [README — §Supported Languages](README.md#supported-languages) and [SPEC — §Framework component destinations](SPEC.md#framework-component-destinations) for the full accepted-source lists.
+If no frontmatter or script block exists, one is created at line 0 automatically. Inserted imports also **match the surrounding indentation** — the extension reads the indentation of existing lines inside the frontmatter or `<script>` block (or inherits the block's own indentation when it's empty), so generated imports line up with your code. See [README — §Supported Languages](README.md#supported-languages) and [SPEC — §Framework component destinations](SPEC.md#framework-component-destinations) for the full accepted-source lists.
 
 ### Why are some configurations single-option dropdowns?
 
@@ -72,6 +72,10 @@ HTML stylesheet (`<link>`), Markdown link (`[text](path)`), and CSS/SCSS image (
 ### Why does the import shape change when I switch destination files?
 
 Because the **destination decides the syntax**. Pasting into `.scss` produces `@use`; pasting into `.html` produces `<script>` or `<link>`; pasting into `.tsx` produces an ES module `import`. The source extension is one input; the destination is the other. The extension's job is to pick the right shape automatically.
+
+### Why do `.module.css` / `.module.scss` imports look different from plain `.css`?
+
+CSS Modules are special-cased for JSX / TSX / MDX destinations. A `.module.css` or `.module.scss` source emits a **default import** — `import styles from './Button.module.css';` (where `styles` is an editable placeholder) — because that binding is what exposes the generated class map (`styles.button`). A plain `.css` / `.scss` source into the same destination stays a **side-effect import** (`import './Button.css';`), since there's no binding to consume.
 
 ### Does drag-and-drop work from the Explorer?
 
@@ -163,7 +167,7 @@ Each section below is **symptom → cause → fix**. If your issue isn't here, [
 
 **Fix:** Change the setting (<kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>,</kbd>, search `auto-import`).
 
-> **Note:** For `.html` and `.md` destinations, and when importing a non-stylesheet into a stylesheet, placement is **always** forced to `Cursor` regardless of the setting. Those contexts don't have an "import block" to attach to.
+> **Note:** For `.html` and `.md` destinations, and when importing a non-stylesheet into a stylesheet, placement is **always** forced to `Cursor` regardless of the setting. Those contexts don't have an "import block" to attach to. **`.mdx` is the exception among Markdown files:** it respects your `Top` / `Bottom` / `Cursor` setting like a script file (only `.md` is force-cursored), while still treating a leading `*` as prose rather than a comment.
 
 ---
 
