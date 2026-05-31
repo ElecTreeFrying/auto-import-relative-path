@@ -17,9 +17,6 @@ export function isPairSupported(info: FilePathInfo): boolean {
   if (!CROSS_IMPORT_DESTINATIONS.includes(destinationFileExt) && sourceFileExt !== destinationFileExt) {
     return false;
   }
-  if (sourceFileExt === '.html' && destinationFileExt === '.html') {
-    return false;
-  }
   if (destinationFileExt === '.html' && !HTML_SUPPORTED_EXTENSIONS.includes(sourceFileExt)) {
     return false;
   }

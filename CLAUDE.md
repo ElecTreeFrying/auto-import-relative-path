@@ -17,7 +17,7 @@ Each directory under `src/` has its own pair of nested guides. Read the director
 | Directory | Scope | Guides |
 |-----------|-------|--------|
 | `src/` | Source-tree overview, dependency layering, naming conventions | [`src/README.md`](src/README.md), [`src/CLAUDE.md`](src/CLAUDE.md) |
-| `src/commands/` | The five commands; clipboard data channel, eleven-clause gating | [`src/commands/README.md`](src/commands/README.md), [`src/commands/CLAUDE.md`](src/commands/CLAUDE.md) |
+| `src/commands/` | The five commands; clipboard data channel, ten-clause gating | [`src/commands/README.md`](src/commands/README.md), [`src/commands/CLAUDE.md`](src/commands/CLAUDE.md) |
 | `src/drop/` | DocumentDropEditProvider; drag-from-Explorer import generation | [`src/drop/README.md`](src/drop/README.md), [`src/drop/CLAUDE.md`](src/drop/CLAUDE.md) |
 | `src/editor/` | VS Code-API helpers (clipboard, snippet insertion, notifications) | [`src/editor/README.md`](src/editor/README.md), [`src/editor/CLAUDE.md`](src/editor/CLAUDE.md) |
 | `src/snippets/` | Per-language snippet builders + dispatch; style sync rules; JSX/TSX/MDX shared algorithm | [`src/snippets/README.md`](src/snippets/README.md), [`src/snippets/CLAUDE.md`](src/snippets/CLAUDE.md) |
@@ -54,7 +54,7 @@ The source tree is layered by responsibility, with strict directional dependenci
 ```
 src/
 ├── extension.ts                # activate/deactivate; registers 5 commands + drop provider
-├── gating.ts                   # shared isPairSupported() — nine-clause extension-pair check
+├── gating.ts                   # shared isPairSupported() — eight-clause extension-pair check
 ├── commands/                   # public command surface (one file per command)
 ├── drop/                       # DocumentDropEditProvider (drag-from-Explorer imports)
 ├── editor/                     # VS Code-API touching helpers (clipboard, snippets, notifications)

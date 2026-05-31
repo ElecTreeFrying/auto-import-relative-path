@@ -31,10 +31,10 @@ On success, the `copy-success` toast carries two action buttons — **Paste with
 - **Sequential fetch.** `getFilePathInfo()` runs first (reads clipboard + active editor), then `buildImportSnippet(info)` runs with the resulting `FilePathInfo`. The snippet builder receives all path data through the `info` parameter — it performs no clipboard or editor reads of its own.
 - **Clipboard validation** rejects with `'empty-clipboard'` when empty or not absolute; rejects with `'no-extension'` when the source path has no file extension (e.g. `Makefile`).
 - **Same-file rejection** runs before gating: `sourceFilePath.toLowerCase() === destinationFilePath.toLowerCase()` → `'same-file-path'` toast.
-- **Eleven-clause gating conjunction** rejects with `'not-supported'` toast if any clause matches. The first nine clauses are delegated to `src/gating.ts:isPairSupported(info)`; the last two are checked inline:
-  1–9. `isPairSupported(info)` — see `src/gating.ts` for the nine extension-pair clauses (`CROSS_IMPORT_DESTINATIONS`, `.html → .html`, and the seven destination-specific supported-extension checks). See [`src/constants/CLAUDE.md`](../constants/CLAUDE.md) for the gating tables.
-  10. `snippet.value === '\n'` (empty snippet — no language module handled this destination)
-  11. `snippet.value === ''` (same)
+- **Ten-clause gating conjunction** rejects with `'not-supported'` toast if any clause matches. The first eight clauses are delegated to `src/gating.ts:isPairSupported(info)`; the last two are checked inline:
+  1–8. `isPairSupported(info)` — see `src/gating.ts` for the eight extension-pair clauses (`CROSS_IMPORT_DESTINATIONS` and the seven destination-specific supported-extension checks; the `.html` destination check also rejects `.html → .html`, since `.html ∉ HTML_SUPPORTED_EXTENSIONS`). See [`src/constants/CLAUDE.md`](../constants/CLAUDE.md) for the gating tables.
+  9. `snippet.value === '\n'` (empty snippet — no language module handled this destination)
+  10. `snippet.value === ''` (same)
 - See [`src/snippets/CLAUDE.md`](../snippets/CLAUDE.md) for what builds the snippet.
 
 ## `copy-paste.ts` — sequential composition
@@ -43,17 +43,17 @@ On success, the `copy-success` toast carries two action buttons — **Paste with
 
 ## `paste-import-with-style.ts` — pick-style variant of paste-import
 
-Mirrors `paste-import.ts` step-by-step (clearNotifications → null-check editor → sequential fetch → clipboard sanity → same-file check → file-exists stat → ten-clause gating), but swaps `buildImportSnippet()` for `snippets/variants.ts:buildImportSnippetVariants()`. Branches on `variants.length` after gating:
+Mirrors `paste-import.ts` step-by-step (clearNotifications → null-check editor → sequential fetch → clipboard sanity → same-file check → file-exists stat → nine-clause gating), but swaps `buildImportSnippet()` for `snippets/variants.ts:buildImportSnippetVariants()`. Branches on `variants.length` after gating:
 
 - **0** → `'not-supported'` toast (defensive — gating already caught this).
 - **1** → insert directly via `insertImportSnippet(new vscode.SnippetString(variants[0].snippetText))`. Single-shape destinations (HTML, Markdown text, CSS image, SCSS image, JSX/TSX/MDX non-script source) take this path so the user gets the same silent-insert UX as `cmd+i`.
 - **≥2** → `vscode.window.showQuickPick` with `matchOnDescription: true`. Cancellation (Esc) returns silently — no toast.
 
-The gating mirrors `paste-import.ts` clauses 1-9 (CROSS_IMPORT_DESTINATIONS, `.html → .html`, the four markup/stylesheet supported-extension checks, and the three framework-component checks for Vue/Svelte/Astro). Clauses 10/11 (the `snippet.value === ''` / `'\n'` checks) collapse to `isEmptyVariantSet` (`variants.length === 0` plus a defensive check on `variants[0].snippetText`). **Persisted style settings are not consulted**; the picker is a one-shot override.
+The gating mirrors `paste-import.ts` clauses 1-8 (CROSS_IMPORT_DESTINATIONS, the four markup/stylesheet supported-extension checks — the `.html` one also rejecting `.html → .html` — and the three framework-component checks for Vue/Svelte/Astro). Clauses 9/10 (the `snippet.value === ''` / `'\n'` checks) collapse to `isEmptyVariantSet` (`variants.length === 0` plus a defensive check on `variants[0].snippetText`). **Persisted style settings are not consulted**; the picker is a one-shot override.
 
 ## `set-default-import-style.ts` — picker that persists instead of pasting
 
-Mirrors `paste-import-with-style.ts` step-by-step through gating, clipboard checks, sequential fetch, same-file rejection, file-existence stat, and the ten-clause `'not-supported'` rejection. Diverges after gating:
+Mirrors `paste-import-with-style.ts` step-by-step through gating, clipboard checks, sequential fetch, same-file rejection, file-existence stat, and the nine-clause `'not-supported'` rejection. Diverges after gating:
 
 - **0 variants OR empty first variant** → `'not-supported'` toast (defensive).
 - **1 variant OR `variants[0].setting === undefined`** (hardcoded destination — HTML, Markdown text, CSS/SCSS image, JSX/TSX/MDX non-script source) → new `'no-configurable-style'` toast. The matching `*ImportStyle` settings exist in `package.json` for UI parity only and are flagged "Currently unused" in `_styles.ts`; persisting one would be misleading.
