@@ -12,6 +12,7 @@ esbuild.js
 **/.vscode-test.*
 qa/**
 qa.new/**
+qa-pipeline/**
 CLAUDE.md
 SPEC.md
 SUPPORT.md
@@ -19,3 +20,5 @@ package-lock.json
 process/**
 .claude/**
 assets/*.gif
+assets/*.mov
+**/.DS_Store
