@@ -30,6 +30,8 @@ One module per destination language.
 
 `_`-prefixed files are internal to the `snippets/` subtree. Importing them from outside `snippets/` is a smell; `languages/` modules importing `../_styles`, `../_react`, and `../_class-name` is expected.
 
+For per-file export signatures and the editing rules, see [`languages/README.md`](languages/README.md) and [`languages/CLAUDE.md`](languages/CLAUDE.md).
+
 ## Where to add new code
 
 - **New destination language** → new module in `languages/` + `case` in `dispatch.ts` + `case` in `variants.ts` + `case` in `src/types/file-extension.ts` + a gating table in `src/constants/extensions.ts`.

@@ -11,7 +11,7 @@ Per-language snippet builders + the destination-extension dispatch in `dispatch.
 - `_class-name.ts` — internal: `readExportedClassName` reads a TS/JS source file and returns the first top-level exported class name (or `null`). `extractFirstExportedClassName` is the pure extraction function (strips comments first). Consumed by `languages/typescript.ts` and `variants.ts`.
 - `languages/` — one module per destination language (`javascript.ts`, `typescript.ts`, `jsx.ts`, `tsx.ts`, `css.ts`, `scss.ts`, `html.ts`, `markdown.ts`, `framework-component.ts`). `.mdx` destinations fall through to `tsx.ts` in `dispatch.ts` (identical import semantics). `.vue`, `.svelte`, and `.astro` destinations share `framework-component.ts` (identical import semantics). The six styled languages (JS, TS, CSS, SCSS, HTML, MD-image) export both a config-reading `buildXImportSnippet` and pure `buildXImportSnippetByStyle(styleIndex, relativePath)` functions. HTML exports four styled builders (script, image, video, audio) plus two fixed-shape builders (stylesheet, text-track).
 
-The `_`-prefixed files are internal to the `snippets/` subtree — importing them from outside `snippets/` is a smell. The `languages/` modules importing `../_styles`, `../_react`, and `../_class-name` is expected (they are within the subtree).
+The `_`-prefixed files are internal to the `snippets/` subtree — importing them from outside `snippets/` is a smell. The `languages/` modules importing `../_styles`, `../_react`, and `../_class-name` is expected (they are within the subtree). Per-file export contracts, intra-directory delegation, and source-classification routing are documented in [`languages/CLAUDE.md`](languages/CLAUDE.md).
 
 ## `_styles.ts` — string-equality contracts
 
