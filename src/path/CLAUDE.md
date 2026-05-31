@@ -12,12 +12,7 @@ Pure path math. **No `vscode` import** — every file here is Node-testable. Don
 
 Returns a Unix-style path (`toUnixPath` replaces `\` with `/`) with the file extension stripped, suitable for use inside an `import` statement.
 
-**The `./` prefix is added when:**
-
-- Files are in the **same directory** (case-insensitive comparison of `path.parse(...).dir`, since macOS/Windows are case-insensitive by default), **OR**
-- `path.relative` produced a result that doesn't already start with `.`.
-
-The second condition catches edge cases on absolute → relative computations that would otherwise emit `'foo'` instead of `'./foo'`.
+**The `./` prefix is added when** `path.relative` produced a result that doesn't already start with `.` (a bare `'foo'` / `'utils/helper'`). Genuine same-directory imports are the common case — `path.relative` returns a bare filename, so they receive the `./` prefix here. Paths that already begin with `../` are left untouched (adding `./` would emit a redundant `./../…`).
 
 **Regression test.** This rule is regression-tested per CHANGELOG `0.6.1` ("Prepend './' to relative paths for same-directory imports"). Don't simplify the prefix logic without re-running the test.
 

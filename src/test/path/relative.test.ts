@@ -58,4 +58,9 @@ describe('computeRelative', () => {
     const result = computeRelative(`${BASE}/unicode-paths/café-menu.tsx`, `${BASE}/src/bar.ts`);
     assert.strictEqual(result, '../unicode-paths/café-menu');
   });
+
+  it('case-only-differing sibling dirs produce a clean ../ (no redundant ./)', () => {
+    const result = computeRelative(`${BASE}/src/Components/Button.tsx`, `${BASE}/src/components/Page.tsx`);
+    assert.strictEqual(result, '../Components/Button');
+  });
 });
