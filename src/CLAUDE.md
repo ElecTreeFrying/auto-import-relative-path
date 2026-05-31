@@ -6,7 +6,7 @@ Source root for the extension. The codebase is layered by responsibility, with s
 
 ```
 extension.ts                 # entry: activate/deactivate
-gating.ts                    # shared isPairSupported() — eight-clause extension-pair check
+gating.ts                    # shared isPairSupported() — nine-clause extension-pair check
 ├── commands/                # public command surface (5 commands)
 ├── drop/                    # DocumentDropEditProvider (drag-from-Explorer imports)
 ├── editor/                  # vscode-API helpers (clipboard, snippets, notification, placement)

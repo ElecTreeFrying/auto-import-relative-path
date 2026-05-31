@@ -51,13 +51,13 @@ describe('gating/isPairSupported', () => {
     });
   });
 
-  describe('HTML self-import rejection (now via clause 2 — .html ∉ HTML_SUPPORTED_EXTENSIONS)', () => {
+  describe('HTML self-import rejection (clause 2)', () => {
     it('.html → .html rejected', () => {
       assert.strictEqual(isPairSupported(info('.html', '.html')), false);
     });
   });
 
-  describe('HTML destination (clause 2)', () => {
+  describe('HTML destination (clause 3)', () => {
     it('.js → .html accepted', () => {
       assert.strictEqual(isPairSupported(info('.js', '.html')), true);
     });
@@ -79,7 +79,7 @@ describe('gating/isPairSupported', () => {
     });
   });
 
-  describe('Markdown destination (clause 3)', () => {
+  describe('Markdown destination (clause 4)', () => {
     it('.md → .md accepted', () => {
       assert.strictEqual(isPairSupported(info('.md', '.md')), true);
     });
@@ -97,7 +97,7 @@ describe('gating/isPairSupported', () => {
     });
   });
 
-  describe('CSS destination (clause 4)', () => {
+  describe('CSS destination (clause 5)', () => {
     it('.css → .css accepted', () => {
       assert.strictEqual(isPairSupported(info('.css', '.css')), true);
     });
@@ -115,7 +115,7 @@ describe('gating/isPairSupported', () => {
     });
   });
 
-  describe('SCSS destination (clause 5)', () => {
+  describe('SCSS destination (clause 6)', () => {
     it('.scss → .scss accepted', () => {
       assert.strictEqual(isPairSupported(info('.scss', '.scss')), true);
     });
@@ -133,7 +133,7 @@ describe('gating/isPairSupported', () => {
     });
   });
 
-  describe('Vue destination (clause 6)', () => {
+  describe('Vue destination (clause 7)', () => {
     it('.ts → .vue accepted', () => {
       assert.strictEqual(isPairSupported(info('.ts', '.vue')), true);
     });
@@ -151,7 +151,7 @@ describe('gating/isPairSupported', () => {
     });
   });
 
-  describe('Svelte destination (clause 7)', () => {
+  describe('Svelte destination (clause 8)', () => {
     it('.ts → .svelte accepted', () => {
       assert.strictEqual(isPairSupported(info('.ts', '.svelte')), true);
     });
@@ -165,7 +165,7 @@ describe('gating/isPairSupported', () => {
     });
   });
 
-  describe('Astro destination (clause 8)', () => {
+  describe('Astro destination (clause 9)', () => {
     it('.ts → .astro accepted', () => {
       assert.strictEqual(isPairSupported(info('.ts', '.astro')), true);
     });

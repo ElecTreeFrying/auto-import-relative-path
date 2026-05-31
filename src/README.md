@@ -7,7 +7,7 @@ Source root for the Auto Import Relative Path VS Code extension.
 | Path | Purpose |
 |------|---------|
 | `extension.ts` | Entry point. `activate` registers the five commands and the document drop edit provider; `deactivate` is a no-op. |
-| `gating.ts` | Shared `isPairSupported()` — eight-clause source/destination extension-pair check. |
+| `gating.ts` | Shared `isPairSupported()` — nine-clause source/destination extension-pair check. |
 | `commands/` | Public command surface — one file per command (copy / paste / auto / paste-with-style / set-default-style). |
 | `drop/` | Drag-and-drop import provider — `DocumentDropEditProvider` for all 12 supported destination languages. |
 | `editor/` | VS Code-API helpers (clipboard, snippet insertion, notifications, placement). |

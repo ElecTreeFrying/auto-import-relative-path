@@ -37,7 +37,7 @@ Runtime: these tables are the runtime safety net. Keep them in sync with `types/
 ## Adding a new accepted source/destination pair
 
 1. Add the source extension to the matching `*_SUPPORTED_EXTENSIONS` table.
-2. Make sure the relevant per-language module under `src/snippets/languages/` knows how to produce a snippet for that source — the ten-clause gating won't catch a source that lands at the per-language `switch`'s `default:` and emits an empty snippet (it will, but you'll have produced a less-useful error path).
+2. Make sure the relevant per-language module under `src/snippets/languages/` knows how to produce a snippet for that source — the eleven-clause gating won't catch a source that lands at the per-language `switch`'s `default:` and emits an empty snippet (it will, but you'll have produced a less-useful error path).
 3. Add a matching branch in `src/snippets/variants.ts` if the new source needs styled variants — missing this means `pasteImportWithStyle` and `setDefaultImportStyle` silently skip it.
 
 ## Adding a new file extension entirely
