@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0.0] - 2026-05-28
+## [1.0.0] - Unreleased
 
 ### Breaking Changes
 - **Minimum VS Code version raised to `^1.115.0`.** Older VS Code installations will no longer load the extension.
@@ -24,7 +24,7 @@
 - **Class-name detection for TypeScript.** The named-import shape (`import { Name } from '…'`) now auto-fills the identifier from the source file's `export class Name` declaration when available. Falls back to Angular-convention PascalCase derivation (`.component`, `.directive`, `.pipe`, `.service`, `.module` suffixes), then to a `$1` tab-stop placeholder.
 - **New import styles per language.** TypeScript: `import type { }`, mixed value + type, dynamic `await import()`. JavaScript: mixed default + named, `await import()`. SCSS: `@use '…' as *`, `@forward '…'`. HTML script: `defer`, `type="module"`, `async`. HTML image: lazy-loading with `loading="lazy"`, CLS-safe dimensions with `width`/`height` attributes.
 - **Comprehensive test coverage.** 15+ automated test suites covering path math, import-type classification, extension gating tables, style-table integrity, class-name detection, and per-language snippet builders for every supported destination (JavaScript, TypeScript, CSS, SCSS, HTML, Markdown, JSX, TSX, framework components). Five-command registration guard test. Integration demo workspace with fixture files for every supported pair.
-- **Toolchain modernization.** Webpack replaced by esbuild (~11 KB production bundle). Unified `typescript-eslint` package replaces the separate parser and plugin. `npm-run-all` powers parallel `watch:tsc` + `watch:esbuild` scripts. Build pipeline: `compile` runs `check-types && lint && esbuild`; `watch` runs both watchers concurrently.
+- **Toolchain modernization.** Webpack replaced by esbuild (~8 KB gzipped production bundle). Unified `typescript-eslint` package replaces the separate parser and plugin. `npm-run-all` powers parallel `watch:tsc` + `watch:esbuild` scripts. Build pipeline: `compile` runs `check-types && lint && esbuild`; `watch` runs both watchers concurrently.
 
 ### Changed
 - **Command palette titles renamed for clarity.** `Auto Import: Paste` → *Paste as Import*. `Auto Import: Copy` → *Copy File Path*. `Auto Import: Auto` → *Insert Import from Selected File*.
