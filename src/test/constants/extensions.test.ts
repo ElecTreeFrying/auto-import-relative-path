@@ -126,4 +126,18 @@ describe('constants/extensions', () => {
   it('.html is not in MARKDOWN_SUPPORTED_EXTENSIONS', () => {
     assert.ok(!MARKDOWN_SUPPORTED_EXTENSIONS.includes('.html' as any));
   });
+
+  describe('type-mirror category invariants', () => {
+    it('MEDIA_FILE_EXTENSIONS excludes .vtt (it belongs to TEXT_TRACK)', () => {
+      assert.ok(!MEDIA_FILE_EXTENSIONS.includes('.vtt' as any), '.vtt must not be in MEDIA');
+      assert.ok(TEXT_TRACK_FILE_EXTENSIONS.includes('.vtt' as any), '.vtt must be in TEXT_TRACK');
+    });
+
+    it('IMAGE / MEDIA / TEXT_TRACK are pairwise disjoint', () => {
+      const overlap = (a: readonly string[], b: readonly string[]) => a.filter(ext => b.includes(ext));
+      assert.deepStrictEqual(overlap(IMAGE_FILE_EXTENSIONS, MEDIA_FILE_EXTENSIONS), [], 'IMAGE ∩ MEDIA');
+      assert.deepStrictEqual(overlap(IMAGE_FILE_EXTENSIONS, TEXT_TRACK_FILE_EXTENSIONS), [], 'IMAGE ∩ TEXT_TRACK');
+      assert.deepStrictEqual(overlap(MEDIA_FILE_EXTENSIONS, TEXT_TRACK_FILE_EXTENSIONS), [], 'MEDIA ∩ TEXT_TRACK');
+    });
+  });
 });
