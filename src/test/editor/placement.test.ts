@@ -1,5 +1,7 @@
 import * as assert from 'assert';
+import * as vscode from 'vscode';
 
+import { setAutoImportSetting } from '../../config/settings';
 import {
   IMPORT_INDICATORS,
   adjustForCommentBlock,
@@ -169,6 +171,15 @@ describe('editor/placement', () => {
       const lines = [ '<script setup lang="ts">', "import { ref } from 'vue';", '</script>' ];
       const result = findSfcScriptBounds(lines);
       assert.deepStrictEqual(result, { openingLine: 0, closingLine: 2 });
+    });
+
+    // Characterization of two edge cases (current behavior — both fall back to a wrapped block):
+    it('returns null for a single-line <script setup>…</script> (open + close on one line)', () => {
+      assert.strictEqual(findSfcScriptBounds([ '<script setup>const a = 1;</script>' ]), null);
+    });
+
+    it('returns null when the closing tag has trailing whitespace (</script >)', () => {
+      assert.strictEqual(findSfcScriptBounds([ '<script>', 'import x;', '</script >' ]), null);
     });
   });
 
@@ -558,6 +569,41 @@ describe('editor/placement', () => {
         0, 0,
       );
       assert.strictEqual(result.indentation, '  ');
+    });
+  });
+
+  // The Astro/SFC Cursor branch inserts at the cursor only when strictly inside the block
+  // (dropLine > openingLine && dropLine < closingLine); a cursor exactly ON a fence/tag line
+  // must fall back to Bottom. Requires the 'Cursor' placement setting (restored after).
+  describe('computeImportPlacement — Cursor exactly on a fence / script tag', () => {
+    before(async () => {
+      await setAutoImportSetting('preferences', 'placement', 'Cursor', vscode.ConfigurationTarget.Global);
+    });
+    after(async () => {
+      await setAutoImportSetting('preferences', 'placement', undefined, vscode.ConfigurationTarget.Global);
+    });
+
+    const astro = '---\nimport x;\nconst a = 1;\n---\n<html></html>';   // fences at lines 0 and 3
+    const vue = '<script setup>\nimport x;\nconst a = 1;\n</script>\n<template></template>'; // tags at 0 and 3
+
+    it('Astro: cursor on the opening --- fence falls back to Bottom (after last import)', () => {
+      const r = computeImportPlacement(astro, '.astro' as FileExtension, '.ts' as FileExtension, 0, 0);
+      assert.strictEqual(r.line, 2);
+    });
+
+    it('Astro: cursor on the closing --- fence falls back to Bottom', () => {
+      const r = computeImportPlacement(astro, '.astro' as FileExtension, '.ts' as FileExtension, 3, 0);
+      assert.strictEqual(r.line, 2);
+    });
+
+    it('Vue: cursor on the opening <script setup> tag falls back to Bottom', () => {
+      const r = computeImportPlacement(vue, '.vue' as FileExtension, '.ts' as FileExtension, 0, 0);
+      assert.strictEqual(r.line, 2);
+    });
+
+    it('Vue: cursor on the closing </script> tag falls back to Bottom', () => {
+      const r = computeImportPlacement(vue, '.vue' as FileExtension, '.ts' as FileExtension, 3, 0);
+      assert.strictEqual(r.line, 2);
     });
   });
 });
