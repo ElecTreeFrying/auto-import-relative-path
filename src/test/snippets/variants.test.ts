@@ -4,6 +4,7 @@ import * as vscode from 'vscode';
 
 import { buildImportSnippetVariants } from '../../snippets/variants';
 import { getFilePathInfo } from '../../editor/file-path-info';
+import { resolveStyleIndex, JAVASCRIPT_IMPORT_OPTIONS } from '../../snippets/_styles';
 
 const FIXTURE_ROOT = path.resolve(__dirname, '../../../qa/workspace');
 
@@ -114,5 +115,20 @@ describe('buildImportSnippetVariants', () => {
     assert.strictEqual(variants.length, 7);
     assert.ok(variants[0].setting, 'styled variant should have setting');
     assert.strictEqual(variants[0].setting.key, 'typescript');
+  });
+
+  it('.json into .json: empty variant set (isEmptyVariantSet backstop, same-ext non-dispatch)', async () => {
+    const variants = await openAndQuery('data/config.json', 'feature-flags.json');
+    assert.deepStrictEqual(variants, []);
+  });
+
+  it('.js into .js: each styled variant setting.value round-trips via resolveStyleIndex', async () => {
+    const variants = await openAndQuery('with-requires.js', 'src/bar.js');
+    // setting.value is the ImportStyle.description string; resolveStyleIndex must recover the
+    // numeric index for every one, covering the whole table exactly once (the persist/read contract
+    // used by set-default-import-style.ts).
+    const resolved = variants.map(v => resolveStyleIndex(JAVASCRIPT_IMPORT_OPTIONS, v.setting!.value));
+    assert.ok(resolved.every(index => index !== undefined), 'every setting.value must resolve to an index');
+    assert.deepStrictEqual([ ...resolved ].sort((a, b) => a! - b!), [ 0, 1, 2, 3, 4, 5, 6 ]);
   });
 });

@@ -151,4 +151,14 @@ describe('buildImportSnippet', () => {
     const result = await buildImportSnippet(info);
     assert.strictEqual(result.value, '');
   });
+
+  // Same-extension pair passes gating (clause 1) but the dispatch switch has no .json case,
+  // so it falls to the default empty-snippet backstop.
+  it('.json into .json produces empty SnippetString (same-ext non-dispatch backstop)', async () => {
+    await openFixture('data/config.json');
+    await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'data/feature-flags.json'));
+    const info = await getFilePathInfo();
+    const result = await buildImportSnippet(info);
+    assert.strictEqual(result.value, '');
+  });
 });
