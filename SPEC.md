@@ -14,7 +14,7 @@ A VS Code extension that generates relative-path import statements for JS, TS, J
 | `extension.pasteImportWithStyle` | Auto Import: Paste as Import (Pick Style) | — | — | Command Palette + copy-success toast button |
 | `extension.setDefaultImportStyle` | Auto Import: Set Default Import Style | — | — | Command Palette only |
 
-**Copy** puts the source file's absolute path on the clipboard and shows a "Copied path" toast with two action buttons: **Paste with Style** (runs Paste as Import (Pick Style)) and **Paste Now** (runs Paste as Import). The clipboard write is an explicit re-write after VS Code's built-in `copyFilePath` to guarantee the next paste sees the correct value.
+**Copy** puts the source file's absolute path on the clipboard and shows a "Copied path" toast with two action buttons: **Paste with Style** (runs Paste as Import (Pick Style)) and **Paste Now** (runs Paste as Import). The clipboard write is an explicit re-write after VS Code's built-in `copyFilePath` to guarantee the next paste sees the correct value. If the active item has no copyable absolute file path, Copy shows a "No file selected to copy." warning and stops. If the copied path has no file extension (e.g. `Makefile`, `Dockerfile`), Copy shows a "{basename} has no file extension." warning instead.
 
 **Paste** reads the clipboard as the source path, takes the active editor's file as the destination, computes the relative path, gates on the source-destination extension pair, and inserts the resulting import snippet.
 
@@ -22,7 +22,7 @@ A VS Code extension that generates relative-path import statements for JS, TS, J
 
 **Paste as Import (Pick Style)** performs the same validation as Paste, but shows a QuickPick listing all applicable import styles for the source-destination pair. If only one style applies, the import is inserted directly without showing the picker.
 
-**Set Default Import Style** shows a QuickPick listing all applicable styles. The current default is marked with a checkmark icon and appears first. Selecting a style persists the choice to VS Code global settings instead of inserting an import. Destinations that have only one hardcoded shape show a "No configurable style" warning instead.
+**Set Default Import Style** shows a QuickPick listing all applicable styles. The current default is marked with a checkmark icon and appears first. If the persisted value matches none of the offered styles (for example, a custom value hand-typed into `settings.json`), no item is marked and the styles appear in their natural order with no current-default indicator. Selecting a style persists the choice to VS Code global settings instead of inserting an import. Destinations that have only one hardcoded shape show a "No configurable style" warning instead.
 
 ---
 
@@ -32,16 +32,19 @@ Dragging a file from VS Code's Explorer tree into a supported editor generates t
 
 ### Supported destination languages
 
-The provider registers against: JavaScript, JavaScriptReact, TypeScript, TypeScriptReact, CSS, SCSS, HTML, Markdown, Vue, Svelte, Astro, and MDX.
+The provider registers against: JavaScript, JavaScriptReact, TypeScript, TypeScriptReact, CSS, SCSS, HTML, Markdown, Vue, Svelte, Astro, and MDX. Each language is registered with `scheme: 'file'`, so the provider activates only for on-disk, file-backed documents; untitled, in-memory, and non-`file`-scheme (e.g. remote or virtual) documents are excluded even when their language is one of the 12 above.
+
+Beyond the per-language `scheme: 'file'` filter, the provider is registered with `dropMimeTypes: [ 'text/uri-list' ]`, so VS Code only invokes it for drag payloads carrying a `text/uri-list` MIME type (the standard Explorer drag payload) — a second registration-time gate alongside the language/scheme selector. Because of this gate, the `text/plain` fallback below is reached only when a drag does carry `text/uri-list` but its first-line value is empty/whitespace.
 
 ### Behavior
 
-1. The source file's absolute path is resolved from the drag payload (`text/uri-list` with `text/plain` fallback).
+1. The source file's path is resolved from the drag payload: the `text/uri-list` value is tried first (its first line is parsed via `Uri.parse(...).fsPath`); only if that is absent/empty is the `text/plain` value used, and then **only when it is an absolute path** (`path.isAbsolute`). A relative `text/plain` value is not accepted (the provider yields no drop edit). When several files are dragged from the Explorer at once, VS Code delivers them as a newline-separated `text/uri-list`, but only the first URI is parsed; the remaining dragged files are ignored, so one drop produces at most one import.
+   - **Unresolvable payload**: if step 1 yields no usable path (the drag has neither a `text/uri-list` entry nor an absolute `text/plain` value), the provider returns `null` silently — no toast and no drop edit are offered. This is the only drop rejection path with no notification; the same-file and unsupported-pair checks below both show a toast.
 2. The destination is the file receiving the drop.
 3. **Same-file check**: if source equals destination (case-insensitive), a "same file" toast appears and nothing is inserted.
 4. **Pair gating**: if the source-destination extension pair is unsupported, a "Cannot import" toast appears and nothing is inserted (the provider returns `null`).
 5. **Snippet generation**: the import snippet is produced by the same per-language dispatch used by the paste commands. All configurable styles and settings apply.
-6. **Insertion**: the snippet's final position is determined by `computeImportPlacement()` — the same Top / Bottom / Cursor logic used by the paste commands, parameterized with the drop position as the cursor input. For inline snippets (e.g., images into CSS/SCSS), the `DocumentDropEdit` places the snippet directly at the drop coordinates. For non-inline snippets, a `WorkspaceEdit` via `additionalEdit` places the import at the computed position (not the drop position).
+6. **Insertion**: the snippet's final position is determined by `computeImportPlacement()` — the same Top / Bottom / Cursor logic used by the paste commands, parameterized with the drop position as the cursor input. For inline snippets (e.g., images into CSS/SCSS), the `DocumentDropEdit` places the snippet directly at the drop coordinates. For non-inline snippets, a `WorkspaceEdit` via `additionalEdit` places the import at the computed position (not the drop position). Every drop edit (both the inline path and the non-inline `additionalEdit` path) is tagged with the title `Auto Import` and the kind `DocumentDropOrPasteEditKind.TextUpdateImports.append('autoImport')`, so VS Code surfaces it as the "Auto Import" option in the drop-edit picker.
 
 ### Differences from paste commands
 
@@ -84,6 +87,8 @@ The provider registers against: JavaScript, JavaScriptReact, TypeScript, TypeScr
 
 Which source extensions each destination accepts. A source-destination pair not listed here is rejected with a "Cannot import" warning.
 
+Exactly ten destinations may import a source of a *different* extension (the cross-import set): `.html`, `.md`, `.css`, `.scss`, `.tsx`, `.mdx`, `.jsx`, `.vue`, `.svelte`, `.astro`. Every other destination accepts only its own extension (the same-extension default; see `.js`/`.ts` below). The per-destination tables that follow detail the accepted sources for each destination.
+
 ### Same-extension destinations
 
 `.js` and `.ts` destinations accept only their own extension. The source extension must equal the destination extension; cross-imports are rejected.
@@ -96,6 +101,8 @@ Which source extensions each destination accepts. A source-destination pair not 
 ### Script-oriented destinations (JSX, TSX, MDX)
 
 These accept script sources through their configurable import style, plus a broad set of non-script sources through hardcoded per-category dispatch.
+
+Mechanically, `.jsx`/`.tsx`/`.mdx` carry NO per-destination source allow-list in `gating.ts` — unlike the stylesheet, markup, and same-extension destinations below (each backed by a `*_SUPPORTED_EXTENSIONS` clause), these three are accepted purely by membership in `CROSS_IMPORT_DESTINATIONS` and therefore accept ANY source extension that clears the cross-import gate. The table below enumerates today's full 35-extension set, so it is exhaustive in practice; but a newly added file extension is auto-accepted into these three destinations with no gating change. It still needs a source branch in `_react.ts:buildReactImport` (default paste flow) and `variants.ts:buildReactNonScriptVariant` (style-picker flow) to emit a non-empty snippet — without one it falls through to the `default:` empty `SnippetString`.
 
 | Source category | Extensions | `.jsx` | `.tsx` | `.mdx` |
 |---|---|---|---|---|
@@ -153,11 +160,15 @@ These accept script sources through their configurable import style, plus a broa
 
 1. **Same file**: source path equals destination path (case-insensitive) — "A file cannot import itself."
 2. **Unsupported pair**: source extension not in the destination's accepted list — "Cannot import {ext} into {ext} files."
-3. **Empty snippet**: if the snippet builder produces an empty or newline-only string, the pair is treated as unsupported.
+3. **Empty snippet**: if the import generator produces an empty or newline-only string, the pair is treated as unsupported. This happens two ways: (a) a per-language builder has no branch for the source (e.g. a `.ts` source into a `.jsx` destination, which passes pair gating but has no script branch), or (b) the destination-extension dispatcher (`snippets/dispatch.ts`) has no `case` for the destination — reached by same-extension pairs that clear the same-file/same-extension gate but have no import syntax, such as `.json` → `.json` or `.png` → `.png` (there is no `.json`/`.png` builder at all). In both cases the empty snippet signals the calling command/drop provider to treat the pair as unsupported.
 
 ---
 
 ## Import Statement Styles
+
+**Configuration drift**: every styled builder resolves the persisted style by exact-matching the setting value against its enum description strings (`resolveStyleIndex`, byte-identical string equality). The stored value is the full option string (e.g. `import name from '_relativePath_';`), not an index. If the value matches none — a typo, a stray space, a value left over after an option string changed across an extension update, or one hand-edited into `settings.json` — resolution yields no index and the renderer silently falls back to that language's index-0 shape (e.g. JavaScript → `import name from './path';`) rather than erroring or inserting nothing. This is the snippet-insertion behavior on both the paste and drag-drop paths; no error, toast, or log is shown. It is distinct from the Set Default Style picker, which separately surfaces an unmatched value by showing no current-default checkmark (see Set Default Import Style). Hardcoded single-shape destinations are unaffected — they never consult the setting.
+
+In the style picker, each entry's label is the snippet shape with the source basename substituted (placeholders rendered as identifier text); its right-aligned description is a short tag. The "Description" column in the per-language tables below paraphrases that tag for every row — it is not a verbatim copy. The default (index 0) HTML image, video, and audio styles have no tag in code, so the picker shows their snippet shape as the description there.
 
 ### JavaScript
 
@@ -193,7 +204,9 @@ Used for `.ts` destinations, for `.ts`/`.tsx` sources imported into `.tsx`/`.mdx
 
 **Angular legacy auto-fill** (index 0 only): when the source path contains `.component`, `.directive`, `.pipe`, `.service`, or `.module`, the placeholder is pre-filled with a PascalCase identifier derived from the filename — for example, `app-root.component.ts` produces `import { AppRootComponent } from './path';`. Other indexes use a generic placeholder.
 
-**Exported class detection** (`.ts` destinations only): when the source file contains an `export class Name` or `export abstract class Name` declaration, the class name is pre-filled into the placeholder at index 0. This takes priority over Angular legacy auto-fill when both would apply. Other destinations that use the TypeScript import style (`.tsx`, `.mdx`, `.vue`, `.svelte`, `.astro`) do not perform class detection — index 0 falls through to Angular legacy auto-fill or an anonymous tab stop.
+**Exported class detection** (`.ts` destinations only): when the source file contains an `export class Name` or `export abstract class Name` declaration, the class name is pre-filled into the placeholder at index 0. This takes priority over Angular legacy auto-fill when both would apply. Other destinations that use the TypeScript import style (`.tsx`, `.mdx`, `.vue`, `.svelte`, `.astro`) do not perform class detection — index 0 falls through to Angular legacy auto-fill or an anonymous tab stop. Detection is line-anchored: only a class declared at column 0 (the very start of a line) is matched. An `export class` that is indented — including one nested inside a `namespace`/`module` block — is not detected, and index 0 then falls through to Angular legacy auto-fill (or, failing that, an anonymous tab stop). When a file declares multiple top-level exported classes, only the first (top-most by line order) is used for the pre-fill. Commented-out declarations are ignored — both `//` line comments and `/* */` block comments (including multi-line blocks) are stripped before scanning, so a commented-out `export class` does not pre-fill the placeholder. Class detection degrades silently: if the source file cannot be read (and unlike the pre-generation existence check, no warning is shown), index 0 simply uses its normal fallback — Angular legacy auto-fill or an anonymous tab stop.
+
+**Config-drift fallback**: if the persisted `typescriptImportStyle` value matches none of the seven enum strings (unset, mistyped, or trailing-space drift, so `resolveStyleIndex` returns `undefined`), the builder still emits a usable `import { name } from './path';` — the index-0 shape, with exported-class pre-fill honored when a class was detected (`.ts` destinations). Unlike the explicitly-selected index 0, this drift path does NOT apply Angular legacy auto-fill, so a `.component`/`.directive`/`.pipe`/`.service`/`.module` source that would PascalCase-fill under a chosen index 0 instead gets a plain `$1` tab stop when index 0 is reached only via drift.
 
 ### CSS stylesheet
 
@@ -268,7 +281,7 @@ Used for image sources imported into `.html` destinations.
 
 | Index | Snippet | Description |
 |---|---|---|
-| **0** | `<img src="./path" alt="sample">` | Standard **(default)** |
+| **0** | `<img src="./path" alt="sample">` | **(default)** — no tag in code; picker shows the snippet shape |
 | 1 | `<img src="./path" alt="" loading="lazy">` | Lazy loading |
 | 2 | `<img src="./path" alt="" width="" height="">` | Explicit dimensions (CLS prevention) |
 
@@ -280,7 +293,7 @@ Used for video sources (`.mp4`, `.webm`, `.mov`) imported into `.html` destinati
 
 | Index | Snippet | Description |
 |---|---|---|
-| **0** | `<video src="./path" controls></video>` | Accessible default **(default)** |
+| **0** | `<video src="./path" controls></video>` | **(default)** — no tag in code; picker shows the snippet shape |
 | 1 | `<video src="./path" autoplay muted loop playsinline></video>` | Silent autoplay (hero sections) |
 | 2 | `<video src="./path" controls poster=""></video>` | Custom poster thumbnail |
 | 3 | `<video src="./path" controls preload="metadata"></video>` | Metadata preload (Core Web Vitals) |
@@ -293,7 +306,7 @@ Used for audio sources (`.mp3`, `.ogg`, `.wav`, `.m4a`) imported into `.html` de
 
 | Index | Snippet | Description |
 |---|---|---|
-| **0** | `<audio src="./path" controls></audio>` | Accessible default **(default)** |
+| **0** | `<audio src="./path" controls></audio>` | **(default)** — no tag in code; picker shows the snippet shape |
 | 1 | `<audio src="./path" controls preload="metadata"></audio>` | Metadata preload |
 
 ### HTML stylesheet — hardcoded
@@ -313,7 +326,7 @@ Used for `.css` source imported into `.html` destinations.
 Used for `.vtt` source imported into `.html` destinations.
 
 ```
-<track src="./path" kind="subtitles" srclang="en" label="English">
+<track src="./path" kind="subtitles" srclang="en" label="English"></track>
 ```
 
 The `srclang` and `label` values are snippet placeholders that the user fills in after insertion.
@@ -351,7 +364,9 @@ When a non-script source is imported into a `.jsx`, `.tsx`, or `.mdx` destinatio
 | Media, text track | `.mp4`, `.webm`, `.mov`, `.mp3`, `.ogg`, `.wav`, `.m4a`, `.vtt` | `import url from './path';` |
 | Font, stylesheet | `.woff`, `.woff2`, `.ttf`, `.eot`, `.css`, `.scss` | `import './path';` |
 
-**Script routing**: `.jsx` destinations route `.js` and `.jsx` sources through the JavaScript import style. `.tsx` and `.mdx` destinations route `.ts` and `.tsx` sources through the TypeScript import style, and `.js` sources through the JavaScript import style as a fallback.
+Every shape in this table keeps the full real source extension on the path verbatim — neither preserve setting applies to these non-script imports.
+
+**Script routing**: `.jsx` destinations route `.js` and `.jsx` sources through the JavaScript import style. `.tsx` and `.mdx` destinations route `.ts` and `.tsx` sources through the TypeScript import style, and `.js` and `.jsx` sources through the JavaScript import style as a fallback.
 
 ### Vue / Svelte / Astro
 
@@ -369,7 +384,7 @@ Setting: **`auto-import.preferences.importStatementPlacement`**. Default: `"Bott
 |---|---|
 | **Top** | Insert before the first line of the file (line 0). |
 | **Bottom** | Insert after the last recognized import line. Falls back to line 0 if no import is found. |
-| **Cursor** | Insert at the current cursor position. |
+| **Cursor** | Insert at the current cursor line. If the cursor sits inside a comment block (lines starting with `//`, `/*`, or `*` after whitespace), the import is placed on the first line *above* that block, so it lands above commented-out code/prose rather than inside the comment. For Markdown destinations (`.md`, `.mdx`) a leading `*` is treated as content (bullet / emphasis), not a comment. |
 
 ### Bottom mode — import line detection
 
@@ -395,8 +410,10 @@ These overrides take effect regardless of the user's placement setting.
 
 | Condition | Forced placement | Reason |
 |---|---|---|
-| HTML or Markdown destination | Cursor (line and column) | No canonical "top of file" for embedded tags. |
+| HTML or Markdown destination (`.html`, `.md` — **not** `.mdx`) | Cursor (line and column) | No canonical "top of file" for embedded tags. |
 | Non-stylesheet source into stylesheet destination (e.g., image into `.css`/`.scss`) | Inline at exact cursor position (line and column), no trailing newline | `url()` is a CSS value fragment, not a standalone statement. |
+
+`.mdx` is intentionally excluded from this forced-cursor override (`shouldRepositionCursor` checks only `.html`/`.md`); it follows the user's Top/Bottom/Cursor setting, though it is still treated as Markdown for `*`-comment handling (see Cursor mode above).
 
 ### Astro frontmatter constraint
 
@@ -408,17 +425,21 @@ For `.astro` destinations, import placement is constrained to within the `---` f
 | Bottom | Scan the frontmatter region for import markers, insert after the last match. Falls back to after the opening `---`. |
 | Cursor | Insert at the cursor line if the cursor is strictly between the `---` lines (not on the fence lines themselves). Otherwise falls back to Bottom. |
 
+In Cursor mode, when the cursor is inside the block, the same comment-block walk-up applies before insertion. The inserted import is indented to match the surrounding block — Top uses the block's detected indentation (the indent of its first content line); Bottom reuses the last existing import's own indentation (falling back to the block's); Cursor uses the cursor line's own indentation (falling back to the block's). When Cursor falls back to Bottom (cursor outside the fences), it inherits Bottom's indentation. Imports inserted outside a frontmatter/script block (the general Top/Bottom/Cursor flow) are not re-indented. This rule applies to both the paste and drag-drop flows.
+
 If no frontmatter exists, a new `---` block is created at line 0 and the import is placed inside it.
 
 ### Vue / Svelte script block constraint
 
-For `.vue` and `.svelte` destinations, import placement is constrained to within a `<script>` block. For Vue, `<script setup>` is preferred over bare `<script>` when both exist.
+For `.vue` and `.svelte` destinations, import placement is constrained to within a `<script>` block, chosen by a three-tier preference: (1) `<script setup>`; otherwise (2) a `<script>` whose opening tag does NOT contain `context=` (so a Svelte `<script context="module">` block is skipped in favor of the instance script); otherwise (3) the first `<script>` of any kind.
 
 | Mode | Behavior |
 |---|---|
 | Top | Insert after the opening `<script...>` tag. |
 | Bottom | Scan the script block for import markers, insert after the last match. Falls back to after the opening tag. |
 | Cursor | Insert at the cursor line if the cursor is strictly between the `<script>` and `</script>` lines (not on the tag lines themselves). Otherwise falls back to Bottom. |
+
+In Cursor mode, when the cursor is inside the block, the same comment-block walk-up applies before insertion. The inserted import is indented to match the surrounding block — Top uses the block's detected indentation (the indent of its first content line); Bottom reuses the last existing import's own indentation (falling back to the block's); Cursor uses the cursor line's own indentation (falling back to the block's). When Cursor falls back to Bottom (cursor outside the tags), it inherits Bottom's indentation. Imports inserted outside a frontmatter/script block (the general Top/Bottom/Cursor flow) are not re-indented. This rule applies to both the paste and drag-drop flows.
 
 If no script block exists, a new `<script>`/`</script>` pair is created at line 0 and the import is placed inside it.
 
@@ -429,6 +450,8 @@ If no script block exists, a new `<script>`/`</script>` pair is created at line 
 | Script (`.ts`, `.tsx`, `.mdx`, `.js`, `.jsx`, `.vue`, `.svelte`, `.astro`) | Column 0 |
 | Stylesheet (`.css`, `.scss`) | Column 0 |
 | HTML, Markdown | Cursor's current column |
+
+**Newline**: every non-inline import has a trailing newline appended before insertion, so each import occupies its own line. The inline `url()` path (the overrides row above) is the only exception. For the no-frontmatter and no-script-block fallbacks, this appended newline is also what lands the synthesized closing fence/tag on its own line — the created blocks are `---\n<import>\n---\n` and `<script>\n<import>\n</script>\n`.
 
 ---
 
@@ -482,6 +505,7 @@ All commands clear existing notifications before executing. Any toast from a pre
 
 1. The user selects a source file and runs **Copy File Path** (`Cmd+Shift+A` / `Ctrl+Shift+A`).
 2. The extension delegates to VS Code's built-in `copyFilePath`, reads the clipboard back, and re-writes the same string to guarantee consistency.
+   - Copy validates the read-back path: if it is empty or not absolute, a "No file selected to copy." warning appears and the workflow stops; if it has no file extension, a "{basename} has no file extension." warning appears and the workflow stops.
 3. An info toast appears: "Copied path — {basename}" with two buttons:
    - **Paste with Style** — runs Paste as Import (Pick Style)
    - **Paste Now** — runs Paste as Import
@@ -494,11 +518,15 @@ The user clicks a file in the explorer and runs **Insert Import from Selected Fi
 
 ### Workflow: Pick Style
 
-Same validation as Paste. Shows a QuickPick with all applicable styles for the current source-destination pair. The picker placeholder reads "Select an import style". The picker supports filtering by description text — typing part of a style description narrows the list. If only one style applies, the import is inserted directly without showing the picker. Pressing Escape dismisses the picker silently.
+Same validation as Paste. Shows a QuickPick with all applicable styles for the current source-destination pair. The picker placeholder reads "Select an import style". The picker enables `matchOnDescription`, so typing also filters against each row's description column — the style's short tag when it declares one (true for 35 of the 38 styled entries), otherwise the full style-description string. If only one style applies, the import is inserted directly without showing the picker. Pressing Escape dismisses the picker silently.
+
+Each picker row's primary label is the rendered import shape itself, but (a) the path is shortened to the source file's basename — a source at `../../components/widget.tsx` shows as `widget`, keeping rows width-stable regardless of nesting depth — and (b) snippet placeholder syntax is converted to plain identifiers for display (`${1:styles}` → `styles`, `${1:name}`/`$1` → `name`, `${1:url}` → `url`, `@use '...' as ${1:*}` → `as *`). The full relative path is restored in the text actually inserted. The row's secondary text is the style's tag (or its full description when no tag is defined; empty for single-shape hardcoded destinations) — this is what "filter by description" matches against.
+
+The picker is a one-shot override: it neither reads nor writes any persisted `*ImportStyle` setting. Unlike Set Default Import Style, the styles appear in their natural order with no current-default checkmark, and the chosen style applies to this insertion only — it does not change the saved default.
 
 ### Workflow: Set Default Style
 
-Same validation as Pick Style. Shows a QuickPick with placeholder "Set default import style". The picker supports filtering by description text — typing part of a style description narrows the list. The current default is marked with a checkmark icon and appears first. Selecting a style persists the choice to VS Code global settings and shows a confirmation toast. Destinations with only one hardcoded shape show a "No configurable style" warning instead.
+Same validation as Pick Style. Shows a QuickPick with placeholder "Set default import style". The picker enables `matchOnDescription`, so typing also filters against each row's description column — the style's short tag when it declares one (true for 35 of the 38 styled entries), otherwise the full style-description string. The current default is marked with a checkmark icon and appears first. If the persisted value does not match any offered style (for example, a custom value hand-typed into `settings.json`), no item is marked and the styles appear in their natural order with no current-default indicator. Selecting a style persists the choice to VS Code global settings and shows a confirmation toast. Pressing Escape dismisses the picker silently — no setting is written and no confirmation toast appears. Destinations with only one hardcoded shape show a "No configurable style" warning instead.
 
 ### Clipboard validation
 
@@ -509,6 +537,8 @@ Before generating an import, the extension validates the clipboard contents agai
 
 After validation passes, the extension checks that the source file still exists on disk. If it has been deleted or moved, the "Source file no longer exists: {basename}" warning appears.
 
+**Copy-side variant**: the Copy File Path command runs the same empty/non-absolute and no-extension checks on the path it reads back, but with a *different* message for the empty/non-absolute case — it shows "No file selected to copy." (the `no-file-to-copy` message) instead of the `empty-clipboard` message the paste commands use. The no-extension message ("{basename} has no file extension.") is shared by both Copy and the paste commands.
+
 ### Notification reference
 
 All messages are prefixed with "Auto Import:".
@@ -516,7 +546,7 @@ All messages are prefixed with "Auto Import:".
 | Condition | Level | Message | Action buttons |
 |---|---|---|---|
 | Copy succeeded | Info | Copied path — {basename} | **Paste with Style**, **Paste Now** |
-| Default style saved | Info | Default style saved — {description} | — |
+| Default style saved | Info | Default style saved — {settingValue} | — |
 | Same file | Warning | A file cannot import itself. | — |
 | Unsupported pair | Warning | Cannot import {sourceExt} into {destinationExt} files. | **View Supported Files** |
 | No active editor | Warning | Open a file to paste an import. | — |
@@ -526,15 +556,28 @@ All messages are prefixed with "Auto Import:".
 | Source not found | Warning | Source file no longer exists: {basename}. | — |
 | No configurable style | Warning | {sourceExt} → {destinationExt} imports use a fixed style. | — |
 
+Clicking **View Supported Files** on the Unsupported pair toast opens the project README's supported-languages section (`https://github.com/ElecTreeFrying/auto-import-relative-path#supported-languages`) in the default browser; dismissing the toast does nothing.
+
+`{settingValue}` is the persisted setting string written to `settings.json` — the byte-exact `package.json` enum value (the `_relativePath_` import shape), e.g. `import name from '_relativePath_';`, with the literal `_relativePath_` token shown unexpanded. It is **not** the human-readable phrase shown in the "Description" column of the style tables above (that phrase is the QuickPick row's description). A custom value hand-typed into `settings.json` would likewise be echoed verbatim.
+
+The two near-duplicate empty/non-absolute messages differ by originating command: **No file to copy** is emitted only by the Copy File Path command, while **Empty clipboard** is emitted by the three paste commands (Paste as Import, Paste as Import (Pick Style), Set Default Import Style). The **No file extension** row is shared by both Copy and the paste commands.
+
 ---
 
 ## Path Computation
 
 **Relative path**: computed via Node's `path.relative` from the destination file's directory to the source file. Always uses Unix-style forward slashes, including on Windows.
 
-**`./` prefix**: added when the source and destination are in the same directory (case-insensitive directory comparison for macOS/Windows compatibility), or when `path.relative` produces a result that does not already start with `.`.
+**`./` prefix**: added when `path.relative`'s result (after Unix-slash normalization via `toUnixPath`) does not already start with `.`. The decision is a single `relativePath.startsWith('.')` test in `computeRelative` (`src/path/relative.ts`) — there is no source-vs-destination directory comparison and no case-folding anywhere in this file. Same-directory imports receive the prefix implicitly, because `path.relative` returns a bare filename (e.g. `foo` / `utils/helper`) for them, which does not begin with `.`. Paths that already begin with `../` are left untouched (prefixing would emit a redundant `./../`). (The only case-insensitive path comparisons in the extension are the same-*file* rejection checks in the paste/drop commands, which compare full file paths upstream — unrelated to this prefix rule.)
 
-**Extension stripping**: script (`.ts`, `.tsx`, `.mdx`, `.js`, `.jsx`) and stylesheet (`.css`, `.scss`) extensions are stripped from the import path by default. The `preserveScriptFileExtension` and `preserveStylesheetFileExtension` settings override this. HTML, Markdown, and all other source types (images, fonts, media, data, documents, YAML, components) always preserve the full extension.
+**Extension stripping**: the import path keeps or drops the source extension depending on which builder renders it.
+
+- **Script sources** (`.ts`, `.tsx`, `.js`, `.jsx`): the extension is stripped by default and kept when `preserveScriptFileExtension` is on. This applies for script destinations (`.js`/`.ts`/`.jsx`/`.tsx`/`.mdx`) and for script sources into `.vue`/`.svelte`/`.astro`. (`.mdx` is never a *script source* — no builder strips an `.mdx` path; see the exception below.)
+- **`.scss` source → `.scss` destination**: the `.scss` extension is stripped by default and kept when `preserveStylesheetFileExtension` is on. (A `.css` source into `.scss` always keeps `.css` — Sass needs it.)
+- **`.css` source → `.css` destination**: the `.css` extension is ALWAYS kept; the CSS builder does not consult `preserveStylesheetFileExtension`.
+- **HTML, Markdown, and all other source types** (images, fonts, media, data, documents, YAML, components) always preserve the full extension.
+
+**Exception — JSX/TSX/MDX non-script sources**: when a non-script source (including `.css`, `.scss`, `.md`, `.mdx`, `.html`, images, media) is imported into a `.jsx`/`.tsx`/`.mdx` destination, the full real source extension is ALWAYS kept on the path regardless of either preserve setting — the non-script branch in `_react.ts` never reads the setting.
 
 **SCSS partial normalization**: a leading `_` on the last path segment is stripped to match Sass's partial-resolution convention. `_variables.scss` becomes `variables` in the import path.
 
@@ -542,7 +585,7 @@ All messages are prefixed with "Auto Import:".
 
 **Angular legacy PascalCase** (TypeScript style index 0 only): when the source path contains `.component`, `.directive`, `.pipe`, `.service`, or `.module`, the named import placeholder is pre-filled with a PascalCase identifier derived from the filename. Example: `app-root.component.ts` produces `{ AppRootComponent }`.
 
-**Exported class detection** (TypeScript style index 0, `.ts` destinations only): when the source file contains an `export class Name` or `export abstract class Name` declaration, the class name is pre-filled into the named import placeholder. This takes priority over Angular legacy PascalCase when both would apply. Does not apply when importing into `.tsx`, `.mdx`, `.vue`, `.svelte`, or `.astro` destinations.
+**Exported class detection** (TypeScript style index 0, `.ts` destinations only): when the source file contains an `export class Name` or `export abstract class Name` declaration, the class name is pre-filled into the named import placeholder. This takes priority over Angular legacy PascalCase when both would apply. Does not apply when importing into `.tsx`, `.mdx`, `.vue`, `.svelte`, or `.astro` destinations. Detection is line-anchored: only a class declared at column 0 (the very start of a line) is matched. An `export class` that is indented — including one nested inside a `namespace`/`module` block — is not detected, and index 0 then falls through to Angular legacy auto-fill (or, failing that, an anonymous tab stop). When a file declares multiple top-level exported classes, only the first (top-most by line order) is used for the pre-fill. Commented-out declarations are ignored — both `//` line comments and `/* */` block comments (including multi-line blocks) are stripped before scanning, so a commented-out `export class` does not pre-fill the placeholder. Class detection degrades silently: if the source file cannot be read (and unlike the pre-generation existence check, no warning is shown), index 0 simply uses its normal fallback — Angular legacy auto-fill or an anonymous tab stop.
 
 ---
 
@@ -568,7 +611,7 @@ These show default text that the user can overwrite by typing.
 
 ### Tab stops
 
-All other editable positions are anonymous tab stops — the cursor lands there with no default text, and the user types from scratch. JS/TS imports place the cursor on the binding name. TS index 0 pre-fills the binding with a detected class name or Angular PascalCase identifier when available; otherwise it is an empty tab stop. HTML image indexes 1–2 place tab stops on `alt`, `width`, `height`. SCSS `@use as` index 2 places an anonymous tab stop on the alias.
+All other editable positions are anonymous tab stops — the cursor lands there with no default text, and the user types from scratch. JS/TS imports place the cursor on the binding name. TS index 0 pre-fills the binding with a detected class name or Angular PascalCase identifier when available; otherwise it is an empty tab stop. HTML image indexes 1–2 and Markdown image index 2 (the HTML `<img>` embed) place tab stops on `alt`, `width`, `height`. SCSS `@use as` index 2 places an anonymous tab stop on the alias.
 
 HTML image index 0 uses the literal word `sample` as alt text — this is static output, not an editable position.
 
