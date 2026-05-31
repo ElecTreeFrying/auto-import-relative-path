@@ -9,5 +9,14 @@
 		"dist": true // set this to false to include "dist" folder in search results
 	},
 	// Turn off tsc task auto detection since we have the necessary tasks as npm scripts
-	"typescript.tsc.autoDetect": "off"
+	"typescript.tsc.autoDetect": "off",
+
+	// Fold each workflow spec (.md) under its script (.js) in the Explorer — files don't move on disk
+	"explorer.fileNesting.enabled": true,
+	"explorer.fileNesting.expand": false,
+	"explorer.fileNesting.patterns": {
+		"spec-sync.js": "spec-sync.md",
+		"release-align.js": "release-align.md",
+		"doc-sync-full.js": "doc-sync-full.md"
+	}
 }
