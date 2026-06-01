@@ -17,6 +17,7 @@
 	"explorer.fileNesting.patterns": {
 		"spec-sync.js": "spec-sync.md",
 		"release-align.js": "release-align.md",
-		"doc-sync-full.js": "doc-sync-full.md"
+		"doc-sync-full.js": "doc-sync-full.md",
+		"qa-coverage.js": "qa-coverage.md"
 	}
 }
