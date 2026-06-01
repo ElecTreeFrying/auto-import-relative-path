@@ -1,0 +1,5 @@
+/*
+ * Theme overrides.
+ * Tune these per brand.
+ */
+.button { color: var(--brand); }
