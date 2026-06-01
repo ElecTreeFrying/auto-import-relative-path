@@ -95,47 +95,198 @@ qa.new/
 
 ## 4. The IR — `PROFILE.md`
 
-One row per destination. Captures the four dimensions that actually vary across languages.
+> **This section is the authoritative specification of the IR.** The on-disk `PROFILE.md` built in Session 2 (§14) *instantiates* it — transcribing the per-destination values defined here into the frozen table. Everything the parity gate (§7) needs to regenerate a checklist must be derivable from these fields: if a behavior in `typescript.md` (or any checklist) has no home in a field below, the field is incomplete.
 
-| Field | What it encodes | Example values |
-|-------|-----------------|----------------|
-| `gating` | Same-extension only, or cross-import? Which `*_SUPPORTED_EXTENSIONS` table applies? | `.js`: same-only • `.html`: cross via `HTML_SUPPORTED_EXTENSIONS` • `.vue`: cross via `VUE_SUPPORTED_EXTENSIONS` |
-| `styles` | Single style table, source-type dispatch, or source-extension dispatch | `.js`: `JAVASCRIPT_IMPORT_OPTIONS` (7) • `.html`: dispatches on source type to 6 branches — 4 configurable tables (script/image/video/audio) + 2 fixed single-shape builders (stylesheet, text-track) • `.tsx`: TS table for `.ts`/`.tsx`, JS table for `.js`/`.jsx`, hardcoded fallthrough for non-script |
-| `smartId` | Class detection? Angular PascalCase? | `.ts`: both • everything else: none |
-| `pathQuirks` | Special path handling | `.scss`: `_partial` normalization + always preserve `.css` • `.html`/`.md`: always preserve full extension • everything else: respect `preserveScriptFileExtension` |
+One row per destination, **six fields**. The table holds 12 rows (`.tsx` and `.mdx` are separate rows even though `.mdx` is byte-identical to `.tsx`; see §10). The table below is the field *index*; the per-field subsections (§4.1–§4.7) carry the per-destination values and the literal catalogues a generator needs.
 
-The table holds 12 rows (one per destination — `.tsx` and `.mdx` are separate rows even though `.mdx` is byte-identical to `.tsx`; see §10). Populated by reading the extension source code:
+| Field | What it encodes |
+|-------|-----------------|
+| `gating` | Same-extension-only, allow-list cross-import, or accept-all? Which `*_SUPPORTED_EXTENSIONS` table (if any) applies? |
+| `styles` | Single style table, source-**type** dispatch, or source-**extension** dispatch — and the branch→shape map, including fixed/hardcoded shapes that live in no options table |
+| `smartId` | Exported-class detection and/or Angular legacy PascalCase — and which styles they affect |
+| `defaultStyle` | The default style index **and** its rendered output string (drives the §2 happy-path case and the §4 "(default)" marker) |
+| `placement` | How the Top/Bottom/Cursor setting is honored, the insertion column, and any container the import is clamped inside |
+| `pathQuirks` | Extension-preservation **namespace** + special path normalization |
 
-- `src/gating.ts` → `gating` field
-- `src/snippets/variants.ts`, `src/snippets/dispatch.ts`, `src/snippets/_styles.ts` → `styles` field
-- `src/snippets/languages/typescript.ts` (Angular legacy PascalCase: `LEGACY_ANGULAR_FILE_SUFFIXES`, `generateAngularLegacyImportName`), `src/snippets/_class-name.ts` (exported-class detection: `readExportedClassName` / `extractFirstExportedClassName`), `src/snippets/variants.ts` (only `.ts` case calls `readExportedClassName`) → `smartId` field
-- `src/snippets/languages/scss.ts`, `src/snippets/languages/html.ts`, `src/snippets/languages/markdown.ts` → `pathQuirks` field
+### 4.1 Source universe (shared, frozen)
+
+Sourced from `src/types/file-extension.ts` + `src/constants/extensions.ts`. The complete **closed** `FileExtension` set is the source universe every destination's `gating` reject column complements. Frozen `SOURCE_UNIVERSE`, grouped with literal members:
+
+| Category | Members |
+|----------|---------|
+| script | `.ts` `.tsx` `.mdx` `.js` `.jsx` |
+| framework | `.vue` `.svelte` `.astro` |
+| stylesheet | `.css` `.scss` |
+| html | `.html` |
+| markdown | `.md` |
+| image (`IMAGE_FILE_EXTENSIONS`) | `.gif` `.jpeg` `.jpg` `.png` `.svg` `.avif` `.webp` |
+| media — video+audio (`MEDIA_FILE_EXTENSIONS`) | `.mp4` `.webm` `.mov` · `.mp3` `.ogg` `.wav` `.m4a` |
+| text-track (`TEXT_TRACK_FILE_EXTENSIONS`) | `.vtt` |
+| data | `.json` `.yaml` `.yml` |
+| fonts | `.woff` `.woff2` `.ttf` `.eot` |
+| document | `.pdf` |
+
+A destination's reject set is mechanically `SOURCE_UNIVERSE − (that destination's accept allow-list)`.
+
+### 4.2 `gating` per destination
+
+Three kinds (read from `src/gating.ts` + `src/constants/extensions.ts`):
+
+- **same-only** — `.ts`, `.js`: accept only the same extension; every other source rejected with `Cannot import .X into .{dest} files.`
+- **allow-list cross-import** — accept = the named `*_SUPPORTED_EXTENSIONS` table members, reject = non-members. The table membership makes the asymmetries fall out of the data:
+  - `.css` → `CSS_SUPPORTED_EXTENSIONS` = `.css` + image set
+  - `.scss` → `SCSS_SUPPORTED_EXTENSIONS` = `.scss` + `.css` + image set **(one-directional: SCSS imports CSS, but CSS rejects `.scss`)**
+  - `.md` → `MARKDOWN_SUPPORTED_EXTENSIONS` = `.md` + image set **(NO media, NO `.vtt`)**
+  - `.html` → `HTML_SUPPORTED_EXTENSIONS` = `.js` + `.css` + image set + media set + `.vtt`. **`.html` is the lone cross-import destination that rejects its own extension** (`.html`→`.html` rejected — the table omits `.html` and `gating.ts` has an explicit clause). The generated `html.md` §1 must carry a `.html`→`.html` **rejection** row, never an accepted self-import.
+  - `.vue` / `.svelte` → `VUE_`/`SVELTE_SUPPORTED_EXTENSIONS` = the HTML-like set additionally accepting `.json` / `.yml` / `.yaml`
+  - `.astro` → `ASTRO_SUPPORTED_EXTENSIONS` = the super-set, additionally accepting `.vue` / `.svelte` / `.md` / `.mdx`
+  - (PROFILE inlines the literal table members from `constants/extensions.ts`; the lists above name the characteristic membership.)
+- **accept-all (no table)** — `.jsx`, `.tsx`, `.mdx`: no `*_SUPPORTED_EXTENSIONS` table exists and no per-destination clause in `gating.ts`; they hit only the `CROSS_IMPORT_DESTINATIONS` bypass and accept **every** source. Their §1 is an all-accept matrix whose only rejection is the universal same-file rejection (owned by general.md) — **no source-extension rejection rows**. (Distinct from same-only and allow-list, so a regenerated `jsx/tsx/mdx` §1 does not fabricate `Cannot import .X` rows.)
+
+### 4.3 `styles` per destination
+
+The `styles` field records the **dispatch structure** + the **fixed/hardcoded shapes** that live in no named options table. Configurable table styles are named by table (the Phase-A runbook reads the literal strings + tab-stops from `_styles.ts`); the hardcoded shapes below are frozen here because they exist only in builder code.
+
+| Dest | Dispatch | Shapes |
+|------|----------|--------|
+| `.ts` | single table | `TYPESCRIPT_IMPORT_OPTIONS` (7) |
+| `.js` | single table | `JAVASCRIPT_IMPORT_OPTIONS` (7) — **`.js` default ≠ `.ts` default**, see §4.7 |
+| `.tsx` / `.mdx` | source-**extension** | `.ts`/`.tsx` → TS table (7); `.js`/`.jsx` → JS table (7, fallback); non-script → fixed asset shapes (below). `.mdx` identical to `.tsx`. |
+| `.jsx` | source-**extension** | `.js`/`.jsx` → JS table (7); **NO TS table, NO fallback**; non-script → fixed asset shapes (below); **a `.ts`/`.tsx` source is gating-accepted but matches no branch → empty `SnippetString` (nothing inserted) on paste, zero Pick-Style variants** |
+| `.css` | source-**type** | stylesheet source → `CSS_IMPORT_OPTIONS` (2 selectable: `@import '_path_';` default, `@import url('_path_');`); image source → fixed `url('_path_')` (no picker) |
+| `.scss` | source-**type** | stylesheet source → `SCSS_IMPORT_OPTIONS` (5 `@use`/`@forward`/`@import`); image source → fixed `url('_path_')` (reuses the CSS image builder) |
+| `.html` | source-**type** → 6 branches | 4 configurable tables (script / image / video / audio) + 2 fixed single-shape builders (stylesheet `<link>`, text-track `<track>`). The image branch's style-0 (`<img>`/`<video>`/`<audio>`) are the 3 **tagless** entries (description falls back to full text). |
+| `.md` | source-**type** | markdown source → fixed `[${1:text}](path)` (full extension preserved; hardcoded — **not** in the image enumeration `§4` counts); image source → 3 image styles: `![${1:alt-text}](path)` · `![${1:alt-text}](path "${2:Hover text}")` (**2 tab stops**) · `<img src="path" alt="$1" width="$2" height="$3">` (**3 tab stops**) |
+| `.vue` / `.svelte` / `.astro` | `framework-component.ts` | script sources → TS table (7) via `buildTypeScriptImportSnippet` (Angular PascalCase on style 0, **no** exported-class fill — see §4.4); non-script → the fixed asset shapes (below) |
+
+**Fixed non-script asset shapes** (`src/snippets/_react.ts` `buildReactImport` + `variants.ts` `buildReactNonScriptVariant`; full source extension **always kept**; each is a SINGLE variant, so Pick Style direct-inserts and Set Default reports a fixed style):
+
+1. **CSS module** (`*.module.css` / `*.module.scss`, checked **first** so it beats the plain stylesheet side-effect shape) → `import ${1:styles} from '<path>';` — tab stop pre-named `styles`
+2. image / doc / component (`.gif .jpeg .jpg .png .svg .avif .webp .json .html .yml .yaml .md .mdx .pdf .vue .svelte .astro`) → `import ${1:name} from '<path>';`
+3. av / text-track (`.mp4 .webm .mov .mp3 .ogg .wav .m4a .vtt`) → `import ${1:url} from '<path>';`
+4. font / stylesheet (`.woff .woff2 .ttf .eot .css .scss`) → `import '<path>';` (side-effect, no tab stop)
+
+The **source-extension → branch** map for the dispatching destinations comes from `src/path/import-type.ts` (`determineImportType`: source extension → `{script, stylesheet, markdown, video, audio, text-track, image}`; `.html`/`.scss` → `null`; default → `image`). The `{ext}.ts` builders expose only the *bucket labels*; the extension→bucket binding lives only here.
+
+### 4.4 `smartId`
+
+Two independent mechanisms; the field records which apply per destination:
+
+| Dest | `smartId` |
+|------|-----------|
+| `.ts` | **both** — exported-class detection (`readExportedClassName`) **and** Angular legacy PascalCase |
+| `.vue` / `.svelte` / `.astro` | **Angular-PascalCase only** (style 0). `framework-component.ts` calls `buildTypeScriptImportSnippet` *without* a `detectedImportName`, so exported-class pre-fill is inert, but `generateAngularLegacyImportName` still fires. Styles 1–6 always emit bare `$1`. |
+| everything else (`.js .jsx .tsx .mdx .css .scss .html .md`) | **none** |
+
+**Exported-class half** (`.ts` only, style 0): `EXPORTED_CLASS_PATTERN = /^export\s+(?:abstract\s+)?class\s+(\w+)/m`. Matches `export class Name` and `export abstract class Name`; **not** `export default class`. Comments are stripped before the (non-global) scan, so `// export class` / `/* export class */` → bare `$1`; multiple classes → **first** only; detection is **column-0 / top-level** (line-anchored) and **`.ts`-destination-only** (a `.ts`/`.tsx` source into `.tsx`/`.mdx`/`.vue`/`.svelte`/`.astro` yields bare `$1`). A detected class takes **priority** over Angular naming.
+
+**Angular-PascalCase half** (`.ts` style 0, and `.vue`/`.svelte`/`.astro` style 0): `LEGACY_ANGULAR_FILE_SUFFIXES`, matched by `relativePath.includes(suffix)`; derivation = strip script ext → basename → `.`→`-` → PascalCase each segment:
+
+| Suffix | Identifier (e.g. `user.<suffix>.ts`) |
+|--------|--------|
+| `.component` | `UserComponent` |
+| `.directive` | `UserDirective` |
+| `.pipe` | `UserPipe` |
+| `.service` | `UserService` |
+| `.module` | `UserModule` |
+
+A path matching **no** suffix → bare `$1` (not a PascalCased basename). `generateAngularLegacyImportName` strips the trailing `.ts`/`.tsx`/`.js`/`.jsx` **before** deriving the name, so the identifier is **stable** across `preserveScriptFileExtension` on/off (never `…ComponentTs`) — only the path string changes.
+
+### 4.5 `placement`
+
+How the **Import Statement Placement** setting (Top / Bottom / Cursor) is honored, the insertion **column**, and any **container** the import is clamped inside. One mode per destination (read from `src/editor/placement.ts` + `src/editor/insert-snippet.ts`):
+
+| Mode | Destinations | Behavior |
+|------|--------------|----------|
+| `generic` | `.ts` `.js` `.jsx` `.tsx` `.mdx` | Full Top/Bottom/Cursor; **column 0**. Bottom = after the last non-comment line containing an `IMPORT_INDICATORS` marker (empty/whitespace or comments-only file → line 0). Cursor = cursor line, except a multi-line `/* */` block or a grouped `//` run pushes the import **above** the block while a lone isolated `//` inserts **at** that line; unknown → falls back to Bottom. **`.mdx` is `generic`/script-side** — the explicit counter-case to `.md`. |
+| `stylesheet` | `.css` `.scss` (stylesheet source) | Like `generic` (column 0, honors the setting) but Bottom anchors after the last `@use`/`@forward`/`@import` line — an observably different anchor; assert with a stylesheet fixture. |
+| `inline-url` | `.css` `.scss` (image / non-stylesheet source) | The `isInline` exception (precedes every placement branch): insert the `url('<path>')` value at the **exact** cursor/drop line **and column**, **no** trailing newline, **no** column-0 forcing — an inline value, not a statement. The placement setting has **no effect**. |
+| `forced-cursor` | `.html` `.md` | Insert at the **cursor line** always (Top/Bottom/Cursor have no effect); column **follows the cursor** (not forced to 0). Comment-block adjustment applies. `.md` uses the **markdown-star quirk** (below). |
+| `astro-frontmatter` | `.astro` | Top/Bottom/Cursor honored but **constrained within the `---` frontmatter fences** (Top = after the opening `---`; Bottom = after the last `IMPORT_INDICATORS` line within the fences, fallback just after the opening `---`; Cursor = cursor line only when strictly between the fences, else Bottom-within-fences). No fences → a new `---\n<import>\n---\n` block is created at line 0 and all three modes converge there. Inserted lines adopt the block's detected indentation. |
+| `sfc-script` | `.vue` `.svelte` | Same shape as `astro-frontmatter` but bounded by the `<script>` block: block selection prefers `<script setup>` over an instance `<script>` (one without `context=`) over any `<script>`. No `<script>` → a new `<script>\n<import>\n</script>\n` block is created at line 0. |
+
+`IMPORT_INDICATORS` (the 9 Bottom-anchor markers): `import ` · `require(` · `@import '` · `@import "` · `@import url(` · `@use '` · `@use "` · `@forward '` · `@forward "`. A `require(` line counts; an `import ` substring **inside a string literal** is a (false-positive) marker; commented-out marker lines (`//`, `/*`, leading `*`) are skipped.
+
+**Markdown-star quirk** (`.md` and `.mdx` only): a line whose first non-whitespace char is `*` is treated as **content** (bullet / `*italic*` / `**bold**` / `***`), **not** a block-comment continuation, when deciding Cursor comment-block adjustment. So in `.md`/`.mdx` a Cursor insertion lands **at** a leading-`*` line; in every other destination (incl. `.tsx`) that line is a comment continuation and the import is pushed **above** it. (`//` and `/*` still adjust above in `.md`/`.mdx`; only leading `*` is reclassified.)
+
+### 4.6 `pathQuirks`
+
+Extension-preservation is **two-namespaced** — the script key and the stylesheet key are different settings:
+
+| Dest | `pathQuirks` |
+|------|--------------|
+| `.scss` | `_partial` normalization (strip leading `_` of last segment) + a `.css` source **always** preserves `.css` (neither toggle) + every other stylesheet source respects **`preserveStylesheetFileExtension`** (stylesheet namespace, **not** the script key) → `./partial` off vs `./partial.scss` on |
+| `.css` | `@import` path **always** keeps the full source extension; respects **neither** preserve toggle |
+| `.ts` `.js` `.jsx` `.tsx` `.mdx` | respect **`preserveScriptFileExtension`** |
+| `.html` `.md` | always preserve full extension (no toggle) |
+
+### 4.7 `defaultStyle`
+
+Records each destination's **default style index and its rendered output string**. Needed because index 0 renders a *different* user-visible string per destination (`.js` index 0 = `import $1 from './foo';` default-import vs `.ts` index 0 = `import { $1 } from './foo';` named) — so a generator cannot reproduce the §2 happy-path string or mark the correct §4 "(default)" row from the index alone, and must not inherit TS's shape for `.js`. The default is defined **only** in `package.json` (`contributes.configuration` enum `default` string, matched by `resolveStyleIndex` against the `description`; `_styles.ts` carries no default flag).
+
+### Populated by reading the extension source code
+
+- `src/gating.ts`, `src/constants/extensions.ts`, `src/types/file-extension.ts` → `gating` + the `SOURCE_UNIVERSE` (§4.1)
+- `src/snippets/variants.ts`, `src/snippets/dispatch.ts`, `src/snippets/_styles.ts`, `src/snippets/_react.ts` → `styles` field + the fixed asset shapes
+- `src/path/import-type.ts` (`determineImportType`) → the source-extension→branch map for the dispatching destinations (HTML/CSS/SCSS/MD) — the labels in `{ext}.ts` are buckets, not extensions
+- `src/snippets/languages/typescript.ts` (`LEGACY_ANGULAR_FILE_SUFFIXES`, `generateAngularLegacyImportName`), `src/snippets/_class-name.ts` (`readExportedClassName` / `extractFirstExportedClassName`), `src/snippets/variants.ts` (only `.ts` calls `readExportedClassName`) → `smartId` field
+- `package.json` (`contributes.configuration` enums + `default`) → `defaultStyle` field
+- `src/editor/placement.ts`, `src/editor/insert-snippet.ts` → `placement` field (modes, column, containers, comment adjustment)
+- `src/snippets/languages/scss.ts`, `src/snippets/languages/css.ts`, `src/snippets/languages/html.ts`, `src/snippets/languages/markdown.ts` → `pathQuirks` field
 
 ---
 
 ## 5. The codegen rule — `RECIPE.md`
 
+> **This section is the authoritative specification of the codegen rule.** The on-disk `RECIPE.md` built in Session 1 (§14) *instantiates* it. The numbered list is the section skeleton; the **Item detail** subsections (§5.1) define what each section must emit and how it resolves against PROFILE (§4).
+
+**BOUNDARY — assume `general.md` passed.** `general.md` is the cross-destination **shared** baseline (55 cases): run once first, **never** regenerated by this pipeline, and it **owns** every destination-neutral behavior — Copy File Path, clipboard validation, same-file rejection, notification wording + toast buttons, path computation, extension stripping, general edge cases, and the **universal mechanics** of Drag-and-drop (general.md §8), Paste as Import / Pick Style (general.md §9), and Set Default Import Style (general.md §10). Every regenerated per-language checklist MUST assume `general.md` passed and emit **only the destination-specific DELTA**. It MUST NOT re-test anything `general.md` owns; where a section has both universal and destination-specific parts, test only the delta and add a one-line cross-reference to the owning `general.md` section (the convention `typescript.md` already uses at its §8/§9/§10: "Universal QuickPick/DnD mechanics … are covered by general.md §N").
+
 Numbered section list. Each marked **required** or **conditional**, with conditions resolving against profile fields.
 
 ```
-1.  Cross-import gating matrix              [required]
-2.  Paste as Import — happy path            [required] — 1 case
-3.  Insert Import from Selected File        [required] — 1 case
-4.  All N styles                            [required] — N from profile.styles count
-5.  Smart identifier behavior               [conditional: profile.smartId != none]
-6.  Placement modes (Bottom / Top / Cursor) [required] — identical across languages
-7.  Paste as Import (Pick Style)            [required]
-8.  Set Default Import Style                [required]
-9.  Drag-and-drop                           [required]
-10. Edge cases                              [required]
-11. Sign-off                                [required] — case-count summary
+1.  Cross-import gating matrix   [required] — resolve from profile.gating (§4.2)
+2.  Paste as Import — happy path [required] — 1 case PER source-type/ext branch (profile.styles), via profile.defaultStyle
+3.  Insert Import from Selected File [required] — 1 case
+4.  All N styles                 [required] — N from profile.styles; + style-name-drift sub-item
+5.  Smart identifier behavior    [conditional: profile.smartId != none]
+6.  Placement                    [required] — resolve from profile.placement (§4.5); NOT identical across languages
+7.  Paste as Import (Pick Style) [required — DELTA ONLY: styles/labels shown; xref general.md §9]
+8.  Set Default Import Style     [required — DELTA ONLY: persisted setting + saved toast; xref general.md §10]
+9.  Drag-and-drop                [required — DELTA ONLY: re-runs items 2/5/6 + quirks at the drop; xref general.md §8]
+10. Edge cases                   [required]
+11. Sign-off                     [required] — case-count summary
 ```
 
-Plus per-quirk slots resolved from `profile.pathQuirks`:
+Plus per-quirk slots resolved from `profile.pathQuirks` (note the **two preserve namespaces** — §4.6):
 
-- If `partial-filename-normalization` → add subsection under §4 demonstrating `_partial.scss` → `partial`
-- If `always-preserve-css` → add §4 note that `.css` sources always include extension regardless of setting
-- If `always-preserve-extension` → omit the `preserveScriptFileExtension` toggle tests entirely
+- If `partial-filename-normalization` (`.scss`) → add a subsection under item 4 demonstrating `_partial.scss` → `partial`
+- If `stylesheet-preserve-toggle` (`.scss`) → add an item-4 subsection testing **`preserveStylesheetFileExtension`** on a non-`.css` stylesheet source: off → `@use './partial';`, on → `@use './partial.scss';` (fixture `_partial.scss`), with a restore step. This is the stylesheet analogue of the script `preserveScriptFileExtension` test (`typescript.md` §7.6); it uses a **different** setting label and must NOT be suppressed by the always-preserve rule.
+- If `always-preserve-css` (`.scss`) → item-4 note that a `.css` source keeps `.css` regardless of either toggle
+- `.css` destination → item-4 note that the `@import` path always keeps the source extension and exposes **no** preserve toggle (omit any preserve-toggle test)
+- If `always-preserve-extension` (`.html`/`.md`) → omit the `preserveScriptFileExtension` toggle tests. **Scope:** this suppression applies to `.html`/`.md`/`.css` only — it does **not** bleed into `.scss`, which DOES have a toggle test (against `preserveStylesheetFileExtension`).
+
+### 5.1 Item detail
+
+**Item 1 — Cross-import gating matrix.** Resolve from `profile.gating` (§4.2). *same-only* → "every other extension rejected". *allow-list* → enumerate accepted (table members) vs rejected rows; the reject column is the mechanical complement `SOURCE_UNIVERSE − accept-list`, sampling ≥1 member from **each** reject category present (image/media/text-track when not accepted; always fonts + `.pdf`; data `.json`/`.yaml`/`.yml` for every destination except `.vue`/`.svelte`/`.astro`, which accept them) — this reproduces `typescript.md`'s `.yaml`/`.woff2`/`.pdf`/`.json`/`.vtt`/media reject rows. *accept-all* (`.jsx`/`.tsx`/`.mdx`) → an all-accept matrix with **no** source-extension rejection rows (only the universal same-file rejection, owned by general.md). `.html` → include the `.html`→`.html` **rejection** row.
+
+**Item 2 — Paste as Import (happy path).** One happy-path case **per source-type/extension branch** in `profile.styles` (not a single case) — so source-type-dispatched destinations (`.html`, `.md`, `.css`, `.scss`) do not orphan their fixed shapes (e.g. `.md`'s markdown-link shape, `.css`'s image `url()`). Each case uses `profile.defaultStyle`'s rendered string and emits the literal inserted string **and** its tab-stop layout verbatim (the `typescript.md` §4 bar).
+
+**Item 4 — All N styles + style-name drift.** Enumerate N styles where N = `profile.styles` count for the source type, each with literal string + tab-stops. For **React-family** (`.jsx`/`.tsx`/`.mdx`) item 4 has **two arms**: script sources → the N-style table; non-script sources → the fixed asset catalogue (§4.3), each a single variant (Pick Style direct-inserts; Set Default rejects with `.{src} → .{dest} imports use a fixed style.`), full extension kept — at minimum a `.module.css` → `import ${1:styles} from …` case proving the CSS-module shape beats the side-effect shape. Plus the `.jsx`-only **empty-snippet** case (a `.ts`/`.tsx` source → nothing inserted, zero Pick-Style variants). **Style-name-drift sub-item:** set the `{lang}ImportStyle` setting to a string matching no enum description (config drift / hand-typed into `settings.json`), paste — expected: the import still inserts using the **style-0 shape** (`resolveStyleIndex` → undefined → builder `default:` arm), **never nothing**; for smartId destinations (`.ts`) the default arm STILL honors the detected name (`export class EventBus` → `import { ${1:EventBus} } from './…';`). This is style-**name** drift, distinct from the style-**count** drift the §6 self-verify guards. Per-language style-0 shape: `.ts`/`.tsx`/`.mdx` → `import { } from`, `.js` → `import from`, `.css` → `@import`, `.scss` → `@use`, html-script → `<script src=…>`, md-image → `![alt-text](…)`.
+
+**Item 5 — Smart identifier behavior** [conditional: `profile.smartId != none`]. For `.ts` (*both*): one case per Angular suffix (5) → its PascalCase identifier; one non-match → bare `$1`; the exported-class matrix (`export class`/`abstract class` → `${1:Name}`; commented `// export class` / `/* */` → `$1`; multiple classes → first only; `export default class` → `$1`; detected class **beats** Angular); and the `preserveScriptFileExtension` off/on pair yielding the **identical** identifier (never `…ComponentTs`) — reproducing `typescript.md` §5.1–5.9 + §6.1–6.10. For `.vue`/`.svelte`/`.astro` (*Angular-only*): test ONLY the style-0 Angular cases (each suffix → PascalCase; non-Angular path → bare `$1`) and explicitly assert **no** exported-class pre-fill (a source with `export class Foo` → still `$1`, contrasting with `.ts` §5.1). Omit item 5 entirely for the genuinely-`none` rows.
+
+**Item 6 — Placement.** Resolve from `profile.placement` (§4.5); do NOT assert "identical across languages". Emit only the destination's mode cases: `generic` → the full Bottom/Top/Cursor section (column 0; Bottom marker-set; lone-`//` vs `/* */`-block vs grouped-`//` Cursor adjustment); `stylesheet` → Bottom anchored on `@use`/`@forward`/`@import` (stylesheet fixture); `inline-url` → the image-source exact-line+column, no-newline, setting-ignored case; `forced-cursor` (`.html`/`.md`) → Top/Bottom/Cursor all insert at the cursor LINE (setting has no effect), column follows the cursor, + the markdown-star case for `.md`; `astro-frontmatter`/`sfc-script` → the container-confined section (create-if-missing, block/fence selection preference, Top/Bottom/Cursor-within-bounds, detected indentation). Call out `.mdx` as `generic`/script-side (column 0, honors the setting) — the explicit counter-case to `.md`. For the four override modes the generic section is **not** emitted.
+
+**Item 7 — Paste as Import (Pick Style)** [DELTA ONLY]. Emit: placeholder verbatim `Select an import style`; N items (one per style); each item **LABEL** = the snippet preview built from `path.basename` of the source (nested `../../components/widget` collapses to `widget`) while the **INSERTED** text uses the FULL relative path — assert **both**; each **DESCRIPTION** = the style's tag (full description for the 3 tagless HTML style-0 entries `<img>`/`<video>`/`<audio>`; empty for single-shape variants); [conditional `smartId != none`] the style-0 LABEL is pre-filled with the detected class name. Universal QuickPick mechanics (escape dismiss, filter-by-description, clipboard validation, one-shot no-default-write, single-variant silent insert) are **general.md §9** — do NOT duplicate.
+
+**Item 8 — Set Default Import Style** [DELTA ONLY]. Emit: on selecting a configurable style, info toast verbatim `Auto Import: Default style saved — {style description}` and the `{language}ImportStyle` setting now holds that value. [conditional] omit / show `no-configurable-style` for fixed-shape destinations whose variants carry no setting (hardcoded HTML / Markdown-text / CSS-image / SCSS-image / JSX-TSX-MDX-non-script). Universal mechanics (placeholder `Set default import style`, current default spliced to position 0 with `$(check) Current default`, escape, filter, clipboard validation, **never inserts**) are **general.md §10** — do NOT duplicate.
+
+**Item 9 — Drag-and-drop** [DELTA ONLY]. A drop reuses the SAME `buildImportSnippet` + `computeImportPlacement` pipeline as paste, so the inserted string is **byte-identical** to the item-2 happy path. Re-run the already-defined conditionals at the drop position: item-4 styles (default style), item-5 smartId (re-fires where `smartId != none`), item-6 placement (incl. lone-`//` vs grouped-comment Cursor), §4.6 pathQuirks. Required cases per destination: (a) happy-path drop = item-2 string; (b) **unsupported-pair drop** → the not-supported reject toast AND **no import inserted** — the drop edit resolves to `null`, so VS Code falls back to its default text-drop and the **raw path text** lands (distinct from paste, which inserts nothing at all); (c) the placement modes + comment-Cursor sub-cases at the drop line/column; (d) class-detect / Angular / preserve-ext on drop wherever the profile enables them. Per-quirk drop slots: stylesheet → an inline `url()` drop lands at the exact drop column with no newline; framework → a drop into a file lacking the wrapper **creates** the `---`/`<script>` wrapper, else constrains within it. **Universal drop precondition** (cross-cutting — emit **once**, not per-language; general.md does not cover it): the gesture is registered only for the 12 `DROP_LANGUAGE_SELECTORS` language IDs and only for `scheme:'file'` — a drop into an untitled/unsaved buffer is a no-op.
+
+**Item 10 — Edge cases.** Include the destination-specific edge cases the profile surfaces — e.g. the `.md`/`.mdx` **markdown-star** Cursor case (§4.5: cursor on a leading-`*` line lands AT the line in `.md`/`.mdx`, but jumps ABOVE in the byte-identical `.tsx` buffer — proving `.mdx` ≠ `.tsx` despite the shared `tsx.ts` builder), and the string-literal / `require(` Bottom false-positive markers for script destinations.
+
+### 5.2 Authoring rules
 
 **Fixture-content inlining rule.** For every fixture file the checklist references, the checklist must inline its expected content (in a fenced code block or inline assertion). This is what makes Phase B mechanical — without it, Phase B requires creative judgment to fill in fixture content, which defeats the per-language session split (§6). The existing `typescript.md` already follows this pattern (e.g., `destinations/with-require.ts` shows its `export const fs = require('fs');` content in the placement-test section); the rule just makes the convention explicit.
 
@@ -152,8 +303,6 @@ Corollaries:
 - A multi-step gesture spells out the order (copy source → open destination → press the paste key).
 
 A table row pairing a source path with its verbatim expected output (as in the §1 gating matrix) is a valid executable form — the rule forbids *vagueness*, not tables. The anti-pattern is an abstract step like "copy a source file and paste it"; that is a defect, not a valid checklist item. The existing `typescript.md` is the reference shape.
-
-Cross-import destinations (HTML, MD, CSS, SCSS, JSX, TSX, MDX, Vue, Svelte, Astro) also get an expanded §1 — instead of "everything except the destination extension is rejected" they enumerate accepted vs rejected sources from their `*_SUPPORTED_EXTENSIONS` table.
 
 ---
 
@@ -190,8 +339,13 @@ Splitting this way gives Phase A — the only creatively-demanding phase — a d
       - `src/snippets/variants.ts` and `src/snippets/dispatch.ts`
       - `src/snippets/_class-name.ts`  (only smart-ID destinations: `.ts`)
       - `src/snippets/_react.ts`        (only React-family destinations: `.jsx` / `.tsx` / `.mdx`)
+      - `src/path/import-type.ts`        (only source-type-dispatch destinations: `.html` / `.css` / `.scss` / `.md`) —
+        resolves which source extension lands in each `case` of the builder's source-type switch (the labels in `{ext}.ts` are buckets, not extensions)
+      - `src/editor/placement.ts` and `src/editor/insert-snippet.ts` — the `placement` field
+        (Top/Bottom/Cursor honoring, insertion column, frontmatter/`<script>` containers, comment adjustment)
       - `src/gating.ts`
-      - `src/constants/extensions.ts`
+      - `src/constants/extensions.ts` and `src/types/file-extension.ts`  (the closed `SOURCE_UNIVERSE`)
+      - `package.json` (`contributes.configuration` enums + `default`) — the `defaultStyle` field
 - [ ] Write `qa.new/checklists/{ext}.md` per recipe + profile,
       with expected fixture content inlined for every referenced path
 - [ ] Self-verify: every recipe section the profile marks required is present
@@ -424,6 +578,8 @@ This follows your `feedback_stepped_commits` rule at the session level: every st
 | Skipping Phase C ("Wire & propagate") | Phase C tasks are part of the runbook; loop won't finish until they're `[x]` |
 | Workspace session run before checklist session committed | `runbook-{ext}-workspace.md` Phase B first task verifies `qa.new/checklists/{ext}.md` exists on disk; halts with a clear error if not |
 | Abstract / non-executable checklist step ("copy a source file and paste it") | Phase A self-verify enforces §5's executable-instruction rule — every step must name file + gesture + expected result |
+| Regenerated per-language checklist duplicates `general.md`'s shared/universal sections (or drops the `general.md` cross-references) | §5 BOUNDARY preamble + per-section DELTA-ONLY markers; for TS, surfaces in the §7 parity gate against `typescript.md`'s §8/§9/§10 cross-reference lines |
+| Persisted `*ImportStyle` value matches no enum entry (name/string drift, e.g. hand-typed into `settings.json`) | RECIPE item 4 style-name-drift sub-item: checklist verifies the `default:` arm emits style-0 (and preserves smartId on `.ts`); separate from the §6 self-verify that guards a changed *number* of styles |
 
 ---
 
