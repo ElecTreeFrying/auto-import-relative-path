@@ -8,9 +8,11 @@ Manual QA for the Auto Import Relative Path extension. Organized into checklists
 qa.new/
 ├── checklists/          Test checklists — one per destination language + one general
 │   ├── general.md       Cross-destination shared behavior (run first)
+│   ├── javascript.md    .js destination — all 7 styles, no smart identifiers, placement, gating, DnD
 │   └── typescript.md    .ts destination — all 7 styles, class detection, Angular, placement
 ├── workspace/           Fixture workspace — open in EDH via File > Open Folder
 │   ├── general/         Fixtures for general.md
+│   ├── javascript/      Fixtures for javascript.md
 │   └── typescript/      Fixtures for typescript.md
 ```
 
@@ -26,4 +28,5 @@ qa.new/
 | Checklist | Workspace | Scope |
 |-----------|-----------|-------|
 | [`general.md`](checklists/general.md) | [`general/`](workspace/general/) | Copy, paste validation, same-file, notifications, edge cases |
+| [`javascript.md`](checklists/javascript.md) | [`javascript/`](workspace/javascript/) | 7 import styles, no smart identifiers, placement, gating, QuickPick, drag-and-drop |
 | [`typescript.md`](checklists/typescript.md) | [`typescript/`](workspace/typescript/) | 7 import styles, class detection, Angular PascalCase, placement, gating, QuickPick, drag-and-drop |

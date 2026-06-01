@@ -7,6 +7,7 @@ Each file in this directory is a manual QA checklist. Naming convention: `{langu
 | File | Scope |
 |------|-------|
 | `general.md` | Cross-destination shared behavior — clipboard validation, same-file rejection, notifications, toast buttons, edge cases, path computation, extension stripping, DnD universal behaviors, Pick Style / Set Default QuickPick mechanics, settings mid-session. Run first; per-destination checklists assume it passed. |
+| `javascript.md` | `.js` destination — gating matrix, 7 import styles + style-name drift, no smart identifiers (N/A for `.js`), placement modes, Pick Style / Set Default, drag-and-drop, edge cases. |
 | `typescript.md` | `.ts` destination — gating matrix, 7 import styles + style-name drift, smart identifiers (exported-class detection + Angular PascalCase), placement modes, Pick Style / Set Default (TS-specific), drag-and-drop (TS-specific), edge cases. |
 
 ## Rules

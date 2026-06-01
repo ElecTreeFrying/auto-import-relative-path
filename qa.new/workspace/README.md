@@ -19,6 +19,7 @@ Destination files (e.g., `typescript/destinations/`) are pre-filled with specifi
 | Directory | Checklist | Files | Scope |
 |-----------|-----------|-------|-------|
 | [`general/`](general/) | [`checklists/general.md`](../checklists/general.md) | 9 | Cross-destination shared behavior |
+| [`javascript/`](javascript/) | [`checklists/javascript.md`](../checklists/javascript.md) | 34 | `.js` destination — styles, placement, gating, DnD (no smart identifiers) |
 | [`typescript/`](typescript/) | [`checklists/typescript.md`](../checklists/typescript.md) | 55 | `.ts` destination — styles, class detection, Angular, placement, gating, DnD |
 
 See each directory's own `README.md` for the full file tree and fixture-to-checklist mapping.
