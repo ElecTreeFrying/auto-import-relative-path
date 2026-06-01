@@ -14,7 +14,6 @@ Fixtures for `checklists/typescript.md` — the `.ts` destination checklist.
 | `src/` | Source files to copy/drag FROM. Contains plain `.ts` files, Angular-convention files (no `export class`), and files WITH `export class` declarations. Also used as paste destinations for some tests. |
 | `destinations/` | Pre-filled `.ts` files for placement tests. Each file has specific content (imports, comments, code) that the checklist expects. **Undo after each paste** so the file returns to its expected state. |
 | `rejected/` | Non-`.ts` files (20 extensions) for gating rejection tests. Most are empty placeholders — content doesn't matter, only the file extension. |
-| `edge-cases/` | Unicode filenames, spaces in directory paths. |
 
 ## Fixture content expectations
 

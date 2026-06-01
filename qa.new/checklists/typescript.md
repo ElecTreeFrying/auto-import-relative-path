@@ -52,7 +52,6 @@ The three settings used in this checklist:
 | `typescript/src/components/`, `typescript/src/utils/` | Nested directories for path-computation tests |
 | `typescript/destinations/` | Pre-filled `.ts` files for placement tests (undo after each test) |
 | `typescript/rejected/` | 20 non-`.ts` files for gating rejection tests |
-| `typescript/edge-cases/` | Unicode filenames, spaces in paths |
 | `typescript/Makefile` | No-extension file for copy/Alt+D rejection |
 
 ---

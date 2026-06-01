@@ -21,6 +21,11 @@ Every regenerated per-language checklist MUST:
 
 - assume `general.md` passed and emit **only the destination-specific DELTA**;
 - NOT re-test anything `general.md` owns;
+- NOT add a per-language `edge-cases/` fixture directory or workspace-map row —
+  the Unicode-filename and spaces-in-path cases are general-owned (fixtures in
+  `general/edge-cases/`); per-language workspaces never duplicate them. (This is
+  distinct from the destination-specific **Item 10** placement edge cases, which
+  DO live per-language under `{lang}/destinations/`.)
 - where a section has both universal and destination-specific parts, test only
   the delta and add a one-line cross-reference to the owning `general.md` section
   — the convention `typescript.md` already uses at its §8/§9/§10: *"Universal

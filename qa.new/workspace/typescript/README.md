@@ -67,10 +67,6 @@ typescript/
 │   ├── App.vue
 │   ├── App.svelte
 │   └── App.astro
-├── edge-cases/                 Special filenames
-│   ├── komponent-日本語.ts      Unicode characters in filename
-│   └── my folder/
-│       └── spaced.ts           Spaces in directory path
 └── Makefile                    No file extension (copy/Alt+D rejection test)
 ```
 
@@ -111,8 +107,6 @@ typescript/
 | `destinations/mixed-imports.ts` | 10.5 | `import` + `require` mixed — Bottom finds last |
 | `destinations/large-file.ts` | 10.3 | 520 lines — Bottom still finds imports at top |
 | `rejected/*` (20 files) | 1.2–1.21, 9.2 | Every non-`.ts` extension for gating rejection |
-| `edge-cases/komponent-日本語.ts` | — | Unicode characters (tested via general.md) |
-| `edge-cases/my folder/spaced.ts` | — | Spaces in directory path (tested via general.md) |
 | `Makefile` | — | No file extension (tested via general.md) |
 
 ## File count
@@ -122,6 +116,5 @@ typescript/
 | `src/` | 20 | Sources + primary destinations |
 | `destinations/` | 12 | Pre-filled placement-test destinations |
 | `rejected/` | 20 | Non-`.ts` sources for gating tests |
-| `edge-cases/` | 2 | Unicode and spaces in path |
 | Root | 1 | `Makefile` (no extension) |
-| **Total** | **55** |
+| **Total** | **53** |
