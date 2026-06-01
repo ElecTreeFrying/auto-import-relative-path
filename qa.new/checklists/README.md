@@ -12,7 +12,7 @@ Manual QA checklists for the extension. One general checklist for shared behavio
 | Checklist | Cases | Scope |
 |-----------|-------|-------|
 | [`general.md`](general.md) | 55 | Copy File Path, clipboard validation, same-file rejection, Alt+D failure paths, all notification toasts + buttons, edge cases (rapid pastes, many files, unicode, spaces), path computation, extension stripping, DnD universal behaviors, Pick Style QuickPick mechanics, Set Default QuickPick mechanics, settings mid-session |
-| [`typescript.md`](typescript.md) | ~86 | Gating matrix (21 pairs), 7 import styles, exported-class detection, Angular PascalCase, Bottom/Top/Cursor placement, Pick Style (TS-specific), Set Default (TS-specific), drag-and-drop (TS-specific), edge cases |
+| [`typescript.md`](typescript.md) | ~88 | Gating matrix (21 pairs), 7 import styles + style-name drift, smart identifiers (exported-class detection + Angular PascalCase), Bottom/Top/Cursor placement, Pick Style (TS-specific), Set Default (TS-specific), drag-and-drop (TS-specific), edge cases |
 
 ## Workspace counterparts
 
