@@ -24,13 +24,8 @@ process
 # Claude Code
 .claude/*
 
-
-
-
-
-
-
-
-
-
+# Large local media (screen-recording tests — not shipped)
 assets/*.mov
+
+# Generated audit reports (local only — regenerate via /qa-coverage)
+*.audit.md
