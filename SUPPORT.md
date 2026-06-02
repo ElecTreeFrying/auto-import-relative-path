@@ -289,6 +289,7 @@ Tests live in `src/test/` and are compiled to `out/test/` by `npm run compile-te
 ```bash
 npm test                          # full chain: compile-tests + compile + lint + run
 npm test -- --grep "<test name>"  # run a single test by name
+npm run test:coverage             # same chain + V8/c8 coverage report (opt-in; writes coverage/)
 ```
 
 - Write tests in BDD style (`describe` / `it`).

@@ -40,6 +40,7 @@ npm run compile-tests    # tsc → out/ (separate from esbuild; required before 
 npm run watch-tests      # tsc watch for the test build
 npm run lint             # eslint src
 npm test                 # @vscode/test-cli; pretest runs compile-tests + compile + lint
+npm run test:coverage    # @vscode/test-cli with --coverage (opt-in; writes coverage/ + text report)
 ```
 
 Run a single test by filtering Mocha via `npm test -- --grep "<name>"` (the filter is forwarded to `@vscode/test-cli`). Tests must be compiled first — `out/test/**/*.test.js` is what `.vscode-test.mjs` picks up.
@@ -80,8 +81,9 @@ These multi-site contracts silently break on drift. The linked guides have the f
 ## Build/test layout quirks
 
 - Two independent TS pipelines: **esbuild** (bundles `src/extension.ts` → `dist/extension.js` as CommonJS with `vscode` external; sourcemaps in dev, minified with `--production`; see `esbuild.js`) and **tsc** (`compile-tests` emits `src/**` → `out/` for the test runner). The two outputs are independent — don't try to share them.
-- `tsconfig.json` is `module: Node16`, `target: ES2022`, `strict: false`, `rootDir: src`, and `types: ["node", "mocha"]`. New source files belong under `src/`.
+- `tsconfig.json` is `module: Node16`, `target: ES2022`, `strict: false`, `rootDir: src`, `sourceMap: true`, and `types: ["node", "mocha"]`. New source files belong under `src/`. (`sourceMap` is on so `test:coverage` maps `out/` back to `src/`.)
 - Mocha tests are written in BDD style (`describe`/`it`); the runner UI is set to `bdd` in `.vscode-test.mjs`. Tests use Node's built-in `assert` (Chai/Sinon were dropped in commit `f06101f`). The test runner glob is `out/test/**/*.test.js` — only files emitted by `compile-tests` get picked up.
+- **Coverage is opt-in:** `npm run test:coverage` runs the same suite with `vscode-test --coverage` (V8/c8, ~96% lines). `.vscode-test.mjs` uses the `{ tests, coverage }` form — the `coverage` block (`includeAll`, `exclude` of `test`/`*.test.*`/`types`, `text`+`html` reporters) is silently ignored unless `--coverage` is passed. Report lands in the git-ignored `coverage/`.
 - `process/` and `.claude/` are gitignored; `process/` holds private publishing notes and access tokens. Never commit to either.
 
 ## Naming conventions
