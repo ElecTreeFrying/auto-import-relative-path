@@ -31,3 +31,27 @@ describe('config/settings', () => {
     );
   });
 });
+
+// Only ('script','javascript') was round-tripped above; the alias map has four namespaces and a wrong
+// path in any of them silently reads/writes the wrong backing setting. One round-trip per other namespace.
+describe('config/settings — namespace alias coverage', () => {
+  const SENTINEL = 'ns-roundtrip-sentinel';
+
+  it('round-trips (preferences, placement) through the alias map', async () => {
+    await setAutoImportSetting('preferences', 'placement', SENTINEL);
+    assert.strictEqual(getAutoImportSetting('preferences', 'placement'), SENTINEL);
+    await setAutoImportSetting('preferences', 'placement', undefined);
+  });
+
+  it('round-trips (stylesheet, css) through the alias map', async () => {
+    await setAutoImportSetting('stylesheet', 'css', SENTINEL);
+    assert.strictEqual(getAutoImportSetting('stylesheet', 'css'), SENTINEL);
+    await setAutoImportSetting('stylesheet', 'css', undefined);
+  });
+
+  it('round-trips (markup, htmlScript) through the alias map', async () => {
+    await setAutoImportSetting('markup', 'htmlScript', SENTINEL);
+    assert.strictEqual(getAutoImportSetting('markup', 'htmlScript'), SENTINEL);
+    await setAutoImportSetting('markup', 'htmlScript', undefined);
+  });
+});
