@@ -19,6 +19,7 @@ import {
   MARKDOWN_IMAGE_IMPORT_OPTIONS,
 } from './_styles';
 import { readExportedClassName } from './_class-name';
+import { buildAssetImportStatement } from './_react';
 import { buildJavaScriptImportSnippetByStyle } from './languages/javascript';
 import { buildTypeScriptImportSnippetByStyle } from './languages/typescript';
 import { buildCssImportSnippetByStyle, buildCssImageImportSnippet } from './languages/css';
@@ -170,60 +171,12 @@ function buildReactNonScriptVariant(
   fullPath: string,
   labelFullPath: string,
 ): ImportSnippetVariant | null {
-  if (fullPath.endsWith('.module.css') || fullPath.endsWith('.module.scss')) {
-    return toHardcodedVariant(
-      new vscode.SnippetString(`import \${1:styles} from '${fullPath}';`),
-      new vscode.SnippetString(`import \${1:styles} from '${labelFullPath}';`),
-    );
+  const insert = buildAssetImportStatement(sourceFileExt, fullPath);
+  const label = buildAssetImportStatement(sourceFileExt, labelFullPath);
+  if (insert === null || label === null) {
+    return null;
   }
-
-  switch (sourceFileExt) {
-    case '.gif':
-    case '.jpeg':
-    case '.jpg':
-    case '.png':
-    case '.svg':
-    case '.avif':
-    case '.webp':
-    case '.json':
-    case '.html':
-    case '.yml':
-    case '.yaml':
-    case '.md':
-    case '.mdx':
-    case '.pdf':
-    case '.vue':
-    case '.svelte':
-    case '.astro':
-      return toHardcodedVariant(
-        new vscode.SnippetString(`import \${1:name} from '${fullPath}';`),
-        new vscode.SnippetString(`import \${1:name} from '${labelFullPath}';`),
-      );
-    case '.mp4':
-    case '.webm':
-    case '.mov':
-    case '.mp3':
-    case '.ogg':
-    case '.wav':
-    case '.m4a':
-    case '.vtt':
-      return toHardcodedVariant(
-        new vscode.SnippetString(`import \${1:url} from '${fullPath}';`),
-        new vscode.SnippetString(`import \${1:url} from '${labelFullPath}';`),
-      );
-    case '.woff':
-    case '.woff2':
-    case '.ttf':
-    case '.eot':
-    case '.css':
-    case '.scss':
-      return toHardcodedVariant(
-        new vscode.SnippetString(`import '${fullPath}';`),
-        new vscode.SnippetString(`import '${labelFullPath}';`),
-      );
-    default:
-      return null;
-  }
+  return toHardcodedVariant(new vscode.SnippetString(insert), new vscode.SnippetString(label));
 }
 
 function buildCssVariants(sourceFilePath: string, fullPath: string, labelFullPath: string): ImportSnippetVariant[] {

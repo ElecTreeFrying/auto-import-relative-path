@@ -29,9 +29,28 @@ export function buildReactImport(opts: ReactImportOptions, info: FilePathInfo): 
   }
 
   const fullPath = relativePath + extractFileExtension(sourceFilePath);
+  return new vscode.SnippetString(buildAssetImportStatement(sourceFileExt, fullPath) ?? '');
+}
 
-  if (sourceFilePath.endsWith('.module.css') || sourceFilePath.endsWith('.module.scss')) {
-    return new vscode.SnippetString(`import \${1:styles} from '${fullPath}';`);
+/**
+ * Maps a non-script source to its asset import statement, keyed only on the source
+ * extension and an already-assembled import path. Pure and config-free — the caller
+ * decides the path — so the same mapping is shared by the paste/drop dispatch builders
+ * (`_react.ts`, `languages/framework-component.ts`) and the style-picker variant builder
+ * (`variants.ts:buildReactNonScriptVariant`) without re-reading config or doing path math.
+ *
+ * Shapes: CSS-module sources → a `styles` default import; images/data/docs/components →
+ * a named default import; audio-visual and text-track sources → a `url` default import;
+ * fonts and plain stylesheets → a side-effect import. Returns `null` for any extension
+ * that should never reach here — gating in `src/gating.ts` is responsible for keeping
+ * unsupported pairs out, and callers translate `null` into an empty result.
+ */
+export function buildAssetImportStatement(
+  sourceFileExt: FileExtension,
+  importPath: string,
+): string | null {
+  if (importPath.endsWith('.module.css') || importPath.endsWith('.module.scss')) {
+    return `import \${1:styles} from '${importPath}';`;
   }
 
   switch (sourceFileExt) {
@@ -52,7 +71,7 @@ export function buildReactImport(opts: ReactImportOptions, info: FilePathInfo): 
     case '.vue':
     case '.svelte':
     case '.astro':
-      return new vscode.SnippetString(`import \${1:name} from '${fullPath}';`);
+      return `import \${1:name} from '${importPath}';`;
     case '.mp4':
     case '.webm':
     case '.mov':
@@ -61,15 +80,15 @@ export function buildReactImport(opts: ReactImportOptions, info: FilePathInfo): 
     case '.wav':
     case '.m4a':
     case '.vtt':
-      return new vscode.SnippetString(`import \${1:url} from '${fullPath}';`);
+      return `import \${1:url} from '${importPath}';`;
     case '.woff':
     case '.woff2':
     case '.ttf':
     case '.eot':
     case '.css':
     case '.scss':
-      return new vscode.SnippetString(`import '${fullPath}';`);
+      return `import '${importPath}';`;
     default:
-      return new vscode.SnippetString('');
+      return null;
   }
 }
