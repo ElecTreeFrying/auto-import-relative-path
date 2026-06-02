@@ -166,7 +166,7 @@ Verify exact wording for every toast the extension can produce.
 - [ ] Open `general/destination.ts`
 - [ ] Command Palette (<kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>) → `Auto Import: Set Default Import Style`
 - [ ] Pick any style from the QuickPick
-- [ ] Info toast: `Auto Import: Default style saved — {description}` (where `{description}` matches the style you picked)
+- [ ] Info toast: `Auto Import: Default style saved — <style template>` — the suffix is the raw import-style **value** you selected (e.g. `import { name } from '_relativePath_';`), not the picker's description tag
 
 ### Warning toasts
 
@@ -300,10 +300,10 @@ All tests use `preserveScriptFileExtension = false` (default) unless noted. Veri
 
 ### 7.6 — `preserveScriptFileExtension = true`
 
-- [ ] In the extension settings, check the **Preserve Script File Extension** checkbox
+- [ ] In the extension settings, check the **Preserve script file extension in imports** checkbox
 - [ ] Copy `general/source.ts`, paste into `general/destination.ts`
 - [ ] Path is `'./source.ts'` — the `.ts` extension is preserved
-- [ ] In the extension settings, uncheck the **Preserve Script File Extension** checkbox to restore the default
+- [ ] In the extension settings, uncheck the **Preserve script file extension in imports** checkbox to restore the default
 
 ### 7.7 — Non-script source always preserves extension
 
@@ -439,7 +439,7 @@ The extension reads settings fresh on every operation — there is no caching. C
 ### 11.3 — Preserve extension change takes effect immediately
 
 - [ ] Copy `general/source.ts`, paste into `general/destination.ts` with `preserveScriptFileExtension = false`
-- [ ] Check the **Preserve Script File Extension** checkbox
+- [ ] Check the **Preserve script file extension in imports** checkbox
 - [ ] Paste again — the path now includes `.ts`
 - [ ] Undo both inserts and uncheck the checkbox
 
