@@ -46,6 +46,16 @@ describe('buildTypeScriptImportSnippetByStyle', () => {
       assert.strictEqual(result.value, "import { AuthModule } from './auth.module';");
     });
 
+    it('.service path with a space in the basename falls back to a bare $1 tab stop', () => {
+      const result = buildTypeScriptImportSnippetByStyle(0, './auth guard.service.ts');
+      assert.strictEqual(result.value, "import { $1 } from './auth guard.service.ts';");
+    });
+
+    it('.service path with a leading-digit basename falls back to a bare $1 tab stop', () => {
+      const result = buildTypeScriptImportSnippetByStyle(0, './123.service.ts');
+      assert.strictEqual(result.value, "import { $1 } from './123.service.ts';");
+    });
+
     it('detectedImportName takes priority over Angular .component path', () => {
       const result = buildTypeScriptImportSnippetByStyle(0, './app-root.component', 'DetectedName');
       assert.strictEqual(result.value, "import { ${1:DetectedName} } from './app-root.component';");
