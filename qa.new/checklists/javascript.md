@@ -38,8 +38,8 @@ The three settings used in this checklist:
 | Setting label in UI | Type | Default |
 |---|---|---|
 | JavaScript / JSX import style | dropdown | `import name from '_relativePath_';` |
-| Preserve Script File Extension | checkbox | unchecked (`false`) |
-| Import Statement Placement | dropdown | `Bottom` |
+| Preserve script file extension in imports | checkbox | unchecked (`false`) |
+| Import statement placement | dropdown | `Bottom` |
 
 **Workspace layout** — see [`workspace/README.md`](../workspace/README.md) for the full fixture map. Key directories:
 
@@ -225,7 +225,7 @@ A hand-typed / drifted `javascriptImportStyle` value (matching no enum descripti
 
 ### 6.2 — Top placement (`importStatementPlacement = "Top"`)
 
-- [ ] In the extension settings (see [How to change extension settings](#how-to-change-extension-settings)), set **Import Statement Placement** to `Top`
+- [ ] In the extension settings (see [How to change extension settings](#how-to-change-extension-settings)), set **Import statement placement** to `Top`
 
 #### 6.2.1 — File with existing imports
 
@@ -249,7 +249,7 @@ A hand-typed / drifted `javascriptImportStyle` value (matching no enum descripti
 
 ### 6.3 — Cursor placement (`importStatementPlacement = "Cursor"`)
 
-- [ ] In the extension settings, set **Import Statement Placement** to `Cursor`
+- [ ] In the extension settings, set **Import statement placement** to `Cursor`
 
 #### 6.3.1 — Cursor on a blank line
 
@@ -377,23 +377,23 @@ Drag a file from the Explorer sidebar into an open `.js` editor. A drop reuses t
 
 ### 9.3 — Placement with Bottom mode
 
-- [ ] In the extension settings (see [How to change extension settings](#how-to-change-extension-settings)), set **Import Statement Placement** to `Bottom` (the default)
+- [ ] In the extension settings (see [How to change extension settings](#how-to-change-extension-settings)), set **Import statement placement** to `Bottom` (the default)
 - [ ] Open `javascript/destinations/with-imports.js` (has existing imports)
 - [ ] Drag `javascript/src/foo.js` → import lands after the last existing import line
 
 ### 9.4 — Placement with Top mode
 
-- [ ] In the extension settings, set **Import Statement Placement** to `Top`
+- [ ] In the extension settings, set **Import statement placement** to `Top`
 - [ ] Drag `javascript/src/foo.js` into `javascript/destinations/with-imports.js` → import lands at line 0
 
 ### 9.5 — Placement with Cursor mode
 
-- [ ] In the extension settings, set **Import Statement Placement** to `Cursor`
+- [ ] In the extension settings, set **Import statement placement** to `Cursor`
 - [ ] Drag `javascript/src/foo.js` → drop position determines the insertion line
 
 #### 9.5.1 — Drop onto a single `//` comment line
 
-- [ ] Ensure **Import Statement Placement** is still set to `Cursor`
+- [ ] Ensure **Import statement placement** is still set to `Cursor`
 - [ ] Open `javascript/destinations/single-comment.js`
 - [ ] Drag `javascript/src/foo.js` and drop onto line 2 (`// standalone note`)
 - [ ] Import inserted at line 2 (at the comment, pushing it down — same as paste Cursor behavior §6.3.7)
@@ -401,7 +401,7 @@ Drag a file from the Explorer sidebar into an open `.js` editor. A drop reuses t
 
 #### 9.5.2 — Drop into a multi-line comment block
 
-- [ ] Ensure **Import Statement Placement** is still set to `Cursor`
+- [ ] Ensure **Import statement placement** is still set to `Cursor`
 - [ ] Open `javascript/destinations/multiline-comment.js`
 - [ ] Drag `javascript/src/foo.js` and drop onto line 4 (inside the `/* */` block)
 - [ ] Import is adjusted ABOVE the comment block (line 2) — same as paste Cursor behavior (§6.3.3)
@@ -413,9 +413,9 @@ Drag a file from the Explorer sidebar into an open `.js` editor. A drop reuses t
 
 ### 9.7 — `preserveScriptFileExtension` respected on drop
 
-- [ ] In the extension settings, check the **Preserve Script File Extension** checkbox
+- [ ] In the extension settings, check the **Preserve script file extension in imports** checkbox
 - [ ] Drag `javascript/src/foo.js` into `javascript/src/bar.js` → path is `'./foo.js'`
-- [ ] In the extension settings, uncheck the **Preserve Script File Extension** checkbox to restore the default
+- [ ] In the extension settings, uncheck the **Preserve script file extension in imports** checkbox to restore the default
 
 > **Universal drop precondition** (untitled / unsaved buffer is a no-op): cross-cutting across all 12 destinations and verified once in [typescript.md §9.10](typescript.md#910--universal-drop-precondition-cross-cutting--verified-once-here) — **not** re-tested here.
 

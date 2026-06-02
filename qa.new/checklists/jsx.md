@@ -39,8 +39,8 @@ The three settings used in this checklist:
 | Setting label in UI | Type | Default |
 |---|---|---|
 | JavaScript / JSX import style | dropdown | `import name from '_relativePath_';` |
-| Preserve Script File Extension | checkbox | unchecked (`false`) |
-| Import Statement Placement | dropdown | `Bottom` |
+| Preserve script file extension in imports | checkbox | unchecked (`false`) |
+| Import statement placement | dropdown | `Bottom` |
 
 > **`.jsx` has no dedicated `jsxImportStyle` setting** — it reuses **JavaScript / JSX import style** (`javascriptImportStyle`). The same setting governs `.js` destinations and `.js`/`.jsx` sources imported into `.tsx`/`.mdx`. See §8.
 
@@ -193,7 +193,7 @@ The `.module.css` / `.module.scss` check runs **before** the extension switch, s
 
 `preserveScriptFileExtension` is a **script-namespace** setting; `_react.ts` builds asset paths from `fullPath`, which always carries the source extension.
 
-- [ ] Confirm **Preserve Script File Extension** is unchecked (`false`, the default)
+- [ ] Confirm **Preserve script file extension in imports** is unchecked (`false`, the default)
 - [ ] Copy `jsx/assets/logo.png`, paste → `import ${1:name} from '../assets/logo.png';` (the `.png` extension is **still present** — the toggle does not strip asset extensions)
 
 ### 4C — Empty-snippet case (`.ts` / `.tsx` source → `.jsx`)
@@ -277,7 +277,7 @@ A hand-typed / drifted `javascriptImportStyle` value (matching no enum descripti
 
 ### 6.2 — Top placement (`importStatementPlacement = "Top"`)
 
-- [ ] In the extension settings (see [How to change extension settings](#how-to-change-extension-settings)), set **Import Statement Placement** to `Top`
+- [ ] In the extension settings (see [How to change extension settings](#how-to-change-extension-settings)), set **Import statement placement** to `Top`
 
 #### 6.2.1 — File with existing imports
 
@@ -295,7 +295,7 @@ A hand-typed / drifted `javascriptImportStyle` value (matching no enum descripti
 
 ### 6.3 — Cursor placement (`importStatementPlacement = "Cursor"`)
 
-- [ ] In the extension settings, set **Import Statement Placement** to `Cursor`
+- [ ] In the extension settings, set **Import statement placement** to `Cursor`
 
 #### 6.3.1 — Cursor on a blank line
 
@@ -461,18 +461,18 @@ This is `.jsx`'s **only** null-resolving drop — every other source is accepted
 
 ### 9.4 — Placement with Bottom mode
 
-- [ ] In the extension settings, set **Import Statement Placement** to `Bottom` (the default)
+- [ ] In the extension settings, set **Import statement placement** to `Bottom` (the default)
 - [ ] Open `jsx/destinations/with-imports.jsx` (has existing imports)
 - [ ] Drag `jsx/src/App.jsx` → import lands after the last existing import line
 
 ### 9.5 — Placement with Top mode
 
-- [ ] Set **Import Statement Placement** to `Top`
+- [ ] Set **Import statement placement** to `Top`
 - [ ] Drag `jsx/src/App.jsx` into `jsx/destinations/with-imports.jsx` → import lands at line 0
 
 ### 9.6 — Placement with Cursor mode (comment-block adjustment)
 
-- [ ] Set **Import Statement Placement** to `Cursor`
+- [ ] Set **Import statement placement** to `Cursor`
 
 #### 9.6.1 — Drop onto a single `//` comment line
 
@@ -492,10 +492,10 @@ This is `.jsx`'s **only** null-resolving drop — every other source is accepted
 
 ### 9.8 — `preserveScriptFileExtension` respected on drop (script source)
 
-- [ ] In the extension settings, check the **Preserve Script File Extension** checkbox
+- [ ] In the extension settings, check the **Preserve script file extension in imports** checkbox
 - [ ] Drag `jsx/src/App.jsx` into `jsx/src/Panel.jsx` → path is `'./App.jsx'`
 - [ ] Drag `jsx/assets/logo.png` → path is still `'../assets/logo.png'` (asset extensions are kept regardless — the toggle is script-namespace)
-- [ ] Uncheck **Preserve Script File Extension** to restore the default
+- [ ] Uncheck **Preserve script file extension in imports** to restore the default
 
 > **Universal drop precondition** (untitled / unsaved buffer is a no-op): cross-cutting across all 12 destinations and verified once in [typescript.md §9.10](typescript.md#910--universal-drop-precondition-cross-cutting--verified-once-here) — **not** re-tested here.
 
@@ -528,7 +528,7 @@ This is `.jsx`'s **only** null-resolving drop — every other source is accepted
 
 ### 10.4 — Leading-`*` Cursor contrast (`.jsx` is not Markdown)
 
-- [ ] With **Import Statement Placement** = `Cursor`, repeat §6.3.8 on `jsx/destinations/leading-star.jsx`: a cursor on the ` * …` line pushes the import **above** the block (the `*` is a comment continuation)
+- [ ] With **Import statement placement** = `Cursor`, repeat §6.3.8 on `jsx/destinations/leading-star.jsx`: a cursor on the ` * …` line pushes the import **above** the block (the `*` is a comment continuation)
 - [ ] This is the explicit counter-case to `.md`/`.mdx`, where a leading-`*` line is content and the import lands **at** the line — the same `tsx.ts`/React-family family of builders, but `.jsx` ≠ `.md`/`.mdx` for comment handling
 
 ---

@@ -38,9 +38,9 @@ The three settings used in this checklist:
 
 | Setting label in UI | Type | Default |
 |---|---|---|
-| Typescript Import Style | dropdown | `import { name } from '_relativePath_';` |
-| Preserve Script File Extension | checkbox | unchecked (`false`) |
-| Import Statement Placement | dropdown | `Bottom` |
+| TypeScript / TSX import style | dropdown | `import { name } from '_relativePath_';` |
+| Preserve script file extension in imports | checkbox | unchecked (`false`) |
+| Import statement placement | dropdown | `Bottom` |
 
 **Workspace layout** — see [`workspace/README.md`](../workspace/README.md) for the full fixture map. Key directories:
 
@@ -114,7 +114,7 @@ Use `typescript/src/foo.ts` as source, `typescript/src/bar.ts` as destination. D
 
 ## 4 — All 7 TypeScript import styles
 
-For each style: open the extension settings (see [How to change extension settings](#how-to-change-extension-settings)) and select the listed value from the **Typescript Import Style** dropdown. Then copy `typescript/src/foo.ts` and paste into `typescript/src/bar.ts`. Undo (`Cmd+Z`) after each test.
+For each style: open the extension settings (see [How to change extension settings](#how-to-change-extension-settings)) and select the listed value from the **TypeScript / TSX import style** dropdown. Then copy `typescript/src/foo.ts` and paste into `typescript/src/bar.ts`. Undo (`Cmd+Z`) after each test.
 
 `typescript/src/foo.ts` is a plain file with NO `export class` and NO Angular suffix (tests the bare tab-stop behavior).
 
@@ -163,7 +163,7 @@ A hand-typed / drifted `typescriptImportStyle` value (matching no enum descripti
 - [ ] In `settings.json`, set `auto-import.importStatement.script.typescriptImportStyle` to a value not in the dropdown, e.g. `import xyz from '_relativePath_';`
 - [ ] Copy `typescript/src/foo.ts` (no class, no Angular suffix), paste into `typescript/src/bar.ts` → `import { $1 } from './foo';` (style-0 named shape — NOT empty)
 - [ ] Copy `typescript/src/classes/event-bus.ts` (`export class EventBus`), paste into `typescript/src/bar.ts` → `import { ${1:EventBus} } from './classes/event-bus';` (default arm still pre-fills the detected class)
-- [ ] Restore: set **Typescript Import Style** back to `import { name } from '_relativePath_';`
+- [ ] Restore: set **TypeScript / TSX import style** back to `import { name } from '_relativePath_';`
 
 ---
 
@@ -270,18 +270,18 @@ Style must be set to index 0. Source files must NOT contain `export class` (othe
 
 #### 5.B.8 — Angular naming with `preserveScriptFileExtension = false`
 
-- [ ] In the extension settings (see [How to change extension settings](#how-to-change-extension-settings)), confirm the **Preserve Script File Extension** checkbox is unchecked
+- [ ] In the extension settings (see [How to change extension settings](#how-to-change-extension-settings)), confirm the **Preserve script file extension in imports** checkbox is unchecked
 - [ ] Copy `typescript/src/angular/app-root.component.ts` → paste into `typescript/src/bar.ts`
 - [ ] Path is `'./angular/app-root.component'` (extension stripped)
 - [ ] Identifier is `AppRootComponent` (NOT `AppRootComponentTs`)
 
 #### 5.B.9 — Angular naming with `preserveScriptFileExtension = true`
 
-- [ ] In the extension settings, check the **Preserve Script File Extension** checkbox
+- [ ] In the extension settings, check the **Preserve script file extension in imports** checkbox
 - [ ] Copy `typescript/src/angular/app-root.component.ts` → paste into `typescript/src/bar.ts`
 - [ ] Path is `'./angular/app-root.component.ts'` (extension preserved)
 - [ ] Identifier is STILL `AppRootComponent` (NOT `AppRootComponentTs`)
-- [ ] Restore: uncheck **Preserve Script File Extension**
+- [ ] Restore: uncheck **Preserve script file extension in imports**
 
 #### 5.B.10 — Same-directory Angular naming
 
@@ -344,7 +344,7 @@ Style must be set to index 0. Source files must NOT contain `export class` (othe
 
 ### 6.2 — Top placement (`importStatementPlacement = "Top"`)
 
-- [ ] In the extension settings (see [How to change extension settings](#how-to-change-extension-settings)), set **Import Statement Placement** to `Top`
+- [ ] In the extension settings (see [How to change extension settings](#how-to-change-extension-settings)), set **Import statement placement** to `Top`
 
 #### 6.2.1 — File with existing imports
 
@@ -368,7 +368,7 @@ Style must be set to index 0. Source files must NOT contain `export class` (othe
 
 ### 6.3 — Cursor placement (`importStatementPlacement = "Cursor"`)
 
-- [ ] In the extension settings, set **Import Statement Placement** to `Cursor`
+- [ ] In the extension settings, set **Import statement placement** to `Cursor`
 
 #### 6.3.1 — Cursor on a blank line
 
@@ -499,23 +499,23 @@ Drag a file from the Explorer sidebar into an open `.ts` editor. Universal DnD b
 
 ### 9.3 — Placement with Bottom mode
 
-- [ ] In the extension settings (see [How to change extension settings](#how-to-change-extension-settings)), set **Import Statement Placement** to `Bottom` (the default)
+- [ ] In the extension settings (see [How to change extension settings](#how-to-change-extension-settings)), set **Import statement placement** to `Bottom` (the default)
 - [ ] Open `typescript/destinations/with-imports.ts` (has existing imports)
 - [ ] Drag `typescript/src/foo.ts` → import lands after the last existing import line
 
 ### 9.4 — Placement with Top mode
 
-- [ ] In the extension settings, set **Import Statement Placement** to `Top`
+- [ ] In the extension settings, set **Import statement placement** to `Top`
 - [ ] Drag `typescript/src/foo.ts` into `typescript/destinations/with-imports.ts` → import lands at line 0
 
 ### 9.5 — Placement with Cursor mode
 
-- [ ] In the extension settings, set **Import Statement Placement** to `Cursor`
+- [ ] In the extension settings, set **Import statement placement** to `Cursor`
 - [ ] Drag `typescript/src/foo.ts` → drop position determines the insertion line
 
 #### 9.5.1 — Drop onto a single `//` comment line
 
-- [ ] Ensure **Import Statement Placement** is still set to `Cursor`
+- [ ] Ensure **Import statement placement** is still set to `Cursor`
 - [ ] Open `typescript/destinations/single-comment.ts`
 - [ ] Drag `typescript/src/foo.ts` and drop onto line 2 (`// standalone note`)
 - [ ] Import inserted at line 2 (at the comment, pushing it down — same as paste Cursor behavior §6.3.7)
@@ -523,7 +523,7 @@ Drag a file from the Explorer sidebar into an open `.ts` editor. Universal DnD b
 
 #### 9.5.2 — Drop into a multi-line comment block
 
-- [ ] Ensure **Import Statement Placement** is still set to `Cursor`
+- [ ] Ensure **Import statement placement** is still set to `Cursor`
 - [ ] Open `typescript/destinations/multiline-comment.ts`
 - [ ] Drag `typescript/src/foo.ts` and drop onto line 4 (inside the `/* */` block)
 - [ ] Import is adjusted ABOVE the comment block (line 2) — same as paste Cursor behavior (§6.3.3)
@@ -545,9 +545,9 @@ Drag a file from the Explorer sidebar into an open `.ts` editor. Universal DnD b
 
 ### 9.9 — `preserveScriptFileExtension` respected
 
-- [ ] In the extension settings, check the **Preserve Script File Extension** checkbox
+- [ ] In the extension settings, check the **Preserve script file extension in imports** checkbox
 - [ ] Drag `typescript/src/foo.ts` into `typescript/src/bar.ts` → path is `'./foo.ts'`
-- [ ] In the extension settings, uncheck the **Preserve Script File Extension** checkbox to restore the default
+- [ ] In the extension settings, uncheck the **Preserve script file extension in imports** checkbox to restore the default
 
 ### 9.10 — Universal drop precondition (cross-cutting — verified once here)
 

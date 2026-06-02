@@ -37,8 +37,8 @@ The settings used in this checklist:
 | Setting label in UI | Type | Default |
 |---|---|---|
 | SCSS @import / @use style | dropdown | `@use '_relativePath_';` |
-| Preserve Stylesheet File Extension | checkbox | unchecked (`false`) |
-| Import Statement Placement | dropdown | `Bottom` |
+| Preserve stylesheet file extension in imports | checkbox | unchecked (`false`) |
+| Import statement placement | dropdown | `Bottom` |
 
 **Workspace layout** — see [`workspace/README.md`](../workspace/README.md) for the full fixture map. Key directories:
 
@@ -177,10 +177,10 @@ $spacing: 8px;
 
 This is the **stylesheet** preserve key (`auto-import.importStatement.styleSheet.preserveStylesheetFileExtension`), distinct from the script-namespace `preserveScriptFileExtension`. It is **not** suppressed for `.scss`.
 
-- [ ] With **Preserve Stylesheet File Extension** unchecked (default), copy `scss/src/abstracts/_variables.scss`, paste into `scss/src/main.scss` → `@use './abstracts/variables';`
-- [ ] In the extension settings, **check** the **Preserve Stylesheet File Extension** checkbox
+- [ ] With **Preserve stylesheet file extension in imports** unchecked (default), copy `scss/src/abstracts/_variables.scss`, paste into `scss/src/main.scss` → `@use './abstracts/variables';`
+- [ ] In the extension settings, **check** the **Preserve stylesheet file extension in imports** checkbox
 - [ ] Copy `scss/src/abstracts/_variables.scss`, paste → `@use './abstracts/variables.scss';` (extension kept; the leading `_` is still stripped)
-- [ ] Restore: **uncheck** **Preserve Stylesheet File Extension**
+- [ ] Restore: **uncheck** **Preserve stylesheet file extension in imports**
 
 ### 4.C — `.css` source always keeps `.css` (neither toggle affects it)
 
@@ -190,9 +190,9 @@ This is the **stylesheet** preserve key (`auto-import.importStatement.styleSheet
 *, *::before, *::after { box-sizing: border-box; }
 ```
 
-- [ ] With **Preserve Stylesheet File Extension** unchecked, copy `scss/src/reset.css`, paste into `scss/src/main.scss` → `@use './reset.css';`
-- [ ] **Check** **Preserve Stylesheet File Extension**, repeat → STILL `@use './reset.css';` (unchanged by the toggle)
-- [ ] Restore: **uncheck** **Preserve Stylesheet File Extension**
+- [ ] With **Preserve stylesheet file extension in imports** unchecked, copy `scss/src/reset.css`, paste into `scss/src/main.scss` → `@use './reset.css';`
+- [ ] **Check** **Preserve stylesheet file extension in imports**, repeat → STILL `@use './reset.css';` (unchanged by the toggle)
+- [ ] Restore: **uncheck** **Preserve stylesheet file extension in imports**
 
 > Rationale (`package.json`): ".css extensions are always preserved inside .scss imports — Sass requires the extension to recognise a foreign-language import, and this setting has no effect there." This short-circuit (`scss.ts:48-50`) runs *before* the preserve setting is read, so it is independent of §4.B.
 
@@ -261,7 +261,7 @@ A hand-typed / drifted `scssImportStyle` value (matching no enum description) mu
 
 ### 6.2 — Top placement (`importStatementPlacement = "Top"`)
 
-- [ ] In the extension settings, set **Import Statement Placement** to `Top`
+- [ ] In the extension settings, set **Import statement placement** to `Top`
 
 #### 6.2.1 — File with existing imports
 
@@ -275,7 +275,7 @@ A hand-typed / drifted `scssImportStyle` value (matching no enum description) mu
 
 ### 6.3 — Cursor placement (`importStatementPlacement = "Cursor"`)
 
-- [ ] In the extension settings, set **Import Statement Placement** to `Cursor`
+- [ ] In the extension settings, set **Import statement placement** to `Cursor`
 
 #### 6.3.1 — Cursor inside a multi-line comment block
 
@@ -327,15 +327,15 @@ A hand-typed / drifted `scssImportStyle` value (matching no enum description) mu
 #### 6.3.5 — Column is always 0
 
 - [ ] Even with the cursor at column 20, the `@use` import inserts at column 0
-- [ ] Restore: set **Import Statement Placement** back to `Bottom`
+- [ ] Restore: set **Import statement placement** back to `Bottom`
 
 ### 6.4 — Image source: inline `url()` (placement ignored)
 
-- [ ] Set **Import Statement Placement** to `Top`
+- [ ] Set **Import statement placement** to `Top`
 - [ ] Open `scss/src/main.scss`, place the cursor mid-line inside a value position, copy `scss/src/images/logo.png`, paste
 - [ ] `url('./images/logo.png')` inserted at the **exact cursor line and column** (NOT line 0) — the placement setting has no effect on inline `url()`
 - [ ] No trailing newline; undo (`Cmd+Z`)
-- [ ] Restore: set **Import Statement Placement** back to `Bottom`
+- [ ] Restore: set **Import statement placement** back to `Bottom`
 
 > A `.css` source is a **stylesheet** source (`STYLESHEET_FILE_EXTENSIONS` includes `.css`), so it is **NOT** inline — `@use './reset.css';` is placed as a normal statement at column 0 and honors the placement setting, exactly like a `.scss` source. Only genuinely non-stylesheet (image) sources go inline.
 
@@ -417,19 +417,19 @@ Drag a file from the Explorer sidebar into an open `.scss` editor. A drop reuses
 
 ### 9.3 — Placement with Bottom mode
 
-- [ ] Ensure **Import Statement Placement** is `Bottom` (the default)
+- [ ] Ensure **Import statement placement** is `Bottom` (the default)
 - [ ] Drag `scss/src/theme.scss` into `scss/destinations/with-imports.scss` → import lands after the last `@forward`/`@use` line
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 ### 9.4 — Placement with Top mode
 
-- [ ] Set **Import Statement Placement** to `Top`
+- [ ] Set **Import statement placement** to `Top`
 - [ ] Drag `scss/src/theme.scss` into `scss/destinations/with-imports.scss` → import lands at line 0
-- [ ] Undo (`Cmd+Z`); restore **Import Statement Placement** to `Bottom`
+- [ ] Undo (`Cmd+Z`); restore **Import statement placement** to `Bottom`
 
 ### 9.5 — Placement with Cursor mode (comment sub-cases)
 
-- [ ] Set **Import Statement Placement** to `Cursor`
+- [ ] Set **Import statement placement** to `Cursor`
 
 #### 9.5.1 — Drop onto a lone `//` comment line
 
@@ -441,7 +441,7 @@ Drag a file from the Explorer sidebar into an open `.scss` editor. A drop reuses
 
 - [ ] Open `scss/destinations/multiline-comment.scss`, drag `scss/src/theme.scss` and drop onto line 4 (inside the `/* */` block)
 - [ ] Import is adjusted ABOVE the comment block (line 2) — same as paste §6.3.1
-- [ ] Undo (`Cmd+Z`); restore **Import Statement Placement** to `Bottom`
+- [ ] Undo (`Cmd+Z`); restore **Import statement placement** to `Bottom`
 
 ### 9.6 — Image drop: inline `url()` at the drop column
 
@@ -455,9 +455,9 @@ Drag a file from the Explorer sidebar into an open `.scss` editor. A drop reuses
 
 ### 9.8 — `preserveStylesheetFileExtension` respected on drop
 
-- [ ] In the extension settings, **check** **Preserve Stylesheet File Extension**
+- [ ] In the extension settings, **check** **Preserve stylesheet file extension in imports**
 - [ ] Drag `scss/src/abstracts/_variables.scss` into `scss/src/main.scss` → `@use './abstracts/variables.scss';`
-- [ ] Restore: **uncheck** **Preserve Stylesheet File Extension**
+- [ ] Restore: **uncheck** **Preserve stylesheet file extension in imports**
 
 ### 9.9 — Universal drop precondition (cross-cutting — verified once for all 12 destinations)
 

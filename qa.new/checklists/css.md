@@ -267,7 +267,7 @@ forced to **column 0**.
 
 **stylesheet mode** (`.css` source — honors Top/Bottom/Cursor, column 0):
 
-- [ ] **§6.1 — Top.** Set `Import Statement Placement` = `Top`. Open
+- [ ] **§6.1 — Top.** Set `Import statement placement` = `Top`. Open
   `css/placement/with-imports.css`, copy `css/placement/widget.css`, `Cmd/Ctrl+I` →
   `@import './widget.css';` is inserted at **line 0**, before `@import './reset.css';`,
   column 0. `Cmd+Z`; restore the setting.
