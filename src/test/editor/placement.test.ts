@@ -605,5 +605,16 @@ describe('editor/placement', () => {
       const r = computeImportPlacement(vue, '.vue' as FileExtension, '.ts' as FileExtension, 3, 0);
       assert.strictEqual(r.line, 2);
     });
+
+    // Cursor STRICTLY inside the block (dropLine between the fences/tags) lands AT the cursor line.
+    it('Astro: cursor strictly inside the fences lands at the cursor line', () => {
+      const r = computeImportPlacement(astro, '.astro' as FileExtension, '.ts' as FileExtension, 2, 0);
+      assert.strictEqual(r.line, 2);
+    });
+
+    it('Vue: cursor strictly inside the script block lands at the cursor line', () => {
+      const r = computeImportPlacement(vue, '.vue' as FileExtension, '.ts' as FileExtension, 2, 0);
+      assert.strictEqual(r.line, 2);
+    });
   });
 });

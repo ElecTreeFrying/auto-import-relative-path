@@ -4,6 +4,7 @@ import * as vscode from 'vscode';
 
 import { insertImportSnippet } from '../../editor/insert-snippet';
 import { getFilePathInfo, FilePathInfo } from '../../editor/file-path-info';
+import { setAutoImportSetting } from '../../config/settings';
 
 const FIXTURE_ROOT = path.resolve(__dirname, '../../../qa/workspace');
 const SNIPPET_TEXT = "import { test } from './test';";
@@ -221,6 +222,68 @@ describe('insertImportSnippet', () => {
         insertedLine.startsWith('  <script src'),
         `expected insertion at column 2, got: "${insertedLine}"`
       );
+    });
+  });
+
+  // Cursor placement INSIDE an Astro frontmatter / SFC <script> block lands the import at the cursor
+  // line (insert-snippet.ts Astro/SFC Cursor branches). The committed App.astro/App.vue fixtures have
+  // EMPTY blocks (no line strictly between the fences/tags), so these use temp fixtures with a body line.
+  describe('Cursor placement inside an Astro frontmatter / SFC script block', () => {
+    it('Astro: Cursor inside the frontmatter inserts at the cursor line', async () => {
+      await setAutoImportSetting('preferences', 'placement', 'Cursor');
+      const uri = await writeTempFile('_temp_astro_cursor.astro', '---\nconst existing = 1;\n---\n<html></html>\n');
+      try {
+        const doc = await vscode.workspace.openTextDocument(uri);
+        const editor = await vscode.window.showTextDocument(doc);
+        const info = await setClipboard('src/bar.ts');
+        await setCursor(editor, 1, 0);
+        await insertAndWait(new vscode.SnippetString(SNIPPET_TEXT), info);
+        assert.ok(
+          editor.document.lineAt(1).text.includes("import { test } from './test';"),
+          `expected snippet at cursor line 1, got: "${editor.document.lineAt(1).text}"`,
+        );
+      } finally {
+        await setAutoImportSetting('preferences', 'placement', undefined);
+        await revertAndClose();
+        await deleteTempFile(uri);
+      }
+    });
+
+    it('Vue: Cursor inside the <script setup> block inserts at the cursor line', async () => {
+      await setAutoImportSetting('preferences', 'placement', 'Cursor');
+      const uri = await writeTempFile('_temp_vue_cursor.vue', '<script setup>\nconst existing = 1;\n</script>\n<template></template>\n');
+      try {
+        const doc = await vscode.workspace.openTextDocument(uri);
+        const editor = await vscode.window.showTextDocument(doc);
+        const info = await setClipboard('src/bar.ts');
+        await setCursor(editor, 1, 0);
+        await insertAndWait(new vscode.SnippetString(SNIPPET_TEXT), info);
+        assert.ok(
+          editor.document.lineAt(1).text.includes("import { test } from './test';"),
+          `expected snippet at cursor line 1, got: "${editor.document.lineAt(1).text}"`,
+        );
+      } finally {
+        await setAutoImportSetting('preferences', 'placement', undefined);
+        await revertAndClose();
+        await deleteTempFile(uri);
+      }
+    });
+  });
+
+  describe('placement fallback', () => {
+    it('falls back to Bottom for an unrecognized placement setting', async () => {
+      await setAutoImportSetting('preferences', 'placement', 'Nonsense');
+      try {
+        const editor = await openFixture('with-imports.ts');
+        const info = await setClipboard('src/bar.ts');
+        await insertAndWait(new vscode.SnippetString(SNIPPET_TEXT), info);
+        assert.ok(
+          editor.document.lineAt(3).text.includes("import { test } from './test';"),
+          `expected default→Bottom at line 3, got: "${editor.document.lineAt(3).text}"`,
+        );
+      } finally {
+        await setAutoImportSetting('preferences', 'placement', undefined);
+      }
     });
   });
 });

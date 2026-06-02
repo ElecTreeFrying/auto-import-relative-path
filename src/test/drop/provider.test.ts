@@ -108,3 +108,35 @@ describe('AutoImportOnDropProvider — source resolution fallbacks', () => {
     assert.strictEqual(result, null);
   });
 });
+
+// Drop placement through the Astro/SFC branches of computeImportPlacement — distinct from the script
+// (.ts → .ts) and inline (.png → .css) paths above. The script-less .svelte case exercises the
+// wrapperPrefix concatenation in provider.ts that fixtures with an existing block skip.
+describe('AutoImportOnDropProvider — framework-destination placement', () => {
+  it('drop .ts into .astro (with frontmatter) yields a placement WorkspaceEdit', async () => {
+    const doc = await destDocument('src/App.astro');
+    const result = await drop(doc, 'src/bar.ts');
+    assert.ok(result, 'expected a DocumentDropEdit for .ts into .astro');
+    assert.ok(result.additionalEdit instanceof vscode.WorkspaceEdit);
+  });
+
+  it('drop .ts into .vue (with <script> block) yields a placement WorkspaceEdit', async () => {
+    const doc = await destDocument('src/App.vue');
+    const result = await drop(doc, 'src/bar.ts');
+    assert.ok(result, 'expected a DocumentDropEdit for .ts into .vue');
+    assert.ok(result.additionalEdit instanceof vscode.WorkspaceEdit);
+  });
+
+  it('drop .ts into a script-less .svelte wraps the import (wrapperPrefix path)', async () => {
+    const uri = vscode.Uri.file(path.join(FIXTURE_ROOT, '_temp_drop_no_script.svelte'));
+    await vscode.workspace.fs.writeFile(uri, Buffer.from('<div>Hello</div>\n', 'utf-8'));
+    try {
+      const doc = await vscode.workspace.openTextDocument(uri);
+      const result = await drop(doc, 'src/bar.ts');
+      assert.ok(result, 'expected a DocumentDropEdit for .ts into a script-less .svelte');
+      assert.ok(result.additionalEdit instanceof vscode.WorkspaceEdit);
+    } finally {
+      try { await vscode.workspace.fs.delete(uri); } catch { /* ignore */ }
+    }
+  });
+});
