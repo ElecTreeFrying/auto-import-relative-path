@@ -1,0 +1,4 @@
+@use './theme';
+@forward './mixins';
+
+body { color: red; }
