@@ -117,6 +117,29 @@ describe('buildImportSnippetVariants', () => {
     assert.strictEqual(variants[0].setting.key, 'typescript');
   });
 
+  // Non-script sources into framework destinations are a single hardcoded asset variant
+  // (not the styled TS catalogue), mirroring the React (.jsx/.tsx/.mdx) picker behavior.
+  it('.png into .vue: 1 hardcoded name-import variant', async () => {
+    const variants = await openAndQuery('src/App.vue', 'logo.png');
+    assert.strictEqual(variants.length, 1);
+    assert.strictEqual(variants[0].setting, undefined, 'asset variant is hardcoded (no setting)');
+    assert.strictEqual(variants[0].snippetText, "import ${1:name} from './logo.png';");
+  });
+
+  it('.mp4 into .svelte: 1 hardcoded url-import variant', async () => {
+    const variants = await openAndQuery('src/App.svelte', 'clip.mp4');
+    assert.strictEqual(variants.length, 1);
+    assert.strictEqual(variants[0].setting, undefined, 'asset variant is hardcoded (no setting)');
+    assert.strictEqual(variants[0].snippetText, "import ${1:url} from './clip.mp4';");
+  });
+
+  it('.svg into .astro: 1 hardcoded name-import variant', async () => {
+    const variants = await openAndQuery('src/App.astro', 'icon.svg');
+    assert.strictEqual(variants.length, 1);
+    assert.strictEqual(variants[0].setting, undefined, 'asset variant is hardcoded (no setting)');
+    assert.strictEqual(variants[0].snippetText, "import ${1:name} from './icon.svg';");
+  });
+
   it('.json into .json: empty variant set (isEmptyVariantSet backstop, same-ext non-dispatch)', async () => {
     const variants = await openAndQuery('data/config.json', 'feature-flags.json');
     assert.deepStrictEqual(variants, []);

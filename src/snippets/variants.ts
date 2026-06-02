@@ -152,18 +152,18 @@ function buildFrameworkComponentVariants(
   fullPath: string,
   labelFullPath: string,
 ): ImportSnippetVariant[] {
-  const isScript = sourceFileExt === '.ts' || sourceFileExt === '.tsx'
-    || sourceFileExt === '.js' || sourceFileExt === '.jsx';
-  const importPath = isScript ? scriptPath : fullPath;
-  const labelPath = isScript ? labelScriptPath : labelFullPath;
-
-  return TYPESCRIPT_IMPORT_OPTIONS.map(opt =>
-    toStyledVariant(
-      opt,
-      buildTypeScriptImportSnippetByStyle(opt.value, importPath),
-      buildTypeScriptImportSnippetByStyle(opt.value, labelPath),
-      'script', 'typescript',
-    ));
+  if (sourceFileExt === '.ts' || sourceFileExt === '.tsx'
+    || sourceFileExt === '.js' || sourceFileExt === '.jsx') {
+    return TYPESCRIPT_IMPORT_OPTIONS.map(opt =>
+      toStyledVariant(
+        opt,
+        buildTypeScriptImportSnippetByStyle(opt.value, scriptPath),
+        buildTypeScriptImportSnippetByStyle(opt.value, labelScriptPath),
+        'script', 'typescript',
+      ));
+  }
+  const variant = buildReactNonScriptVariant(sourceFileExt, fullPath, labelFullPath);
+  return variant ? [variant] : [];
 }
 
 function buildReactNonScriptVariant(

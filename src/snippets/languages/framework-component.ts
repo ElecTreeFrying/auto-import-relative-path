@@ -5,6 +5,7 @@ import { extractFileExtension } from '../../path/extension';
 import { FilePathInfo } from '../../editor/file-path-info';
 import { getAutoImportSetting } from '../../config/settings';
 import { buildTypeScriptImportSnippet } from './typescript';
+import { buildAssetImportStatement } from '../_react';
 
 const SCRIPT_SOURCE_EXTENSIONS: ReadonlyArray<FileExtension> = [ '.ts', '.tsx', '.js', '.jsx' ];
 
@@ -19,5 +20,5 @@ export function buildSnippet(info: FilePathInfo): vscode.SnippetString {
     return buildTypeScriptImportSnippet(relativePath + fileExtension);
   }
 
-  return buildTypeScriptImportSnippet(relativePath + sourceFileExt);
+  return new vscode.SnippetString(buildAssetImportStatement(sourceFileExt, relativePath + sourceFileExt) ?? '');
 }

@@ -44,32 +44,46 @@ describe('framework-component', () => {
     assert.strictEqual(result.value, "import { $1 } from './App';");
   });
 
-  it('image source preserves full extension', async () => {
+  it('image source produces name import (full extension preserved)', async () => {
     await vscode.env.clipboard.writeText(source('logo.png'));
     const info = await getFilePathInfo();
     const result = buildSnippet(info);
-    assert.strictEqual(result.value, "import { $1 } from './logo.png';");
+    assert.strictEqual(result.value, "import ${1:name} from './logo.png';");
   });
 
-  it('.json source preserves full extension', async () => {
+  it('.json source produces name import (full extension preserved)', async () => {
     await vscode.env.clipboard.writeText(source('config.json'));
     const info = await getFilePathInfo();
     const result = buildSnippet(info);
-    assert.strictEqual(result.value, "import { $1 } from './config.json';");
+    assert.strictEqual(result.value, "import ${1:name} from './config.json';");
   });
 
-  it('.vue self-import preserves .vue extension', async () => {
+  it('media source produces url import', async () => {
+    await vscode.env.clipboard.writeText(source('clip.mp4'));
+    const info = await getFilePathInfo();
+    const result = buildSnippet(info);
+    assert.strictEqual(result.value, "import ${1:url} from './clip.mp4';");
+  });
+
+  it('text-track source produces url import', async () => {
+    await vscode.env.clipboard.writeText(source('subs.vtt'));
+    const info = await getFilePathInfo();
+    const result = buildSnippet(info);
+    assert.strictEqual(result.value, "import ${1:url} from './subs.vtt';");
+  });
+
+  it('.vue self-import produces name import', async () => {
     await vscode.env.clipboard.writeText(source('App.vue'));
     const info = await getFilePathInfo();
     const result = buildSnippet(info);
-    assert.strictEqual(result.value, "import { $1 } from './App.vue';");
+    assert.strictEqual(result.value, "import ${1:name} from './App.vue';");
   });
 
-  it('.svelte self-import preserves .svelte extension', async () => {
+  it('.svelte self-import produces name import', async () => {
     await vscode.env.clipboard.writeText(source('Widget.svelte'));
     const info = await getFilePathInfo();
     const result = buildSnippet(info);
-    assert.strictEqual(result.value, "import { $1 } from './Widget.svelte';");
+    assert.strictEqual(result.value, "import ${1:name} from './Widget.svelte';");
   });
 
   it('Angular .component source gets PascalCase at index 0 (no class detection)', async () => {
