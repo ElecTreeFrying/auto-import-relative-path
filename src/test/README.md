@@ -8,19 +8,21 @@ Mocha BDD tests. Manual QA checklists and fixture workspaces live in the top-lev
 |------|---------|
 | `extension.test.ts` | Activation smoke test |
 | `gating.test.ts` | Extension-pair gating tests (`isPairSupported`) |
-| `commands/` | Command-level tests (`paste-import` only — the other four commands have no test file) |
-| `drop/` | Drag-and-drop provider tests (`provider`) |
-| `editor/` | Editor-helper tests (`insert-snippet`, `notification`, `placement`) |
+| `commands/` | Command-level tests (`copy-file-path`, `copy-paste`, `paste-import`, `paste-import-with-style`, `set-default-import-style` — one per command) |
+| `drop/` | Drag-and-drop provider tests (`provider`, `selector`) |
+| `editor/` | Editor-helper tests (`file-path-info`, `insert-snippet`, `notification`, `placement`, `placement-parity`) |
 | `path/` | Pure path-math tests (`relative`, `extension`, `import-type`) |
+| `config/` | Workspace-config access tests (`settings`) |
 | `constants/` | Gating-table tests (`extensions`) |
-| `snippets/` | Snippet builder, dispatch, variants, class-name, and styles tests |
-| `snippets/languages/` | Per-language snippet builder tests (9 files, one per destination language) |
+| `snippets/` | Snippet builder, dispatch, variants, class-name, react, and styles tests, plus `dispatch-variants-parity` — a structural test that reads source to pin the dispatch↔variants destination switch |
+| `snippets/languages/` | Per-language snippet builder tests (9 files: 8 per-destination-language plus `framework-component` for the shared Vue/Svelte/Astro path) |
 
 ## Running
 
 ```bash
 npm test                         # pretest (compile-tests + compile + lint) then run
 npm test -- --grep "<pattern>"   # filter by Mocha test name
+npm run test:coverage            # pretest then run with V8/c8 coverage (text + HTML report under coverage/)
 npm run compile-tests            # tsc → out/ (prerequisite — tests don't use esbuild)
 npm run watch-tests              # tsc watch for the test build
 ```
