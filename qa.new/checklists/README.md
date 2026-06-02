@@ -13,6 +13,7 @@ Manual QA checklists for the extension. One general checklist for shared behavio
 |-----------|-------|-------|
 | [`general.md`](general.md) | 55 | Copy File Path, clipboard validation, same-file rejection, Alt+D failure paths, all notification toasts + buttons, edge cases (rapid pastes, many files, unicode, spaces), path computation, extension stripping, DnD universal behaviors, Pick Style QuickPick mechanics, Set Default QuickPick mechanics, settings mid-session |
 | [`css.md`](css.md) | 30 | Allow-list gating (`.css` + 7 image exts), 2 `@import` styles + fixed image `url()` arm + style-name drift, no smart identifiers (§5 N/A), Top/Bottom/Cursor placement + inline-`url()` (placement-ignored), Pick Style, Set Default, drag-and-drop, shared `@use`/`@forward` marker edges |
+| [`html.md`](html.md) | 75 | Allow-list gating (`.js` `.css` + image/video/audio/`.vtt`; `.html`→`.html` rejected), 6-way source-type dispatch (`<script>`/`<img>`/`<video>`/`<audio>`/`<link>`/`<track>`), no smart identifiers (§5 N/A), `forced-cursor` placement (setting ignored, column follows cursor), always-keep-extension, Pick Style (3 tagless style-0 descriptions), Set Default, drag-and-drop, comment-marker mismatch edges |
 | [`javascript.md`](javascript.md) | ~65 | Gating matrix (21 pairs), 7 import styles + style-name drift, no smart identifiers (§5 N/A for `.js`), Bottom/Top/Cursor placement, Pick Style, Set Default, drag-and-drop, edge cases |
 | [`scss.md`](scss.md) | ~65 | Allow-list gating (21 pairs: `.scss` + `.css` + 7 image), 5 `@use`/`@forward`/`@import` styles + fixed image `url()` arm + style-name drift, no smart identifiers (§5 N/A), Bottom/Top/Cursor placement + inline-`url()`, partial-`_` normalization, `preserveStylesheetFileExtension` toggle, Pick Style, Set Default, drag-and-drop, edge cases |
 | [`typescript.md`](typescript.md) | ~88 | Gating matrix (21 pairs), 7 import styles + style-name drift, smart identifiers (exported-class detection + Angular PascalCase), Bottom/Top/Cursor placement, Pick Style (TS-specific), Set Default (TS-specific), drag-and-drop (TS-specific), edge cases |
@@ -24,6 +25,7 @@ Every checklist has a matching fixture directory under `workspace/`:
 ```
 checklists/general.md      →  workspace/general/
 checklists/css.md          →  workspace/css/
+checklists/html.md         →  workspace/html/
 checklists/javascript.md   →  workspace/javascript/
 checklists/scss.md         →  workspace/scss/
 checklists/typescript.md   →  workspace/typescript/
