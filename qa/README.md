@@ -7,7 +7,7 @@ Manual QA suite and fixture workspaces for the Auto Import Relative Path extensi
 | Path | Purpose |
 |------|---------|
 | `checklists/` | 21 sequential markdown checklists driving the human QA pass before each release. |
-| `workspace/` | ~174 fixture files opened as a VS Code folder in the Extension Development Host. Also used as `FIXTURE_ROOT` by 8 automated Mocha tests. |
+| `workspace/` | ~174 fixture files opened as a VS Code folder in the Extension Development Host. Also used as `FIXTURE_ROOT` by 15 automated Mocha test files. |
 | `demo-workspace/` | Small fixture workspace (~16 source files + framework `node_modules`). |
 
 ## Running a QA pass

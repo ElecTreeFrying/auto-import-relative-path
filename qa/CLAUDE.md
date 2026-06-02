@@ -7,7 +7,7 @@ Manual QA suite and fixture workspaces. No executable code, no compilation surfa
 | Directory | Role | Key rule |
 |-----------|------|----------|
 | `checklists/` | 21 sequential QA checklists + [`00-setup.md`](checklists/00-setup.md) + master sign-off | Read [`README.md`](checklists/README.md) first to find the specific checklist you need. Don't survey the tree. |
-| `workspace/` | ~174 fixture files for manual QA; also `FIXTURE_ROOT` for 8 Mocha tests | Never `find`, `grep`, or `ls -R`. Read its [`CLAUDE.md`](workspace/CLAUDE.md) for fixture-role mappings or [`README.md`](workspace/README.md) for layout. |
+| `workspace/` | ~174 fixture files for manual QA; also `FIXTURE_ROOT` for 15 Mocha test files | Never `find`, `grep`, or `ls -R`. Read its [`CLAUDE.md`](workspace/CLAUDE.md) for fixture-role mappings or [`README.md`](workspace/README.md) for layout. |
 | `demo-workspace/` | Small framework fixture workspace with real `node_modules` | No internal guides. Has its own `package.json` and `tsconfig.json` — don't confuse with the root project's. |
 
 ## Invariants
