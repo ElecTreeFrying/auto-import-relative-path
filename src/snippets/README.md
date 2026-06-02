@@ -8,7 +8,7 @@ Per-language snippet builders and the destination-extension dispatch. The public
 |------|---------|
 | `dispatch.ts` | `buildImportSnippet()` — switches on `destinationFileExt` and delegates. The public entry point for the default paste flow. |
 | `variants.ts` | `buildImportSnippetVariants()` — enumerates every applicable style for the current source/destination pair. Consumed by `pasteImportWithStyle` and `setDefaultImportStyle`; renders full-path snippets for insertion and basename-only labels for the QuickPick in parallel. |
-| `_react.ts` | Internal: `buildReactImport` (+ supporting `ReactImportOptions` interface / `BuildScriptSnippet` type) shared by JSX/TSX/MDX. |
+| `_react.ts` | Internal: `buildReactImport` (+ supporting `ReactImportOptions` interface / `BuildScriptSnippet` type) shared by JSX/TSX/MDX, plus `buildAssetImportStatement` — the single canonical non-script asset-shape switch reused by `buildReactImport`, `languages/framework-component.ts`, and `variants.ts`. |
 | `_styles.ts` | Internal: `ImportStyle` interface + `*_IMPORT_OPTIONS` tables + `resolveStyleIndex` lookup. |
 | `_class-name.ts` | Internal: reads source files for exported class names; consumed by `typescript.ts` and `variants.ts`. |
 
@@ -26,7 +26,7 @@ One module per destination language.
 | `scss.ts` | SCSS shapes (5 styles), with partial-filename underscore stripping and asymmetric `.css` extension preservation. |
 | `html.ts` | HTML `<script>` (5 styles) / `<img>` (3) / `<video>` (4) / `<audio>` (2) configurable + `<link>` / `<track>` fixed. |
 | `markdown.ts` | Markdown link (fixed) + image (3 configurable styles). |
-| `framework-component.ts` | Vue/Svelte/Astro entry — delegates to `buildTypeScriptImportSnippet` for all sources; strips extension for script sources per preserve setting. All three share identical import semantics. |
+| `framework-component.ts` | Vue/Svelte/Astro entry — script sources (`.ts`/`.tsx`/`.js`/`.jsx`) delegate to `buildTypeScriptImportSnippet` (extension stripped per preserve setting); non-script sources delegate to `../_react:buildAssetImportStatement`. All three share identical import semantics. |
 
 `_`-prefixed files are internal to the `snippets/` subtree. Importing them from outside `snippets/` is a smell; `languages/` modules importing `../_styles`, `../_react`, and `../_class-name` is expected.
 

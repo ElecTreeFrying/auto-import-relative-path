@@ -14,7 +14,7 @@ One module per destination language — the leaf builders `dispatch.ts` and `var
 | `scss.ts` | `buildSnippet`, `buildScssImportSnippetByStyle`, `prepareScssImportPath` | SCSS `@use`/`@forward`/`@import` (5 styles); strips partial underscores, always keeps `.css`. Image sources defer to `css.ts`. Unlike CSS/JS/TS, config is resolved inline in `buildSnippet` — there is no `buildScssImportSnippet` wrapper. |
 | `html.ts` | `buildSnippet`, four `buildHtml…ImportSnippetByStyle` (script/image/video/audio) + `buildHtmlStylesheetImportSnippet` / `buildHtmlTextTrackImportSnippet` | `<script>` (5) / `<img>` (3) / `<video>` (4) / `<audio>` (2) configurable; `<link>` / `<track>` fixed. |
 | `markdown.ts` | `buildSnippet`, `buildMarkdownImportSnippet`, `buildMarkdownImageImportSnippetByStyle` | `[text](path)` link (fixed) + image (3 styles). |
-| `framework-component.ts` | `buildSnippet` | Vue/Svelte/Astro entry — defers to `buildTypeScriptImportSnippet` for every source; for script extensions (`.ts`/`.tsx`/`.js`/`.jsx`) it respects the preserve-extension setting, otherwise it always keeps the full extension. All three share identical semantics. Unlike `typescript.ts`, it does not run class-name pre-fill, so style 0 emits `$1` (or the Angular fallback) rather than a detected class name. |
+| `framework-component.ts` | `buildSnippet` | Vue/Svelte/Astro entry — script sources (`.ts`/`.tsx`/`.js`/`.jsx`) defer to `buildTypeScriptImportSnippet` (respecting the preserve-extension setting); non-script sources defer to `../_react:buildAssetImportStatement` (which always keeps the full extension). All three share identical semantics. Unlike `typescript.ts`, the script path does not run class-name pre-fill, so style 0 emits `$1` (or the Angular fallback) rather than a detected class name. |
 
 ## Intra-directory delegation
 
@@ -22,7 +22,7 @@ Builders reuse each other instead of re-deriving a shape. These are the only imp
 
 - `jsx.ts` → `javascript.ts`; `tsx.ts` → `javascript.ts` + `typescript.ts` (the script builders handed to `../_react.ts`).
 - `scss.ts` → `css.ts` (`buildCssImageImportSnippet`).
-- `framework-component.ts` → `typescript.ts` (`buildTypeScriptImportSnippet`).
+- `framework-component.ts` → `typescript.ts` (`buildTypeScriptImportSnippet`) for script sources, and `../_react` (`buildAssetImportStatement`) for non-script asset sources.
 
 ## Where to add new code
 

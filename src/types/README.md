@@ -15,4 +15,4 @@ Cross-cutting type unions used across the codebase. **String-literal unions, not
 ## Where to add new code
 
 - New cross-cutting union → here.
-- Adding a new file extension is a four-site sync (this directory + `src/constants/extensions.ts` + snippet dispatch in `src/snippets/` + `src/snippets/variants.ts`). The dispatch site depends on usage: a new destination language touches `src/snippets/dispatch.ts`; a new JSX/TSX/MDX source extension touches the parallel source switches in both `src/snippets/_react.ts` and `src/snippets/variants.ts:buildReactNonScriptVariant`. See [`CLAUDE.md`](CLAUDE.md) here for the full rule.
+- Adding a new file extension is a four-site sync (this directory + `src/constants/extensions.ts` + snippet dispatch in `src/snippets/` + `src/snippets/variants.ts`). The dispatch site depends on usage: a new destination language touches `src/snippets/dispatch.ts`; a new JSX/TSX/MDX non-script source extension touches the single shared asset switch `src/snippets/_react.ts:buildAssetImportStatement` (used by both the default paste flow and `variants.ts:buildReactNonScriptVariant`). See [`CLAUDE.md`](CLAUDE.md) here for the full rule.

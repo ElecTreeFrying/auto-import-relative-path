@@ -6,8 +6,8 @@ Per-language snippet builders + the destination-extension dispatch in `dispatch.
 
 - `dispatch.ts` — single-level destination-extension switch consumed by `commands/paste-import.ts` and `drop/provider.ts`.
 - `variants.ts` — parallel aggregator that enumerates every applicable style for the current paste, consumed by `extension.pasteImportWithStyle` and `extension.setDefaultImportStyle`. Mirrors `dispatch.ts`'s destination switch and the per-language source classification, but calls each language's `buildXImportSnippetByStyle` **twice** per `*_IMPORT_OPTIONS` entry — once with the full relative path (for `snippetText`, the insertion payload) and once with `path.basename(...)` of that path (for `label`, the picker preview). The basename render keeps QuickPick labels short and width-stable regardless of source nesting depth (`'../../components/widget'` → `'widget'`). Each styled variant also carries a `setting?: { namespace, key, value }` triple pointing at the backing `package.json` setting, so `set-default-import-style.ts` can persist the chosen style via `setAutoImportSetting` without re-deriving the destination → table mapping. Hardcoded variants leave `setting` undefined. The "twice per entry" applies to script/styled sources; non-script and fixed-shape sources (HTML `<link>`/`<track>`, CSS/SCSS images, Markdown links, JSX/TSX/MDX non-script imports) instead build hardcoded variants via `toHardcodedVariant` without calling the `…ByStyle` builders.
-- `_react.ts` — internal: `buildReactImport` (+ supporting `ReactImportOptions` interface / `BuildScriptSnippet` type) shared by JSX/TSX/MDX.
-- `_styles.ts` — internal: `ImportStyle[]` tables + `resolveStyleIndex`. Most entries on the nine active tables carry an optional `tag` (free-form short label) used by the QuickPick rendered in `paste-import-with-style.ts` — 35 of the 38 active entries. The three exceptions are the first entry of `HTML_IMAGE_IMPORT_OPTIONS`, `HTML_VIDEO_IMPORT_OPTIONS`, and `HTML_AUDIO_IMPORT_OPTIONS`, which fall back to the full description via `opt.tag ?? opt.description` (`variants.ts:346`).
+- `_react.ts` — internal: `buildReactImport` (+ supporting `ReactImportOptions` interface / `BuildScriptSnippet` type) shared by JSX/TSX/MDX, plus `buildAssetImportStatement(sourceFileExt, importPath)` — the single canonical non-script asset-shape switch (image/data/component → `${1:name}`, media/text-track → `${1:url}`, font/stylesheet → side-effect, CSS-module → `${1:styles}`, else `null`). Called by `buildReactImport`, `languages/framework-component.ts`, and `variants.ts:buildReactNonScriptVariant`, so the asset switch lives in exactly one place.
+- `_styles.ts` — internal: `ImportStyle[]` tables + `resolveStyleIndex`. Most entries on the nine active tables carry an optional `tag` (free-form short label) used by the QuickPick rendered in `paste-import-with-style.ts` — 35 of the 38 active entries. The three exceptions are the first entry of `HTML_IMAGE_IMPORT_OPTIONS`, `HTML_VIDEO_IMPORT_OPTIONS`, and `HTML_AUDIO_IMPORT_OPTIONS`, which fall back to the full description via `opt.tag ?? opt.description` (`variants.ts:299`).
 - `_class-name.ts` — internal: `readExportedClassName` reads a TS/JS source file and returns the first top-level exported class name (or `null`). `extractFirstExportedClassName` is the pure extraction function (strips comments first). Consumed by `languages/typescript.ts` and `variants.ts`.
 - `languages/` — one module per destination language (`javascript.ts`, `typescript.ts`, `jsx.ts`, `tsx.ts`, `css.ts`, `scss.ts`, `html.ts`, `markdown.ts`, `framework-component.ts`). `.mdx` destinations fall through to `tsx.ts` in `dispatch.ts` (identical import semantics). `.vue`, `.svelte`, and `.astro` destinations share `framework-component.ts` (identical import semantics). The six styled languages (JS, TS, CSS, SCSS, HTML, MD-image) export both a config-reading `buildXImportSnippet` and pure `buildXImportSnippetByStyle(styleIndex, relativePath)` functions. HTML exports four styled builders (script, image, video, audio) plus two fixed-shape builders (stylesheet, text-track). In `variants.ts:buildHtmlVariants` the four styled builders are called once per `HTML_*_IMPORT_OPTIONS` entry inside a `.map(opt => …)`, while the two fixed-shape builders are invoked directly as single hardcoded variants.
 
@@ -35,15 +35,15 @@ Parameterised by `primaryExtensions` / `primarySnippet` (and optional `fallbackE
 - **TSX**: `primaryExtensions: ['.ts', '.tsx']` → `buildTypeScriptImportSnippet`. `fallbackExtensions: ['.js', '.jsx']` → `buildJavaScriptImportSnippet` (a `.js` source dropped into a TSX file should emit a JS-shaped import, not TS).
 - **MDX**: identical to TSX — `primaryExtensions: ['.ts', '.tsx']` + TS primary + JS fallback for `.js`/`.jsx` sources. MDX content is JSX-with-Markdown-syntax and canonically imports `.tsx` / `.ts` components.
 
-Non-script sources fall through to a hardcoded `switch` with four groups:
+Non-script sources delegate to `buildAssetImportStatement(sourceFileExt, importPath)` (also in `_react.ts`) — the single canonical asset-shape switch with four groups:
 
 - CSS Modules (`.module.css`/`.module.scss`) → `import ${1:styles} from '<path>';` (checked before the `switch`)
 - `.gif`/`.jpeg`/`.jpg`/`.png`/`.svg`/`.avif`/`.webp`/`.json`/`.html`/`.yml`/`.yaml`/`.md`/`.mdx`/`.pdf`/`.vue`/`.svelte`/`.astro` → `import ${1:name} from '<path>';`
 - `.mp4`/`.webm`/`.mov`/`.mp3`/`.ogg`/`.wav`/`.m4a`/`.vtt` → `import ${1:url} from '<path>';`
 - `.woff`/`.woff2`/`.ttf`/`.eot`/`.css`/`.scss` → `import '<path>';` (side-effect)
-- `default:` → empty `SnippetString` (means an unsupported extension slipped through gating in `src/gating.ts`).
+- `default:` → `null`, which `buildReactImport` wraps as an empty `SnippetString` (means an unsupported extension slipped through gating in `src/gating.ts`).
 
-The picker flow duplicates this same source-extension switch in `variants.ts:buildReactNonScriptVariant` (lines 180-226), returning `ImportSnippetVariant | null` instead of a `SnippetString`; keep the two in sync.
+The picker flow's `variants.ts:buildReactNonScriptVariant` and `languages/framework-component.ts` both call this same `buildAssetImportStatement`. One switch, three callers — no parallel copy to keep in sync.
 
 ## Language quirks
 
@@ -53,7 +53,7 @@ Both `buildSnippet()` (line 18) and `variants.ts` (`.ts` case) call `readExporte
 
 Import-name resolution per style index:
 
-- **Index 0** (`import { name } from '...';`): uses `detectedImportName` if available; otherwise falls back to `generateAngularLegacyImportName()`, which derives a PascalCase identifier when the path matches a suffix in `LEGACY_ANGULAR_FILE_SUFFIXES` (`.component`, `.directive`, `.pipe`, `.service`, `.module`), or emits `$1` if neither applies.
+- **Index 0** (`import { name } from '...';`): uses `detectedImportName` if available; otherwise falls back to `generateAngularLegacyImportName()`, which derives a PascalCase identifier when the path matches a suffix in `LEGACY_ANGULAR_FILE_SUFFIXES` (`.component`, `.directive`, `.pipe`, `.service`, `.module`). The derived name is validated against `/^[A-Za-z_$][\w$]*$/`; if it is not a legal identifier (e.g. a space-containing basename) — or if no suffix matches — it emits `$1` instead.
 - **Indices 1–6**: use `$1` unconditionally.
 - **Default branch** (when `resolveStyleIndex` returns `undefined`): uses `detectedImportName` if available; otherwise `$1`.
 

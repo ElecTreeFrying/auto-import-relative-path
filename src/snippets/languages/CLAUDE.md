@@ -8,7 +8,7 @@ The full inventory with one-line purposes is in [`README.md`](README.md). For ed
 
 - **Styled languages** (`javascript.ts`, `typescript.ts`, `css.ts`, `scss.ts`, `html.ts`, `markdown.ts`) — each exposes a pure `buildXImportSnippetByStyle(styleIndex, relativePath)` switch, with the config lookup sitting above it. (`scss.ts` additionally exports `prepareScssImportPath`, a path-normalizer called by `variants.ts`.) See the config/pure split below.
 - **React entries** (`jsx.ts`, `tsx.ts`) — thin; each only exports `buildSnippet` and delegates the algorithm to `../_react.ts`. The `.mdx` destination reuses `tsx.ts`.
-- **Component frameworks** (`framework-component.ts`) — only exports `buildSnippet`; defers to `typescript.ts` for Vue/Svelte/Astro alike.
+- **Component frameworks** (`framework-component.ts`) — only exports `buildSnippet`. Script sources defer to `typescript.ts:buildTypeScriptImportSnippet`; non-script sources defer to `../_react.ts:buildAssetImportStatement`. Same split for Vue/Svelte/Astro alike.
 
 ## The config/pure split
 
@@ -27,7 +27,7 @@ Builders reuse each other rather than duplicating a shape. These are the *only* 
 
 - `jsx.ts` → `javascript.ts`; `tsx.ts` → `javascript.ts` + `typescript.ts` (the script builders handed to `../_react.ts` as primary/fallback).
 - `scss.ts` → `css.ts:buildCssImageImportSnippet` (image `url('…')` is identical across CSS/SCSS, so no SCSS-specific image variant exists).
-- `framework-component.ts` → `typescript.ts:buildTypeScriptImportSnippet` (Vue/Svelte/Astro all import like TS).
+- `framework-component.ts` → `typescript.ts:buildTypeScriptImportSnippet` for script sources (Vue/Svelte/Astro import scripts like TS), and `../_react.ts:buildAssetImportStatement` for non-script asset sources.
 
 Editing a shared builder (`buildJavaScriptImportSnippet`, `buildTypeScriptImportSnippet`, `buildCssImageImportSnippet`) changes every caller above. Grep before you touch one.
 
@@ -36,7 +36,7 @@ Editing a shared builder (`buildJavaScriptImportSnippet`, `buildTypeScriptImport
 Three strategies decide which shape a source gets. Know which one a file uses before editing it:
 
 - **`determineImportType(sourceFilePath)`** (from `../../path/`) — `css.ts`, `scss.ts`, `html.ts`, `markdown.ts` branch on the seven-way classifier (`image` / `video` / `audio` / `text-track` / `script` / `stylesheet` / `markdown`). It returns `null` for `.scss` and `.html`, which is why `scss.ts` falls to its own `default:` for stylesheet sources. See [`../../path/CLAUDE.md`](../../path/CLAUDE.md).
-- **Raw source extension** — `jsx.ts` / `tsx.ts` (via `../_react.ts`) branch on the literal `.ts`/`.tsx`/`.js`/`.jsx` extension for the script path, then fall to a hardcoded asset `switch`. `framework-component.ts` branches on its `SCRIPT_SOURCE_EXTENSIONS` set.
+- **Raw source extension** — `jsx.ts` / `tsx.ts` (via `../_react.ts`) branch on the literal `.ts`/`.tsx`/`.js`/`.jsx` extension for the script path, then route non-script sources to `../_react.ts:buildAssetImportStatement` (the shared asset switch). `framework-component.ts` branches on its `SCRIPT_SOURCE_EXTENSIONS` set the same way — script sources to `typescript.ts`, non-script sources to that same `buildAssetImportStatement`.
 - **No classification** — `javascript.ts` and `typescript.ts` always emit a script import; the destination already implies a scripty source (gating guaranteed it upstream).
 
 ## `buildSnippet` entry contract
