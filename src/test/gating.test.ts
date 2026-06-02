@@ -186,4 +186,22 @@ describe('gating/isPairSupported', () => {
       assert.strictEqual(isPairSupported(info('.css', '.astro')), false);
     });
   });
+
+  // Each destination's allow-list checked with BOTH an in-list accept and an out-of-list reject,
+  // so a future edit that widens or narrows one table is caught from the same destination.
+  describe('allow-list boundaries (accept and reject share one destination)', () => {
+    const pairs: Array<[ string, string, boolean ]> = [
+      [ '.mp4', '.html', true ], [ '.vtt', '.html', true ], [ '.tsx', '.html', false ],
+      [ '.gif', '.md', true ], [ '.ts', '.md', false ],
+      [ '.webp', '.css', true ], [ '.mp4', '.css', false ],
+      [ '.jpg', '.scss', true ], [ '.html', '.scss', false ],
+      [ '.json', '.svelte', true ], [ '.md', '.vue', false ],
+      [ '.svelte', '.astro', true ], [ '.scss', '.astro', false ],
+    ];
+    for (const [ src, dest, expected ] of pairs) {
+      it(`${src} → ${dest} ${expected ? 'accepted' : 'rejected'}`, () => {
+        assert.strictEqual(isPairSupported(info(src, dest)), expected);
+      });
+    }
+  });
 });
