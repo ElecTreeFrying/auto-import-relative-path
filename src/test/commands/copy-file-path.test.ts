@@ -29,4 +29,28 @@ describe('executeCopyFilePath', () => {
     // The post-success toast carries Paste with Style / Paste Now buttons; its .then dispatch can't be
     // asserted here — showInformationMessage resolves undefined with no user click.
   });
+
+  // Guard branches: with no active editor the built-in copyFilePath leaves the clipboard empty, and a
+  // copied path can legitimately have no extension (Makefile, Dockerfile). Both reject with `false`.
+  it('returns false when there is no active editor (empty-clipboard guard)', async () => {
+    await vscode.commands.executeCommand('workbench.action.closeAllEditors');
+    await vscode.env.clipboard.writeText('');
+    const ok = await executeCopyFilePath();
+    assert.strictEqual(ok, false, 'expected false when no file is available to copy');
+  });
+
+  it('returns false for an extensionless active file (no-extension guard)', async () => {
+    const uri = vscode.Uri.file(path.join(FIXTURE_ROOT, 'TempNoExtFixture'));
+    await vscode.workspace.fs.writeFile(uri, Buffer.from('all:\n\techo hi\n', 'utf-8'));
+    try {
+      const doc = await vscode.workspace.openTextDocument(uri);
+      await vscode.window.showTextDocument(doc);
+      await vscode.env.clipboard.writeText('');
+      const ok = await executeCopyFilePath();
+      assert.strictEqual(ok, false, 'expected false for a copied path with no extension');
+    } finally {
+      await vscode.commands.executeCommand('workbench.action.closeAllEditors');
+      try { await vscode.workspace.fs.delete(uri); } catch { /* ignore */ }
+    }
+  });
 });

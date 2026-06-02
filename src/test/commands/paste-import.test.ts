@@ -186,4 +186,13 @@ describe('executePasteImport', () => {
       assert.ok(allText.includes('./global.css'), `expected SCSS import with .css preserved, got: ${allText.slice(0, 200)}`);
     });
   });
+
+  describe('rejection: no active editor', () => {
+    it('returns without inserting and does not throw when no editor is open', async () => {
+      await closeAll();
+      await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'src/bar.ts'));
+      // getFilePathInfo dereferences editor.document on a null editor — the guard must short-circuit first.
+      await assert.doesNotReject(executePasteImport());
+    });
+  });
 });

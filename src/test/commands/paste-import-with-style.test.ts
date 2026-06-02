@@ -65,4 +65,12 @@ describe('executePasteImportWithStyle', () => {
       assert.ok(editor.document.getText().includes('logo.png'), 'expected the image import in the document');
     });
   });
+
+  describe('no active editor', () => {
+    it('returns without inserting and does not throw when no editor is open', async () => {
+      await vscode.commands.executeCommand('workbench.action.closeAllEditors');
+      await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'src/bar.ts'));
+      await assert.doesNotReject(executePasteImportWithStyle());
+    });
+  });
 });

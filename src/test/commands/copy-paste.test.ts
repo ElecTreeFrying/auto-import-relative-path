@@ -27,4 +27,22 @@ describe('executeCopyPaste', () => {
 
     assert.strictEqual(editor.document.getText(), before, 'self-import should not modify the document');
   });
+
+  // The `if (!ok) return` guard: an extensionless active file makes executeCopyFilePath return false,
+  // so the composed paste must be skipped and the document left untouched.
+  it('skips paste when copy fails (extensionless source returns false)', async () => {
+    const uri = vscode.Uri.file(path.join(FIXTURE_ROOT, 'TempNoExtCopyPaste'));
+    await vscode.workspace.fs.writeFile(uri, Buffer.from('plain text, no extension\n', 'utf-8'));
+    try {
+      const doc = await vscode.workspace.openTextDocument(uri);
+      const editor = await vscode.window.showTextDocument(doc);
+      const before = editor.document.getText();
+      await vscode.env.clipboard.writeText('');
+      await assert.doesNotReject(executeCopyPaste());
+      assert.strictEqual(editor.document.getText(), before, 'paste must be skipped when copy fails');
+    } finally {
+      await vscode.commands.executeCommand('workbench.action.closeAllEditors');
+      try { await vscode.workspace.fs.delete(uri); } catch { /* ignore */ }
+    }
+  });
 });
