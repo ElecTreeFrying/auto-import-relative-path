@@ -25,6 +25,7 @@ Destination files (e.g., `typescript/destinations/`) are pre-filled with specifi
 | [`jsx/`](jsx/) | [`checklists/jsx.md`](../checklists/jsx.md) | 30 | `.jsx` destination — accept-all + 2-arm style model (7 JS styles or fixed asset shapes), source-ext dispatch, placement, DnD (no smart identifiers) |
 | [`markdown/`](markdown/) | [`checklists/markdown.md`](../checklists/markdown.md) | 17 | `.md` destination — fixed `[text](…)` link + 3 image styles, `forced-cursor` placement + markdown-star quirk, allow-list gating, DnD (no smart identifiers) |
 | [`scss/`](scss/) | [`checklists/scss.md`](../checklists/scss.md) | 33 | `.scss` destination — 5 `@use`/`@forward`/`@import` styles + image `url()` arm, partial-`_` normalization, preserve toggle, placement + inline-`url()`, allow-list gating, DnD (no smart identifiers) |
+| [`tsx/`](tsx/) | [`checklists/tsx.md`](../checklists/tsx.md) | 39 | `.tsx` destination — accept-all + two-script-arm + asset model (7 TS / 7 JS-fallback styles or fixed asset shapes), Angular-only smart identifiers, placement, gating, DnD |
 | [`typescript/`](typescript/) | [`checklists/typescript.md`](../checklists/typescript.md) | 53 | `.ts` destination — styles, class detection, Angular, placement, gating, DnD |
 
 See each directory's own `README.md` for the full file tree and fixture-to-checklist mapping.

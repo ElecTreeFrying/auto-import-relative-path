@@ -14,6 +14,7 @@ qa.new/
 │   ├── jsx.md           .jsx destination — accept-all + 2-arm style model (7 JS styles or fixed asset shapes), source-ext dispatch, placement, DnD
 │   ├── markdown.md      .md destination — fixed [text](…) link + 3 image styles, forced-cursor placement, markdown-star quirk, gating, DnD
 │   ├── scss.md          .scss destination — 5 @use/@forward/@import styles + image url() arm, partial-_ norm, placement, gating, DnD
+│   ├── tsx.md           .tsx destination — accept-all + two-script-arm + asset model (7 TS / 7 JS-fallback / fixed asset), Angular-only smart ids, placement, gating, DnD
 │   └── typescript.md    .ts destination — all 7 styles, class detection, Angular, placement
 ├── workspace/           Fixture workspace — open in EDH via File > Open Folder
 │   ├── general/         Fixtures for general.md
@@ -23,6 +24,7 @@ qa.new/
 │   ├── jsx/             Fixtures for jsx.md
 │   ├── markdown/        Fixtures for markdown.md
 │   ├── scss/            Fixtures for scss.md
+│   ├── tsx/             Fixtures for tsx.md
 │   └── typescript/      Fixtures for typescript.md
 └── demo-workspace/      Standalone framework sandbox (Vue/Svelte/Astro/React + real node_modules)
 ```
@@ -45,6 +47,7 @@ qa.new/
 | [`jsx.md`](checklists/jsx.md) | [`jsx/`](workspace/jsx/) | Accept-all gating, 2-arm style model (7 JS styles or fixed asset shapes) via source-ext dispatch, no smart identifiers, placement, `.ts`/`.tsx`→empty-snippet, QuickPick, drag-and-drop |
 | [`markdown.md`](checklists/markdown.md) | [`markdown/`](workspace/markdown/) | Fixed `[text](…)` link + 3 image styles, no smart identifiers, `forced-cursor` placement + markdown-star quirk, allow-list gating, QuickPick, drag-and-drop |
 | [`scss.md`](checklists/scss.md) | [`scss/`](workspace/scss/) | 5 `@use`/`@forward`/`@import` styles + image `url()` arm, no smart identifiers, partial-`_` normalization, placement + inline-`url()`, allow-list gating, QuickPick, drag-and-drop |
+| [`tsx.md`](checklists/tsx.md) | [`tsx/`](workspace/tsx/) | Accept-all gating, two-script-arm + asset model (7 TS / 7 JS-fallback styles or fixed asset shapes), Angular-only smart identifiers, placement, gating, QuickPick, drag-and-drop |
 | [`typescript.md`](checklists/typescript.md) | [`typescript/`](workspace/typescript/) | 7 import styles, class detection, Angular PascalCase, placement, gating, QuickPick, drag-and-drop |
 
 ## Demo workspace
