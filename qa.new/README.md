@@ -20,6 +20,7 @@ qa.new/
 │   ├── javascript/      Fixtures for javascript.md
 │   ├── scss/            Fixtures for scss.md
 │   └── typescript/      Fixtures for typescript.md
+└── demo-workspace/      Standalone framework sandbox (Vue/Svelte/Astro/React + real node_modules)
 ```
 
 ## How to run a QA pass
@@ -39,3 +40,11 @@ qa.new/
 | [`javascript.md`](checklists/javascript.md) | [`javascript/`](workspace/javascript/) | 7 import styles, no smart identifiers, placement, gating, QuickPick, drag-and-drop |
 | [`scss.md`](checklists/scss.md) | [`scss/`](workspace/scss/) | 5 `@use`/`@forward`/`@import` styles + image `url()` arm, no smart identifiers, partial-`_` normalization, placement + inline-`url()`, allow-list gating, QuickPick, drag-and-drop |
 | [`typescript.md`](checklists/typescript.md) | [`typescript/`](workspace/typescript/) | 7 import styles, class detection, Angular PascalCase, placement, gating, QuickPick, drag-and-drop |
+
+## Demo workspace
+
+`demo-workspace/` is a standalone framework sandbox (Vue/Svelte/Astro/React) with
+its own `package.json`/`tsconfig.json` and real `node_modules` — separate from the
+checklist↔workspace model above and referenced by no checklist or test. Only its
+~16 source files are tracked; run `npm install` inside it to restore the framework
+packages before using it in the EDH.
