@@ -131,4 +131,58 @@ describe('buildImportSnippetVariants', () => {
     assert.ok(resolved.every(index => index !== undefined), 'every setting.value must resolve to an index');
     assert.deepStrictEqual([ ...resolved ].sort((a, b) => a! - b!), [ 0, 1, 2, 3, 4, 5, 6 ]);
   });
+
+  // renderLabel strips snippet placeholders so the picker shows human text, not `${1:name}` / `$1`.
+  it('.js into .js: labels render without raw snippet placeholders', async () => {
+    const variants = await openAndQuery('with-requires.js', 'src/bar.js');
+    for (const v of variants) {
+      assert.ok(!v.label.includes('$'), `label should have no snippet syntax: "${v.label}"`);
+    }
+    assert.ok(variants[0].label.includes('bar'), `expected the source basename in the label, got "${variants[0].label}"`);
+  });
+
+  // The picker preview shows the detected exported class name at index 0 (TS class detection).
+  it('.ts into .ts: the index-0 label shows the detected exported class name', async () => {
+    const variants = await openAndQuery('src/foo.ts', 'components/app-root.component.ts');
+    assert.ok(
+      variants[0].label.includes('AppRootComponent'),
+      `expected detected class name in label, got "${variants[0].label}"`,
+    );
+    assert.ok(!variants[0].label.includes('$'), 'label should not contain raw snippet placeholders');
+  });
+
+  // Image-into-stylesheet is a single hardcoded url() variant — assert the exact payload, not just count.
+  it('.png into .css: one hardcoded url() variant with the exact snippet', async () => {
+    const variants = await openAndQuery('styles/reset.css', 'logo.png');
+    assert.strictEqual(variants.length, 1);
+    assert.strictEqual(variants[0].setting, undefined, 'image variant is hardcoded (no setting)');
+    assert.strictEqual(variants[0].snippetText, "url('./logo.png')");
+  });
+
+  it('.png into .scss: reuses the CSS image url() snippet', async () => {
+    const variants = await openAndQuery('styles/main.scss', 'logo.png');
+    assert.strictEqual(variants.length, 1);
+    assert.strictEqual(variants[0].snippetText, "url('./logo.png')");
+  });
+
+  // SCSS partial normalization through the variant path: a leading-underscore source loses the `_`.
+  it('.scss into .scss: a leading-underscore partial source is normalized in the variant path', async () => {
+    const variants = await openAndQuery('styles/tokens.scss', '_mypartial.scss');
+    assert.ok(variants.length >= 1);
+    assert.ok(
+      variants[0].snippetText.includes('mypartial') && !variants[0].snippetText.includes('_mypartial'),
+      `expected the leading underscore stripped, got "${variants[0].snippetText}"`,
+    );
+  });
+
+  // Every framework-component variant carries the typescript setting (not just variants[0]).
+  it('.ts into .vue: all 7 variants carry the typescript setting', async () => {
+    const variants = await openAndQuery('src/App.vue', 'bar.ts');
+    assert.strictEqual(variants.length, 7);
+    for (const v of variants) {
+      assert.ok(v.setting, 'every framework variant should carry a setting');
+      assert.strictEqual(v.setting!.namespace, 'script');
+      assert.strictEqual(v.setting!.key, 'typescript');
+    }
+  });
 });

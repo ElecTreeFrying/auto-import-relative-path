@@ -1,9 +1,13 @@
 import * as assert from 'assert';
+import * as path from 'path';
 
 import {
+  buildSnippet,
   buildMarkdownImportSnippet,
   buildMarkdownImageImportSnippetByStyle,
 } from '../../../snippets/languages/markdown';
+import { FilePathInfo } from '../../../editor/file-path-info';
+import { FileExtension } from '../../../types/file-extension';
 
 describe('markdown', () => {
   describe('buildMarkdownImportSnippet', () => {
@@ -44,6 +48,26 @@ describe('markdown', () => {
     it('preserves full extension on image path', () => {
       const result = buildMarkdownImageImportSnippetByStyle(0, './assets/photo.jpeg');
       assert.ok(result.value.includes('.jpeg'), 'expected .jpeg extension preserved');
+    });
+  });
+
+  // buildSnippet's source-type switch: a .md source becomes a [text](link); an image source becomes an
+  // image embed. The *ByStyle renderer above is covered in isolation, but these dispatch arms were not.
+  describe('buildSnippet (source-type dispatch)', () => {
+    const info = (sourceFile: string): FilePathInfo => ({
+      relativePath: './asset',
+      sourceFilePath: `/w/${sourceFile}`,
+      destinationFilePath: '/w/guide.md',
+      sourceFileExt: path.extname(sourceFile) as FileExtension,
+      destinationFileExt: '.md' as FileExtension,
+    });
+
+    it('markdown source → [text](link)', () => {
+      assert.ok(buildSnippet(info('readme.md')).value.startsWith('['));
+    });
+    it('image source → image embed', () => {
+      const value = buildSnippet(info('logo.png')).value;
+      assert.ok(value.startsWith('![') || value.startsWith('<img'), `got "${value}"`);
     });
   });
 });

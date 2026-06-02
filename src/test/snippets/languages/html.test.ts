@@ -1,6 +1,8 @@
 import * as assert from 'assert';
+import * as path from 'path';
 
 import {
+  buildSnippet,
   buildHtmlScriptImportSnippetByStyle,
   buildHtmlImageImportSnippetByStyle,
   buildHtmlVideoImportSnippetByStyle,
@@ -8,6 +10,8 @@ import {
   buildHtmlStylesheetImportSnippet,
   buildHtmlTextTrackImportSnippet,
 } from '../../../snippets/languages/html';
+import { FilePathInfo } from '../../../editor/file-path-info';
+import { FileExtension } from '../../../types/file-extension';
 
 describe('html', () => {
   describe('buildHtmlScriptImportSnippetByStyle', () => {
@@ -130,6 +134,39 @@ describe('html', () => {
         result.value,
         '<track src="./assets/captions.vtt" kind="subtitles" srclang="${1:en}" label="${2:English}"></track>'
       );
+    });
+  });
+
+  // buildSnippet's source-type switch picks WHICH tag from a real source. The *ByStyle renderers above
+  // are fully covered in isolation, but nothing drove the dispatch arms (image→<img>, video→<video>,
+  // audio→<audio>, text-track→<track>, stylesheet→<link>). A deleted arm would silently emit the wrong
+  // tag — or nothing — and no test above would notice.
+  describe('buildSnippet (source-type dispatch)', () => {
+    const info = (sourceFile: string): FilePathInfo => ({
+      relativePath: './asset',
+      sourceFilePath: `/w/${sourceFile}`,
+      destinationFilePath: '/w/index.html',
+      sourceFileExt: path.extname(sourceFile) as FileExtension,
+      destinationFileExt: '.html' as FileExtension,
+    });
+
+    it('script source → <script> tag', () => {
+      assert.ok(buildSnippet(info('app.js')).value.includes('<script'));
+    });
+    it('image source → <img> tag', () => {
+      assert.ok(buildSnippet(info('logo.png')).value.includes('<img'));
+    });
+    it('video source → <video> tag', () => {
+      assert.ok(buildSnippet(info('clip.mp4')).value.includes('<video'));
+    });
+    it('audio source → <audio> tag', () => {
+      assert.ok(buildSnippet(info('song.mp3')).value.includes('<audio'));
+    });
+    it('text-track source → <track> tag', () => {
+      assert.ok(buildSnippet(info('captions.vtt')).value.includes('<track'));
+    });
+    it('stylesheet source → <link> tag', () => {
+      assert.ok(buildSnippet(info('main.css')).value.includes('<link'));
     });
   });
 });
