@@ -19,10 +19,13 @@ async function destDocument(relativePath: string): Promise<vscode.TextDocument> 
   return vscode.workspace.openTextDocument(vscode.Uri.file(path.join(FIXTURE_ROOT, relativePath)));
 }
 
-function drop(doc: vscode.TextDocument, sourceRel: string) {
-  const transfer = dataTransferFor(path.join(FIXTURE_ROOT, sourceRel));
+function dropWith(doc: vscode.TextDocument, transfer: vscode.DataTransfer) {
   const token = new vscode.CancellationTokenSource().token;
   return provider.provideDocumentDropEdits(doc, new vscode.Position(0, 0), transfer, token);
+}
+
+function drop(doc: vscode.TextDocument, sourceRel: string) {
+  return dropWith(doc, dataTransferFor(path.join(FIXTURE_ROOT, sourceRel)));
 }
 
 describe('AutoImportOnDropProvider.provideDocumentDropEdits', () => {
@@ -66,5 +69,42 @@ describe('AutoImportOnDropProvider.provideDocumentDropEdits', () => {
       inserted.includes("url(") && inserted.includes('logo.png'),
       `expected an inline url() snippet referencing the image, got: "${inserted}"`,
     );
+  });
+});
+
+// resolveSourcePath prefers text/uri-list, falls back to an absolute text/plain, and otherwise
+// yields null (no drop edit offered). The cases above all feed text/uri-list; these exercise the
+// fallback and the give-up branches through the public provider.
+describe('AutoImportOnDropProvider — source resolution fallbacks', () => {
+  function plainTransfer(value: string): vscode.DataTransfer {
+    const transfer = new vscode.DataTransfer();
+    transfer.set('text/plain', new vscode.DataTransferItem(value));
+    return transfer;
+  }
+
+  it('falls back to text/plain when it is an absolute path (no uri-list present)', async () => {
+    const doc = await destDocument('src/foo.ts');
+    const result = await dropWith(doc, plainTransfer(path.join(FIXTURE_ROOT, 'src/bar.ts')));
+    assert.ok(result, 'expected an edit from an absolute text/plain path');
+  });
+
+  it('returns null when text/plain is a relative path (not absolute)', async () => {
+    const doc = await destDocument('src/foo.ts');
+    const result = await dropWith(doc, plainTransfer('src/bar.ts'));
+    assert.strictEqual(result, null);
+  });
+
+  it('returns null when the DataTransfer carries no usable item', async () => {
+    const doc = await destDocument('src/foo.ts');
+    const result = await dropWith(doc, new vscode.DataTransfer());
+    assert.strictEqual(result, null);
+  });
+
+  it('returns null when uri-list is blank and there is no text/plain', async () => {
+    const doc = await destDocument('src/foo.ts');
+    const transfer = new vscode.DataTransfer();
+    transfer.set('text/uri-list', new vscode.DataTransferItem('   '));
+    const result = await dropWith(doc, transfer);
+    assert.strictEqual(result, null);
   });
 });
