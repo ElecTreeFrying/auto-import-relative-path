@@ -6,7 +6,7 @@ import { buildImportSnippetVariants } from '../../snippets/variants';
 import { getFilePathInfo } from '../../editor/file-path-info';
 import { resolveStyleIndex, JAVASCRIPT_IMPORT_OPTIONS } from '../../snippets/_styles';
 
-const FIXTURE_ROOT = path.resolve(__dirname, '../../../qa/workspace');
+const FIXTURE_ROOT = path.resolve(__dirname, '../../../src/test/fixtures');
 
 async function openAndQuery(destFixture: string, sourceName: string) {
   const doc = await vscode.workspace.openTextDocument(

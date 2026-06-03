@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 
 import { executeCopyPaste } from '../../commands/copy-paste';
 
-const FIXTURE_ROOT = path.resolve(__dirname, '../../../qa/workspace');
+const FIXTURE_ROOT = path.resolve(__dirname, '../../../src/test/fixtures');
 
 // A true happy-path assertion is structurally impossible in isolation: executeCopyFilePath forces the
 // clipboard to the active editor's OWN path, so the composed executePasteImport then sees

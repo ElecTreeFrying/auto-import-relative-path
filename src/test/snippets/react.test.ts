@@ -12,7 +12,7 @@ import {
   STYLESHEET_FILE_EXTENSIONS,
 } from '../../constants/extensions';
 
-const FIXTURE_ROOT = path.resolve(__dirname, '../../../qa/workspace');
+const FIXTURE_ROOT = path.resolve(__dirname, '../../../src/test/fixtures');
 
 // JSX/TSX/MDX route their source-extension handling through TWO independently-maintained switches
 // that types/CLAUDE.md (four-site sync, site 3) mandates stay synchronized:

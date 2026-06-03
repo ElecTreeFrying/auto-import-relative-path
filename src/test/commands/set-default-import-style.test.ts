@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 
 import { executeSetDefaultImportStyle } from '../../commands/set-default-import-style';
 
-const FIXTURE_ROOT = path.resolve(__dirname, '../../../qa/workspace');
+const FIXTURE_ROOT = path.resolve(__dirname, '../../../src/test/fixtures');
 
 async function openFixture(relativePath: string): Promise<void> {
   const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(path.join(FIXTURE_ROOT, relativePath)));

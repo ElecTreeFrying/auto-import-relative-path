@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 
 import { executePasteImportWithStyle } from '../../commands/paste-import-with-style';
 
-const FIXTURE_ROOT = path.resolve(__dirname, '../../../qa/workspace');
+const FIXTURE_ROOT = path.resolve(__dirname, '../../../src/test/fixtures');
 
 async function openFixture(relativePath: string): Promise<vscode.TextEditor> {
   const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(path.join(FIXTURE_ROOT, relativePath)));

@@ -6,7 +6,7 @@ import { insertImportSnippet } from '../../editor/insert-snippet';
 import { getFilePathInfo, FilePathInfo } from '../../editor/file-path-info';
 import { setAutoImportSetting } from '../../config/settings';
 
-const FIXTURE_ROOT = path.resolve(__dirname, '../../../qa/workspace');
+const FIXTURE_ROOT = path.resolve(__dirname, '../../../src/test/fixtures');
 const SNIPPET_TEXT = "import { test } from './test';";
 
 async function openFixture(relativePath: string): Promise<vscode.TextEditor> {

@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 
 import { AutoImportOnDropProvider } from '../../drop/provider';
 
-const FIXTURE_ROOT = path.resolve(__dirname, '../../../qa/workspace');
+const FIXTURE_ROOT = path.resolve(__dirname, '../../../src/test/fixtures');
 
 const provider = new AutoImportOnDropProvider();
 

@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 
 import { executeCopyFilePath } from '../../commands/copy-file-path';
 
-const FIXTURE_ROOT = path.resolve(__dirname, '../../../qa/workspace');
+const FIXTURE_ROOT = path.resolve(__dirname, '../../../src/test/fixtures');
 
 // executeCopyFilePath delegates to VS Code's built-in `copyFilePath`, then validates and re-writes the
 // clipboard, returning a boolean that copy-paste.ts gates on. The success path is the testable part;

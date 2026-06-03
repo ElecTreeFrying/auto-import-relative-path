@@ -5,7 +5,7 @@ import * as vscode from 'vscode';
 import { buildSnippet } from '../../../snippets/languages/tsx';
 import { getFilePathInfo } from '../../../editor/file-path-info';
 
-const FIXTURE_ROOT = path.resolve(__dirname, '../../../../qa/workspace');
+const FIXTURE_ROOT = path.resolve(__dirname, '../../../../src/test/fixtures');
 const DEST_DIR = path.join(FIXTURE_ROOT, 'src');
 const DEST_FILE = path.join(DEST_DIR, 'foo.ts');
 

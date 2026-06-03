@@ -1,6 +1,6 @@
 # src/test/CLAUDE.md
 
-Mocha BDD tests that run from `out/`, not `dist/`. Manual QA checklists and fixture workspaces live in the top-level `qa/` directory — see [`qa/checklists/CLAUDE.md`](../../qa/checklists/CLAUDE.md) and [`qa/workspace/CLAUDE.md`](../../qa/workspace/CLAUDE.md).
+Mocha BDD tests that run from `out/`, not `dist/`. The suite owns its fixtures in [`fixtures/`](fixtures/) — a self-contained copy that gives the tests **no dependency on the top-level `qa/` tree**. (The separate manual-QA checklists still live under `qa/`.) `fixtures/` is excluded from `tsc` (`tsconfig.json` `exclude`) and ESLint (`eslint.config.mjs` `ignores`) — see [`fixtures/CLAUDE.md`](fixtures/CLAUDE.md); don't lift those excludes, the fixtures are deliberately invalid.
 
 ## Conventions
 

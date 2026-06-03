@@ -7,7 +7,7 @@ import { computeImportPlacement } from '../../editor/placement';
 import { getFilePathInfo, FilePathInfo } from '../../editor/file-path-info';
 import { setAutoImportSetting } from '../../config/settings';
 
-const FIXTURE_ROOT = path.resolve(__dirname, '../../../qa/workspace');
+const FIXTURE_ROOT = path.resolve(__dirname, '../../../src/test/fixtures');
 const MARKER = 'ZZPARITYZZ';
 
 // The command flow (insertImportSnippet) and the drop flow (computeImportPlacement) DUPLICATE the
