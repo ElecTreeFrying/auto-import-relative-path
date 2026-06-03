@@ -38,7 +38,7 @@ Session 2 filled each field from these source-of-truth files:
 | Field | Source files |
 |-------|--------------|
 | `gating` + `SOURCE_UNIVERSE` | `src/gating.ts`, `src/constants/extensions.ts`, `src/types/file-extension.ts` |
-| `styles` + fixed asset shapes | `src/snippets/variants.ts`, `src/snippets/dispatch.ts`, `src/snippets/_styles.ts`, `src/snippets/_react.ts`; source-ext→branch map from `src/path/import-type.ts` |
+| `styles` + fixed asset shapes | `src/snippets/variants.ts`, `src/snippets/dispatch.ts`, `src/snippets/_styles.ts`, `src/snippets/_react.ts` (incl. the shared `buildAssetImportStatement`), `src/snippets/languages/framework-component.ts`; source-ext→branch map from `src/path/import-type.ts` |
 | `smartId` | `src/snippets/languages/typescript.ts`, `src/snippets/_class-name.ts`, `src/snippets/variants.ts` |
 | `defaultStyle` | `package.json` (`contributes.configuration` enums + `default`) |
 | `placement` | `src/editor/placement.ts`, `src/editor/insert-snippet.ts` |
@@ -48,20 +48,20 @@ Session 2 filled each field from these source-of-truth files:
 
 ## Deltas from design-spec prose
 
-Two per-destination values are taken from the **code**, which the design spec
+One per-destination value is taken from the **code**, which the design spec
 (`qa-pipeline/QA-PIPELINE-SPEC.md` §4) describes incorrectly. The IR is source-derived (§2
 mental model) and the generated checklists are tested against the *running* extension, so the
-code is authoritative here. Recorded for the frozen-review step; reconciling §4.3/§4.4 of the
+code is authoritative here. Recorded for the frozen-review step; reconciling §4.4 of the
 design spec is a separate follow-up.
+
+> The former Delta #1 (`styles` · `.vue`/`.svelte`/`.astro`) was **resolved** by `a85af78`:
+> framework non-script sources now route through the shared `buildAssetImportStatement`, so the
+> code matches the spec §4.3 prose (non-script → fixed asset shapes). Only the smartId deviation
+> below remains.
 
 | # | Row | Spec §4 prose | Code (authoritative) | Provenance |
 |---|-----|---------------|----------------------|------------|
-| 1 | `styles` · `.vue`/`.svelte`/`.astro` | non-script sources → fixed asset shapes | **all sources → the 7-style TS table** (`TYPESCRIPT_IMPORT_OPTIONS`); no asset-shape branch exists | `framework-component.ts:16-22`, `variants.ts:147-166` |
-| 2 | `smartId` · `.tsx`/`.mdx` | none | **Angular-PascalCase on style 0** for `.ts`/`.tsx` sources (exported-class half correctly absent) | `tsx.ts:8-15` → `_react.ts:24-25` → `typescript.ts:38-44,64-77` |
-
-Finding #1 is also a likely latent code quirk — a non-script asset into a framework file renders
-as a *named* TS import (`import { $1 } from './logo.png';`), where the React family correctly
-uses a default import (`import ${1:name} from …`). Noted, not fixed (Session 2 changes no code).
+| 2 | `smartId` · `.tsx`/`.mdx` | none | **Angular-PascalCase on style 0** for `.ts`/`.tsx` sources (exported-class half correctly absent) | `tsx.ts:8-15` → `_react.ts:24-25` → `typescript.ts:38-44,64-78` |
 
 ---
 
@@ -130,11 +130,13 @@ literal strings + tab-stops from `_styles.ts`) + the **fixed/hardcoded shapes** 
 | `.scss` | source-**type** | stylesheet → `SCSS_IMPORT_OPTIONS` (5); image → fixed `url('<path>')` (reuses the CSS image builder; `scssImage` setting dormant) |
 | `.html` | source-**type** (6) | script `HTML_SCRIPT_IMPORT_OPTIONS` (5) · image `HTML_IMAGE_IMPORT_OPTIONS` (3) · video `HTML_VIDEO_IMPORT_OPTIONS` (4) · audio `HTML_AUDIO_IMPORT_OPTIONS` (2) · stylesheet fixed `<link href="<path>" rel="stylesheet">` · text-track fixed `<track …>`. The image/video/audio **style-0 entries are tagless** (description falls back to full text). |
 | `.md` | source-**type** | markdown → fixed `[${1:text}](<path>)` (hardcoded; `markdown` setting dormant; **not** in the image style count) · image → `MARKDOWN_IMAGE_IMPORT_OPTIONS` (3) |
-| `.vue` / `.svelte` / `.astro` | `framework-component.ts` | **all sources → `TYPESCRIPT_IMPORT_OPTIONS` (7)** [Delta #1]: script paths honor `preserve`, non-script keep the full ext; style-0 Angular PascalCase, no exported-class fill, styles 1–6 bare `$1`. No fixed-asset branch. |
+| `.vue` / `.svelte` / `.astro` | `framework-component.ts` | source-**extension** split: **script** (`.ts`/`.tsx`/`.js`/`.jsx`) → `TYPESCRIPT_IMPORT_OPTIONS` (7), style-0 Angular PascalCase, no exported-class fill, styles 1–6 bare `$1`; **non-script** → fixed asset shapes (shared `buildAssetImportStatement`). Script paths honor `preserve`; non-script keep the full ext. Fonts/plain-stylesheets/CSS-modules are gated out, so only the named-default + url-default arms are reachable. |
 
-**Fixed non-script asset shapes** (React family only — `src/snippets/_react.ts:buildReactImport`
-non-script switch + `variants.ts:buildReactNonScriptVariant`; full source extension **always**
-kept; each is a SINGLE variant → Pick Style direct-inserts, Set Default reports a fixed style):
+**Fixed non-script asset shapes** (shared by the React trio **and** the framework trio
+(`.vue`/`.svelte`/`.astro`) — `src/snippets/_react.ts:buildAssetImportStatement`, the single
+canonical asset switch, called by `buildReactImport`, `variants.ts:buildReactNonScriptVariant`,
+and `languages/framework-component.ts`; full source extension **always** kept; each is a SINGLE
+variant → Pick Style direct-inserts, Set Default reports a fixed style):
 
 1. **CSS module** (`*.module.css` / `*.module.scss`, checked **first** so it beats the side-effect shape) → `import ${1:styles} from '<path>';`
 2. image / doc / component (`.gif .jpeg .jpg .png .svg .avif .webp .json .html .yml .yaml .md .mdx .pdf .vue .svelte .astro`) → `import ${1:name} from '<path>';`
@@ -155,7 +157,7 @@ Two independent mechanisms — exported-class detection and Angular-legacy Pasca
 |------|-----------|
 | `.ts` | **both** — exported-class (`readExportedClassName`, called by `typescript.ts:buildSnippet` + `variants.ts` `.ts` case) **and** Angular PascalCase. A detected class beats Angular. |
 | `.tsx` / `.mdx` | **Angular-PascalCase only** (style 0), for `.ts`/`.tsx` sources via the TS-primary path; **no exported-class fill** (`readExportedClassName` is never called for tsx/mdx). `.js`/`.jsx` sources → JS builder → none. [Delta #2] |
-| `.vue` / `.svelte` / `.astro` | **Angular-PascalCase only** (style 0, all sources via the TS builder). `framework-component.ts` calls `buildTypeScriptImportSnippet` *without* a `detectedImportName`, so exported-class fill is inert but `generateAngularLegacyImportName` still fires. |
+| `.vue` / `.svelte` / `.astro` | **Angular-PascalCase only** (style 0), **script sources only** via the TS builder; non-script sources take fixed asset shapes and never reach Angular naming. `framework-component.ts` calls `buildTypeScriptImportSnippet` *without* a `detectedImportName`, so exported-class fill is inert but `generateAngularLegacyImportName` still fires. (Unlike `.tsx`/`.mdx`, a `.js`/`.jsx` script source **does** reach Angular here — all four script exts route to the TS builder.) |
 | `.js` `.jsx` `.css` `.scss` `.html` `.md` | **none** |
 
 **Exported-class half** (`.ts` only, style 0): `EXPORTED_CLASS_PATTERN =
@@ -219,7 +221,7 @@ the stylesheet key `preserveStylesheetFileExtension` are different settings.
 | `.css` | `@import` path **always** keeps the full source extension; respects **neither** toggle |
 | `.ts` `.js` `.jsx` `.tsx` `.mdx` | respect **`preserveScriptFileExtension`** (script sources); for `.jsx`/`.tsx`/`.mdx`, **non-script** asset imports always keep the full extension (not toggled) |
 | `.html` `.md` | always preserve the full extension (no toggle) |
-| `.vue` `.svelte` `.astro` | **`preserveScriptFileExtension`** for script sources; non-script sources always keep the full extension [fills the §4.6 gap] |
+| `.vue` `.svelte` `.astro` | **`preserveScriptFileExtension`** for script sources; non-script sources always keep the full extension (via the shared `buildAssetImportStatement`) [fills the §4.6 gap] |
 
 ## `defaultStyle` per destination
 
@@ -251,8 +253,9 @@ destination, so the string is frozen here (the index alone is insufficient).
 | `.html` · text-track source | — (fixed) | `<track src="<path>" kind="subtitles" srclang="${1:en}" label="${2:English}"></track>` |
 | `.md` · markdown source | — (fixed) | `[${1:text}](<path>)` |
 | `.md` · image source | 0 | `![${1:alt-text}](<path>)` |
-| `.vue` / `.svelte` / `.astro` · any source | 0 (TS) | `import { $1 } from '<path>';` (Angular PascalCase on style 0 if the path matches a suffix; no exported-class fill) |
+| `.vue` / `.svelte` / `.astro` · script source | 0 (TS) | `import { $1 } from '<path>';` (Angular PascalCase on style 0 if the path matches a suffix; no exported-class fill) |
+| `.vue` / `.svelte` / `.astro` · non-script source | — (fixed) | the asset shape for its source type (see `styles`) |
 
-> Fixed-shape branches (md-link, css/scss-image, html-link/track, jsx/tsx/mdx non-script) carry
-> no configurable setting → `Set Default Import Style` reports `no-configurable-style`
-> (`.{src} → .{dest} imports use a fixed style.`).
+> Fixed-shape branches (md-link, css/scss-image, html-link/track, jsx/tsx/mdx non-script,
+> **vue/svelte/astro non-script**) carry no configurable setting → `Set Default Import Style`
+> reports `no-configurable-style` (`.{src} → .{dest} imports use a fixed style.`).

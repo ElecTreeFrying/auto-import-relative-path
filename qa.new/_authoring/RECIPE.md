@@ -98,13 +98,18 @@ selection inserts the item-2 happy-path string into the active editor.
 
 **Item 4 — All N styles + style-name drift.** Enumerate N styles where N =
 `profile.styles` count for the source type, each with literal string + tab-stops.
-For **React-family** (`.jsx`/`.tsx`/`.mdx`) item 4 has **two arms**: script sources
-→ the N-style table; non-script sources → the fixed asset catalogue, each a single
-variant (Pick Style direct-inserts; Set Default rejects with `.{src} → .{dest}
-imports use a fixed style.`), full extension kept — at minimum a `.module.css` →
-`import ${1:styles} from …` case proving the CSS-module shape beats the side-effect
-shape. Plus the `.jsx`-only **empty-snippet** case (a `.ts`/`.tsx` source → nothing
-inserted, zero Pick-Style variants). **Style-name-drift sub-item:** set the
+For **React-family** (`.jsx`/`.tsx`/`.mdx`) **and the framework trio**
+(`.vue`/`.svelte`/`.astro`) item 4 has **two arms**: script sources → the N-style
+table; non-script sources → the fixed asset catalogue, each a single variant (Pick
+Style direct-inserts; Set Default rejects with `.{src} → .{dest} imports use a fixed
+style.`), full extension kept. **React-trio only:** at minimum a `.module.css` →
+`import ${1:styles} from …` proving the CSS-module shape beats the side-effect shape,
+plus the `.jsx`-only **empty-snippet** case (a `.ts`/`.tsx` source → nothing inserted,
+zero Pick-Style variants). **Framework trio:** the non-script catalogue is the asset
+switch **intersected with framework gating** — only the named-default
+(image/data/doc/component) and url-default (av/text-track) arms are reachable; there is
+**no** CSS-module, side-effect, or empty-snippet case (frameworks reject `.ts`/`.tsx`,
+stylesheet, and font sources at the gate rather than rendering them). **Style-name-drift sub-item:** set the
 `{lang}ImportStyle` setting to a string matching no enum description (config drift /
 hand-typed into `settings.json`), paste — expected: the import still inserts using
 the **style-0 shape** (`resolveStyleIndex` → undefined → builder `default:` arm),
@@ -125,7 +130,11 @@ only; `export default class` → `$1`; detected class **beats** Angular); and th
 `.vue`/`.svelte`/`.astro` (*Angular-only*): test ONLY the style-0 Angular cases
 (each suffix → PascalCase; non-Angular path → bare `$1`) and explicitly assert
 **no** exported-class pre-fill (a source with `export class Foo` → still `$1`,
-contrasting with `.ts` §5.1). Omit item 5 entirely for the genuinely-`none` rows.
+contrasting with `.ts` §5.1). **Angular identifier guard (every Angular-routed dest —
+`.ts`/`.tsx`/`.mdx`/`.vue`/`.svelte`/`.astro`):** add one case where an Angular-suffixed
+source's PascalCase derivation is **not** a legal JS/TS identifier (basename with a space
+or a leading digit) → falls back to bare `$1`, not a malformed `${1:…}` (`typescript.ts:75`).
+Omit item 5 entirely for the genuinely-`none` rows.
 
 **Item 6 — Placement.** Resolve from `profile.placement`; do NOT assert "identical
 across languages". Emit only the destination's mode cases:
@@ -160,7 +169,7 @@ style, info toast verbatim `Auto Import: Default style saved — {style descript
 and the `{language}ImportStyle` setting now holds that value. [conditional] omit /
 show `no-configurable-style` for fixed-shape destinations whose variants carry no
 setting (hardcoded HTML / Markdown-text / CSS-image / SCSS-image /
-JSX-TSX-MDX-non-script). Universal mechanics (placeholder `Set default import style`,
+JSX-TSX-MDX-non-script / framework-non-script). Universal mechanics (placeholder `Set default import style`,
 current default spliced to position 0 with `$(check) Current default`, escape,
 filter, clipboard validation, **never inserts**) are **general.md §10** — do NOT
 duplicate.
@@ -181,8 +190,10 @@ pathQuirks. Required cases per destination:
 - (d) class-detect / Angular / preserve-ext on drop wherever the profile enables them.
 
 Per-quirk drop slots: stylesheet → an inline `url()` drop lands at the exact drop
-column with no newline; framework → a drop into a file lacking the wrapper
-**creates** the `---`/`<script>` wrapper, else constrains within it. **Universal drop
+column with no newline; framework → (i) a **script** drop into a file lacking the
+wrapper **creates** the `---`/`<script>` wrapper, else constrains within it; (ii) a
+**non-script** asset drop emits the same single-variant asset shape as the item-2/item-4
+non-script arm, placed inside the (created-if-missing) wrapper. **Universal drop
 precondition** (cross-cutting — emit **once**, not per-language; general.md does not
 cover it): the gesture is registered only for the 12 `DROP_LANGUAGE_SELECTORS`
 language IDs and only for `scheme:'file'` — a drop into an untitled/unsaved buffer is
