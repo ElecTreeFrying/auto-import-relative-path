@@ -55,7 +55,7 @@ The settings used in this checklist:
 
 ## 1 — Cross-import gating matrix
 
-`.scss` is in `CROSS_IMPORT_DESTINATIONS`, so it accepts a curated source set: `SCSS_SUPPORTED_EXTENSIONS` = `.scss` + `.css` + the seven image types (`src/gating.ts:32-34`). Every other source is rejected with `Auto Import: Cannot import .X into .scss files.`
+`.scss` is in `CROSS_IMPORT_DESTINATIONS`, so it accepts a curated source set: `SCSS_SUPPORTED_EXTENSIONS` = `.scss` + `.css` + the seven image types (defined in `src/constants/extensions.ts:45-49`; gated in `src/gating.ts:32-34`). Every other source is rejected with `Auto Import: Cannot import .X into .scss files.`
 
 For each row: copy the source file from the listed workspace path, paste into `scss/src/main.scss`.
 

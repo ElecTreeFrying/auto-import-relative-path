@@ -7,7 +7,7 @@ JSX-specific manual QA: accept-all gating, the two-arm style model (7 script sty
 **Sources under test:**
 
 - `src/snippets/languages/jsx.ts` — `buildSnippet`: delegates to `buildReactImport` with `primaryExtensions: ['.js', '.jsx']`, `primarySnippet: buildJavaScriptImportSnippet`, **no fallback**
-- `src/snippets/_react.ts` — `buildReactImport`: script-primary path (honors `preserveScriptFileExtension`), the `.module.css`/`.module.scss` check (FIRST), the non-script asset `switch` (4 groups, full extension via `fullPath`), and `default: ''` (the empty snippet for `.ts`/`.tsx`)
+- `src/snippets/_react.ts` — `buildReactImport`: script-primary path (honors `preserveScriptFileExtension`), then delegates non-script sources to the shared exported `buildAssetImportStatement(sourceFileExt, importPath)` (same file) — the `.module.css`/`.module.scss` check (FIRST), the non-script asset `switch` (4 groups, full extension via `fullPath`), `default: null`; `buildReactImport` wraps a `null` result as an empty `SnippetString` (the empty snippet for `.ts`/`.tsx`)
 - `src/snippets/_styles.ts` — `JAVASCRIPT_IMPORT_OPTIONS` (7 entries) — descriptions + tags + tab-stop layout per style
 - `src/snippets/variants.ts` — `buildJsxVariants` / `buildReactNonScriptVariant`: `.js`/`.jsx` → 7 styled variants backed by `('script', 'javascript')`; non-script → a single hardcoded variant (no `setting`); `.ts`/`.tsx` → `[]`
 - `src/gating.ts` — `isPairSupported`: `.jsx ∈ CROSS_IMPORT_DESTINATIONS` → accepts every source (the empty `.ts`/`.tsx` case is caught downstream by the empty-snippet guard, not here)
