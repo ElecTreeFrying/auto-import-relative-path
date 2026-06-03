@@ -13,6 +13,7 @@ qa.new/
 │   ├── javascript.md    .js destination — all 7 styles, no smart identifiers, placement, gating, DnD
 │   ├── jsx.md           .jsx destination — accept-all + 2-arm style model (7 JS styles or fixed asset shapes), source-ext dispatch, placement, DnD
 │   ├── markdown.md      .md destination — fixed [text](…) link + 3 image styles, forced-cursor placement, markdown-star quirk, gating, DnD
+│   ├── mdx.md           .mdx destination — accept-all + two-script-arm + asset model (7 TS / 7 JS-fallback / fixed asset), Angular-only smart ids, markdown-star quirk, placement, gating, DnD
 │   ├── scss.md          .scss destination — 5 @use/@forward/@import styles + image url() arm, partial-_ norm, placement, gating, DnD
 │   ├── tsx.md           .tsx destination — accept-all + two-script-arm + asset model (7 TS / 7 JS-fallback / fixed asset), Angular-only smart ids, placement, gating, DnD
 │   └── typescript.md    .ts destination — all 7 styles, class detection, Angular, placement
@@ -23,6 +24,7 @@ qa.new/
 │   ├── javascript/      Fixtures for javascript.md
 │   ├── jsx/             Fixtures for jsx.md
 │   ├── markdown/        Fixtures for markdown.md
+│   ├── mdx/             Fixtures for mdx.md
 │   ├── scss/            Fixtures for scss.md
 │   ├── tsx/             Fixtures for tsx.md
 │   └── typescript/      Fixtures for typescript.md
@@ -46,6 +48,7 @@ qa.new/
 | [`javascript.md`](checklists/javascript.md) | [`javascript/`](workspace/javascript/) | 7 import styles, no smart identifiers, placement, gating, QuickPick, drag-and-drop |
 | [`jsx.md`](checklists/jsx.md) | [`jsx/`](workspace/jsx/) | Accept-all gating, 2-arm style model (7 JS styles or fixed asset shapes) via source-ext dispatch, no smart identifiers, placement, `.ts`/`.tsx`→empty-snippet, QuickPick, drag-and-drop |
 | [`markdown.md`](checklists/markdown.md) | [`markdown/`](workspace/markdown/) | Fixed `[text](…)` link + 3 image styles, no smart identifiers, `forced-cursor` placement + markdown-star quirk, allow-list gating, QuickPick, drag-and-drop |
+| [`mdx.md`](checklists/mdx.md) | [`mdx/`](workspace/mdx/) | Accept-all gating, two-script-arm + asset model (7 TS / 7 JS-fallback styles or fixed asset shapes), Angular-only smart identifiers, markdown-star `.mdx`≠`.tsx` quirk, placement, gating, QuickPick, drag-and-drop |
 | [`scss.md`](checklists/scss.md) | [`scss/`](workspace/scss/) | 5 `@use`/`@forward`/`@import` styles + image `url()` arm, no smart identifiers, partial-`_` normalization, placement + inline-`url()`, allow-list gating, QuickPick, drag-and-drop |
 | [`tsx.md`](checklists/tsx.md) | [`tsx/`](workspace/tsx/) | Accept-all gating, two-script-arm + asset model (7 TS / 7 JS-fallback styles or fixed asset shapes), Angular-only smart identifiers, placement, gating, QuickPick, drag-and-drop |
 | [`typescript.md`](checklists/typescript.md) | [`typescript/`](workspace/typescript/) | 7 import styles, class detection, Angular PascalCase, placement, gating, QuickPick, drag-and-drop |
