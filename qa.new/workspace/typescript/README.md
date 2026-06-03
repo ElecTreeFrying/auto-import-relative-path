@@ -16,6 +16,7 @@ typescript/
 │   │   ├── trim.pipe.ts
 │   │   ├── user.service.ts
 │   │   ├── auth.module.ts
+│   │   ├── 2fa.service.ts      Angular suffix, illegal derived id (leading digit) → bare $1 (5.B.11)
 │   │   └── dest.ts             Same-directory destination for section 5.B.10
 │   ├── classes/                Files WITH export class declarations
 │   │   ├── event-bus.ts        export class EventBus
@@ -82,6 +83,7 @@ typescript/
 | `src/angular/trim.pipe.ts` | 5.B.3 | Angular `.pipe` WITHOUT export class |
 | `src/angular/user.service.ts` | 5.B.4, 5.A.7, 9.8 | Angular `.service` WITHOUT export class |
 | `src/angular/auth.module.ts` | 5.B.5, 5.B.10 | Angular `.module` WITHOUT export class |
+| `src/angular/2fa.service.ts` | 5.B.11 | Angular suffix, illegal derived identifier (leading digit) → bare `$1` |
 | `src/angular/dest.ts` | 5.B.10 | Same-directory destination for Angular same-dir test |
 | `src/classes/event-bus.ts` | 4 (drift), 5.A.1, 5.A.9, 7.3, 9.7 | `export class EventBus` — class detection |
 | `src/classes/base-service.ts` | 5.A.2 | `export abstract class BaseService` |
@@ -113,8 +115,8 @@ typescript/
 
 | Directory | Files | Purpose |
 |-----------|-------|---------|
-| `src/` | 20 | Sources + primary destinations |
+| `src/` | 21 | Sources + primary destinations |
 | `destinations/` | 12 | Pre-filled placement-test destinations |
 | `rejected/` | 20 | Non-`.ts` sources for gating tests |
 | Root | 1 | `Makefile` (no extension) |
-| **Total** | **53** |
+| **Total** | **54** |

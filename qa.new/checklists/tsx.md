@@ -335,6 +335,11 @@ This is the signature `.tsx` ≠ `.ts` case. A `.ts`/`.tsx` source containing `e
 - [ ] The identifier is **identical** (`UserComponent`) in both cases — never `UserComponentTs` — because the extension is stripped before the name is derived; only the path string changes
 - [ ] Restore: uncheck **Preserve script file extension in imports**
 
+### 5.10 — Angular suffix, illegal derived identifier (guard)
+
+- [ ] Copy `tsx/src/angular/2fa.component.ts` (no `export class`) → paste into `tsx/src/Panel.tsx`
+- [ ] Output: `import { $1 } from './angular/2fa.component';` — `2fa.component` derives `2faComponent`, not a legal identifier (leading digit), so the name falls back to a bare `$1` tab stop, NOT `2faComponent` (`typescript.ts:75` guard)
+
 ---
 
 ## 6 — Placement modes
@@ -684,7 +689,7 @@ Drag a file from the Explorer sidebar into an open `.tsx` editor. A drop reuses 
 - [ ] Style model — arm 1B: all 7 JavaScript styles via fallback (7 cases)
 - [ ] Style model — arm 2: 4 fixed asset shapes + `.module.css`-beats-side-effect proof + asset-keeps-extension note (6 cases)
 - [ ] Style-name drift safety net — `typescriptImportStyle` + `javascriptImportStyle` (2 cases)
-- [ ] Smart identifier — Angular PascalCase (5 suffixes) + non-Angular + no-exported-class-fill counter-case + Angular-is-TS-source-only + preserve-stable (9 cases)
+- [ ] Smart identifier — Angular PascalCase (5 suffixes) + non-Angular + no-exported-class-fill counter-case + Angular-is-TS-source-only + preserve-stable + invalid-identifier guard (10 cases)
 - [ ] Placement — Bottom (6 cases)
 - [ ] Placement — Top (3 cases)
 - [ ] Placement — Cursor, incl. leading-`*`-is-comment (8 cases)
@@ -693,4 +698,4 @@ Drag a file from the Explorer sidebar into an open `.tsx` editor. A drop reuses 
 - [ ] Drag-and-drop — happy TS / happy JS-fallback / happy asset / placement / Angular-on-drop / preserve (no raw-text-fallback) (11 cases)
 - [ ] Edge cases — markdown-star `.mdx` ≠ `.tsx` proof, string-literal + `require(` false-positives, JS-fallback recap (4 cases)
 
-**Total: ~89 test cases**
+**Total: ~90 test cases**

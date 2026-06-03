@@ -38,6 +38,7 @@ mdx/
 │   │   ├── trim.pipe.ts           → TrimPipe
 │   │   ├── user.service.ts        → UserService
 │   │   ├── auth.module.ts         → AuthModule
+│   │   ├── 2fa.component.ts        Illegal derived id (leading digit) → bare $1 (§5.10)
 │   │   └── widget.component.js     Angular suffix on a .js source → JS fallback, NO PascalCase (§5.8)
 │   └── classes/
 │       └── event-bus.ts          `export class EventBus` — the no-exported-class-fill counter-case (§5.7)
@@ -86,6 +87,7 @@ mdx/
 | `src/angular/trim.pipe.ts` | 5.3 | `.pipe` suffix → `TrimPipe` |
 | `src/angular/user.service.ts` | 5.4 | `.service` suffix → `UserService` |
 | `src/angular/auth.module.ts` | 5.5 | `.module` suffix → `AuthModule` |
+| `src/angular/2fa.component.ts` | 5.10 | Angular suffix, illegal derived id (leading digit) → bare `$1` |
 | `src/angular/widget.component.js` | 5.8 | Angular suffix on a `.js` source → JS fallback, **NO** PascalCase |
 | `src/classes/event-bus.ts` | 5.7 | `export class EventBus` → still bare `$1` (`.mdx` never reads classes) |
 | `assets/logo.png` | 1.9, 2.3, 4C, 4C.2, 7.5, 8.4, 9.3, 9.9 | Image — `${1:name}` (the primary asset across the checklist) |
@@ -119,7 +121,7 @@ mdx/
 
 | Directory | Files | Purpose |
 |-----------|-------|---------|
-| `src/` | 13 | Script sources (TS-primary + JS-fallback) + nested source + `angular/` (6) + `classes/` (1) + primary destination |
+| `src/` | 14 | Script sources (TS-primary + JS-fallback) + nested source + `angular/` (7) + `classes/` (1) + primary destination |
 | `assets/` | 14 | One non-script source per category — all accepted, fixed shapes |
 | `destinations/` | 12 | Pre-filled placement-test destinations (incl. `leading-star.tsx` for the `.mdx` ≠ `.tsx` proof) |
-| **Total** | **39** |
+| **Total** | **40** |

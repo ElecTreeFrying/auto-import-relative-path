@@ -289,6 +289,11 @@ Style must be set to index 0. Source files must NOT contain `export class` (othe
 - [ ] Path starts with `'./auth.module'` (same-dir `./` prefix)
 - [ ] Identifier is `AuthModule`
 
+#### 5.B.11 — Angular suffix, illegal derived identifier (guard)
+
+- [ ] Copy `typescript/src/angular/2fa.service.ts` (no `export class`) → paste into `typescript/src/bar.ts`
+- [ ] Output: `import { $1 } from './angular/2fa.service';` — `2fa.service` derives `2faService`, which is not a legal identifier (leading digit), so the name falls back to a bare `$1` tab stop, NOT `2faService` (`typescript.ts:75` guard)
+
 ---
 
 ## 6 — Placement modes
@@ -603,7 +608,7 @@ The drop provider is registered only for the 12 `DROP_LANGUAGE_SELECTORS` langua
 - [ ] All 7 import styles (7 cases)
 - [ ] Style-name drift safety net (1 case)
 - [ ] Smart identifier — exported class detection (9 cases)
-- [ ] Smart identifier — Angular legacy PascalCase (10 cases)
+- [ ] Smart identifier — Angular legacy PascalCase (11 cases)
 - [ ] Placement — Bottom (6 cases)
 - [ ] Placement — Top (3 cases)
 - [ ] Placement — Cursor (7 cases)
@@ -613,4 +618,4 @@ The drop provider is registered only for the 12 `DROP_LANGUAGE_SELECTORS` langua
 - [ ] Drag-and-drop — universal precondition (1 case)
 - [ ] Edge cases (5 cases)
 
-**Total: ~88 test cases**
+**Total: ~89 test cases**
