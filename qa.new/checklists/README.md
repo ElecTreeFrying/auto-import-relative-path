@@ -21,6 +21,7 @@ Manual QA checklists for the extension. One general checklist for shared behavio
 | [`scss.md`](scss.md) | ~65 | Allow-list gating (21 pairs: `.scss` + `.css` + 7 image), 5 `@use`/`@forward`/`@import` styles + fixed image `url()` arm + style-name drift, no smart identifiers (§5 N/A), Bottom/Top/Cursor placement + inline-`url()`, partial-`_` normalization, `preserveStylesheetFileExtension` toggle, Pick Style, Set Default, drag-and-drop, edge cases |
 | [`tsx.md`](tsx.md) | ~90 | Accept-all gating (18-row matrix, 0 source rejections; same-file owned by general.md), two-script-arm + asset style model (7 TypeScript styles for `.ts`/`.tsx` **or** 7 JavaScript styles for `.js`/`.jsx` via fallback **or** 4 fixed asset shapes; every source non-empty — no empty-snippet case) + style-name drift, Angular-only smart identifiers (style 0; no exported-class fill), Bottom/Top/Cursor placement incl. leading-`*`-is-comment, shared `typescriptImportStyle`/`javascriptImportStyle`, Pick Style, Set Default, drag-and-drop (no raw-text fallback), markdown-star `.mdx`≠`.tsx` edge |
 | [`typescript.md`](typescript.md) | ~89 | Gating matrix (21 pairs), 7 import styles + style-name drift, smart identifiers (exported-class detection + Angular PascalCase), Bottom/Top/Cursor placement, Pick Style (TS-specific), Set Default (TS-specific), drag-and-drop (TS-specific), edge cases |
+| [`vue.md`](vue.md) | ~80 | Allow-list gating (accept-vs-reject; 12 accept / 9 reject), one-table two-arm style model (7 TypeScript styles for **all four** script sources `.ts`/`.tsx`/`.js`/`.jsx` **or** a fixed asset shape) + style-name drift, Angular-only smart identifiers (style 0; no exported-class fill; fires for all four script exts incl. `.js`), SFC `<script>`-block-confined placement, shared `typescriptImportStyle` (no `vueImportStyle`), Pick Style, Set Default, drag-and-drop incl. unsupported-pair raw-text fallback, `.vue`→`.vue` named-asset quirk |
 
 ## Workspace counterparts
 
@@ -37,6 +38,7 @@ checklists/mdx.md          →  workspace/mdx/
 checklists/scss.md         →  workspace/scss/
 checklists/tsx.md          →  workspace/tsx/
 checklists/typescript.md   →  workspace/typescript/
+checklists/vue.md          →  workspace/vue/
 ```
 
 When a checklist is updated, ensure the workspace counterpart has every fixture file the checklist references.

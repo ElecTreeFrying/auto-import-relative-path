@@ -28,5 +28,6 @@ Destination files (e.g., `typescript/destinations/`) are pre-filled with specifi
 | [`scss/`](scss/) | [`checklists/scss.md`](../checklists/scss.md) | 33 | `.scss` destination — 5 `@use`/`@forward`/`@import` styles + image `url()` arm, partial-`_` normalization, preserve toggle, placement + inline-`url()`, allow-list gating, DnD (no smart identifiers) |
 | [`tsx/`](tsx/) | [`checklists/tsx.md`](../checklists/tsx.md) | 40 | `.tsx` destination — accept-all + two-script-arm + asset model (7 TS / 7 JS-fallback styles or fixed asset shapes), Angular-only smart identifiers, placement, gating, DnD |
 | [`typescript/`](typescript/) | [`checklists/typescript.md`](../checklists/typescript.md) | 54 | `.ts` destination — styles, class detection, Angular, placement, gating, DnD |
+| [`vue/`](vue/) | [`checklists/vue.md`](../checklists/vue.md) | 39 | `.vue` destination — allow-list gating, one-table two-arm style model (7 TS styles for all four script sources **or** fixed asset shape), Angular-only smart identifiers, SFC `<script>`-block placement, DnD incl. raw-text fallback |
 
 See each directory's own `README.md` for the full file tree and fixture-to-checklist mapping.
