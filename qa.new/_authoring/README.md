@@ -25,7 +25,7 @@ aspirational.
 |------|-----------|-----------|
 | `README.md` | This file — what the subtree is and how to use it | Stable |
 | `RECIPE.md` | The codegen rule — the section recipe every checklist is rendered through (required/conditional sections, per-quirk slots, item detail, authoring rules) | Stable; rarely changes |
-| `PROFILE.md` | The IR — one frozen row per destination, six fields, populated by reading the extension source | Stable; one row added if the extension gains a new destination |
+| `PROFILE.md` | The IR — one frozen row per destination, six fields, populated by reading the extension source | Stable; a row is added if the extension gains a new destination, or an existing row **re-derived** if `src/` behavior for that destination changes after the freeze |
 | `LOOP-PROMPT.md` | The reusable loop-prompt text, pasted verbatim per session | Stable; reused verbatim across all runbooks |
 | `runbook-{ext}-checklist.md` | Phase A runbook (checklist generation) | Created + committed alongside the checklist it produces |
 | `runbook-{ext}-workspace.md` | Phase B+C runbook (workspace fixtures + sync-doc propagation) | Created + committed alongside the workspace it produces |
@@ -67,9 +67,13 @@ hard rule.
 
 - **`RECIPE.md` is the single source of truth for checklist shape.** It is shared
   by all 12 destinations; per-language divergence is structurally impossible.
-- **`PROFILE.md` is frozen.** It is read from disk every session, never re-derived.
-  A destination's behavior changes only by editing its PROFILE row and
-  regenerating — never by hand-editing a generated checklist.
+- **`PROFILE.md` is frozen — but "frozen" means freeze-after-review, NOT auto-tracking
+  of `src/`.** It is read from disk every session, never re-derived per-session. A
+  destination's behavior changes only by editing its PROFILE row and regenerating —
+  never by hand-editing a generated checklist. **If extension source behavior changes
+  *after* the freeze** (a `src/` fix lands for an already-profiled destination), the
+  affected row(s) MUST be re-derived from `src/` and re-reviewed **before** regenerating
+  any checklist for that destination — the pipeline does not detect this drift for you.
 - **Propagation still applies.** A generated checklist drives its workspace 1:1 and
   ripples into the `qa.new/` inventory docs — see [`../CLAUDE.md`](../CLAUDE.md).
 

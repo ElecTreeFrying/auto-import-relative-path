@@ -634,7 +634,7 @@ If a task fails or you need clarification, stop and report — do not skip.
 
 ## 12a — Vue checklist (Phase A)
 
-*`framework-component.ts` builder: ALL sources → the 7-style TS table (PROFILE Delta #1, no fixed-asset branch); `sfc-script` placement (clamped in `<script>`, prefers `<script setup>`); Angular-PascalCase on style 0, no exported-class fill.*
+*`framework-component.ts` builder: **script** sources (`.ts`/`.tsx`/`.js`/`.jsx`) → the 7-style TS table; **non-script** sources → fixed single-variant asset shapes (shared `buildAssetImportStatement`, same split as `.tsx`); `sfc-script` placement (clamped in `<script>`, prefers `<script setup>`); Angular-PascalCase on style 0 (script sources), no exported-class fill.*
 
 **Kickoff:**
 
@@ -704,7 +704,7 @@ If a task fails or you need clarification, stop and report — do not skip.
 
 ## 13a — Svelte checklist (Phase A)
 
-*Same `framework-component.ts` builder as `.vue`; `sfc-script` placement bounded by the `<script>` block (no `context=` preference). All sources → the 7-style TS table.*
+*Same `framework-component.ts` builder as `.vue`; `sfc-script` placement bounded by the `<script>` block (no `context=` preference). Script sources → the 7-style TS table; non-script sources → the shared fixed asset shapes (single variant each) — same split as `.tsx`/`.vue`.*
 
 **Kickoff:**
 
