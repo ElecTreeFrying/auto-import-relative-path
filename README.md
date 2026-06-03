@@ -101,9 +101,9 @@ The extension is **destination-driven** — the file open in your editor decides
 | `.scss` | `.scss`, `.css`, images | `@use` / `@forward` / `@import` (configurable) or inline `url()` for images |
 | `.html` | `.js`, `.css`, images, video, audio, `.vtt` | `<script>`, `<link>`, `<img>`, `<video>`, `<audio>`, `<track>` |
 | `.md` | `.md`, images | `[text](path)` or Markdown image syntax |
-| `.vue` | `.vue`, scripts, images, media, data | TypeScript import style |
-| `.svelte` | `.svelte`, scripts, images, media, data | TypeScript import style |
-| `.astro` | `.astro`, `.vue`, `.svelte`, scripts, images, media, data, `.md`, `.mdx` | TypeScript import style |
+| `.vue` | `.vue`, scripts, images, media, data | TS style for scripts; per-category default import (`import name`/`import url`) for assets |
+| `.svelte` | `.svelte`, scripts, images, media, data | TS style for scripts; per-category default import (`import name`/`import url`) for assets |
+| `.astro` | `.astro`, `.vue`, `.svelte`, scripts, images, media, data, `.md`, `.mdx` | TS style for scripts; per-category default import (`import name`/`import url`) for assets and components |
 
 See [SPEC — §Supported File Extensions][SPEC-extensions] for the full 35-extension breakdown by category.
 
@@ -364,7 +364,7 @@ See [SPEC — §JSX / TSX / MDX][SPEC-react] for the full source-category dispat
 
 ### Vue / Svelte / Astro
 
-All source types use the **TypeScript import style**. Non-script sources (images, media, data) use the same TypeScript import builder with the full source extension preserved on the path.
+Script sources (`.ts`, `.tsx`, `.js`, `.jsx`) use the **TypeScript import style**. Non-script sources use a category-based default import — images, data (`.json`/`.yaml`/`.yml`), and components (`.vue`/`.svelte` and `.md`/`.mdx`, which reach only `.astro` destinations) get a default name import (`import name from '...'`), while media and text tracks (`.vtt`) get a url import (`import url from '...'`). All non-script sources keep the full source extension on the path.
 
 Import placement is constrained to framework-specific regions — see [Placement](#placement).
 

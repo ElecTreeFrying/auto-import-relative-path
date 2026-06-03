@@ -57,7 +57,7 @@ Where to get help, how to diagnose common issues, and how to contribute. For fea
 
 ### How do Vue / Svelte / Astro imports work?
 
-All three are fully supported destinations. They use the **TypeScript import style** for all source types. Import placement is automatically constrained to the correct region:
+All three are fully supported destinations. Script sources (`.ts` / `.tsx` / `.js` / `.jsx`) use the **TypeScript import style**. Non-script sources get an asset-shaped import keyed on the source type — images, data (`.json` / `.yml` / `.yaml`), and (for Astro) `.vue` / `.svelte` / `.md` / `.mdx` components emit a default name import (`import name from './…';`), while media and `.vtt` text tracks emit a url import (`import url from './…';`). Import placement is automatically constrained to the correct region:
 
 - **Astro** — inside the `---` frontmatter fences
 - **Vue** — inside the `<script setup>` block (or `<script>` if no setup block exists)
