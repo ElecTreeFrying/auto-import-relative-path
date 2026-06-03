@@ -182,7 +182,10 @@ PascalCase each segment.
 A path matching **no** suffix → bare `$1` (not a PascalCased basename). The trailing
 `.ts`/`.tsx`/`.js`/`.jsx` is stripped **before** deriving the name, so the identifier is
 **stable** across `preserveScriptFileExtension` on/off (never `…ComponentTs`) — only the path
-string changes.
+string changes. The derived PascalCase name is then validated against `/^[A-Za-z_$][\w$]*$/`
+(`typescript.ts:75`); an illegal result — a basename with a space or a leading digit, e.g.
+`2fa.service` → `2faService` (fails the leading-char class) — falls back to bare `$1` **even
+when a suffix matched** (added in `b0a2505`; applies to every Angular-routed dest).
 
 ## `placement` per destination
 

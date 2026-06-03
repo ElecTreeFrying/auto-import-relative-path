@@ -108,8 +108,10 @@ plus the `.jsx`-only **empty-snippet** case (a `.ts`/`.tsx` source → nothing i
 zero Pick-Style variants). **Framework trio:** the non-script catalogue is the asset
 switch **intersected with framework gating** — only the named-default
 (image/data/doc/component) and url-default (av/text-track) arms are reachable; there is
-**no** CSS-module, side-effect, or empty-snippet case (frameworks reject `.ts`/`.tsx`,
-stylesheet, and font sources at the gate rather than rendering them). **Style-name-drift sub-item:** set the
+**no** CSS-module, side-effect, or empty-snippet case (stylesheet and font sources are
+gate-rejected from framework dests, eliminating the CSS-module and side-effect arms;
+`.ts`/`.tsx`/`.js`/`.jsx` are accepted but routed to the script arm's 7-style table, so they
+never reach the non-script asset switch — unlike `.jsx`, there is no empty-snippet case). **Style-name-drift sub-item:** set the
 `{lang}ImportStyle` setting to a string matching no enum description (config drift /
 hand-typed into `settings.json`), paste — expected: the import still inserts using
 the **style-0 shape** (`resolveStyleIndex` → undefined → builder `default:` arm),
