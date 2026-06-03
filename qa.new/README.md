@@ -15,6 +15,7 @@ qa.new/
 │   ├── markdown.md      .md destination — fixed [text](…) link + 3 image styles, forced-cursor placement, markdown-star quirk, gating, DnD
 │   ├── mdx.md           .mdx destination — accept-all + two-script-arm + asset model (7 TS / 7 JS-fallback / fixed asset), Angular-only smart ids, markdown-star quirk, placement, gating, DnD
 │   ├── scss.md          .scss destination — 5 @use/@forward/@import styles + image url() arm, partial-_ norm, placement, gating, DnD
+│   ├── svelte.md        .svelte destination — allow-list gating, one-table 7-TS-style script arm (all four script exts) + fixed asset arm, Angular-only smart ids, SFC <script>-block placement (no <script setup>), DnD raw-text fallback
 │   ├── tsx.md           .tsx destination — accept-all + two-script-arm + asset model (7 TS / 7 JS-fallback / fixed asset), Angular-only smart ids, placement, gating, DnD
 │   ├── typescript.md    .ts destination — all 7 styles, class detection, Angular, placement
 │   └── vue.md           .vue destination — allow-list gating, one-table 7-TS-style script arm (all four script exts) + fixed asset arm, Angular-only smart ids, SFC <script>-block placement, DnD raw-text fallback
@@ -27,6 +28,7 @@ qa.new/
 │   ├── markdown/        Fixtures for markdown.md
 │   ├── mdx/             Fixtures for mdx.md
 │   ├── scss/            Fixtures for scss.md
+│   ├── svelte/          Fixtures for svelte.md
 │   ├── tsx/             Fixtures for tsx.md
 │   ├── typescript/      Fixtures for typescript.md
 │   └── vue/             Fixtures for vue.md
@@ -52,6 +54,7 @@ qa.new/
 | [`markdown.md`](checklists/markdown.md) | [`markdown/`](workspace/markdown/) | Fixed `[text](…)` link + 3 image styles, no smart identifiers, `forced-cursor` placement + markdown-star quirk, allow-list gating, QuickPick, drag-and-drop |
 | [`mdx.md`](checklists/mdx.md) | [`mdx/`](workspace/mdx/) | Accept-all gating, two-script-arm + asset model (7 TS / 7 JS-fallback styles or fixed asset shapes), Angular-only smart identifiers, markdown-star `.mdx`≠`.tsx` quirk, placement, gating, QuickPick, drag-and-drop |
 | [`scss.md`](checklists/scss.md) | [`scss/`](workspace/scss/) | 5 `@use`/`@forward`/`@import` styles + image `url()` arm, no smart identifiers, partial-`_` normalization, placement + inline-`url()`, allow-list gating, QuickPick, drag-and-drop |
+| [`svelte.md`](checklists/svelte.md) | [`svelte/`](workspace/svelte/) | Allow-list gating, one-table two-arm style model (7 TS styles for all four script sources **or** fixed asset shape), Angular-only smart identifiers, SFC `<script>`-block placement (no `<script setup>`), shared `typescriptImportStyle`, QuickPick, drag-and-drop incl. raw-text fallback |
 | [`tsx.md`](checklists/tsx.md) | [`tsx/`](workspace/tsx/) | Accept-all gating, two-script-arm + asset model (7 TS / 7 JS-fallback styles or fixed asset shapes), Angular-only smart identifiers, placement, gating, QuickPick, drag-and-drop |
 | [`typescript.md`](checklists/typescript.md) | [`typescript/`](workspace/typescript/) | 7 import styles, class detection, Angular PascalCase, placement, gating, QuickPick, drag-and-drop |
 | [`vue.md`](checklists/vue.md) | [`vue/`](workspace/vue/) | Allow-list gating, one-table two-arm style model (7 TS styles for all four script sources **or** fixed asset shape), Angular-only smart identifiers, SFC `<script>`-block placement, shared `typescriptImportStyle`, QuickPick, drag-and-drop incl. raw-text fallback |
