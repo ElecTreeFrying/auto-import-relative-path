@@ -589,7 +589,12 @@ Because `.astro` is **allow-list**, a gated-out source has no snippet to offer. 
 ### 9.10 — Wrapper created on drop into a frontmatter-less `.astro`
 
 - [ ] Open `astro/destinations/template-only.astro` (no `---` frontmatter; content as in §6.4)
-- [ ] Drag `astro/src/Widget.tsx` → a new `---\n…\n---\n` frontmatter block is created at line 0 with the import inside (same create-if-missing behavior as paste §6.4)
+- [ ] Drag `astro/src/Widget.tsx` → a new `---` frontmatter block is created at line 0 with the import inside — byte-identical to the paste-side §6.4 block:
+  ```astro
+  ---
+  import { $1 } from '../src/Widget';
+  ---
+  ```
 - [ ] Undo, then drag `astro/assets/logo.png` → the wrapper is created with the **single-variant asset** shape inside: `import ${1:name} from '../assets/logo.png';`
 - [ ] Undo (`Cmd+Z`) to restore the file
 

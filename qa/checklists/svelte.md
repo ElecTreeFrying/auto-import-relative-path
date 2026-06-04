@@ -617,7 +617,12 @@ Because `.svelte` is **allow-list**, a gated-out source has no snippet to offer.
 ### 9.10 — Wrapper created on drop into a script-less `.svelte`
 
 - [ ] Open `svelte/destinations/template-only.svelte` (no `<script>` block; content as in §6.5)
-- [ ] Drag `svelte/src/Widget.tsx` → a new `<script>\n…\n</script>\n` wrapper is created at line 0 with the import inside (same create-if-missing behavior as paste §6.5)
+- [ ] Drag `svelte/src/Widget.tsx` → a new `<script>` wrapper is created at line 0 with the import inside — byte-identical to the paste-side §6.5 block:
+  ```svelte
+  <script>
+  import { $1 } from '../src/Widget';
+  </script>
+  ```
 - [ ] Undo, then drag `svelte/assets/logo.png` → the wrapper is created with the **single-variant asset** shape inside: `import ${1:name} from '../assets/logo.png';`
 - [ ] Undo (`Cmd+Z`) to restore the file
 
