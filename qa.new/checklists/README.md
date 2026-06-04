@@ -12,6 +12,7 @@ Manual QA checklists for the extension. One general checklist for shared behavio
 | Checklist | Cases | Scope |
 |-----------|-------|-------|
 | [`general.md`](general.md) | 55 | Copy File Path, clipboard validation, same-file rejection, Alt+D failure paths, all notification toasts + buttons, edge cases (rapid pastes, many files, unicode, spaces), path computation, extension stripping, DnD universal behaviors, Pick Style QuickPick mechanics, Set Default QuickPick mechanics, settings mid-session |
+| [`astro.md`](astro.md) | ~84 | Allow-list gating (accept-vs-reject; **widest** framework accept-list, 16 accept / 5 reject; third framework-trio destination, shares `framework-component.ts`), one-table two-arm style model (7 TypeScript styles for **all four** script sources `.ts`/`.tsx`/`.js`/`.jsx` **or** a fixed asset shape) + style-name drift, Angular-only smart identifiers (style 0; no exported-class fill; fires for all four script exts incl. `.js`), frontmatter `---`-fence-confined placement (no `<script setup>`/`<script context="module">`; create-if-missing wrapper), shared `typescriptImportStyle` (no `astroImportStyle`), Pick Style, Set Default, drag-and-drop incl. unsupported-pair raw-text fallback, named-asset family (`.astro`/`.vue`/`.svelte`/`.md`/`.mdx`→`.astro`) |
 | [`css.md`](css.md) | 30 | Allow-list gating (`.css` + 7 image exts), 2 `@import` styles + fixed image `url()` arm + style-name drift, no smart identifiers (§5 N/A), Top/Bottom/Cursor placement + inline-`url()` (placement-ignored), Pick Style, Set Default, drag-and-drop, shared `@use`/`@forward` marker edges |
 | [`html.md`](html.md) | 75 | Allow-list gating (`.js` `.css` + image/video/audio/`.vtt`; `.html`→`.html` rejected), 6-way source-type dispatch (`<script>`/`<img>`/`<video>`/`<audio>`/`<link>`/`<track>`), no smart identifiers (§5 N/A), `forced-cursor` placement (setting ignored, column follows cursor), always-keep-extension, Pick Style (3 tagless style-0 descriptions), Set Default, drag-and-drop, comment-marker mismatch edges |
 | [`javascript.md`](javascript.md) | ~65 | Gating matrix (21 pairs), 7 import styles + style-name drift, no smart identifiers (§5 N/A for `.js`), Bottom/Top/Cursor placement, Pick Style, Set Default, drag-and-drop, edge cases |
@@ -30,6 +31,7 @@ Every checklist has a matching fixture directory under `workspace/`:
 
 ```
 checklists/general.md      →  workspace/general/
+checklists/astro.md        →  workspace/astro/
 checklists/css.md          →  workspace/css/
 checklists/html.md         →  workspace/html/
 checklists/javascript.md   →  workspace/javascript/

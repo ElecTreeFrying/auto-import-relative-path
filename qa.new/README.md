@@ -8,6 +8,7 @@ Manual QA for the Auto Import Relative Path extension. Organized into checklists
 qa.new/
 ├── checklists/          Test checklists — one per destination language + one general
 │   ├── general.md       Cross-destination shared behavior (run first)
+│   ├── astro.md         .astro destination — allow-list gating (widest accept-list), one-table 7-TS-style script arm (all four script exts) + fixed asset arm, Angular-only smart ids, frontmatter ---fence placement, DnD raw-text fallback
 │   ├── css.md           .css destination — 2 @import styles + image url() arm, no smart ids, placement, gating, DnD
 │   ├── html.md          .html destination — 6-way source-type dispatch, forced-cursor placement, always-keep-ext, gating, DnD
 │   ├── javascript.md    .js destination — all 7 styles, no smart identifiers, placement, gating, DnD
@@ -21,6 +22,7 @@ qa.new/
 │   └── vue.md           .vue destination — allow-list gating, one-table 7-TS-style script arm (all four script exts) + fixed asset arm, Angular-only smart ids, SFC <script>-block placement, DnD raw-text fallback
 ├── workspace/           Fixture workspace — open in EDH via File > Open Folder
 │   ├── general/         Fixtures for general.md
+│   ├── astro/           Fixtures for astro.md
 │   ├── css/             Fixtures for css.md
 │   ├── html/            Fixtures for html.md
 │   ├── javascript/      Fixtures for javascript.md
@@ -47,6 +49,7 @@ qa.new/
 | Checklist | Workspace | Scope |
 |-----------|-----------|-------|
 | [`general.md`](checklists/general.md) | [`general/`](workspace/general/) | Copy, paste validation, same-file, notifications, edge cases |
+| [`astro.md`](checklists/astro.md) | [`astro/`](workspace/astro/) | Allow-list gating (widest accept-list), one-table two-arm style model (7 TS styles for all four script sources **or** fixed asset shape), Angular-only smart identifiers, frontmatter `---`-fence placement, shared `typescriptImportStyle`, QuickPick, drag-and-drop incl. raw-text fallback |
 | [`css.md`](checklists/css.md) | [`css/`](workspace/css/) | 2 `@import` styles + image `url()` arm, no smart identifiers, placement + inline-`url()`, allow-list gating, QuickPick, drag-and-drop |
 | [`html.md`](checklists/html.md) | [`html/`](workspace/html/) | 6-way source-type dispatch (`<script>`/`<img>`/`<video>`/`<audio>`/`<link>`/`<track>`), no smart identifiers, `forced-cursor` placement, always-keep-extension, allow-list gating, QuickPick, drag-and-drop |
 | [`javascript.md`](checklists/javascript.md) | [`javascript/`](workspace/javascript/) | 7 import styles, no smart identifiers, placement, gating, QuickPick, drag-and-drop |

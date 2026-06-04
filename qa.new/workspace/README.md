@@ -19,6 +19,7 @@ Destination files (e.g., `typescript/destinations/`) are pre-filled with specifi
 | Directory | Checklist | Files | Scope |
 |-----------|-----------|-------|-------|
 | [`general/`](general/) | [`checklists/general.md`](../checklists/general.md) | 9 | Cross-destination shared behavior |
+| [`astro/`](astro/) | [`checklists/astro.md`](../checklists/astro.md) | 38 | `.astro` destination — allow-list gating (widest accept-list), one-table two-arm style model (7 TS styles for all four script sources **or** fixed asset shape), Angular-only smart identifiers, frontmatter `---`-fence placement (no `<script setup>`/`<script context="module">`), DnD incl. raw-text fallback |
 | [`css/`](css/) | [`checklists/css.md`](../checklists/css.md) | 20 | `.css` destination — 2 `@import` styles + image `url()` arm, placement + inline-`url()`, allow-list gating, DnD (no smart identifiers) |
 | [`html/`](html/) | [`checklists/html.md`](../checklists/html.md) | 18 | `.html` destination — 6-way source-type dispatch (`<script>`/`<img>`/`<video>`/`<audio>`/`<link>`/`<track>`), `forced-cursor` placement, always-keep-extension, allow-list gating, DnD (no smart identifiers) |
 | [`javascript/`](javascript/) | [`checklists/javascript.md`](../checklists/javascript.md) | 34 | `.js` destination — styles, placement, gating, DnD (no smart identifiers) |
