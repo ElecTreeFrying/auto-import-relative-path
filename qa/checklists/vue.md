@@ -495,7 +495,19 @@ Run via Command Palette: `Auto Import: Paste as Import (Pick Style)`, or click *
 - [ ] Copy `vue/src/Widget.tsx`, run Paste as Import (Pick Style) in `vue/src/App.vue`
 - [ ] QuickPick appears with placeholder text: `Select an import style`
 - [ ] 7 items listed, one per TypeScript import style (the **same** list for `.ts`/`.tsx`/`.js`/`.jsx` sources)
-- [ ] Each item has a **label** (the snippet preview using `path.basename` of the source — e.g. `import { name } from 'Widget';`) and a **description** (the style's tag — e.g. `ES module: named import — legacy Angular files …`)
+- [ ] Each item has a **label** (the snippet preview using `path.basename` of the source — e.g. `import { name } from 'Widget';`) and a **description** = the style's tag, verbatim:
+
+| Style | DESCRIPTION (tag — shown in the QuickPick, verbatim) |
+|---|---|
+| 0 | `ES module: named import — legacy Angular files (.component / .directive / .pipe / .service / .module) auto-fill PascalCase identifiers (back-compat)` |
+| 1 | `ES module: default import` |
+| 2 | `ES module: namespace import (every export bound under one name)` |
+| 3 | `ES module: side-effect import (no binding)` |
+| 4 | `TypeScript: type-only import (TS 3.8+ — zero runtime, erased at compile time)` |
+| 5 | `TypeScript: mixed value + type import (TS 4.5+ inline modifier)` |
+| 6 | `Dynamic import: lazy-load / code-splitting` |
+
+- [ ] Each item's description matches the tag column exactly
 
 ### 7.2 — Label = basename, inserted = full path
 

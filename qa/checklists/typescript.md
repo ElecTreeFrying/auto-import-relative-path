@@ -453,7 +453,19 @@ Run via Command Palette: `Auto Import: Paste as Import (Pick Style)`, or click *
 - [ ] Copy a `.ts` source, run Paste as Import (Pick Style) in a `.ts` destination
 - [ ] QuickPick appears with placeholder text: `Select an import style`
 - [ ] 7 items listed, one per TypeScript import style
-- [ ] Each item has a label (the snippet preview using `path.basename` of the source) and a description/tag
+- [ ] Each item has a label (the snippet preview using `path.basename` of the source) and a description = the style's tag, verbatim:
+
+| Style | DESCRIPTION (tag — shown in the QuickPick, verbatim) |
+|---|---|
+| 0 | `ES module: named import — legacy Angular files (.component / .directive / .pipe / .service / .module) auto-fill PascalCase identifiers (back-compat)` |
+| 1 | `ES module: default import` |
+| 2 | `ES module: namespace import (every export bound under one name)` |
+| 3 | `ES module: side-effect import (no binding)` |
+| 4 | `TypeScript: type-only import (TS 3.8+ — zero runtime, erased at compile time)` |
+| 5 | `TypeScript: mixed value + type import (TS 4.5+ inline modifier)` |
+| 6 | `Dynamic import: lazy-load / code-splitting` |
+
+- [ ] Each item's description matches the tag column exactly
 
 ### 7.2 — Selecting a style inserts the import (label = basename, inserted = full path)
 

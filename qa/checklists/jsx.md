@@ -385,7 +385,19 @@ Run via Command Palette: `Auto Import: Paste as Import (Pick Style)`, or click *
 - [ ] Copy `jsx/src/App.jsx`, run Paste as Import (Pick Style) in `jsx/src/Panel.jsx`
 - [ ] QuickPick appears with placeholder text: `Select an import style`
 - [ ] 7 items listed, one per JavaScript import style
-- [ ] Each item has a **label** (the snippet preview using `path.basename` of the source — e.g. `import name from 'App';`) and a **description** (the style's tag — e.g. `ES module: default import`)
+- [ ] Each item has a **label** (the snippet preview using `path.basename` of the source — e.g. `import name from 'App';`) and a **description** (the style's tag) — verbatim per style:
+
+| Style | DESCRIPTION (tag — shown in the QuickPick, verbatim) |
+|---|---|
+| 0 | `ES module: default import` |
+| 1 | `ES module: named import (destructured)` |
+| 2 | `ES module: default + named import (mixed)` |
+| 3 | `ES module: namespace import (every export bound under one name)` |
+| 4 | `ES module: side-effect import (no binding)` |
+| 5 | `CommonJS: const require()` |
+| 6 | `Dynamic import: lazy-load / code-splitting` |
+
+- [ ] Each item's description matches the tag column exactly
 - [ ] The style-0 label is `import name from 'App';` — **not** pre-filled with any identifier (`.jsx` has no smart-identifier detection)
 
 ### 7.2 — Script source: label = basename, inserted = full path
