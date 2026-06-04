@@ -1,7 +1,0 @@
-common:
-  save: Save
-  cancel: Cancel
-  delete: Delete
-errors:
-  not_found: Not found
-  server_error: Something went wrong

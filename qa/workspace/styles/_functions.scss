@@ -1,7 +1,0 @@
-@function rem($pixels, $base: 16px) {
-  @return ($pixels / $base) * 1rem;
-}
-
-@function shade($color, $percent) {
-  @return mix(black, $color, $percent);
-}

@@ -27,7 +27,8 @@ Each directory under `src/` has its own pair of nested guides. Read the director
 | `src/constants/` | Runtime gating tables; runtime mirror of `types/file-extension.ts` | [`src/constants/README.md`](src/constants/README.md), [`src/constants/CLAUDE.md`](src/constants/CLAUDE.md) |
 | `src/types/` | Cross-cutting type unions (no enums) | [`src/types/README.md`](src/types/README.md), [`src/types/CLAUDE.md`](src/types/CLAUDE.md) |
 | `src/test/` | Mocha BDD tests; runs from `out/`, not `dist/` | [`src/test/README.md`](src/test/README.md), [`src/test/CLAUDE.md`](src/test/CLAUDE.md) |
-| `qa/` | Manual QA checklists, fixture workspace, demo workspace | [`qa/README.md`](qa/README.md), [`qa/CLAUDE.md`](qa/CLAUDE.md), [`qa/checklists/README.md`](qa/checklists/README.md), [`qa/checklists/CLAUDE.md`](qa/checklists/CLAUDE.md), [`qa/workspace/README.md`](qa/workspace/README.md), [`qa/workspace/CLAUDE.md`](qa/workspace/CLAUDE.md) |
+| `qa/` | Per-language manual-QA checklists + matching by-language fixture workspaces, the `_authoring/` checklist-codegen pipeline (RECIPE + frozen-IR PROFILE), and a standalone framework demo-workspace | [`qa/README.md`](qa/README.md), [`qa/CLAUDE.md`](qa/CLAUDE.md), [`qa/_authoring/README.md`](qa/_authoring/README.md), [`qa/checklists/README.md`](qa/checklists/README.md), [`qa/checklists/CLAUDE.md`](qa/checklists/CLAUDE.md), [`qa/workspace/README.md`](qa/workspace/README.md), [`qa/workspace/CLAUDE.md`](qa/workspace/CLAUDE.md) |
+| `docs/` | Design library (the *why*): the import-statements design tree (criteria, decisions, rejection ledgers) + a reader-facing QA checklist-codegen overview. The product spec `SPEC.md` stays in root, paired with `README.md`. | [`docs/CLAUDE.md`](docs/CLAUDE.md), [`docs/import-statements/CLAUDE.md`](docs/import-statements/CLAUDE.md) |
 
 ## Commands
 
