@@ -326,7 +326,7 @@ These behaviors are identical across all 12 destination languages.
 
 - [ ] Copy `general/unsupported.js`, open `general/destination.ts`, press `Cmd+I` (triggers the unsupported-pair warning toast)
 - [ ] Then drag `general/source.ts` from the Explorer into the `general/destination.ts` editor
-- [ ] Previous toast is NOT dismissed — unlike the paste commands, DnD does not call `clearNotifications()`
+- [ ] Previous toast is NOT dismissed — unlike the paste commands, DnD does not call `clearNotifications()`. This asymmetry is intentional: a command *owns* its outcome so it earns the window-global `notifications.clearAll` at entry, whereas the drop provider only *proposes* an edit VS Code may discard — firing a destructive, all-extensions clear off a drag would be too blunt.
 
 ---
 

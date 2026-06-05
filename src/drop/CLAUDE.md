@@ -39,7 +39,7 @@ Drag-and-drop import provider registered via the VS Code `DocumentDropEditProvid
 | File-exists stat | `vscode.workspace.fs.stat` → `'source-not-found'` | Skipped — dragged file exists by definition |
 | Unsupported pair | `'not-supported'` toast, return void | `'not-supported'` toast, return `null` (no drop edit) |
 | Placement | `insertImportSnippet` orchestrator | `computeImportPlacement` + `WorkspaceEdit` |
-| `clearNotifications` | Called at entry | Not called — non-interactive |
+| `clearNotifications` | Called at entry | Not called — the provider only *proposes* an edit it doesn't own, and `clearNotifications` is the window-global `notifications.clearAll`; too blunt to fire off a drag |
 
 ## `selector.ts` — `DROP_LANGUAGE_SELECTORS`
 
