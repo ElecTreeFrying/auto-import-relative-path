@@ -19,11 +19,13 @@ One intentional type↔runtime divergence: the `MediaFileExtension` type include
 ### Four-site sync when adding/removing an extension
 
 1. The relevant category sub-type here.
-2. Runtime gating tables in `src/constants/extensions.ts`.
-3. The matching `case` in `src/snippets/dispatch.ts` (destination dispatch). For JSX/TSX/MDX **non-script** source dispatch, add the case to the single canonical asset switch `src/snippets/_react.ts:buildAssetImportStatement` — shared by the default paste flow (`buildReactImport` and `languages/framework-component.ts`) and the variant-picker flow (`variants.ts:buildReactNonScriptVariant`, which just calls it), so there is only one switch to update.
+2. Runtime gating tables in `src/constants/extensions.ts` — required **only** for extensions that target a *gated* destination (HTML, MD, CSS, SCSS, Vue, Svelte, Astro). Source extensions that target **only** script-like destinations (`.jsx`/`.tsx`/`.mdx`) skip this site: those destinations accept any source via `CROSS_IMPORT_DESTINATIONS` and never consult a per-destination `*_SUPPORTED_EXTENSIONS` allow-list, so there is no table to add them to. `.pdf` (`DocumentFileExtension`) and the fonts `.woff`/`.woff2`/`.ttf`/`.eot` (`FontFileExtension`) are exactly this case — present in the `FileExtension` union (1) and in the `_react.ts` asset switch (3b), with **no** gating-table entry, because they import only into JSX/TSX/MDX. (This is a second, broader type↔runtime divergence beyond the `.vtt` one noted above.)
+3. The dispatch case(s). Two sub-sites, depending on what is new:
+   - **3a — destination dispatch:** if the new extension is a *destination* language, add its `case` to `src/snippets/dispatch.ts:buildImportSnippet` (which switches on the **destination** extension).
+   - **3b — source dispatch for non-script assets into JSX/TSX/MDX:** if the new extension is a non-script **source** (image, font, data, doc, media, component) imported into `.jsx`/`.tsx`/`.mdx`, add its `case` to the single canonical asset switch `src/snippets/_react.ts:buildAssetImportStatement` (which switches on the **source** extension). That switch is shared by the default paste flow (`buildReactImport` and `languages/framework-component.ts`) and the variant-picker flow (`variants.ts:buildReactNonScriptVariant`, which just calls it), so there is only one switch to update. For non-script sources into the *other* destination languages (HTML, CSS, SCSS, Markdown, …), the per-language builder in `src/snippets/languages/` classifies the source itself — do **not** add it to `_react.ts`.
 4. The matching `case` in `src/snippets/variants.ts:buildImportSnippetVariants` (so the picker commands work for the new extension).
 
-A missing entry in (2) produces a silent fall-through to a `default:` branch — the cast in (1) won't catch it. Gating is the runtime safety net.
+A missing entry in (2) produces a silent fall-through to a `default:` branch — the cast in (1) won't catch it. Gating is the runtime safety net **for gated destinations**; script-like destinations are safe without it because their source set is unrestricted.
 
 ## `import-type.ts` — `ImportType`
 

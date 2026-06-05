@@ -14,7 +14,7 @@ Drag-and-drop import provider registered via the VS Code `DocumentDropEditProvid
 `resolveSourcePath(dataTransfer)` extracts the dragged file's path from the `DataTransfer` object:
 
 1. Tries `text/uri-list` first — parses the first line as a URI and returns `Uri.parse(raw).fsPath`.
-2. Falls back to `text/plain` — returns the value only if it's an absolute path (`path.isAbsolute`).
+2. Would fall back to `text/plain` — returns the value only if it's an absolute path (`path.isAbsolute`). Unreachable in practice: the provider is registered with `dropMimeTypes: [ 'text/uri-list' ]` (see Architectural position), so VS Code never populates `text/plain` in the `DataTransfer`. Kept as a defensive branch.
 3. Returns `null` if neither item yields a usable path → provider returns `null` (no drop edit offered).
 
 ### Flow
@@ -24,7 +24,7 @@ Drag-and-drop import provider registered via the VS Code `DocumentDropEditProvid
 3. **Same-file check** (case-insensitive) → `'same-file-path'` toast, return `null`.
 4. Build `FilePathInfo` via sync `getFilePathInfoFromPaths(source, dest)` — no clipboard read, no async.
 5. **Gating** via `isPairSupported(info)` from `src/gating.ts` (shared with `commands/`) → `'not-supported'` toast, return `null`.
-6. Build snippet via `buildImportSnippet(info)`. Empty/newline-only snippet → `'not-supported'` toast, return `null`.
+6. Build snippet via async `buildImportSnippet(info)` → `Promise<SnippetString>` (awaited). Empty/newline-only snippet value → `'not-supported'` toast, return `null`.
 7. Compute placement via `computeImportPlacement(...)` from `src/editor/placement.ts` — same Top/Bottom/Cursor/Astro/SFC logic as the command flow, parameterised with the drop position.
 8. If inline snippet: return `DocumentDropEdit(snippet)` directly. Otherwise: build a `WorkspaceEdit` with a `SnippetTextEdit.insert` at the computed line/column and attach it as `dropEdit.additionalEdit`.
 
@@ -52,4 +52,4 @@ These are VS Code language IDs, whereas the four-site sync and `dispatch.ts` are
 
 ## Architectural position
 
-Same layer as `commands/` — imports from `editor/`, `snippets/`, and `gating.ts`. Registered in `src/extension.ts:activate` via `vscode.languages.registerDocumentDropEditProvider(DROP_LANGUAGE_SELECTORS, new AutoImportOnDropProvider())`.
+Same layer as `commands/` — imports from `editor/`, `snippets/`, and `gating.ts`. Registered in `src/extension.ts:activate` via `vscode.languages.registerDocumentDropEditProvider(DROP_LANGUAGE_SELECTORS, new AutoImportOnDropProvider(), { dropMimeTypes: [ 'text/uri-list' ] })`.

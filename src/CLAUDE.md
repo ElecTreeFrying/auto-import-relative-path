@@ -6,7 +6,7 @@ Source root for the extension. The codebase is layered by responsibility, with s
 
 ```
 extension.ts                 # entry: activate/deactivate
-gating.ts                    # shared isPairSupported() — nine-clause pair check (.jsx/.tsx/.mdx accept any source; .html/.md/.css/.scss/.vue/.svelte/.astro carry per-destination source allow-lists)
+gating.ts                    # shared isPairSupported() — nine-clause pair check. Only the ten CROSS_IMPORT_DESTINATIONS (.html/.md/.css/.scss/.tsx/.mdx/.jsx/.vue/.svelte/.astro) accept a cross-extension source; every other destination (.js/.ts) accepts same-extension imports only. Of the ten, .jsx/.tsx/.mdx accept any source; .html/.md/.css/.scss/.vue/.svelte/.astro carry per-destination source allow-lists
 ├── commands/                # public command surface (5 commands)
 ├── drop/                    # DocumentDropEditProvider (drag-from-Explorer imports)
 ├── editor/                  # vscode-API helpers (clipboard, snippets, notification, placement)

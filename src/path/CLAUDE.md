@@ -6,7 +6,7 @@ Pure path math. **No `vscode` import** — every file here is Node-testable. Don
 
 - `relative.ts` — `computeRelative(sourceFilePath, destinationFilePath)` returns the import-ready relative path.
 - `extension.ts` — `extractFileExtension` is a thin wrapper over `path.parse`; `removeFileExtension` strips the extension via string slicing.
-- `import-type.ts` — `determineImportType(filePath)` seven-way classifier with two intentional `null` returns.
+- `import-type.ts` — `determineImportType(filePath)` maps file extensions to one of seven `ImportType` values, or `null` (`.html` and `.scss`).
 
 ## `computeRelative` — the `./` prefix rule
 
@@ -19,7 +19,7 @@ Returns a Unix-style path (`toUnixPath` replaces `\` with `/`) with the file ext
 ## `extension.ts` — the empty-string-on-no-extension quirk
 
 - `extractFileExtension(filePath)` returns the trailing extension (e.g. `'.ts'`) or `''` when there is none. Thin wrapper over `path.parse(filePath).ext`.
-- `removeFileExtension(filePath)` returns `filePath.slice(0, -ext.length)`. **When `ext` is `''`, `slice(0, -0)` is `''`** (because `-0 === 0`) — the function returns an empty string for any path with no extension.
+- `removeFileExtension(filePath)` returns `filePath.slice(0, -ext.length)`. **When `ext` is `''`, this becomes `slice(0, 0)`, which returns an empty string** (a zero-width slice) — so the function returns an empty string for any path with no extension.
 
 This behaviour is intentional and regression-tested with extensionless paths (e.g. `Makefile` → `''`, in `test/path/extension.test.ts`). The test suite expects it — **don't add a guard** without re-running all path tests.
 

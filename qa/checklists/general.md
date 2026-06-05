@@ -86,12 +86,12 @@ These tests verify the shared validation in `commands/paste-import.ts` that runs
 ### 2.1 — Empty clipboard
 
 - [ ] Copy the text `hello world` to the clipboard, open `general/destination.ts`, press `Cmd+I`
-- [ ] Warning toast: `Auto Import: Clipboard does not contain a file path. Use Auto Import: Copy File Path on a source file first.`
+- [ ] Warning toast: `Auto Import: Clipboard does not contain a file path.`
 
 ### 2.2 — Relative path on clipboard
 
 - [ ] Copy the text `./relative/path.ts` to the clipboard, open `general/destination.ts`, press `Cmd+I`
-- [ ] Warning toast: `Auto Import: Clipboard does not contain a file path. Use Auto Import: Copy File Path on a source file first.`
+- [ ] Warning toast: `Auto Import: Clipboard does not contain a file path.`
 
 ### 2.3 — No file extension on clipboard path
 
@@ -205,7 +205,7 @@ Verify exact wording for every toast the extension can produce.
 
 - [ ] Copy the text `hello world` to the system clipboard (e.g., select it in an editor and `Cmd+C`)
 - [ ] Open `general/destination.ts`, press `Cmd+I`
-- [ ] Warning toast: `Auto Import: Clipboard does not contain a file path. Use Auto Import: Copy File Path on a source file first.`
+- [ ] Warning toast: `Auto Import: Clipboard does not contain a file path.`
 
 #### 5.9 — Source not found
 

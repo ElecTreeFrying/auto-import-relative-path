@@ -27,3 +27,6 @@ process
 
 # Large local media (screen-recording tests — not shipped)
 assets/*.mov
+
+# Local generated QA checklist (computed [x] = covered by src + tests; gitignored, not shipped)
+_checklist

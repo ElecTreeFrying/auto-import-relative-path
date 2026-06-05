@@ -14,8 +14,14 @@ Drag-and-drop import provider. When a user drags a file from the explorer onto a
 Registered in `src/extension.ts:activate` alongside the five commands:
 
 ```typescript
-vscode.languages.registerDocumentDropEditProvider(DROP_LANGUAGE_SELECTORS, new AutoImportOnDropProvider())
+vscode.languages.registerDocumentDropEditProvider(
+  DROP_LANGUAGE_SELECTORS,
+  new AutoImportOnDropProvider(),
+  { dropMimeTypes: [ 'text/uri-list' ] },
+)
 ```
+
+The third argument restricts the provider to drops carrying a `text/uri-list` mime type (file drags from the Explorer), so it isn't invoked for plain-text drops.
 
 ## Where to add new code
 

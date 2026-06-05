@@ -304,7 +304,7 @@ Used for `.mp3`, `.ogg`, `.wav`, `.m4a` sources imported into `.html` destinatio
 **`<track>` — text track (hardcoded)**
 
 ```html
-<track src="./path" kind="subtitles" srclang="en" label="English">
+<track src="./path" kind="subtitles" srclang="en" label="English"></track>
 ```
 
 `srclang` and `label` are editable placeholders.

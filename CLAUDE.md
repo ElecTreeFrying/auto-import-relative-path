@@ -65,7 +65,8 @@ src/
 ├── path/                       # pure path math (no `vscode` import; Node-testable)
 ├── config/                     # workspace-config access (getAutoImportSetting)
 ├── constants/                  # cross-import gating tables
-└── types/                      # cross-cutting type unions
+├── types/                      # cross-cutting type unions
+└── test/                       # Mocha BDD tests (runs from out/, not dist/)
 ```
 
 Allowed dependency direction: `commands → gating, editor, snippets, constants, types`; `drop → gating, editor, snippets, constants, types`; `gating → editor, constants, types`; `snippets → config, path, editor, types, constants`; `editor → config, path, constants, types`; `path → types`. Lower layers never import from higher layers. Internal-only sibling modules in `snippets/` are prefixed with `_` (`_styles.ts`, `_react.ts`, `_class-name.ts`).
@@ -74,8 +75,8 @@ Allowed dependency direction: `commands → gating, editor, snippets, constants,
 
 These multi-site contracts silently break on drift. The linked guides have the full rules.
 
-- **Four-site extension sync** — adding a file extension requires updates in `types/file-extension.ts` → `constants/extensions.ts` → `snippets/dispatch.ts` → `snippets/variants.ts`. See [`src/types/CLAUDE.md`](src/types/CLAUDE.md).
-- **Three-site config sync** — setting enum strings must be byte-identical across `package.json` → `snippets/_styles.ts` → per-language `switch`. See [`src/config/CLAUDE.md`](src/config/CLAUDE.md).
+- **Four-site extension sync** — adding a file extension requires updates in `types/file-extension.ts` → `constants/extensions.ts` → `snippets/dispatch.ts` → `snippets/variants.ts` (non-script asset sources into JSX/TSX/MDX route through `snippets/_react.ts:buildAssetImportStatement` instead of `dispatch.ts`, and skip the `constants` gating table). See [`src/types/CLAUDE.md`](src/types/CLAUDE.md).
+- **Three-site config sync** — setting enum strings must be byte-identical across `package.json` → `snippets/_styles.ts` → per-language `switch`. Four dormant single-shape keys (`cssImage`, `scssImage`, `htmlStyleSheet`, `markdown`) are the exception — kept in `package.json` for backward compatibility but not style-synced at runtime. See [`src/config/CLAUDE.md`](src/config/CLAUDE.md).
 - **Two-site button-label sync** — toast action button labels in `editor/notification.ts` must match the `switch` cases in `commands/copy-file-path.ts` character-for-character. See [`src/commands/CLAUDE.md`](src/commands/CLAUDE.md).
 - **Runtime-type mirror sync** — `IMAGE_FILE_EXTENSIONS` (mirrors `ImageFileExtension`) and `TEXT_TRACK_FILE_EXTENSIONS` (mirrors `TextTrackFileExtension`) in `constants/extensions.ts` track their type unions; `MEDIA_FILE_EXTENSIONS` holds video + audio only (`.vtt` lives in `TEXT_TRACK_FILE_EXTENSIONS`, and both are spread together into the destination lists). See [`src/constants/CLAUDE.md`](src/constants/CLAUDE.md).
 

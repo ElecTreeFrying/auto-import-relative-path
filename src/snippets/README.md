@@ -8,9 +8,9 @@ Per-language snippet builders and the destination-extension dispatch. The public
 |------|---------|
 | `dispatch.ts` | `buildImportSnippet()` — switches on `destinationFileExt` and delegates. The public entry point for the default paste flow. |
 | `variants.ts` | `buildImportSnippetVariants()` — enumerates every applicable style for the current source/destination pair. Consumed by `pasteImportWithStyle` and `setDefaultImportStyle`; renders full-path snippets for insertion and basename-only labels for the QuickPick in parallel. |
-| `_react.ts` | Internal: `buildReactImport` (+ supporting `ReactImportOptions` interface / `BuildScriptSnippet` type) shared by JSX/TSX/MDX, plus `buildAssetImportStatement` — the single canonical non-script asset-shape switch reused by `buildReactImport`, `languages/framework-component.ts`, and `variants.ts`. |
+| `_react.ts` | Internal: `buildReactImport` (+ supporting `ReactImportOptions` interface / `BuildScriptSnippet` type) shared by JSX/TSX/MDX, plus `buildAssetImportStatement` — the single canonical non-script asset-shape switch reused by `buildReactImport`, `languages/framework-component.ts`, and `variants.ts`. Shape groups: CSS Modules → `${1:styles}`, images/data/docs/components → `${1:name}`, media/text-track → `${1:url}`, fonts/stylesheets → side-effect (detailed in [`CLAUDE.md`](CLAUDE.md)). |
 | `_styles.ts` | Internal: `ImportStyle` interface + `*_IMPORT_OPTIONS` tables + `resolveStyleIndex` lookup. |
-| `_class-name.ts` | Internal: reads source files for exported class names; consumed by `typescript.ts` and `variants.ts`. |
+| `_class-name.ts` | Internal: reads source files for exported class names; consumed by `languages/typescript.ts` and `variants.ts`. |
 
 ### `languages/`
 

@@ -39,7 +39,7 @@ export function showNotification(
       vscode.window.showWarningMessage(`Auto Import: ${payload!.basename} has no file extension.`);
       break;
     case 'empty-clipboard':
-      vscode.window.showWarningMessage('Auto Import: Clipboard does not contain a file path. Use Auto Import: Copy File Path on a source file first.');
+      vscode.window.showWarningMessage('Auto Import: Clipboard does not contain a file path.');
       break;
     case 'source-not-found':
       vscode.window.showWarningMessage(`Auto Import: Source file no longer exists: ${payload!.basename}.`);
