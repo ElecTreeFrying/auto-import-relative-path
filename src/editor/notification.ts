@@ -4,16 +4,19 @@ import { NotificationType } from '../types/notification';
 
 const SUPPORTED_PAIRS_URL = 'https://github.com/ElecTreeFrying/auto-import-relative-path#supported-languages';
 
-export function showNotification(type: 'same-file-path' | 'no-active-editor' | 'no-file-to-copy' | 'empty-clipboard'): void;
+export function showNotification(type: 'same-file-path' | 'no-active-editor' | 'no-file-to-copy' | 'empty-clipboard' | 'no-styles-to-reset' | 'styles-restored'): void;
 export function showNotification(type: 'not-supported', payload: { sourceExt: string; destinationExt: string }): void;
 export function showNotification(type: 'no-extension', payload: { basename: string }): void;
 export function showNotification(type: 'source-not-found', payload: { basename: string }): void;
 export function showNotification(type: 'copy-success', payload: { basename: string }): Thenable<string | undefined>;
 export function showNotification(type: 'no-configurable-style', payload: { sourceExt: string; destinationExt: string }): void;
 export function showNotification(type: 'default-style-saved', payload: { description: string }): void;
+export function showNotification(type: 'placement-saved', payload: { placement: string }): void;
+export function showNotification(type: 'preserve-script-extension-toggled', payload: { enabled: boolean }): void;
+export function showNotification(type: 'styles-reset', payload: { count: number }): Thenable<string | undefined>;
 export function showNotification(
   type: NotificationType,
-  payload?: { sourceExt?: string; destinationExt?: string; basename?: string; description?: string },
+  payload?: { sourceExt?: string; destinationExt?: string; basename?: string; description?: string; placement?: string; enabled?: boolean; count?: number },
 ): Thenable<string | undefined> | void {
   switch (type) {
     case 'same-file-path':
@@ -55,6 +58,24 @@ export function showNotification(
       break;
     case 'default-style-saved':
       vscode.window.showInformationMessage(`Auto Import: Default style saved — ${payload!.description}`);
+      break;
+    case 'placement-saved':
+      vscode.window.showInformationMessage(`Auto Import: Import placement saved — ${payload!.placement}`);
+      break;
+    case 'preserve-script-extension-toggled':
+      vscode.window.showInformationMessage(`Auto Import: Preserve script file extension — ${payload!.enabled ? 'On' : 'Off'}`);
+      break;
+    case 'styles-reset': {
+      const message = payload!.count === 1
+        ? `Auto Import: Reset 1 import style to defaults`
+        : `Auto Import: Reset ${payload!.count} import styles to defaults`;
+      return vscode.window.showInformationMessage(message, 'Undo');
+    }
+    case 'no-styles-to-reset':
+      vscode.window.showInformationMessage('Auto Import: No custom import styles to reset.');
+      break;
+    case 'styles-restored':
+      vscode.window.showInformationMessage('Auto Import: Import styles restored.');
       break;
   }
 }

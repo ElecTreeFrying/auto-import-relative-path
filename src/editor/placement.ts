@@ -10,6 +10,27 @@ export const IMPORT_INDICATORS = [
 ];
 
 /**
+ * Returns `true` when `line` bears an import marker in a *code* position — the
+ * predicate Bottom placement uses to find the last import line.
+ *
+ * Line-leading markers (`import`, `@import`, `@use`, `@forward`) must start the
+ * trimmed line, so an `import ` substring inside a string literal
+ * (`const msg = "you should import this"`) is correctly NOT counted. `require(`
+ * is a call expression, not a line-leading keyword (`const fs = require('fs')`),
+ * so it is matched anywhere on the line. A `require(` substring inside a string
+ * literal stays a residual false positive — far rarer than the prose-`import`
+ * case and not removable without full string-literal parsing.
+ */
+export function isImportLine(line: string): boolean {
+  const trimmed = line.trimStart();
+  return IMPORT_INDICATORS.some(indicator =>
+    indicator === 'require('
+      ? line.includes(indicator)
+      : trimmed.startsWith(indicator),
+  );
+}
+
+/**
  * Returns `true` when the line starts with `//`, `/*`, or `*` (after leading whitespace).
  * For Markdown destinations (`isMarkdown`), a leading `*` is treated as content — bullets,
  * `*italic*`, `**bold**`, `***` — not a block-comment continuation.
@@ -91,7 +112,7 @@ export function findBottomLineInRange(
   let insertionLine = openingLine + 1;
   let lastImportIndentation = '';
   for (let i = openingLine + 1; i < closingLine; i++) {
-    if (!isCommentLine(lines[i]) && IMPORT_INDICATORS.some(indicator => lines[i].includes(indicator))) {
+    if (!isCommentLine(lines[i]) && isImportLine(lines[i])) {
       insertionLine = i + 1;
       lastImportIndentation = getLineIndentation(lines[i]);
     }
@@ -136,7 +157,7 @@ export function adjustForCommentBlock(lines: string[], line: number, isMarkdown 
 function computeBottomLine(lines: string[]): number {
   let insertionLine = 0;
   lines.forEach((lineContent, index) => {
-    if (!isCommentLine(lineContent) && IMPORT_INDICATORS.some(indicator => lineContent.includes(indicator))) {
+    if (!isCommentLine(lineContent) && isImportLine(lineContent)) {
       insertionLine = index + 1;
     }
   });

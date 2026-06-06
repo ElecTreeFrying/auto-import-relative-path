@@ -72,7 +72,7 @@ function generateAngularLegacyImportName(relativePath: string): string {
       .split('-')
       .map(segment => segment.charAt(0).toUpperCase() + segment.slice(1))
       .join('');
-    return /^[A-Za-z_$][\w$]*$/.test(derived) ? derived : '$1';
+    return /^[A-Za-z_$][\w$]*$/.test(derived) ? `\${1:${derived}}` : '$1';
   }
   return '$1';
 }

@@ -7,7 +7,7 @@ Source root for the extension. The codebase is layered by responsibility, with s
 ```
 extension.ts                 # entry: activate/deactivate
 gating.ts                    # shared isPairSupported() — nine-clause pair check. Only the ten CROSS_IMPORT_DESTINATIONS (.html/.md/.css/.scss/.tsx/.mdx/.jsx/.vue/.svelte/.astro) accept a cross-extension source; every other destination (.js/.ts) accepts same-extension imports only. Of the ten, .jsx/.tsx/.mdx accept any source; .html/.md/.css/.scss/.vue/.svelte/.astro carry per-destination source allow-lists
-├── commands/                # public command surface (5 commands)
+├── commands/                # public command surface (8 commands)
 ├── drop/                    # DocumentDropEditProvider (drag-from-Explorer imports)
 ├── editor/                  # vscode-API helpers (clipboard, snippets, notification, placement)
 ├── snippets/                # per-language snippet builders + dispatch
@@ -44,7 +44,7 @@ See each directory's `CLAUDE.md` for the deep rules:
 
 | Directory | What it owns | Key invariant |
 |-----------|--------------|---------------|
-| `commands/` | The five registered commands | Clipboard is the data channel; failure paths return void, never throw |
+| `commands/` | The eight registered commands | Clipboard is the data channel; failure paths return void, never throw |
 | `drop/` | DocumentDropEditProvider | Same gating as commands (`isPairSupported`); same snippet pipeline; placement via `computeImportPlacement` |
 | `editor/` | vscode-API helpers | Inline insertion for non-stylesheet → stylesheet (`url()` at exact cursor, no `\n`); forced-cursor for HTML/MD; Astro frontmatter constrains to `---` fences; Vue/Svelte constrains to `<script>` block |
 | `snippets/` | Per-language builders + dispatch | Style `description` strings are byte-exact contracts with `package.json` enums |

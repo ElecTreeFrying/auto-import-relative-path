@@ -20,6 +20,8 @@ export class AutoImportOnDropProvider implements vscode.DocumentDropEditProvider
   ): Promise<vscode.DocumentDropEdit | null> {
     const sourceFilePath = resolveSourcePath(dataTransfer);
     if (!sourceFilePath) {
+      // Couldn't identify the dragged file at all — cede to VS Code's default drop
+      // handling rather than swallowing an unidentified payload.
       return null;
     }
 
@@ -27,21 +29,21 @@ export class AutoImportOnDropProvider implements vscode.DocumentDropEditProvider
 
     if (sourceFilePath.toLowerCase() === destinationFilePath.toLowerCase()) {
       showNotification('same-file-path');
-      return null;
+      return suppressDrop();
     }
 
     const info = getFilePathInfoFromPaths(sourceFilePath, destinationFilePath);
 
     if (!isPairSupported(info)) {
       showNotification('not-supported', { sourceExt: info.sourceFileExt, destinationExt: info.destinationFileExt });
-      return null;
+      return suppressDrop();
     }
 
     const snippet = await buildImportSnippet(info);
 
     if (snippet.value === '' || snippet.value === '\n') {
       showNotification('not-supported', { sourceExt: info.sourceFileExt, destinationExt: info.destinationFileExt });
-      return null;
+      return suppressDrop();
     }
 
     const placement = computeImportPlacement(
@@ -72,6 +74,19 @@ export class AutoImportOnDropProvider implements vscode.DocumentDropEditProvider
 
     return dropEdit;
   }
+}
+
+/**
+ * Consumes a drop we won't turn into an import, without inserting anything.
+ *
+ * Returning `null` only tells VS Code we decline the drop — it then falls back to
+ * its built-in "insert relative path" edit, which is the stray path that showed up
+ * on unsupported drops. Returning an empty edit that out-ranks that default resolves
+ * the drop to a no-op instead, so nothing lands in the document. The
+ * `'not-supported'` / `'same-file-path'` toast still fires at the call site.
+ */
+function suppressDrop(): vscode.DocumentDropEdit {
+  return new vscode.DocumentDropEdit(new vscode.SnippetString(''), EDIT_TITLE, EDIT_KIND);
 }
 
 function resolveSourcePath(dataTransfer: vscode.DataTransfer): string | null {

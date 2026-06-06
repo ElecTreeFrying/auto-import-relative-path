@@ -6,7 +6,7 @@ Reads and writes user settings in VS Code's workspace configuration.
 
 | File | Public functions | Purpose |
 |------|------------------|---------|
-| `settings.ts` | `getAutoImportSetting<T>(namespaceKey, settingKey): T \| undefined`, `setAutoImportSetting<T>(namespaceKey, settingKey, value, target: ConfigurationTarget = ConfigurationTarget.Global): Thenable<void>` | Reader/writer pair over the frozen `AUTO_IMPORT_CONFIG` map. Writer defaults to `ConfigurationTarget.Global` (no `scope` field on any `package.json` setting). |
+| `settings.ts` | `getAutoImportSetting<T>(namespaceKey, settingKey): T \| undefined`, `setAutoImportSetting<T>(namespaceKey, settingKey, value, target: ConfigurationTarget = ConfigurationTarget.Global): Thenable<void>`, `inspectAutoImportSetting<T>(namespaceKey, settingKey)` | Reader / writer / inspector over the frozen `AUTO_IMPORT_CONFIG` map. Writer defaults to `ConfigurationTarget.Global` (no `scope` field on any `package.json` setting); `inspect` returns VS Code's full default-vs-override record (used by `reset-import-styles.ts` to find Global overrides). |
 
 Also exported: the type aliases `AutoImportConfigNamespace` (the four namespace keys) and `AutoImportSettingKey` (all valid setting keys, derived from the internal `SettingsKeyMap`).
 

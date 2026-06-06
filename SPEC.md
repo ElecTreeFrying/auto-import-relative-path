@@ -1,6 +1,6 @@
 # Auto Import Relative Path — Functionality Specification
 
-A VS Code extension that generates relative-path import statements for JS, TS, JSX, TSX, MDX, CSS, SCSS, HTML, Markdown, Vue, Svelte, and Astro files. Two input gestures: **copy-paste** (copy a source file's path, open a destination, paste) and **drag-and-drop** (drag a file from the Explorer into an open editor). Both compute the relative path and insert the correctly-shaped import statement for that language pair. Five commands, three keybindings, one drop provider, sixteen configuration settings.
+A VS Code extension that generates relative-path import statements for JS, TS, JSX, TSX, MDX, CSS, SCSS, HTML, Markdown, Vue, Svelte, and Astro files. Two input gestures: **copy-paste** (copy a source file's path, open a destination, paste) and **drag-and-drop** (drag a file from the Explorer into an open editor). Both compute the relative path and insert the correctly-shaped import statement for that language pair. Eight commands, three keybindings, one drop provider, sixteen configuration settings.
 
 ---
 
@@ -13,6 +13,9 @@ A VS Code extension that generates relative-path import statements for JS, TS, J
 | `extension.copyPaste` | Auto Import: Insert Import from Selected File | `Alt+D` | `Alt+D` | `filesExplorerFocus` |
 | `extension.pasteImportWithStyle` | Auto Import: Paste as Import (Pick Style) | — | — | Command Palette + copy-success toast button |
 | `extension.setDefaultImportStyle` | Auto Import: Set Default Import Style | — | — | Command Palette only |
+| `extension.setImportPlacement` | Auto Import: Set Import Placement | — | — | Command Palette only |
+| `extension.togglePreserveScriptExtension` | Auto Import: Toggle Preserve Script File Extension | — | — | Command Palette only |
+| `extension.resetImportStyles` | Auto Import: Reset All Import Styles to Defaults | — | — | Command Palette only |
 
 **Copy** puts the source file's absolute path on the clipboard and shows a "Copied path" toast with two action buttons: **Paste with Style** (runs Paste as Import (Pick Style)) and **Paste Now** (runs Paste as Import). The clipboard write is an explicit re-write after VS Code's built-in `copyFilePath` to guarantee the next paste sees the correct value. If the active item has no copyable absolute file path, Copy shows a "No file selected to copy." warning and stops. If the copied path has no file extension (e.g. `Makefile`, `Dockerfile`), Copy shows a "{basename} has no file extension." warning instead.
 
@@ -42,9 +45,9 @@ Beyond the per-language `scheme: 'file'` filter, the provider is registered with
    - **Unresolvable payload**: if step 1 yields no usable path (the drag has neither a `text/uri-list` entry nor an absolute `text/plain` value), the provider returns `null` silently — no toast and no drop edit are offered. This is the only drop rejection path with no notification; the same-file, unsupported-pair, and empty-snippet checks below each show a toast.
 2. The destination is the file receiving the drop.
 3. **Same-file check**: if source equals destination (case-insensitive), a "same file" toast appears and nothing is inserted.
-4. **Pair gating**: if the source-destination extension pair is unsupported, a "Cannot import" toast appears and nothing is inserted (the provider returns `null`).
+4. **Pair gating**: if the source-destination extension pair is unsupported, a "Cannot import" toast appears and nothing is inserted (the provider returns a *suppressing empty edit* that out-ranks VS Code's default insert-relative-path drop — not `null`, which would let that raw-path default through).
 5. **Snippet generation**: the import snippet is produced by the same per-language dispatch used by the paste commands. All configurable styles and settings apply.
-6. **Empty-snippet guard**: if the generated snippet is empty or newline-only (`snippet.value === '' || snippet.value === '\n'`) — an unsupported source/destination combination that cleared pair gating but produced a no-op, e.g. a `.ts` source into a `.jsx` destination — a "Cannot import" toast appears (the same `not-supported` message and `{ sourceExt, destinationExt }` payload as Pair gating, from a distinct call site) and nothing is inserted (the provider returns `null`). See Rejection rules #3.
+6. **Empty-snippet guard**: if the generated snippet is empty or newline-only (`snippet.value === '' || snippet.value === '\n'`) — an unsupported source/destination combination that cleared pair gating but produced a no-op, e.g. a `.ts` source into a `.jsx` destination — a "Cannot import" toast appears (the same `not-supported` message and `{ sourceExt, destinationExt }` payload as Pair gating, from a distinct call site) and nothing is inserted (the provider returns a *suppressing empty edit*, as in Pair gating). See Rejection rules #3.
 7. **Insertion**: the snippet's final position is determined by `computeImportPlacement()` — the same Top / Bottom / Cursor logic used by the paste commands, parameterized with the drop position as the cursor input. For inline snippets (e.g., images into CSS/SCSS), the `DocumentDropEdit` places the snippet directly at the drop coordinates. For non-inline snippets, a `WorkspaceEdit` via `additionalEdit` places the import at the computed position (not the drop position). Every drop edit (both the inline path and the non-inline `additionalEdit` path) is tagged with the title `Auto Import` and the kind `DocumentDropOrPasteEditKind.TextUpdateImports.append('autoImport')`, so VS Code surfaces it as the "Auto Import" option in the drop-edit picker.
 
 ### Differences from paste commands
@@ -56,7 +59,7 @@ Beyond the per-language `scheme: 'file'` filter, the provider is registered with
 | Astro / Vue / Svelte constraint | Frontmatter / script block | Same constraint (frontmatter / script block via `computeImportPlacement`) |
 | Clipboard validation | Checks for empty/non-absolute/no-extension | Not applicable (Explorer provides a valid file URI) |
 | Source file existence check | `vscode.workspace.fs.stat` before generating | Not performed (Explorer only offers existing files) |
-| Unsupported pair fallback | Warning toast, no insertion | Warning toast, no insertion (provider returns `null`) |
+| Unsupported pair fallback | Warning toast, no insertion | Warning toast, no insertion (provider returns a suppressing empty edit) |
 
 ---
 
@@ -391,7 +394,7 @@ Setting: **`auto-import.preferences.importStatementPlacement`**. Default: `"Bott
 
 ### Bottom mode — import line detection
 
-Bottom mode scans the document line by line for lines containing any of these 9 markers:
+Bottom mode scans the document line by line for the last line that bears one of these 9 markers in a *code* position (the `isImportLine` predicate):
 
 ```
 import 
@@ -405,7 +408,7 @@ require(
 @forward "
 ```
 
-Lines starting with `//`, `/*`, or `*` (comment lines) are skipped during the scan. The import is inserted on the line after the last match. If no marker matches, falls back to line 0.
+The eight line-leading markers (`import`, the `@import` family, `@use`, `@forward`) count only when they start the trimmed line, so an `import ` substring inside a string literal (`const msg = "you should import this"`) does **not** trigger Bottom placement; `require(` is matched anywhere, so a `require(` inside a string literal is a rare residual false positive. Lines starting with `//`, `/*`, or `*` (comment lines) are also skipped during the scan. The import is inserted on the line after the last match. If no marker matches, falls back to line 0.
 
 ### Placement overrides
 
@@ -551,6 +554,11 @@ All messages are prefixed with "Auto Import:".
 |---|---|---|---|
 | Copy succeeded | Info | Copied path — {basename} | **Paste with Style**, **Paste Now** |
 | Default style saved | Info | Default style saved — {settingValue} | — |
+| Placement saved | Info | Import placement saved — {placement} | — |
+| Preserve script extension toggled | Info | Preserve script file extension — On / Off | — |
+| Import styles reset | Info | Reset {count} import style(s) to defaults | **Undo** |
+| No styles to reset | Info | No custom import styles to reset. | — |
+| Import styles restored | Info | Import styles restored. | — |
 | Same file | Warning | A file cannot import itself. | — |
 | Unsupported pair | Warning | Cannot import {sourceExt} into {destinationExt} files. | **View Supported Files** |
 | No active editor | Warning | Open a file to paste an import. | — |
@@ -560,7 +568,7 @@ All messages are prefixed with "Auto Import:".
 | Source not found | Warning | Source file no longer exists: {basename}. | — |
 | No configurable style | Warning | {sourceExt} → {destinationExt} imports use a fixed style. | — |
 
-Clicking **View Supported Files** on the Unsupported pair toast opens the project README's supported-languages section (`https://github.com/ElecTreeFrying/auto-import-relative-path#supported-languages`) in the default browser; dismissing the toast does nothing.
+Clicking **View Supported Files** on the Unsupported pair toast opens the project README's supported-languages section (`https://github.com/ElecTreeFrying/auto-import-relative-path#supported-languages`) in the default browser; dismissing the toast does nothing. Clicking **Undo** on the Import styles reset toast re-writes the cleared overrides to their captured prior values (then shows the *Import styles restored.* toast); dismissing leaves the reset in place.
 
 `{settingValue}` is the persisted setting string written to `settings.json` — the byte-exact `package.json` enum value (the `_relativePath_` import shape), e.g. `import name from '_relativePath_';`, with the literal `_relativePath_` token shown unexpanded. It is **not** the human-readable phrase shown in the "Description" column of the style tables above (that phrase is the QuickPick row's description). A custom value hand-typed into `settings.json` would likewise be echoed verbatim.
 
@@ -623,4 +631,4 @@ HTML image index 0 uses the literal word `sample` as alt text — this is static
 
 ## Activation
 
-The extension activates on any of the 12 supported destination languages (`onLanguage:javascript`, `onLanguage:typescriptreact`, etc.) so the drop provider is registered before the user's first drag. Invoking any of the five contributed commands also triggers activation — each carries an implicit `onCommand` activation event — so the extension activates from a cold start even before one of the 12 languages is opened, e.g. running Copy File Path or Set Default Import Style.
+The extension activates on any of the 12 supported destination languages (`onLanguage:javascript`, `onLanguage:typescriptreact`, etc.) so the drop provider is registered before the user's first drag. Invoking any of the eight contributed commands also triggers activation — each carries an implicit `onCommand` activation event — so the extension activates from a cold start even before one of the 12 languages is opened, e.g. running Copy File Path or Set Default Import Style.

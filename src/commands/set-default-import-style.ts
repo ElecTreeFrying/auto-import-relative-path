@@ -86,7 +86,7 @@ function toQuickPickItems(
     }
     items.push({
       label: v.label,
-      description: isCurrent ? `${v.description} $(check) Current default` : v.description,
+      description: isCurrent ? '$(check) Current default' : v.description,
       setting: v.setting,
     });
   }

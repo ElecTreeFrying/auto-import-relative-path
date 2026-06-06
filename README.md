@@ -44,7 +44,7 @@ Drag a file or press a key — the right import lands in your editor. Path, synt
 
 ## Highlights
 
-- **Five commands, three keystrokes** — Copy, Paste, and Auto on the keyboard; *Pick Style* and *Set Default Style* from the Command Palette
+- **Eight commands, three keystrokes** — Copy, Paste, and Auto on the keyboard; *Pick Style*, *Set Default Style*, *Set Import Placement*, *Toggle Preserve Script File Extension*, and *Reset All Import Styles* from the Command Palette
 - **Drag-and-drop from Explorer** — drag any supported file into an editor to insert the import at the drop position, no keyboard required
 - **Built for every major framework** — Angular, React, Vue, Svelte, Astro — plus vanilla JS/TS, CSS/SCSS, HTML, and Markdown
 - **35 source extensions** — scripts, stylesheets, images, fonts, video, audio, text tracks, data, documents, components
@@ -64,8 +64,11 @@ Drag a file or press a key — the right import lands in your editor. Path, synt
 | **Insert Import from Selected File** | <kbd>Option+D</kbd> | <kbd>Alt+D</kbd> | Copy + Paste in one step from the Explorer sidebar. |
 | **Paste as Import (Pick Style)** | Command Palette | Command Palette | Shows a picker of all applicable styles for the current pair, then inserts. Does not change your default. |
 | **Set Default Import Style** | Command Palette | Command Palette | Shows a picker and persists the chosen style to your global settings. The current default is marked with a checkmark. |
+| **Set Import Placement** | Command Palette | Command Palette | Shows a picker of Top / Bottom / Cursor and persists where imports are inserted. The current choice is marked with a checkmark. |
+| **Toggle Preserve Script File Extension** | Command Palette | Command Palette | Flips whether the source `.js` / `.ts` extension is kept on generated import paths, and shows the new state in a toast. |
+| **Reset All Import Styles to Defaults** | Command Palette | Command Palette | Clears every customized import-style override back to its default; shows a toast with an **Undo** action, or an info toast if nothing was customized. |
 
-All five are searchable in the Command Palette (<kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> → `Auto Import`). The three keyboard shortcuts are rebindable from VS Code's keyboard shortcuts editor.
+All eight are searchable in the Command Palette (<kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> → `Auto Import`). The three keyboard shortcuts are rebindable from VS Code's keyboard shortcuts editor.
 
 See [SPEC — §Commands & Keybindings][SPEC-commands] for command IDs, context clauses, and workflow details.
 
@@ -79,7 +82,7 @@ Drag a file from the Explorer into any supported editor. The import snippet is g
 
 - Uses the same gating, snippet styles, and configuration as paste commands.
 - Follows the same Top / Bottom / Cursor placement setting as paste commands — the drop position is used as the Cursor input.
-- Unsupported pairs show the same "Cannot import" warning as paste commands (the provider returns no edit).
+- Unsupported pairs show the same "Cannot import" warning as paste commands; the provider suppresses the drop, so nothing is inserted (no stray path text).
 - See [SPEC — §Drag-and-Drop Import][SPEC-drop] for full behavior and differences from paste.
 
 [SPEC-drop]: SPEC.md#drag-and-drop-import
@@ -539,7 +542,7 @@ See [SPEC — §Path Computation][SPEC-path] for the complete path logic includi
 - **Drag from Explorer for zero-keystroke imports.** Drag a file from the sidebar directly into your editor — the import lands at the drop position with the same style as paste. Great for quickly pulling in components or assets without touching the keyboard.
 - **Mixing CSS into SCSS just works.** The `.css` extension is preserved even when `preserveStylesheetFileExtension` is off, because Sass needs it.
 - **HTML and Markdown ignore your placement setting.** Insertion is always at the cursor for these languages. Leave `importStatementPlacement` set to `Bottom` for scripts — it won't affect your markup.
-- **Rebind anything.** `extension.copyFilePath`, `extension.pasteImport`, and `extension.copyPaste` are rebindable from VS Code's keyboard shortcuts editor. The two palette-only commands can be given keybindings from the same editor.
+- **Rebind anything.** `extension.copyFilePath`, `extension.pasteImport`, and `extension.copyPaste` are rebindable from VS Code's keyboard shortcuts editor. The five Command Palette–only commands can be given keybindings from the same editor.
 
 ---
 

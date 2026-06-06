@@ -6,7 +6,7 @@ Cross-cutting type unions used across the codebase. **String-literal unions, not
 
 - `file-extension.ts` — `FileExtension` union (the only export from this file).
 - `import-type.ts` — `ImportType` seven-way classifier.
-- `notification.ts` — `NotificationType` ten-variant notification kind (eight warning, two info).
+- `notification.ts` — `NotificationType` fifteen-variant notification kind (eight warning, seven info).
 
 ## `file-extension.ts` — only `FileExtension` is exported
 
@@ -38,14 +38,17 @@ The `'image'` value is the catch-all default for unrecognised extensions — *no
 
 ## `notification.ts` — `NotificationType`
 
-Ten variants: `'same-file-path' | 'not-supported' | 'no-active-editor' | 'no-file-to-copy' | 'no-extension' | 'empty-clipboard' | 'source-not-found' | 'copy-success' | 'no-configurable-style' | 'default-style-saved'`. Six are raised from `commands/paste-import.ts` (`'same-file-path'`, `'not-supported'`, `'no-active-editor'`, `'no-extension'`, `'empty-clipboard'`, `'source-not-found'`), re-raised from `commands/paste-import-with-style.ts` and `commands/set-default-import-style.ts` for shared gating; `'no-file-to-copy'` and `'copy-success'` come from `commands/copy-file-path.ts` (which also raises `'no-extension'`); the last two (`'no-configurable-style'`, `'default-style-saved'`) are exclusive to `commands/set-default-import-style.ts`. `drop/provider.ts` raises two (`'same-file-path'`, `'not-supported'`). Messages live in `editor/notification.ts`.
+Fifteen variants: `'same-file-path' | 'not-supported' | 'no-active-editor' | 'no-file-to-copy' | 'no-extension' | 'empty-clipboard' | 'source-not-found' | 'copy-success' | 'no-configurable-style' | 'default-style-saved' | 'placement-saved' | 'preserve-script-extension-toggled' | 'styles-reset' | 'no-styles-to-reset' | 'styles-restored'`. Six are raised from `commands/paste-import.ts` (`'same-file-path'`, `'not-supported'`, `'no-active-editor'`, `'no-extension'`, `'empty-clipboard'`, `'source-not-found'`), re-raised from `commands/paste-import-with-style.ts` and `commands/set-default-import-style.ts` for shared gating; `'no-file-to-copy'` and `'copy-success'` come from `commands/copy-file-path.ts` (which also raises `'no-extension'`); the next two (`'no-configurable-style'`, `'default-style-saved'`) are exclusive to `commands/set-default-import-style.ts`. The three settings commands raise their own info toasts: `'placement-saved'` from `commands/set-import-placement.ts`, `'preserve-script-extension-toggled'` from `commands/toggle-preserve-script-extension.ts`, and `'no-styles-to-reset'` / `'styles-reset'` / `'styles-restored'` from `commands/reset-import-styles.ts`. `drop/provider.ts` raises two (`'same-file-path'`, `'not-supported'`). Messages live in `editor/notification.ts`.
 
-Six variants are parameterized — see the overload signatures on `editor/notification.ts:showNotification`:
+Nine variants are parameterized — see the overload signatures on `editor/notification.ts:showNotification`:
 - `'not-supported'` takes `{ sourceExt, destinationExt }` — interpolated as `Auto Import: Cannot import .X into .Y files.`
 - `'no-extension'` takes `{ basename }` — interpolated as `Auto Import: <basename> has no file extension.`
 - `'source-not-found'` takes `{ basename }` — interpolated as `Auto Import: Source file no longer exists: <basename>.`
 - `'copy-success'` takes `{ basename }` — interpolated as `Auto Import: Copied path — <basename>` (info toast).
 - `'no-configurable-style'` takes `{ sourceExt, destinationExt }` — interpolated as `Auto Import: .X → .Y imports use a fixed style.`
 - `'default-style-saved'` takes `{ description }` — interpolated as `Auto Import: Default style saved — <description>` (info toast).
+- `'placement-saved'` takes `{ placement }` — interpolated as `Auto Import: Import placement saved — <placement>` (info toast).
+- `'preserve-script-extension-toggled'` takes `{ enabled }` — interpolated as `Auto Import: Preserve script file extension — On`/`Off` (info toast).
+- `'styles-reset'` takes `{ count }` — interpolated as `Auto Import: Reset 1 import style to defaults` (`count === 1`) / `Auto Import: Reset <count> import styles to defaults` (info toast, carries an **Undo** button).
 
-The remaining four take no payload. Eight variants render as warning toasts; `'copy-success'` and `'default-style-saved'` render as info.
+The remaining six take no payload. Eight variants render as warning toasts; the seven info variants (`'copy-success'`, `'default-style-saved'`, `'placement-saved'`, `'preserve-script-extension-toggled'`, `'styles-reset'`, `'no-styles-to-reset'`, `'styles-restored'`) render as info.

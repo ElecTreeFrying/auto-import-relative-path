@@ -85,7 +85,7 @@ CSS Modules are special-cased for JSX / TSX / MDX destinations. A `.module.css` 
 
 **Yes.** Open VS Code's keyboard shortcuts editor (<kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>K</kbd> <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>S</kbd>), search for `extension.copyFilePath`, `extension.pasteImport`, or `extension.copyPaste`, and rebind. Useful if `Cmd+I` clashes with another extension you use.
 
-The two palette-only commands — `extension.pasteImportWithStyle` and `extension.setDefaultImportStyle` — have no default keybinding; assign one from the same editor if you use them often.
+The five palette-only commands — `extension.pasteImportWithStyle`, `extension.setDefaultImportStyle`, `extension.setImportPlacement`, `extension.togglePreserveScriptExtension`, and `extension.resetImportStyles` — have no default keybinding; assign one from the same editor if you use them often.
 
 ### How do I pick an import style without changing my default?
 
@@ -218,7 +218,7 @@ Each section below is **symptom → cause → fix**. If your issue isn't here, [
 
 **Cause:** Another extension or keymap binds the same combo (`Ctrl+I`, `Ctrl+Shift+A`, or `Alt+D`).
 
-**Fix:** Rebind from VS Code's keyboard shortcuts editor (<kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>K</kbd> <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>S</kbd>). The command IDs to search for are `extension.copyFilePath`, `extension.pasteImport`, and `extension.copyPaste` — the only three with default keybindings. The palette-only commands (`extension.pasteImportWithStyle`, `extension.setDefaultImportStyle`) accept assignments from the same editor if you want to give them a key.
+**Fix:** Rebind from VS Code's keyboard shortcuts editor (<kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>K</kbd> <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>S</kbd>). The command IDs to search for are `extension.copyFilePath`, `extension.pasteImport`, and `extension.copyPaste` — the only three with default keybindings. The five palette-only commands (`extension.pasteImportWithStyle`, `extension.setDefaultImportStyle`, `extension.setImportPlacement`, `extension.togglePreserveScriptExtension`, `extension.resetImportStyles`) accept assignments from the same editor if you want to give them a key.
 
 ---
 

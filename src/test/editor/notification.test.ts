@@ -14,6 +14,10 @@ const COPY_FILE_PATH_SRC = fs.readFileSync(
   path.resolve(__dirname, '../../../src/commands/copy-file-path.ts'),
   'utf-8',
 );
+const RESET_IMPORT_STYLES_SRC = fs.readFileSync(
+  path.resolve(__dirname, '../../../src/commands/reset-import-styles.ts'),
+  'utf-8',
+);
 
 /** Returns the single-quoted string literals inside a `case '<type>':` block of notification.ts. */
 function actionLabelsInCase(caseLabel: string): string[] {
@@ -47,5 +51,20 @@ describe('editor/notification — self-handler', () => {
     assert.strictEqual(labels.length, 2, "expected 'View Supported Files' as button arg + handler comparison");
     assert.strictEqual(labels[0], 'View Supported Files');
     assert.strictEqual(labels[1], labels[0], 'button label and handler comparison must be byte-identical');
+  });
+});
+
+describe('editor/notification — styles-reset Undo label', () => {
+  it("styles-reset's action label is exactly 'Undo'", () => {
+    assert.deepStrictEqual(actionLabelsInCase('styles-reset'), [ 'Undo' ]);
+  });
+
+  it('reset-import-styles.ts handles each styles-reset action label as a switch case', () => {
+    for (const label of actionLabelsInCase('styles-reset')) {
+      assert.ok(
+        RESET_IMPORT_STYLES_SRC.includes(`case '${label}':`),
+        `reset-import-styles.ts is missing a switch case for '${label}'`,
+      );
+    }
   });
 });

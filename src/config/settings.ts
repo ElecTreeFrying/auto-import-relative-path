@@ -78,3 +78,19 @@ export function setAutoImportSetting<T = unknown, N extends AutoImportConfigName
   const settingProperty = (settings as Record<string, string>)[settingKey];
   return configuration.update(settingProperty, value, target);
 }
+
+/**
+ * Reads the full inspection record for a setting (declared default vs. per-target overrides) so
+ * callers can distinguish a user override from the `package.json` default — a distinction
+ * `getAutoImportSetting` collapses, since `.get()` already falls back to the default. Resolves the
+ * backing property through the same `AUTO_IMPORT_CONFIG` alias map as the get/set helpers.
+ */
+export function inspectAutoImportSetting<T = unknown, N extends AutoImportConfigNamespace = AutoImportConfigNamespace>(
+  namespaceKey: N,
+  settingKey: SettingsKeyMap[N],
+) {
+  const { namespace, settings } = AUTO_IMPORT_CONFIG[namespaceKey];
+  const configuration = vscode.workspace.getConfiguration(namespace);
+  const settingProperty = (settings as Record<string, string>)[settingKey];
+  return configuration.inspect<T>(settingProperty);
+}

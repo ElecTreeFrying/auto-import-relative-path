@@ -8,4 +8,9 @@ export type NotificationType =
   | 'source-not-found'
   | 'copy-success'
   | 'no-configurable-style'
-  | 'default-style-saved';
+  | 'default-style-saved'
+  | 'placement-saved'
+  | 'preserve-script-extension-toggled'
+  | 'styles-reset'
+  | 'no-styles-to-reset'
+  | 'styles-restored';

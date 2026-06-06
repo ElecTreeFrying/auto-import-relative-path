@@ -127,6 +127,18 @@
       {
         "command": "extension.setDefaultImportStyle",
         "title": "Auto Import: Set Default Import Style"
+      },
+      {
+        "command": "extension.setImportPlacement",
+        "title": "Auto Import: Set Import Placement"
+      },
+      {
+        "command": "extension.togglePreserveScriptExtension",
+        "title": "Auto Import: Toggle Preserve Script File Extension"
+      },
+      {
+        "command": "extension.resetImportStyles",
+        "title": "Auto Import: Reset All Import Styles to Defaults"
       }
     ],
     "keybindings": [

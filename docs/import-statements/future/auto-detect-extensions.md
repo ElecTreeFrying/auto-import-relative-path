@@ -4,7 +4,7 @@
 >
 > Captures the design space for a future feature that auto-detects whether to preserve (and rewrite) the file extension on script imports based on the destination project's runtime context. The criteria rubric in [`../CRITERIA.md`](../CRITERIA.md) applies to anything this feature adds to a picker; otherwise this is a behavior-detection feature, not a registry entry. The per-language picker spec is [`../spec/statements.md`](../spec/statements.md).
 
-> **NOT shipped — this is the lone deferred design in the docs tree.** Nothing designed here exists in `src/`. `preserveScriptFileExtension` is still a plain **boolean, default `false`** in `package.json` (`auto-import.importStatement.script.preserveScriptFileExtension` — `"type": "boolean"`, `"default": false`). There is no detection module, no `.ts → .js` rewriting, no tri-state migration, no `package.json` schema change, and zero `"auto"` / tri-state / `2026` tokens anywhere in `src/`. Revisit December 2026 per [Implementation status](#implementation-status).
+> **NOT shipped — the only deferred design in the docs tree carrying a hard calendar date** (the framework sub-roadmap in [`framework-roadmap.md`](framework-roadmap.md) is also deferred, but trigger-only with no date). Nothing designed here exists in `src/`. `preserveScriptFileExtension` is still a plain **boolean, default `false`** in `package.json` (`auto-import.importStatement.script.preserveScriptFileExtension` — `"type": "boolean"`, `"default": false`). There is no detection module, no `.ts → .js` rewriting, no tri-state migration, no `package.json` schema change, and zero `"auto"` / tri-state / `2026` tokens anywhere in `src/`. Revisit December 2026 per [Implementation status](#implementation-status).
 
 > The current shipped boolean behavior — which shapes never regress with `false`, and which mechanisms are setting-controlled vs hardcoded — is documented in the spec layer at [`../spec/CLAUDE.md`](../spec/CLAUDE.md) (Extension preservation). This doc covers only the unbuilt auto-detect design.
 
@@ -127,11 +127,12 @@ The source file on disk is unchanged; only the path emitted into the snippet is 
 
 ## Implementation sketch (non-binding)
 
-Three places this would touch (subject to refinement during the actual implementation audit):
+Four places this would touch (subject to refinement during the actual implementation audit):
 
 - `src/config/settings.ts` — `AUTO_IMPORT_CONFIG` `script.preserve` alias resolves to the new enum-typed setting; consumers cast from `boolean | string` to the new enum. Migration logic on first read.
 - `src/snippets/languages/javascript.ts` + `src/snippets/languages/typescript.ts` — replace the `getAutoImportSetting('script', 'preserve')` boolean read with a helper `resolveScriptExtension(sourceFilePath, destinationFilePath)` that returns the **final extension string to append** (possibly empty, possibly rewritten). All extension logic centralizes there. (`src/snippets/variants.ts` and `src/snippets/_react.ts:buildAssetImportStatement` would route through the same resolver for their script buckets.)
 - New helper module `src/path/extension-detect.ts` — pure detection logic (reads `package.json` / `tsconfig.json` / `deno.json` via `vscode.workspace.fs` or `fs.promises`; caches per-workspace). Stays in `path/` if we can keep it `vscode`-free; otherwise lives in `editor/` since `vscode.workspace.fs` is needed.
+- `src/commands/toggle-preserve-script-extension.ts` — *(shipped after this design was captured)* a Command-Palette toggle that flips the **boolean** `preserveScriptFileExtension` on/off. A 2-state toggle cannot represent the `"never"` / `"always"` / `"auto"` tri-state, so when this design is un-deferred, replace the toggle with a 3-way QuickPick (mirror `src/commands/set-import-placement.ts`) or remove the command. The boolean→enum migration (`true` → `"always"`, `false` → `"never"`) migrates the persisted value cleanly; only the command UI needs reconciling.
 
 `package.json` setting type changes from `"type": "boolean"` to `"type": "string"` with `enum: ["never", "always", "auto"]`. Settings migration runs once per user on first activation that sees the boolean value.
 

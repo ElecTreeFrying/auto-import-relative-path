@@ -1,6 +1,6 @@
 # src/commands/CLAUDE.md
 
-The five commands registered in `src/extension.ts`. The clipboard is the data channel between copy and paste.
+The eight commands registered in `src/extension.ts`. The clipboard is the data channel between copy and paste; the three settings commands are the exception — they read/write configuration only and have no source/destination pair (see [Settings commands](#settings-commands)).
 
 ## Files
 
@@ -9,6 +9,9 @@ The five commands registered in `src/extension.ts`. The clipboard is the data ch
 - `copy-paste.ts` — `executeCopyPaste`
 - `paste-import-with-style.ts` — `executePasteImportWithStyle`
 - `set-default-import-style.ts` — `executeSetDefaultImportStyle`
+- `set-import-placement.ts` — `executeSetImportPlacement`
+- `toggle-preserve-script-extension.ts` — `executeTogglePreserveScriptExtension`
+- `reset-import-styles.ts` — `executeResetImportStyles` (+ `restoreImportStyles`, the Undo helper)
 - `index.ts` — barrel re-export (the only barrel in the project)
 
 ## Conventions
@@ -63,9 +66,17 @@ Mirrors `paste-import-with-style.ts` step-by-step through gating, clipboard chec
 
 The `(namespace, key, value)` triple comes from the new `setting?` field on `ImportSnippetVariant` (see [`snippets/CLAUDE.md`](../snippets/CLAUDE.md)). All styled variants in a single picker invocation share one `(namespace, key)` because the destination switch in `snippets/variants.ts` enumerates from one table per branch — the pair varies between picker runs but never within one. Cancellation (Esc) returns silently — no toast.
 
-**Current-default indicator.** Before opening the picker, the command reads the persisted value via `getAutoImportSetting(namespace, key)` (`vscode.workspace.getConfiguration().get(...)` falls back to the `package.json` default when no user override exists). The variant whose `setting.value` matches the result is moved to position 0 and its `description` gets `$(check) Current default` appended (rendered as a checkmark icon by VS Code's QuickPick). If no variant matches — e.g. the user typed a custom value into `settings.json` that isn't in `_styles.ts` — the picker renders in natural order with no indicator. Byte-exact comparison is safe because `ImportStyle.description` strings are byte-exact contracts with `package.json:enum` per [`config/CLAUDE.md`](../config/CLAUDE.md).
+**Current-default indicator.** Before opening the picker, the command reads the persisted value via `getAutoImportSetting(namespace, key)` (`vscode.workspace.getConfiguration().get(...)` falls back to the `package.json` default when no user override exists). The variant whose `setting.value` matches the result is moved to position 0 and its `description` is **replaced** with `$(check) Current default` (rendered as a checkmark icon by VS Code's QuickPick) — the per-style description text is dropped on that one row, leaving just the checkmark annotation. If no variant matches — e.g. the user typed a custom value into `settings.json` that isn't in `_styles.ts` — the picker renders in natural order with no indicator. Byte-exact comparison is safe because `ImportStyle.description` strings are byte-exact contracts with `package.json:enum` per [`config/CLAUDE.md`](../config/CLAUDE.md).
 
 The same picker items appear in both `pasteImportWithStyle` and `setDefaultImportStyle` for the same source/destination pair — `buildImportSnippetVariants` is the shared aggregator.
+
+## Settings commands
+
+`set-import-placement.ts`, `toggle-preserve-script-extension.ts`, and `reset-import-styles.ts` are **settings commands**: they act on global configuration, not on a source→destination pair. Unlike the five copy/paste commands above, they run **none** of the gating preamble — no `activeTextEditor` requirement, no clipboard read, no `getFilePathInfo`, no `fs.stat`, no `isPairSupported`, no `buildImportSnippetVariants`. Each reads/writes configuration via `getAutoImportSetting` / `setAutoImportSetting` (defaulting to `ConfigurationTarget.Global`, like `set-default-import-style.ts`); `reset-import-styles.ts` additionally calls `inspectAutoImportSetting` to find user overrides. Each emits an info toast through `showNotification`, and all work with no editor open.
+
+- `set-import-placement.ts` — QuickPick over `Top` / `Bottom` / `Cursor` for `auto-import.preferences.importStatementPlacement` (`preferences` / `placement`). Reuses the `$(check)`-current + splice-to-position-0 shape of `set-default-import-style.ts:73-98`, minus the variant/pair logic. The option list and `detail` strings are local to the file — the placement enum is **not** in `_styles.ts` (it is matched literally in `editor/placement.ts` + `editor/insert-snippet.ts`), so adding this command introduces no new enum value and does not touch those switches. Persists the pick and emits `'placement-saved'`. Esc cancels silently.
+- `toggle-preserve-script-extension.ts` — flips the `auto-import.importStatement.script.preserveScriptFileExtension` boolean (`script` / `preserve`, `?? false` when unset) and emits `'preserve-script-extension-toggled'` (`On` / `Off`). No QuickPick. **Living-gate note:** if the deferred tri-state enum in [`docs/import-statements/future/auto-detect-extensions.md`](../../docs/import-statements/future/auto-detect-extensions.md) ever replaces the boolean, this 2-state toggle must be reconciled (3-way picker or removal).
+- `reset-import-styles.ts` — clears the user's Global override on the **nine** configurable import-style settings (`RESETTABLE_STYLES`: `script.javascript`/`typescript`, `stylesheet.css`/`scss`, `markup.htmlScript`/`htmlImage`/`htmlVideo`/`htmlAudio`/`markdownImage`), restoring each to its `package.json` default. Excludes the two `preserve…FileExtension` booleans, `importStatementPlacement`, and the four dormant single-shape keys (`cssImage`, `scssImage`, `htmlStyleSheet`, `markdown`) — resetting a one-value setting is meaningless. Counts only settings with an actual Global override via `inspectAutoImportSetting(...).globalValue`: none customized → `'no-styles-to-reset'` and return; otherwise clears them and emits `'styles-reset'` (`{ count }`) carrying an **Undo** action that re-writes the captured prior values through the exported `restoreImportStyles` (which then emits `'styles-restored'`). The **Undo** label is a second instance of the two-site button-label contract — `editor/notification.ts` ↔ this file's `switch`. Workspace-level overrides are left untouched; the extension writes only to Global.
 
 ## Adding a new command
 

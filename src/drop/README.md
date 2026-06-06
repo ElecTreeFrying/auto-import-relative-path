@@ -6,12 +6,12 @@ Drag-and-drop import provider. When a user drags a file from the explorer onto a
 
 | File | Export | What it does |
 |------|--------|--------------|
-| `provider.ts` | `AutoImportOnDropProvider` | Implements `DocumentDropEditProvider`; resolves the source path from `DataTransfer`, gates via `isPairSupported`, builds an import snippet via `snippets/dispatch.ts`, computes placement via `editor/placement.ts`, and returns a `DocumentDropEdit`. Returns `null` (no drop edit) for unsupported pairs. |
+| `provider.ts` | `AutoImportOnDropProvider` | Implements `DocumentDropEditProvider`; resolves the source path from `DataTransfer`, gates via `isPairSupported`, builds an import snippet via `snippets/dispatch.ts`, computes placement via `editor/placement.ts`, and returns a `DocumentDropEdit`. For same-file / unsupported / empty-snippet drops it returns a **suppressing empty edit** (`suppressDrop()`) so nothing is inserted; it returns `null` only when the dragged file can't be identified (ceding to VS Code's default drop). |
 | `selector.ts` | `DROP_LANGUAGE_SELECTORS` | `DocumentSelector` covering all 12 supported destination languages with `scheme: 'file'`. |
 
 ## Registration
 
-Registered in `src/extension.ts:activate` alongside the five commands:
+Registered in `src/extension.ts:activate` alongside the eight commands:
 
 ```typescript
 vscode.languages.registerDocumentDropEditProvider(

@@ -16,34 +16,34 @@ describe('buildTypeScriptImportSnippetByStyle', () => {
       assert.strictEqual(result.value, `import { \${1:Foo} } from '${PATH}';`);
     });
 
-    it('.component path produces literal PascalCase (no tab stop)', () => {
+    it('.component path pre-fills a PascalCase tab stop', () => {
       const result = buildTypeScriptImportSnippetByStyle(0, './app-root.component');
-      assert.strictEqual(result.value, "import { AppRootComponent } from './app-root.component';");
+      assert.strictEqual(result.value, "import { ${1:AppRootComponent} } from './app-root.component';");
     });
 
     it('.component.ts path strips .ts extension before deriving the Angular identifier', () => {
       const result = buildTypeScriptImportSnippetByStyle(0, './app-root.component.ts');
-      assert.strictEqual(result.value, "import { AppRootComponent } from './app-root.component.ts';");
+      assert.strictEqual(result.value, "import { ${1:AppRootComponent} } from './app-root.component.ts';");
     });
 
     it('.directive path produces correct PascalCase', () => {
       const result = buildTypeScriptImportSnippetByStyle(0, './highlight.directive');
-      assert.strictEqual(result.value, "import { HighlightDirective } from './highlight.directive';");
+      assert.strictEqual(result.value, "import { ${1:HighlightDirective} } from './highlight.directive';");
     });
 
     it('.pipe path produces correct PascalCase', () => {
       const result = buildTypeScriptImportSnippetByStyle(0, './trim.pipe');
-      assert.strictEqual(result.value, "import { TrimPipe } from './trim.pipe';");
+      assert.strictEqual(result.value, "import { ${1:TrimPipe} } from './trim.pipe';");
     });
 
     it('.service path produces correct PascalCase', () => {
       const result = buildTypeScriptImportSnippetByStyle(0, './user.service');
-      assert.strictEqual(result.value, "import { UserService } from './user.service';");
+      assert.strictEqual(result.value, "import { ${1:UserService} } from './user.service';");
     });
 
     it('.module path produces correct PascalCase', () => {
       const result = buildTypeScriptImportSnippetByStyle(0, './auth.module');
-      assert.strictEqual(result.value, "import { AuthModule } from './auth.module';");
+      assert.strictEqual(result.value, "import { ${1:AuthModule} } from './auth.module';");
     });
 
     it('.service path with a space in the basename falls back to a bare $1 tab stop', () => {

@@ -90,6 +90,6 @@ describe('framework-component', () => {
     await vscode.env.clipboard.writeText(source('app-root.component.ts'));
     const info = await getFilePathInfo();
     const result = buildSnippet(info);
-    assert.strictEqual(result.value, "import { AppRootComponent } from './app-root.component';");
+    assert.strictEqual(result.value, "import { ${1:AppRootComponent} } from './app-root.component';");
   });
 });

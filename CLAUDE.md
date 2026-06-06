@@ -8,7 +8,7 @@ Do NOT append a `Co-Authored-By: Claude ...` trailer (or any other Claude/AI att
 
 ## Project
 
-VS Code extension that generates relative-path import statements for JS/TS/JSX/TSX/MDX/CSS/SCSS/HTML/Markdown/Vue/Svelte/Astro. Two input gestures: **copy-paste** (five commands) and **drag-and-drop** (a `DocumentDropEditProvider` for all 12 destination languages). The five commands (`extension.copyFilePath`, `extension.pasteImport`, `extension.copyPaste`, `extension.pasteImportWithStyle`, `extension.setDefaultImportStyle`) are registered in `src/extension.ts`. The first three are bound to keybindings in `package.json` (`cmd/ctrl+shift+a`, `cmd/ctrl+i`, and `alt+d` in the explorer respectively); the latter two are reachable via the Command Palette (and `pasteImportWithStyle` also via the `copy-success` toast button). The drop provider is registered alongside the commands in `activate()` and uses the same snippet pipeline.
+VS Code extension that generates relative-path import statements for JS/TS/JSX/TSX/MDX/CSS/SCSS/HTML/Markdown/Vue/Svelte/Astro. Two input gestures: **copy-paste** (eight commands) and **drag-and-drop** (a `DocumentDropEditProvider` for all 12 destination languages). The eight commands (`extension.copyFilePath`, `extension.pasteImport`, `extension.copyPaste`, `extension.pasteImportWithStyle`, `extension.setDefaultImportStyle`, `extension.setImportPlacement`, `extension.togglePreserveScriptExtension`, `extension.resetImportStyles`) are registered in `src/extension.ts`. The first three are bound to keybindings in `package.json` (`cmd/ctrl+shift+a`, `cmd/ctrl+i`, and `alt+d` in the explorer respectively); the latter five are reachable via the Command Palette (and `pasteImportWithStyle` also via the `copy-success` toast button). The drop provider is registered alongside the commands in `activate()` and uses the same snippet pipeline.
 
 ## Subdirectory guides
 
@@ -17,7 +17,7 @@ Each directory under `src/` has its own pair of nested guides. Read the director
 | Directory | Scope | Guides |
 |-----------|-------|--------|
 | `src/` | Source-tree overview, dependency layering, naming conventions | [`src/README.md`](src/README.md), [`src/CLAUDE.md`](src/CLAUDE.md) |
-| `src/commands/` | The five commands; clipboard data channel, eleven-clause gating | [`src/commands/README.md`](src/commands/README.md), [`src/commands/CLAUDE.md`](src/commands/CLAUDE.md) |
+| `src/commands/` | The eight commands (five paste/copy + three settings); clipboard data channel, eleven-clause gating (paste/copy only) | [`src/commands/README.md`](src/commands/README.md), [`src/commands/CLAUDE.md`](src/commands/CLAUDE.md) |
 | `src/drop/` | DocumentDropEditProvider; drag-from-Explorer import generation | [`src/drop/README.md`](src/drop/README.md), [`src/drop/CLAUDE.md`](src/drop/CLAUDE.md) |
 | `src/editor/` | VS Code-API helpers (clipboard, snippet insertion, notifications) | [`src/editor/README.md`](src/editor/README.md), [`src/editor/CLAUDE.md`](src/editor/CLAUDE.md) |
 | `src/snippets/` | Per-language snippet builders + dispatch; style sync rules; JSX/TSX/MDX shared algorithm | [`src/snippets/README.md`](src/snippets/README.md), [`src/snippets/CLAUDE.md`](src/snippets/CLAUDE.md) |
@@ -56,7 +56,7 @@ The source tree is layered by responsibility, with strict directional dependenci
 
 ```
 src/
-├── extension.ts                # activate/deactivate; registers 5 commands + drop provider
+├── extension.ts                # activate/deactivate; registers 8 commands + drop provider
 ├── gating.ts                   # shared isPairSupported() — nine-clause extension-pair check
 ├── commands/                   # public command surface (one file per command)
 ├── drop/                       # DocumentDropEditProvider (drag-from-Explorer imports)
@@ -77,7 +77,7 @@ These multi-site contracts silently break on drift. The linked guides have the f
 
 - **Four-site extension sync** — adding a file extension requires updates in `types/file-extension.ts` → `constants/extensions.ts` → `snippets/dispatch.ts` → `snippets/variants.ts` (non-script asset sources into JSX/TSX/MDX route through `snippets/_react.ts:buildAssetImportStatement` instead of `dispatch.ts`, and skip the `constants` gating table). See [`src/types/CLAUDE.md`](src/types/CLAUDE.md).
 - **Three-site config sync** — setting enum strings must be byte-identical across `package.json` → `snippets/_styles.ts` → per-language `switch`. Four dormant single-shape keys (`cssImage`, `scssImage`, `htmlStyleSheet`, `markdown`) are the exception — kept in `package.json` for backward compatibility but not style-synced at runtime. See [`src/config/CLAUDE.md`](src/config/CLAUDE.md).
-- **Two-site button-label sync** — toast action button labels in `editor/notification.ts` must match the `switch` cases in `commands/copy-file-path.ts` character-for-character. See [`src/commands/CLAUDE.md`](src/commands/CLAUDE.md).
+- **Two-site button-label sync** — toast action-button labels in `editor/notification.ts` must match the `switch` cases in the dispatching command character-for-character, at two sites: the `copy-success` buttons ↔ `commands/copy-file-path.ts`, and the `styles-reset` **Undo** ↔ `commands/reset-import-styles.ts`. See [`src/commands/CLAUDE.md`](src/commands/CLAUDE.md).
 - **Runtime-type mirror sync** — `IMAGE_FILE_EXTENSIONS` (mirrors `ImageFileExtension`) and `TEXT_TRACK_FILE_EXTENSIONS` (mirrors `TextTrackFileExtension`) in `constants/extensions.ts` track their type unions; `MEDIA_FILE_EXTENSIONS` holds video + audio only (`.vtt` lives in `TEXT_TRACK_FILE_EXTENSIONS`, and both are spread together into the destination lists). See [`src/constants/CLAUDE.md`](src/constants/CLAUDE.md).
 
 ## Build/test layout quirks
@@ -86,7 +86,7 @@ These multi-site contracts silently break on drift. The linked guides have the f
 - `tsconfig.json` is `module: Node16`, `target: ES2022`, `strict: false`, `rootDir: src`, `sourceMap: true`, and `types: ["node", "mocha"]`. New source files belong under `src/`. (`sourceMap` is on so `test:coverage` maps `out/` back to `src/`.)
 - Mocha tests are written in BDD style (`describe`/`it`); the runner UI is set to `bdd` in `.vscode-test.mjs`. Tests use Node's built-in `assert` (Chai/Sinon were dropped in commit `f06101f`). The test runner glob is `out/test/**/*.test.js` — only files emitted by `compile-tests` get picked up.
 - **Coverage is opt-in:** `npm run test:coverage` runs the same suite with `vscode-test --coverage` (V8/c8, ~96% lines). `.vscode-test.mjs` uses the `{ tests, coverage }` form — the `coverage` block (`includeAll`, `exclude` of `test`/`*.test.*`/`types`, `text`+`html` reporters) is silently ignored unless `--coverage` is passed. Report lands in the git-ignored `coverage/`.
-- `process/` and `.claude/` are gitignored; `process/` holds private publishing notes and access tokens. Never commit to either.
+- `process/` is gitignored — private publishing notes + access tokens; never commit it. Under `.claude/`, the shared tooling (`agents/`, `skills/`, `workflows/`) is tracked; `agents/state/` and everything else under `.claude/` stays gitignored.
 
 ## Naming conventions
 

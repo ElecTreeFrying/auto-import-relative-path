@@ -6,7 +6,6 @@ import { SCRIPT_FILE_EXTENSIONS, STYLESHEET_FILE_EXTENSIONS } from '../constants
 import { FileExtension } from '../types/file-extension';
 import { FilePathInfo } from './file-path-info';
 import {
-  IMPORT_INDICATORS,
   adjustForCommentBlock,
   detectBlockIndentation,
   findAstroFrontmatterBounds,
@@ -14,6 +13,7 @@ import {
   findSfcScriptBounds,
   getLineIndentation,
   isCommentLine,
+  isImportLine,
   isInlineSnippet,
   isMarkdownDestination,
   shouldRepositionCursor,
@@ -77,7 +77,7 @@ function insertSnippetAtBottom(snippet: vscode.SnippetString): void {
 
   let insertionLine = 0;
   documentText.split('\n').forEach((lineContent, index) => {
-    if (!isCommentLine(lineContent) && IMPORT_INDICATORS.some(indicator => lineContent.includes(indicator))) {
+    if (!isCommentLine(lineContent) && isImportLine(lineContent)) {
       insertionLine = index + 1;
     }
   });

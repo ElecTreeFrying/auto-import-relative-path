@@ -11,7 +11,7 @@ describe('extension activation', () => {
     await extension?.activate();
   });
 
-  it('registers the five auto-import commands', async () => {
+  it('registers the eight auto-import commands', async () => {
     const commands = await vscode.commands.getCommands(true);
 
     assert.ok(commands.includes('extension.copyFilePath'), 'extension.copyFilePath not registered');
@@ -19,19 +19,25 @@ describe('extension activation', () => {
     assert.ok(commands.includes('extension.copyPaste'), 'extension.copyPaste not registered');
     assert.ok(commands.includes('extension.pasteImportWithStyle'), 'extension.pasteImportWithStyle not registered');
     assert.ok(commands.includes('extension.setDefaultImportStyle'), 'extension.setDefaultImportStyle not registered');
+    assert.ok(commands.includes('extension.setImportPlacement'), 'extension.setImportPlacement not registered');
+    assert.ok(commands.includes('extension.togglePreserveScriptExtension'), 'extension.togglePreserveScriptExtension not registered');
+    assert.ok(commands.includes('extension.resetImportStyles'), 'extension.resetImportStyles not registered');
   });
 
   // package.json ↔ registration parity. We can't compare against ALL registered `extension.*` commands
   // (VS Code ships its own, e.g. extension.bisect.*), so we pin against our canonical set: package.json
   // must declare exactly these (catches an added/removed/renamed command), and each must be registered
   // at runtime (catches a declared-but-unregistered command — a menu entry that does nothing).
-  it('package.json declares exactly the five commands, and all are registered', async () => {
+  it('package.json declares exactly the eight commands, and all are registered', async () => {
     const ours = [
       'extension.copyFilePath',
       'extension.pasteImport',
       'extension.copyPaste',
       'extension.pasteImportWithStyle',
       'extension.setDefaultImportStyle',
+      'extension.setImportPlacement',
+      'extension.togglePreserveScriptExtension',
+      'extension.resetImportStyles',
     ].sort();
 
     const pkg = JSON.parse(fs.readFileSync(PACKAGE_JSON, 'utf-8'));

@@ -204,7 +204,7 @@ No correctness tiebreaker — omitting the attribute works in non-strict mode to
 
 ### Why TS `import { name } from '...'` stays as default despite simpler shapes existing
 
-Hits Frequency (named imports are equally common as default in modern TS) and Back-compat for the legacy Angular filename convention via the **legacy-Angular auto-naming** support (`app-root.component.ts` → `{ AppRootComponent }` automatically). Fires only on this shape, only when the path matches one of the legacy suffixes (`.component` / `.directive` / `.pipe` / `.service` / `.module`), and only after the derived name validates against `/^[A-Za-z_$][\w$]*$/` (otherwise it falls back to `$1`).
+Hits Frequency (named imports are equally common as default in modern TS) and Back-compat for the legacy Angular filename convention via the **legacy-Angular auto-naming** support (`app-root.component.ts` → `{ ${1:AppRootComponent} }` automatically — a pre-filled but editable tab stop). Fires only on this shape, only when the path matches one of the legacy suffixes (`.component` / `.directive` / `.pipe` / `.service` / `.module`), and only after the derived name validates against `/^[A-Za-z_$][\w$]*$/` (otherwise it falls back to `$1`).
 
 Add criterion exception: **"Legacy back-compat support"** can pin a non-obvious default. Losing the `{ name }` default would gut legacy-Angular auto-naming for codebases following the pre-standalone (v2–v17) convention. Documented in the decisions ledger. (This is one of the three Tiebreaker-1 fragility tags above — re-check it when pre-standalone Angular usage fades.)
 

@@ -12,6 +12,7 @@ import {
   findSfcScriptBounds,
   getLineIndentation,
   isCommentLine,
+  isImportLine,
   isInlineSnippet,
   shouldRepositionCursor,
 } from '../../editor/placement';
@@ -312,6 +313,59 @@ describe('editor/placement', () => {
     });
   });
 
+  describe('isImportLine', () => {
+    it('detects a line-leading ES import', () => {
+      assert.strictEqual(isImportLine("import x from './y';"), true);
+    });
+
+    it('detects a side-effect import', () => {
+      assert.strictEqual(isImportLine("import './styles.css';"), true);
+    });
+
+    it('detects a space-indented import (e.g. inside a script block)', () => {
+      assert.strictEqual(isImportLine("  import { onMount } from 'svelte';"), true);
+    });
+
+    it('detects a tab-indented import', () => {
+      assert.strictEqual(isImportLine("\timport x from './y';"), true);
+    });
+
+    it('does NOT detect an `import ` substring inside a string literal', () => {
+      assert.strictEqual(isImportLine('const msg = "you should import this";'), false);
+    });
+
+    it('detects a mid-line require() call (not line-leading)', () => {
+      assert.strictEqual(isImportLine("const fs = require('fs');"), true);
+    });
+
+    it('detects an indented require() call', () => {
+      assert.strictEqual(isImportLine("  const fs = require('fs');"), true);
+    });
+
+    it('detects @import, @import url(), @use, @forward at-rules', () => {
+      assert.strictEqual(isImportLine("@import 'reset.css';"), true);
+      assert.strictEqual(isImportLine("@import url('reset.css');"), true);
+      assert.strictEqual(isImportLine("@use 'colors';"), true);
+      assert.strictEqual(isImportLine("@forward 'spacing';"), true);
+    });
+
+    it('does NOT detect an at-rule keyword inside a string literal', () => {
+      assert.strictEqual(isImportLine('const note = "remember to @use this";'), false);
+    });
+
+    it('returns false for a plain statement and an empty line', () => {
+      assert.strictEqual(isImportLine('const x = 1;'), false);
+      assert.strictEqual(isImportLine(''), false);
+    });
+
+    // Documented residual: `require(` is a call expression matched anywhere on the
+    // line, so a literal `require(` inside a string is still a false positive. Far
+    // rarer than the prose-`import` case; removing it needs string-literal parsing.
+    it('characterizes the residual require()-in-string false positive (intentional)', () => {
+      assert.strictEqual(isImportLine('const note = "call require(x) here";'), true);
+    });
+  });
+
   describe('computeImportPlacement', () => {
     it('returns inline for non-stylesheet source into stylesheet destination', () => {
       const result = computeImportPlacement(
@@ -480,6 +534,39 @@ describe('editor/placement', () => {
         1, 0,
       );
       assert.strictEqual(result.line, 0);
+    });
+
+    it('Bottom placement ignores an `import ` substring inside a string literal (no real import → line 0)', () => {
+      const text = 'const msg = "you should import this";';
+      const result = computeImportPlacement(
+        text,
+        '.ts' as FileExtension,
+        '.ts' as FileExtension,
+        0, 0,
+      );
+      assert.strictEqual(result.line, 0);
+    });
+
+    it('Bottom placement counts only the real import, not a string-literal `import ` below it', () => {
+      const text = "import { real } from './real';\nconst msg = \"you should import this\";\n\nconst x = 1;";
+      const result = computeImportPlacement(
+        text,
+        '.ts' as FileExtension,
+        '.ts' as FileExtension,
+        3, 0,
+      );
+      assert.strictEqual(result.line, 1);
+    });
+
+    it('Bottom (Astro): an `import ` substring in a frontmatter string literal does not move the insertion point', () => {
+      const text = '---\nconst msg = "you should import this";\n---\n<h1></h1>';
+      const result = computeImportPlacement(
+        text,
+        '.astro' as FileExtension,
+        '.ts' as FileExtension,
+        0, 0,
+      );
+      assert.strictEqual(result.line, 1);
     });
 
     it('Svelte: inserts after last import in script block (Bottom)', () => {
