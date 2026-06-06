@@ -15,7 +15,7 @@ JSX-specific manual QA: accept-all gating, the two-arm style model (7 script sty
 - `src/commands/copy-paste.ts` — Insert Import from Selected File (sequential copy + paste)
 - `src/commands/paste-import-with-style.ts` — Paste as Import (Pick Style) command
 - `src/commands/set-default-import-style.ts` — Set Default Import Style command
-- `src/drop/provider.ts` — `AutoImportOnDropProvider`: empty snippet (`''`/`'\n'`) → `not-supported` toast + `return null` → VS Code's default text-drop inserts the raw path
+- `src/drop/provider.ts` — `AutoImportOnDropProvider`: empty snippet (`''`/`'\n'`) → `not-supported` toast + `suppressDrop()` (empty edit out-ranks VS Code's default) → nothing inserted
 - `src/editor/insert-snippet.ts` — insertion orchestrator (Top / Bottom / Cursor; column 0 for script destinations)
 - `src/editor/placement.ts` — placement helpers (Bottom scan, `adjustForCommentBlock`; `isMarkdownDestination('.jsx')` is **false**, so a leading `*` is a comment)
 - `src/config/settings.ts` — `getAutoImportSetting` / `setAutoImportSetting`
@@ -231,7 +231,7 @@ A hand-typed / drifted `javascriptImportStyle` value (matching no enum descripti
 
 #### 6.1.1 — Empty file
 
-- [ ] Copy `jsx/src/App.jsx`, paste into `jsx/destinations/empty.jsx` → import inserted at line 0
+- [ ] Copy `jsx/src/App.jsx`, paste into `jsx/destinations/empty.jsx` → import inserted at line 1
 
 #### 6.1.2 — File with existing imports
 
@@ -242,7 +242,7 @@ A hand-typed / drifted `javascriptImportStyle` value (matching no enum descripti
 
   export const Page = () => null;
   ```
-- [ ] Copy `jsx/src/App.jsx`, paste → import inserted on line 2 (after `import { Footer }`, before the blank line)
+- [ ] Copy `jsx/src/App.jsx`, paste → import inserted on line 3 (after `import { Footer }`, before the blank line)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.1.3 — File with `require()` import
@@ -251,7 +251,7 @@ A hand-typed / drifted `javascriptImportStyle` value (matching no enum descripti
   ```jsx
   const fs = require('fs');
   ```
-- [ ] Copy `jsx/src/App.jsx`, paste → import inserted on line 1 (after the `require(` line — `require(` is one of the `IMPORT_INDICATORS` markers)
+- [ ] Copy `jsx/src/App.jsx`, paste → import inserted on line 2 (after the `require(` line — `require(` is one of the `IMPORT_INDICATORS` markers)
 
 #### 6.1.4 — File with comments containing the `import` keyword
 
@@ -260,7 +260,7 @@ A hand-typed / drifted `javascriptImportStyle` value (matching no enum descripti
   // import { Footer } from '../src/Footer';
   import { Header } from '../src/Header';
   ```
-- [ ] The commented line is skipped — import inserted on line 2 (after the real import, NOT after the comment)
+- [ ] The commented line is skipped — import inserted on line 3 (after the real import, NOT after the comment)
 
 #### 6.1.5 — File with only comments
 
@@ -269,7 +269,7 @@ A hand-typed / drifted `javascriptImportStyle` value (matching no enum descripti
   // This file has no imports
   /* Just comments */
   ```
-- [ ] No import marker found → import inserted at line 0
+- [ ] No import marker found → import inserted at line 1
 
 #### 6.1.6 — Column is always 0
 
@@ -282,12 +282,12 @@ A hand-typed / drifted `javascriptImportStyle` value (matching no enum descripti
 #### 6.2.1 — File with existing imports
 
 - [ ] Open `jsx/destinations/with-imports.jsx` (same content as §6.1.2)
-- [ ] Copy `jsx/src/App.jsx`, paste → import inserted at line 0 (before `import { Header }`)
+- [ ] Copy `jsx/src/App.jsx`, paste → import inserted at line 1 (before `import { Header }`)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.2.2 — Empty file
 
-- [ ] Copy `jsx/src/App.jsx`, paste into `jsx/destinations/empty.jsx` → import at line 0
+- [ ] Copy `jsx/src/App.jsx`, paste into `jsx/destinations/empty.jsx` → import at line 1
 
 #### 6.2.3 — Column is always 0
 
@@ -299,8 +299,8 @@ A hand-typed / drifted `javascriptImportStyle` value (matching no enum descripti
 
 #### 6.3.1 — Cursor on a blank line
 
-- [ ] Open `jsx/destinations/with-imports.jsx`, place cursor on line 2 (the blank line)
-- [ ] Copy `jsx/src/App.jsx`, paste → import inserted at line 2
+- [ ] Open `jsx/destinations/with-imports.jsx`, place cursor on line 3 (the blank line)
+- [ ] Copy `jsx/src/App.jsx`, paste → import inserted at line 3
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.3.2 — Cursor at end of file
@@ -320,8 +320,8 @@ A hand-typed / drifted `javascriptImportStyle` value (matching no enum descripti
    */
   export const Page = () => null;
   ```
-- [ ] Place cursor on line 4 (inside the `/* */` block), paste
-- [ ] Import is adjusted ABOVE the comment block (line 2), NOT at line 4
+- [ ] Place cursor on line 5 (inside the `/* */` block), paste
+- [ ] Import is adjusted ABOVE the comment block (line 3), NOT at line 5
 
 #### 6.3.4 — Cursor on a `//` comment line within a comment group
 
@@ -331,12 +331,12 @@ A hand-typed / drifted `javascriptImportStyle` value (matching no enum descripti
   // Line two of comment
   // Line three of comment
   ```
-- [ ] Place cursor on line 1, paste → import adjusted to line 0 (above the comment block)
+- [ ] Place cursor on line 2, paste → import adjusted to line 1 (above the comment block)
 
 #### 6.3.5 — Cursor on a non-comment line
 
-- [ ] Open `jsx/destinations/with-imports.jsx`, place cursor on line 3 (`export const Page = () => null;`)
-- [ ] Copy `jsx/src/App.jsx`, paste → import inserted at line 3
+- [ ] Open `jsx/destinations/with-imports.jsx`, place cursor on line 4 (`export const Page = () => null;`)
+- [ ] Copy `jsx/src/App.jsx`, paste → import inserted at line 4
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.3.6 — Column is always 0
@@ -353,8 +353,8 @@ A hand-typed / drifted `javascriptImportStyle` value (matching no enum descripti
 
   export const Page = () => null;
   ```
-- [ ] Place cursor on line 2 (`// standalone note`), paste
-- [ ] Import inserted at line 2 (AT the comment, pushing it to line 3 — unlike a comment group where the import moves above the block)
+- [ ] Place cursor on line 3 (`// standalone note`), paste
+- [ ] Import inserted at line 3 (AT the comment, pushing it to line 4 — unlike a comment group where the import moves above the block)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.3.8 — Cursor on a leading-`*` line (NOT Markdown — counter-case to `.md`/`.mdx`)
@@ -369,8 +369,8 @@ A hand-typed / drifted `javascriptImportStyle` value (matching no enum descripti
    */
   export const Page = () => null;
   ```
-- [ ] Place cursor on line 4 (the ` * The second body line…` line), paste
-- [ ] Import is adjusted ABOVE the comment block (line 2) — in `.jsx`, a leading `*` is a **comment continuation** (`isMarkdownDestination('.jsx')` is `false`)
+- [ ] Place cursor on line 5 (the ` * The second body line…` line), paste
+- [ ] Import is adjusted ABOVE the comment block (line 3) — in `.jsx`, a leading `*` is a **comment continuation** (`isMarkdownDestination('.jsx')` is `false`)
 - [ ] **Contrast:** in `.md`/`.mdx`, the same leading-`*` line is treated as **content** (bullet / emphasis), so the import would land **at** that line — see §10.4
 - [ ] Undo (`Cmd+Z`) to restore the file
 
@@ -462,14 +462,14 @@ Drag a file from the Explorer sidebar into an open `.jsx` editor. A drop reuses 
 
 - [ ] Drag `jsx/assets/logo.png` into `jsx/src/Panel.jsx` → `import ${1:name} from '../assets/logo.png';` (the fixed asset shape, byte-identical to §2.2)
 
-### 9.3 — Unsupported pair (`.ts` / `.tsx` → `.jsx`): raw-text fallback
+### 9.3 — Unsupported pair (`.ts` / `.tsx` → `.jsx`): drop suppression
 
-This is `.jsx`'s **only** null-resolving drop — every other source is accepted, but a `.ts`/`.tsx` source builds an empty snippet, so the provider returns `null`.
+This is `.jsx`'s **only** suppressed drop — every other source is accepted, but a `.ts`/`.tsx` source builds an empty snippet, so the provider suppresses the drop (an empty edit that out-ranks VS Code's default, nothing inserted).
 
 - [ ] Drag `jsx/src/model.ts` from Explorer into `jsx/src/Panel.jsx`
 - [ ] Warning toast: `Auto Import: Cannot import .ts into .jsx files.` (has a **View Supported Files** button)
-- [ ] **No Auto Import import inserted** — the drop edit resolves to `null`, so VS Code falls back to its default text-drop and the **raw path text** lands in the editor (distinct from paste §4C, which inserts **nothing at all**)
-- [ ] Undo (`Cmd+Z`) to remove the raw text
+- [ ] **No Auto Import import inserted** — the provider returns a suppressing empty edit, so nothing lands in the editor (the same no-op as paste §4C)
+- [ ] No text was inserted, so there is nothing to undo
 
 ### 9.4 — Placement with Bottom mode
 
@@ -480,7 +480,7 @@ This is `.jsx`'s **only** null-resolving drop — every other source is accepted
 ### 9.5 — Placement with Top mode
 
 - [ ] Set **Import statement placement** to `Top`
-- [ ] Drag `jsx/src/App.jsx` into `jsx/destinations/with-imports.jsx` → import lands at line 0
+- [ ] Drag `jsx/src/App.jsx` into `jsx/destinations/with-imports.jsx` → import lands at line 1
 
 ### 9.6 — Placement with Cursor mode (comment-block adjustment)
 
@@ -488,14 +488,14 @@ This is `.jsx`'s **only** null-resolving drop — every other source is accepted
 
 #### 9.6.1 — Drop onto a single `//` comment line
 
-- [ ] Open `jsx/destinations/single-comment.jsx`, drag `jsx/src/App.jsx` and drop onto line 2 (`// standalone note`)
-- [ ] Import inserted at line 2 (at the comment, pushing it down — same as paste Cursor §6.3.7)
+- [ ] Open `jsx/destinations/single-comment.jsx`, drag `jsx/src/App.jsx` and drop onto line 3 (`// standalone note`)
+- [ ] Import inserted at line 3 (at the comment, pushing it down — same as paste Cursor §6.3.7)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 9.6.2 — Drop into a multi-line comment block
 
-- [ ] Open `jsx/destinations/multiline-comment.jsx`, drag `jsx/src/App.jsx` and drop onto line 4 (inside the `/* */` block)
-- [ ] Import is adjusted ABOVE the comment block (line 2) — same as paste Cursor §6.3.3
+- [ ] Open `jsx/destinations/multiline-comment.jsx`, drag `jsx/src/App.jsx` and drop onto line 5 (inside the `/* */` block)
+- [ ] Import is adjusted ABOVE the comment block (line 3) — same as paste Cursor §6.3.3
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 ### 9.7 — Column is always 0
@@ -525,7 +525,7 @@ This is `.jsx`'s **only** null-resolving drop — every other source is accepted
   ```jsx
   const msg = "you should import this";
   ```
-- [ ] Bottom mode: the substring `import ` inside the string literal IS detected as an import marker (known heuristic limitation — not a bug); the import lands after that line
+- [ ] Bottom mode: the substring `import ` inside the string literal is **NOT** detected as an import marker — `isImportLine` requires a line-leading keyword, so the string is skipped; with no real import found, Bottom falls back to the top of the file (the import lands above the `const msg` line)
 
 ### 10.3 — File with `require()` marker (Bottom mode)
 
@@ -536,7 +536,7 @@ This is `.jsx`'s **only** null-resolving drop — every other source is accepted
 
   export const Page = () => null;
   ```
-- [ ] Bottom mode: import inserted on line 2 (after the `require(` line, which is the last import marker)
+- [ ] Bottom mode: import inserted on line 3 (after the `require(` line, which is the last import marker)
 
 ### 10.4 — Leading-`*` Cursor contrast (`.jsx` is not Markdown)
 

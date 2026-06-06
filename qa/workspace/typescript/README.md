@@ -96,16 +96,16 @@ typescript/
 | `src/components/widget.ts` | — | Child directory source (extra fixture, not directly referenced) |
 | `src/components/ui/button.ts` | — | Deep traversal destination (extra fixture) |
 | `src/utils/helpers/format.ts` | — | Deep traversal source (extra fixture) |
-| `destinations/empty.ts` | 6.1.1, 10.1 | Empty file — Bottom falls back to line 0 |
+| `destinations/empty.ts` | 6.1.1, 10.1 | Empty file — Bottom falls back to line 1 |
 | `destinations/whitespace-only.ts` | 10.2 | Blank lines only — no markers found |
 | `destinations/with-imports.ts` | 6.1.2, 6.2.1, 6.3.1, 6.3.2, 6.3.5, 9.3, 9.4 | Two imports + code — placement tests |
 | `destinations/with-require.ts` | 6.1.3 | `require()` — Bottom detects as import marker |
 | `destinations/commented-imports.ts` | 6.1.4 | Comment skipping — Bottom ignores commented import |
-| `destinations/comments-only.ts` | 6.1.5 | Only comments — Bottom falls back to line 0 |
+| `destinations/comments-only.ts` | 6.1.5 | Only comments — Bottom falls back to line 1 |
 | `destinations/multiline-comment.ts` | 6.3.3, 9.5.2 | Cursor inside `/* */` block — adjusts above block |
 | `destinations/comment-group.ts` | 6.3.4 | Cursor on `//` line — adjusts above group |
 | `destinations/single-comment.ts` | 6.3.7, 9.5.1 | Single isolated `//` comment — no block adjustment |
-| `destinations/string-with-import.ts` | 10.4 | `import` inside string literal — known heuristic |
+| `destinations/string-with-import.ts` | 10.4 | `import` inside string literal — NOT a Bottom marker (line-leading only) |
 | `destinations/mixed-imports.ts` | 10.5 | `import` + `require` mixed — Bottom finds last |
 | `destinations/large-file.ts` | 10.3 | 520 lines — Bottom still finds imports at top |
 | `rejected/*` (20 files) | 1.2–1.21, 9.2 | Every non-`.ts` extension for gating rejection |

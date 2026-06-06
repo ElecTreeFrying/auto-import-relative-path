@@ -113,7 +113,7 @@ astro/
 | `assets/Widget.svelte` | 1.7, 10.3.3 | `.svelte` cross-framework → **ACCEPTED**, asset-routed `${1:name}` |
 | `assets/notes.md` | 1.8, 10.3.4 | `.md` doc → **ACCEPTED**, asset-routed `${1:name}` |
 | `assets/post.mdx` | 1.9, 10.3.5 | `.mdx` doc → **ACCEPTED**, asset-routed `${1:name}` (signature case — a *script* ext elsewhere) |
-| `assets/global.css` | 1.17, 9.3 | **Reject** — stylesheet (raw-text fallback on drop, §9.3) |
+| `assets/global.css` | 1.17, 9.3 | **Reject** — stylesheet (drop suppressed, no insert, §9.3) |
 | `assets/theme.scss` | 1.18 | **Reject** — stylesheet |
 | `assets/page.html` | 1.19, 9.3 | **Reject** — html |
 | `assets/font.woff2` | 1.20 | **Reject** — font (empty placeholder) |
@@ -122,9 +122,9 @@ astro/
 | `destinations/empty-frontmatter.astro` | 6.1.2 | `---` frontmatter, no imports — Bottom falls back to just-after-opening-fence |
 | `destinations/with-require.astro` | 6.1.3, 10.1 | `require()` — Bottom detects as import marker, scoped to the fences |
 | `destinations/comment-cursor.astro` | 6.3.3, 9.6 | Cursor on `/* */` block — adjusts above the comment (in-fence) |
-| `destinations/template-only.astro` | 6.4, 9.10 | No `---` frontmatter — create-if-missing wrapper at line 0 |
+| `destinations/template-only.astro` | 6.4, 9.10 | No `---` frontmatter — create-if-missing wrapper at line 1 |
 | `destinations/indented-imports.astro` | 6.5 | 2-space-indented import — adopts detected frontmatter indentation |
-| `destinations/string-literal.astro` | 10.2 | `import` substring inside a string literal (known heuristic) |
+| `destinations/string-literal.astro` | 10.2 | `import` substring inside a string literal (NOT a Bottom marker — line-leading only) |
 
 ## File count
 

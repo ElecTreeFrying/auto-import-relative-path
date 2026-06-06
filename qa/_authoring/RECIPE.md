@@ -185,9 +185,8 @@ pathQuirks. Required cases per destination:
 
 - (a) happy-path drop = item-2 string;
 - (b) **unsupported-pair drop** → the not-supported reject toast AND **no import
-  inserted** — the drop edit resolves to `null`, so VS Code falls back to its default
-  text-drop and the **raw path text** lands (distinct from paste, which inserts
-  nothing at all);
+  inserted** — the provider returns a suppressing empty edit that out-ranks VS Code's
+  default drop, so nothing lands (no stray path text — the same no-op as paste);
 - (c) the placement modes + comment-Cursor sub-cases at the drop line/column;
 - (d) class-detect / Angular / preserve-ext on drop wherever the profile enables them.
 

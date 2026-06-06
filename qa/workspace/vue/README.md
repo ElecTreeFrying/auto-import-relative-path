@@ -103,7 +103,7 @@ vue/
 | `assets/page.mdx` | 1.13, 9.3 | **Reject** — script-category but not accepted (the instructive reject) |
 | `assets/Widget.svelte` | 1.14, 9.3 | **Reject** — other framework |
 | `assets/Layout.astro` | 1.15 | **Reject** — other framework |
-| `assets/global.css` | 1.16, 9.3 | **Reject** — stylesheet (raw-text fallback on drop, §9.3) |
+| `assets/global.css` | 1.16, 9.3 | **Reject** — stylesheet (drop suppressed, no insert, §9.3) |
 | `assets/theme.scss` | 1.17 | **Reject** — stylesheet |
 | `assets/page.html` | 1.18 | **Reject** — html |
 | `assets/notes.md` | 1.19 | **Reject** — markdown |
@@ -114,9 +114,9 @@ vue/
 | `destinations/instance-only.vue` | 6.2.2, 6.2.3 | Instance `<script>` only — empty-block fallback + instance-selected |
 | `destinations/with-require.vue` | 6.2.4, 10.1 | `require()` — Bottom detects as import marker, scoped to the block |
 | `destinations/comment-cursor.vue` | 6.4.3, 9.6 | Cursor on `/* */` block — adjusts above the comment (in-block) |
-| `destinations/template-only.vue` | 6.5, 9.10 | No `<script>` — create-if-missing wrapper at line 0 |
+| `destinations/template-only.vue` | 6.5, 9.10 | No `<script>` — create-if-missing wrapper at line 1 |
 | `destinations/indented-imports.vue` | 6.6 | 2-space-indented import — adopts detected block indentation |
-| `destinations/string-literal.vue` | 10.2 | `import` substring inside a string literal (known heuristic) |
+| `destinations/string-literal.vue` | 10.2 | `import` substring inside a string literal (NOT a Bottom marker — line-leading only) |
 
 ## File count
 

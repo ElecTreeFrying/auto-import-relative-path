@@ -57,16 +57,16 @@ javascript/
 |---------|-----------|---------|
 | `src/foo.js` | 1.1, 2, 3, 4, 7, 8, 9.1, 9.3–9.7 | Plain `.js` source — happy-path paste, all 7 styles + drift, `Alt+D`, Pick/Set Default, DnD, preserve-ext |
 | `src/bar.js` | 2, 3, 4, 7, 8, 9 | Primary paste/drop destination |
-| `destinations/empty.js` | 6.1.1, 6.2.2, 10.1 | Empty file — Bottom/Top fall back to line 0 |
+| `destinations/empty.js` | 6.1.1, 6.2.2, 10.1 | Empty file — Bottom/Top fall back to line 1 |
 | `destinations/whitespace-only.js` | 10.2 | Blank lines only — no markers found |
 | `destinations/with-imports.js` | 6.1.2, 6.2.1, 6.3.1, 6.3.2, 6.3.5, 9.3, 9.4 | Two imports + code — placement tests |
 | `destinations/with-require.js` | 6.1.3 | `require()` — Bottom detects as import marker |
 | `destinations/commented-imports.js` | 6.1.4 | Comment skipping — Bottom ignores commented import |
-| `destinations/comments-only.js` | 6.1.5 | Only comments — Bottom falls back to line 0 |
+| `destinations/comments-only.js` | 6.1.5 | Only comments — Bottom falls back to line 1 |
 | `destinations/multiline-comment.js` | 6.3.3, 9.5.2 | Cursor inside `/* */` block — adjusts above block |
 | `destinations/comment-group.js` | 6.3.4 | Cursor on `//` line — adjusts above group |
 | `destinations/single-comment.js` | 6.3.7, 9.5.1 | Single isolated `//` comment — no block adjustment |
-| `destinations/string-with-import.js` | 10.4 | `import` inside string literal — known heuristic |
+| `destinations/string-with-import.js` | 10.4 | `import` inside string literal — NOT a Bottom marker (line-leading only) |
 | `destinations/mixed-imports.js` | 10.5 | `import` + `require` mixed — Bottom finds last |
 | `destinations/large-file.js` | 10.3 | 520 lines — Bottom still finds imports at top |
 | `rejected/*` (20 files) | 1.2–1.21, 9.2 | Every non-`.js` extension for gating rejection (`helper.ts` also covers the §9.2 `.ts`→`.js` drop reject) |

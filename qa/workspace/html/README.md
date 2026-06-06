@@ -56,7 +56,7 @@ html/
 | `destinations/blank.html` | §6, §9c-i | Empty body line — `forced-cursor` setting-ignored (Top/Bottom/Cursor all → cursor line) |
 | `destinations/indented.html` | §6, §9c-ii | Line 2 = six spaces — column follows the cursor/drop (col 6, NOT 0) |
 | `destinations/with-comments.html` | §10, §9c-iii, §9c-iv | `<!-- -->` lands at it (not a comment); embedded-`//` run pushes above |
-| `rejected/widget.ts` | §1, §9b | `.ts` reject; also drives the unsupported-pair drop (raw-path fallback) |
+| `rejected/widget.ts` | §1, §9b | `.ts` reject; also drives the unsupported-pair drop (drop suppressed, no insert) |
 | `rejected/App.vue` | §1 | `.vue` reject (`.svelte`/`.astro` reject identically) |
 | `rejected/theme.scss` | §1 | `.scss` reject (only `.css` accepted among stylesheets) |
 | `rejected/notes.md` | §1 | `.md` reject |

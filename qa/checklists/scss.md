@@ -222,7 +222,7 @@ A hand-typed / drifted `scssImportStyle` value (matching no enum description) mu
 #### 6.1.1 — Empty file
 
 - [ ] Copy `scss/src/theme.scss`, paste into `scss/destinations/empty.scss` (empty file)
-- [ ] `@use './theme';` inserted at line 0
+- [ ] `@use './theme';` inserted at line 1
 
 #### 6.1.2 — File with existing `@use` / `@forward`
 
@@ -233,7 +233,7 @@ A hand-typed / drifted `scssImportStyle` value (matching no enum description) mu
 
   body { color: red; }
   ```
-- [ ] Copy `scss/src/theme.scss`, paste → import inserted on line 2 (after `@forward './mixins';`, the last `IMPORT_INDICATORS` marker, before the blank line)
+- [ ] Copy `scss/src/theme.scss`, paste → import inserted on line 3 (after `@forward './mixins';`, the last `IMPORT_INDICATORS` marker, before the blank line)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.1.3 — Commented-out marker is skipped
@@ -243,7 +243,7 @@ A hand-typed / drifted `scssImportStyle` value (matching no enum description) mu
   // @use './old-theme';
   @use './theme';
   ```
-- [ ] Copy `scss/src/theme.scss`, paste → the commented `// @use` line is skipped; import inserted on line 2 (after the real `@use './theme';`)
+- [ ] Copy `scss/src/theme.scss`, paste → the commented `// @use` line is skipped; import inserted on line 3 (after the real `@use './theme';`)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.1.4 — File with only comments
@@ -253,7 +253,7 @@ A hand-typed / drifted `scssImportStyle` value (matching no enum description) mu
   // Theme entry point
   /* nothing imported yet */
   ```
-- [ ] No import marker found → import inserted at line 0
+- [ ] No import marker found → import inserted at line 1
 
 #### 6.1.5 — Column is always 0
 
@@ -266,7 +266,7 @@ A hand-typed / drifted `scssImportStyle` value (matching no enum description) mu
 #### 6.2.1 — File with existing imports
 
 - [ ] Open `scss/destinations/with-imports.scss` (content above)
-- [ ] Copy `scss/src/theme.scss`, paste → import inserted at line 0 (before `@use './theme';`)
+- [ ] Copy `scss/src/theme.scss`, paste → import inserted at line 1 (before `@use './theme';`)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.2.2 — Column is always 0
@@ -289,8 +289,8 @@ A hand-typed / drifted `scssImportStyle` value (matching no enum description) mu
    */
   body { margin: 0; }
   ```
-- [ ] Place the cursor on line 4 (inside the `/* */` block), paste `scss/src/theme.scss`
-- [ ] Import is adjusted ABOVE the comment block (line 2), NOT at line 4
+- [ ] Place the cursor on line 5 (inside the `/* */` block), paste `scss/src/theme.scss`
+- [ ] Import is adjusted ABOVE the comment block (line 3), NOT at line 5
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.3.2 — Cursor on a lone `//` comment line
@@ -303,8 +303,8 @@ A hand-typed / drifted `scssImportStyle` value (matching no enum description) mu
 
   body { margin: 0; }
   ```
-- [ ] Place the cursor on line 2 (`// standalone note`), paste
-- [ ] Import inserted at line 2 (AT the comment, pushing it down — a lone `//` is not a comment *block*; contrast §6.3.3, where a `//` *group* pushes the import above the run)
+- [ ] Place the cursor on line 3 (`// standalone note`), paste
+- [ ] Import inserted at line 3 (AT the comment, pushing it down — a lone `//` is not a comment *block*; contrast §6.3.3, where a `//` *group* pushes the import above the run)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.3.3 — Cursor on a `//` comment line within a comment group
@@ -315,13 +315,13 @@ A hand-typed / drifted `scssImportStyle` value (matching no enum description) mu
   // Line two of comment
   // Line three of comment
   ```
-- [ ] Place the cursor on line 2 (the middle `//` line), paste `scss/src/theme.scss`
-- [ ] Import is adjusted to line 0 — ABOVE the entire `//` run (the cursor walks up over the consecutive comments), NOT at the cursor line; a run of `//` lines is treated as one comment block, unlike the lone `//` in §6.3.2
+- [ ] Place the cursor on line 3 (the middle `//` line), paste `scss/src/theme.scss`
+- [ ] Import is adjusted to line 1 — ABOVE the entire `//` run (the cursor walks up over the consecutive comments), NOT at the cursor line; a run of `//` lines is treated as one comment block, unlike the lone `//` in §6.3.2
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.3.4 — Cursor on a content line
 
-- [ ] Open `scss/destinations/with-imports.scss`, place the cursor on line 3 (`body { color: red; }`), paste → import inserted at line 3
+- [ ] Open `scss/destinations/with-imports.scss`, place the cursor on line 4 (`body { color: red; }`), paste → import inserted at line 4
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.3.5 — Column is always 0
@@ -333,7 +333,7 @@ A hand-typed / drifted `scssImportStyle` value (matching no enum description) mu
 
 - [ ] Set **Import statement placement** to `Top`
 - [ ] Open `scss/src/main.scss`, place the cursor mid-line inside a value position, copy `scss/src/images/logo.png`, paste
-- [ ] `url('./images/logo.png')` inserted at the **exact cursor line and column** (NOT line 0) — the placement setting has no effect on inline `url()`
+- [ ] `url('./images/logo.png')` inserted at the **exact cursor line and column** (NOT line 1) — the placement setting has no effect on inline `url()`
 - [ ] No trailing newline; undo (`Cmd+Z`)
 - [ ] Restore: set **Import statement placement** back to `Bottom`
 
@@ -413,7 +413,7 @@ Drag a file from the Explorer sidebar into an open `.scss` editor. A drop reuses
 
 - [ ] Drag `scss/rejected/App.vue` from Explorer into `scss/src/main.scss`
 - [ ] Warning toast: `Auto Import: Cannot import .vue into .scss files.`
-- [ ] No Auto Import import inserted (the drop edit resolves to `null` → VS Code falls back to its default text-drop, so the raw path text may land — distinct from paste, which inserts nothing at all)
+- [ ] No Auto Import import inserted — the provider returns a suppressing empty edit that out-ranks VS Code's default drop, so nothing lands (no stray path text — the same no-op as paste)
 
 ### 9.3 — Placement with Bottom mode
 
@@ -424,7 +424,7 @@ Drag a file from the Explorer sidebar into an open `.scss` editor. A drop reuses
 ### 9.4 — Placement with Top mode
 
 - [ ] Set **Import statement placement** to `Top`
-- [ ] Drag `scss/src/theme.scss` into `scss/destinations/with-imports.scss` → import lands at line 0
+- [ ] Drag `scss/src/theme.scss` into `scss/destinations/with-imports.scss` → import lands at line 1
 - [ ] Undo (`Cmd+Z`); restore **Import statement placement** to `Bottom`
 
 ### 9.5 — Placement with Cursor mode (comment sub-cases)
@@ -433,14 +433,14 @@ Drag a file from the Explorer sidebar into an open `.scss` editor. A drop reuses
 
 #### 9.5.1 — Drop onto a lone `//` comment line
 
-- [ ] Open `scss/destinations/single-comment.scss`, drag `scss/src/theme.scss` and drop onto line 2 (`// standalone note`)
-- [ ] Import inserted at line 2 (at the comment, pushing it down — same as paste §6.3.2)
+- [ ] Open `scss/destinations/single-comment.scss`, drag `scss/src/theme.scss` and drop onto line 3 (`// standalone note`)
+- [ ] Import inserted at line 3 (at the comment, pushing it down — same as paste §6.3.2)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 9.5.2 — Drop into a multi-line comment block
 
-- [ ] Open `scss/destinations/multiline-comment.scss`, drag `scss/src/theme.scss` and drop onto line 4 (inside the `/* */` block)
-- [ ] Import is adjusted ABOVE the comment block (line 2) — same as paste §6.3.1
+- [ ] Open `scss/destinations/multiline-comment.scss`, drag `scss/src/theme.scss` and drop onto line 5 (inside the `/* */` block)
+- [ ] Import is adjusted ABOVE the comment block (line 3) — same as paste §6.3.1
 - [ ] Undo (`Cmd+Z`); restore **Import statement placement** to `Bottom`
 
 ### 9.6 — Image drop: inline `url()` at the drop column
@@ -491,7 +491,7 @@ $danger: #cc0000;
   // @use './deprecated';
   .btn { color: blue; }
   ```
-- [ ] With Bottom placement, copy `scss/src/theme.scss`, paste → import inserted at line 0 (the commented `// @use` line is skipped, and `.btn { … }` is not a marker, so no anchor is found)
+- [ ] With Bottom placement, copy `scss/src/theme.scss`, paste → import inserted at line 1 (the commented `// @use` line is skipped, and `.btn { … }` is not a marker, so no anchor is found)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 ---

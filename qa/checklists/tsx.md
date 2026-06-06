@@ -289,27 +289,27 @@ Style must be set to index 0 (`import { name } from '_relativePath_';`).
 ### 5.1 — `.component` suffix
 
 - [ ] Copy `tsx/src/angular/user.component.ts` (no `export class`) → paste into `tsx/src/Panel.tsx`
-- [ ] Output: `import { UserComponent } from './angular/user.component';` (PascalCase identifier filled directly — a committed identifier, **not** an editable `${1:…}` tab stop)
+- [ ] Output: `import { ${1:UserComponent} } from './angular/user.component';` (PascalCase identifier pre-filled as an **editable** `${1:…}` tab stop, like the detected-class case in `.ts`)
 
 ### 5.2 — `.directive` suffix
 
 - [ ] Copy `tsx/src/angular/highlight.directive.ts` → paste into `tsx/src/Panel.tsx`
-- [ ] Output: `import { HighlightDirective } from './angular/highlight.directive';`
+- [ ] Output: `import { ${1:HighlightDirective} } from './angular/highlight.directive';`
 
 ### 5.3 — `.pipe` suffix
 
 - [ ] Copy `tsx/src/angular/trim.pipe.ts` → paste into `tsx/src/Panel.tsx`
-- [ ] Output: `import { TrimPipe } from './angular/trim.pipe';`
+- [ ] Output: `import { ${1:TrimPipe} } from './angular/trim.pipe';`
 
 ### 5.4 — `.service` suffix
 
 - [ ] Copy `tsx/src/angular/user.service.ts` → paste into `tsx/src/Panel.tsx`
-- [ ] Output: `import { UserService } from './angular/user.service';`
+- [ ] Output: `import { ${1:UserService} } from './angular/user.service';`
 
 ### 5.5 — `.module` suffix
 
 - [ ] Copy `tsx/src/angular/auth.module.ts` → paste into `tsx/src/Panel.tsx`
-- [ ] Output: `import { AuthModule } from './angular/auth.module';`
+- [ ] Output: `import { ${1:AuthModule} } from './angular/auth.module';`
 
 ### 5.6 — Non-Angular `.ts`/`.tsx` source (no suffix match)
 
@@ -326,13 +326,13 @@ This is the signature `.tsx` ≠ `.ts` case. A `.ts`/`.tsx` source containing `e
 ### 5.8 — Angular naming is `.ts`/`.tsx`-source-only (`.js`/`.jsx` source → JS fallback)
 
 - [ ] Copy `tsx/src/angular/widget.component.js` (an Angular-suffixed `.js` source) → paste into `tsx/src/Panel.tsx`
-- [ ] Output: `import $1 from './angular/widget.component';` — a **bare** default-import, NOT `import { WidgetComponent }`. A `.js`/`.jsx` source takes the JS **fallback**, which has no Angular naming. Contrast §5.1 (a `.component.ts` source → `import { UserComponent }`)
+- [ ] Output: `import $1 from './angular/widget.component';` — a **bare** default-import, NOT `import { ${1:WidgetComponent} }`. A `.js`/`.jsx` source takes the JS **fallback**, which has no Angular naming. Contrast §5.1 (a `.component.ts` source → `import { ${1:UserComponent} }`)
 
 ### 5.9 — Preserve-extension identifier stability
 
-- [ ] With **Preserve script file extension in imports** unchecked (default): copy `tsx/src/angular/user.component.ts`, paste → `import { UserComponent } from './angular/user.component';`
-- [ ] Check the **Preserve script file extension in imports** checkbox, copy `tsx/src/angular/user.component.ts`, paste → `import { UserComponent } from './angular/user.component.ts';`
-- [ ] The identifier is **identical** (`UserComponent`) in both cases — never `UserComponentTs` — because the extension is stripped before the name is derived; only the path string changes
+- [ ] With **Preserve script file extension in imports** unchecked (default): copy `tsx/src/angular/user.component.ts`, paste → `import { ${1:UserComponent} } from './angular/user.component';`
+- [ ] Check the **Preserve script file extension in imports** checkbox, copy `tsx/src/angular/user.component.ts`, paste → `import { ${1:UserComponent} } from './angular/user.component.ts';`
+- [ ] The identifier is **identical** (`${1:UserComponent}`) in both cases — never `UserComponentTs` — because the extension is stripped before the name is derived; only the path string changes
 - [ ] Restore: uncheck **Preserve script file extension in imports**
 
 ### 5.10 — Angular suffix, illegal derived identifier (guard)
@@ -350,7 +350,7 @@ This is the signature `.tsx` ≠ `.ts` case. A `.ts`/`.tsx` source containing `e
 
 #### 6.1.1 — Empty file
 
-- [ ] Copy `tsx/src/Widget.tsx`, paste into `tsx/destinations/empty.tsx` → import inserted at line 0
+- [ ] Copy `tsx/src/Widget.tsx`, paste into `tsx/destinations/empty.tsx` → import inserted at line 1
 
 #### 6.1.2 — File with existing imports
 
@@ -361,7 +361,7 @@ This is the signature `.tsx` ≠ `.ts` case. A `.ts`/`.tsx` source containing `e
 
   export const Page = () => null;
   ```
-- [ ] Copy `tsx/src/Widget.tsx`, paste → import inserted on line 2 (after `import { Footer }`, before the blank line)
+- [ ] Copy `tsx/src/Widget.tsx`, paste → import inserted on line 3 (after `import { Footer }`, before the blank line)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.1.3 — File with `require()` import
@@ -370,7 +370,7 @@ This is the signature `.tsx` ≠ `.ts` case. A `.ts`/`.tsx` source containing `e
   ```tsx
   const fs = require('fs');
   ```
-- [ ] Copy `tsx/src/Widget.tsx`, paste → import inserted on line 1 (after the `require(` line — `require(` is one of the `IMPORT_INDICATORS` markers)
+- [ ] Copy `tsx/src/Widget.tsx`, paste → import inserted on line 2 (after the `require(` line — `require(` is one of the `IMPORT_INDICATORS` markers)
 
 #### 6.1.4 — File with comments containing the `import` keyword
 
@@ -379,7 +379,7 @@ This is the signature `.tsx` ≠ `.ts` case. A `.ts`/`.tsx` source containing `e
   // import { Footer } from '../src/Footer';
   import { Header } from '../src/Header';
   ```
-- [ ] The commented line is skipped — import inserted on line 2 (after the real import, NOT after the comment)
+- [ ] The commented line is skipped — import inserted on line 3 (after the real import, NOT after the comment)
 
 #### 6.1.5 — File with only comments
 
@@ -388,7 +388,7 @@ This is the signature `.tsx` ≠ `.ts` case. A `.ts`/`.tsx` source containing `e
   // This file has no imports
   /* Just comments */
   ```
-- [ ] No import marker found → import inserted at line 0
+- [ ] No import marker found → import inserted at line 1
 
 #### 6.1.6 — Column is always 0
 
@@ -401,12 +401,12 @@ This is the signature `.tsx` ≠ `.ts` case. A `.ts`/`.tsx` source containing `e
 #### 6.2.1 — File with existing imports
 
 - [ ] Open `tsx/destinations/with-imports.tsx` (same content as §6.1.2)
-- [ ] Copy `tsx/src/Widget.tsx`, paste → import inserted at line 0 (before `import { Header }`)
+- [ ] Copy `tsx/src/Widget.tsx`, paste → import inserted at line 1 (before `import { Header }`)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.2.2 — Empty file
 
-- [ ] Copy `tsx/src/Widget.tsx`, paste into `tsx/destinations/empty.tsx` → import at line 0
+- [ ] Copy `tsx/src/Widget.tsx`, paste into `tsx/destinations/empty.tsx` → import at line 1
 
 #### 6.2.3 — Column is always 0
 
@@ -418,8 +418,8 @@ This is the signature `.tsx` ≠ `.ts` case. A `.ts`/`.tsx` source containing `e
 
 #### 6.3.1 — Cursor on a blank line
 
-- [ ] Open `tsx/destinations/with-imports.tsx`, place cursor on line 2 (the blank line)
-- [ ] Copy `tsx/src/Widget.tsx`, paste → import inserted at line 2
+- [ ] Open `tsx/destinations/with-imports.tsx`, place cursor on line 3 (the blank line)
+- [ ] Copy `tsx/src/Widget.tsx`, paste → import inserted at line 3
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.3.2 — Cursor at end of file
@@ -439,8 +439,8 @@ This is the signature `.tsx` ≠ `.ts` case. A `.ts`/`.tsx` source containing `e
    */
   export const Page = () => null;
   ```
-- [ ] Place cursor on line 4 (inside the `/* */` block), paste
-- [ ] Import is adjusted ABOVE the comment block (line 2), NOT at line 4
+- [ ] Place cursor on line 5 (inside the `/* */` block), paste
+- [ ] Import is adjusted ABOVE the comment block (line 3), NOT at line 5
 
 #### 6.3.4 — Cursor on a `//` comment line within a comment group
 
@@ -450,12 +450,12 @@ This is the signature `.tsx` ≠ `.ts` case. A `.ts`/`.tsx` source containing `e
   // Line two of comment
   // Line three of comment
   ```
-- [ ] Place cursor on line 1, paste → import adjusted to line 0 (above the comment block)
+- [ ] Place cursor on line 2, paste → import adjusted to line 1 (above the comment block)
 
 #### 6.3.5 — Cursor on a non-comment line
 
-- [ ] Open `tsx/destinations/with-imports.tsx`, place cursor on line 3 (`export const Page = () => null;`)
-- [ ] Copy `tsx/src/Widget.tsx`, paste → import inserted at line 3
+- [ ] Open `tsx/destinations/with-imports.tsx`, place cursor on line 4 (`export const Page = () => null;`)
+- [ ] Copy `tsx/src/Widget.tsx`, paste → import inserted at line 4
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.3.6 — Column is always 0
@@ -472,8 +472,8 @@ This is the signature `.tsx` ≠ `.ts` case. A `.ts`/`.tsx` source containing `e
 
   export const Page = () => null;
   ```
-- [ ] Place cursor on line 2 (`// standalone note`), paste
-- [ ] Import inserted at line 2 (AT the comment, pushing it to line 3 — unlike a comment group where the import moves above the block)
+- [ ] Place cursor on line 3 (`// standalone note`), paste
+- [ ] Import inserted at line 3 (AT the comment, pushing it to line 4 — unlike a comment group where the import moves above the block)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.3.8 — Cursor on a leading-`*` line (NOT Markdown — counter-case to `.md`/`.mdx`)
@@ -488,8 +488,8 @@ This is the signature `.tsx` ≠ `.ts` case. A `.ts`/`.tsx` source containing `e
    */
   export const Page = () => null;
   ```
-- [ ] Place cursor on line 4 (the ` * The second body line…` line), paste
-- [ ] Import is adjusted ABOVE the comment block (line 2) — in `.tsx`, a leading `*` is a **comment continuation** (`isMarkdownDestination('.tsx')` is `false`)
+- [ ] Place cursor on line 5 (the ` * The second body line…` line), paste
+- [ ] Import is adjusted ABOVE the comment block (line 3) — in `.tsx`, a leading `*` is a **comment continuation** (`isMarkdownDestination('.tsx')` is `false`)
 - [ ] **Contrast:** in `.md`/`.mdx`, the same leading-`*` line is treated as **content** (bullet / emphasis), so the import would land **at** that line — see §10.1
 - [ ] Undo (`Cmd+Z`) to restore the file
 
@@ -547,7 +547,7 @@ Run via Command Palette: `Auto Import: Paste as Import (Pick Style)`, or click *
 
 - [ ] Copy `tsx/src/angular/user.component.ts`, run the command in `tsx/src/Panel.tsx`
 - [ ] The style-0 item's **label** is `import { UserComponent } from 'user.component';` (basename preview, Angular PascalCase filled — `generateAngularLegacyImportName` runs on the label path too)
-- [ ] Selecting it inserts `import { UserComponent } from './angular/user.component';` (full path)
+- [ ] Selecting it inserts `import { ${1:UserComponent} } from './angular/user.component';` (full path)
 - [ ] Styles 1–6 show a bare `name` placeholder in their labels (Angular fills only style 0)
 
 ### 7.5 — Asset source: single fixed variant (direct insert)
@@ -617,7 +617,7 @@ Drag a file from the Explorer sidebar into an open `.tsx` editor. A drop reuses 
 
 - [ ] Drag `tsx/assets/logo.png` into `tsx/src/Panel.tsx` → `import ${1:name} from '../assets/logo.png';` (the fixed asset shape, byte-identical to §2.3)
 
-> **No raw-text-fallback drop.** `.tsx` accepts every source **and** renders a non-empty snippet for all of them, so a drop never resolves to `null` — there is no raw-path text fallback. This is the contrast to [jsx.md §9.3](jsx.md#93--unsupported-pair-ts--tsx--jsx-raw-text-fallback), where a `.ts`/`.tsx` source builds an empty snippet and VS Code's default text-drop drops the raw path. `.tsx` has no such case.
+> **No suppressed-drop case.** `.tsx` accepts every source **and** renders a non-empty snippet for all of them, so no drop is ever empty/unsupported — there is no suppressed-drop case. This is the contrast to [jsx.md §9.3](jsx.md#93--unsupported-pair-ts--tsx--jsx-drop-suppression), where a `.ts`/`.tsx` source builds an empty snippet and the provider suppresses the drop (nothing inserted). `.tsx` has no such case.
 
 ### 9.4 — Placement with Bottom mode
 
@@ -629,7 +629,7 @@ Drag a file from the Explorer sidebar into an open `.tsx` editor. A drop reuses 
 ### 9.5 — Placement with Top mode
 
 - [ ] Set **Import statement placement** to `Top`
-- [ ] Drag `tsx/src/Widget.tsx` into `tsx/destinations/with-imports.tsx` → import lands at line 0
+- [ ] Drag `tsx/src/Widget.tsx` into `tsx/destinations/with-imports.tsx` → import lands at line 1
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 ### 9.6 — Placement with Cursor mode (comment-block adjustment)
@@ -638,14 +638,14 @@ Drag a file from the Explorer sidebar into an open `.tsx` editor. A drop reuses 
 
 #### 9.6.1 — Drop onto a single `//` comment line
 
-- [ ] Open `tsx/destinations/single-comment.tsx`, drag `tsx/src/Widget.tsx` and drop onto line 2 (`// standalone note`)
-- [ ] Import inserted at line 2 (at the comment, pushing it down — same as paste Cursor §6.3.7)
+- [ ] Open `tsx/destinations/single-comment.tsx`, drag `tsx/src/Widget.tsx` and drop onto line 3 (`// standalone note`)
+- [ ] Import inserted at line 3 (at the comment, pushing it down — same as paste Cursor §6.3.7)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 9.6.2 — Drop into a multi-line comment block
 
-- [ ] Open `tsx/destinations/multiline-comment.tsx`, drag `tsx/src/Widget.tsx` and drop onto line 4 (inside the `/* */` block)
-- [ ] Import is adjusted ABOVE the comment block (line 2) — same as paste Cursor §6.3.3
+- [ ] Open `tsx/destinations/multiline-comment.tsx`, drag `tsx/src/Widget.tsx` and drop onto line 5 (inside the `/* */` block)
+- [ ] Import is adjusted ABOVE the comment block (line 3) — same as paste Cursor §6.3.3
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 ### 9.7 — Column is always 0
@@ -655,7 +655,7 @@ Drag a file from the Explorer sidebar into an open `.tsx` editor. A drop reuses 
 ### 9.8 — Angular naming applies on drop
 
 - [ ] Drag `tsx/src/angular/user.component.ts` (no `export class`) into `tsx/src/Panel.tsx`
-- [ ] Import is `import { UserComponent } from './angular/user.component';` (Angular PascalCase, same as paste §5.1)
+- [ ] Import is `import { ${1:UserComponent} } from './angular/user.component';` (Angular PascalCase, same as paste §5.1)
 
 ### 9.9 — `preserveScriptFileExtension` respected on drop
 
@@ -675,7 +675,7 @@ Drag a file from the Explorer sidebar into an open `.tsx` editor. A drop reuses 
 `.mdx` and `.tsx` share the **same** `tsx.ts` builder (`dispatch.ts` routes both there), so their imports are byte-identical. They diverge only at **Cursor placement on a leading-`*` line**: `isMarkdownDestination` is `true` for `.mdx` but `false` for `.tsx`, which flips `adjustForCommentBlock`'s treatment of `*`.
 
 - [ ] Set **Import statement placement** to `Cursor`
-- [ ] Open `tsx/destinations/leading-star.tsx` (content as in §6.3.8), place cursor on line 4 (the ` * …` line), copy `tsx/src/Widget.tsx`, paste → import lands **ABOVE** the block (line 2) — `*` is a comment continuation
+- [ ] Open `tsx/destinations/leading-star.tsx` (content as in §6.3.8), place cursor on line 5 (the ` * …` line), copy `tsx/src/Widget.tsx`, paste → import lands **ABOVE** the block (line 3) — `*` is a comment continuation
 - [ ] Open `tsx/destinations/leading-star.mdx` (byte-identical content), place cursor on the same ` * …` line, paste → import lands **AT** that line — in `.mdx`, `*` is content (bullet / emphasis), not a comment
 - [ ] The two buffers are identical and use the same builder, yet the insertion line differs — the only difference is `isMarkdownDestination`. Restore both files (`Cmd+Z`)
 
@@ -686,7 +686,7 @@ Drag a file from the Explorer sidebar into an open `.tsx` editor. A drop reuses 
   ```tsx
   const msg = "you should import this";
   ```
-- [ ] Bottom mode: the substring `import ` inside the string literal IS detected as an import marker (known heuristic limitation — not a bug); the import lands after that line
+- [ ] Bottom mode: the substring `import ` inside the string literal is **NOT** detected as an import marker — `isImportLine` requires a line-leading keyword, so the string is skipped; with no real import found, Bottom falls back to the top of the file (the import lands above the `const msg` line)
 
 ### 10.3 — File with `require()` marker (Bottom mode)
 
@@ -697,7 +697,7 @@ Drag a file from the Explorer sidebar into an open `.tsx` editor. A drop reuses 
 
   export const Page = () => null;
   ```
-- [ ] Bottom mode: import inserted on line 2 (after the `require(` line, which is the last import marker)
+- [ ] Bottom mode: import inserted on line 3 (after the `require(` line, which is the last import marker)
 
 ### 10.4 — JS-fallback recap
 

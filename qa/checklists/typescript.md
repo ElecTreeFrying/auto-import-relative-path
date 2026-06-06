@@ -213,8 +213,8 @@ Style must be set to index 0 (`import { name } from '_relativePath_';`).
 #### 5.A.7 — No export class in Angular file falls through to Angular naming
 
 - [ ] Copy `typescript/src/angular/user.service.ts` (does NOT contain any `export class`)
-- [ ] Paste into `typescript/src/bar.ts` → `import { UserService } from './angular/user.service';`
-- [ ] Pre-filled with `UserService` (Angular PascalCase)
+- [ ] Paste into `typescript/src/bar.ts` → `import { ${1:UserService} } from './angular/user.service';`
+- [ ] Pre-filled with `UserService` — an **editable** tab stop (Angular PascalCase), same as the detected-class case
 
 #### 5.A.8 — `export default class` (NOT detected)
 
@@ -231,32 +231,32 @@ Style must be set to index 0 (`import { name } from '_relativePath_';`).
 
 ### 5.B — Angular legacy PascalCase auto-fill (style 0)
 
-Style must be set to index 0. Source files must NOT contain `export class` (otherwise the exported-class half §5.A takes priority).
+Style must be set to index 0. Source files must NOT contain `export class` (otherwise the exported-class half §5.A takes priority). Like §5.A, the derived PascalCase name is a **pre-filled, editable** `${1:…}` tab stop — not a committed literal.
 
 #### 5.B.1 — `.component` suffix
 
 - [ ] Copy `typescript/src/angular/app-root.component.ts` → paste into `typescript/src/bar.ts`
-- [ ] Output: `import { AppRootComponent } from './angular/app-root.component';`
+- [ ] Output: `import { ${1:AppRootComponent} } from './angular/app-root.component';`
 
 #### 5.B.2 — `.directive` suffix
 
 - [ ] Copy `typescript/src/angular/highlight.directive.ts` → paste into `typescript/src/bar.ts`
-- [ ] Output: `import { HighlightDirective } from './angular/highlight.directive';`
+- [ ] Output: `import { ${1:HighlightDirective} } from './angular/highlight.directive';`
 
 #### 5.B.3 — `.pipe` suffix
 
 - [ ] Copy `typescript/src/angular/trim.pipe.ts` → paste into `typescript/src/bar.ts`
-- [ ] Output: `import { TrimPipe } from './angular/trim.pipe';`
+- [ ] Output: `import { ${1:TrimPipe} } from './angular/trim.pipe';`
 
 #### 5.B.4 — `.service` suffix
 
 - [ ] Copy `typescript/src/angular/user.service.ts` → paste into `typescript/src/bar.ts`
-- [ ] Output: `import { UserService } from './angular/user.service';`
+- [ ] Output: `import { ${1:UserService} } from './angular/user.service';`
 
 #### 5.B.5 — `.module` suffix
 
 - [ ] Copy `typescript/src/angular/auth.module.ts` → paste into `typescript/src/bar.ts`
-- [ ] Output: `import { AuthModule } from './angular/auth.module';`
+- [ ] Output: `import { ${1:AuthModule} } from './angular/auth.module';`
 
 #### 5.B.6 — Non-Angular file (no suffix match)
 
@@ -273,21 +273,21 @@ Style must be set to index 0. Source files must NOT contain `export class` (othe
 - [ ] In the extension settings (see [How to change extension settings](#how-to-change-extension-settings)), confirm the **Preserve script file extension in imports** checkbox is unchecked
 - [ ] Copy `typescript/src/angular/app-root.component.ts` → paste into `typescript/src/bar.ts`
 - [ ] Path is `'./angular/app-root.component'` (extension stripped)
-- [ ] Identifier is `AppRootComponent` (NOT `AppRootComponentTs`)
+- [ ] Identifier is `${1:AppRootComponent}` — editable (NOT `AppRootComponentTs`)
 
 #### 5.B.9 — Angular naming with `preserveScriptFileExtension = true`
 
 - [ ] In the extension settings, check the **Preserve script file extension in imports** checkbox
 - [ ] Copy `typescript/src/angular/app-root.component.ts` → paste into `typescript/src/bar.ts`
 - [ ] Path is `'./angular/app-root.component.ts'` (extension preserved)
-- [ ] Identifier is STILL `AppRootComponent` (NOT `AppRootComponentTs`)
+- [ ] Identifier is STILL `${1:AppRootComponent}` — editable (NOT `AppRootComponentTs`)
 - [ ] Restore: uncheck **Preserve script file extension in imports**
 
 #### 5.B.10 — Same-directory Angular naming
 
 - [ ] Copy `typescript/src/angular/auth.module.ts` → paste into `typescript/src/angular/dest.ts` (same directory)
 - [ ] Path starts with `'./auth.module'` (same-dir `./` prefix)
-- [ ] Identifier is `AuthModule`
+- [ ] Identifier is `${1:AuthModule}` (editable)
 
 #### 5.B.11 — Angular suffix, illegal derived identifier (guard)
 
@@ -303,7 +303,7 @@ Style must be set to index 0. Source files must NOT contain `export class` (othe
 #### 6.1.1 — Empty file
 
 - [ ] Copy `typescript/src/foo.ts`, paste into `typescript/destinations/empty.ts`
-- [ ] Import inserted at line 0
+- [ ] Import inserted at line 1
 
 #### 6.1.2 — File with existing imports
 
@@ -314,7 +314,7 @@ Style must be set to index 0. Source files must NOT contain `export class` (othe
 
   export const x = 1;
   ```
-- [ ] Copy `typescript/src/foo.ts`, paste → import inserted on line 2 (after `import { bar }`, before the blank line)
+- [ ] Copy `typescript/src/foo.ts`, paste → import inserted on line 3 (after `import { bar }`, before the blank line)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.1.3 — File with `require()` import
@@ -323,7 +323,7 @@ Style must be set to index 0. Source files must NOT contain `export class` (othe
   ```ts
   export const fs = require('fs');
   ```
-- [ ] Copy `typescript/src/foo.ts`, paste → import inserted on line 1 (after the `require(` line)
+- [ ] Copy `typescript/src/foo.ts`, paste → import inserted on line 2 (after the `require(` line)
 
 #### 6.1.4 — File with comments containing `import` keyword
 
@@ -332,7 +332,7 @@ Style must be set to index 0. Source files must NOT contain `export class` (othe
   // import { bar } from '../src/bar';
   import { foo } from '../src/foo';
   ```
-- [ ] The commented line is skipped — import inserted on line 2 (after the real import, NOT after the comment)
+- [ ] The commented line is skipped — import inserted on line 3 (after the real import, NOT after the comment)
 
 #### 6.1.5 — File with only comments
 
@@ -341,7 +341,7 @@ Style must be set to index 0. Source files must NOT contain `export class` (othe
   // This file has no imports
   /* Just comments */
   ```
-- [ ] No import marker found → import inserted at line 0
+- [ ] No import marker found → import inserted at line 1
 
 #### 6.1.6 — Column is always 0
 
@@ -360,12 +360,12 @@ Style must be set to index 0. Source files must NOT contain `export class` (othe
 
   export const x = 1;
   ```
-- [ ] Copy `typescript/src/foo.ts`, paste → import inserted at line 0 (before `import { foo }`)
+- [ ] Copy `typescript/src/foo.ts`, paste → import inserted at line 1 (before `import { foo }`)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.2.2 — Empty file
 
-- [ ] Copy `typescript/src/foo.ts`, paste into `typescript/destinations/empty.ts` → import at line 0
+- [ ] Copy `typescript/src/foo.ts`, paste into `typescript/destinations/empty.ts` → import at line 1
 
 #### 6.2.3 — Column is always 0
 
@@ -384,7 +384,7 @@ Style must be set to index 0. Source files must NOT contain `export class` (othe
 
   export const x = 1;
   ```
-- [ ] Place cursor on line 2 (the blank line), copy `typescript/src/foo.ts`, paste → import inserted at line 2
+- [ ] Place cursor on line 3 (the blank line), copy `typescript/src/foo.ts`, paste → import inserted at line 3
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.3.2 — Cursor at end of file
@@ -405,8 +405,8 @@ Style must be set to index 0. Source files must NOT contain `export class` (othe
    */
   export const x = 1;
   ```
-- [ ] Place cursor on line 4 (inside the `/* */` block), paste
-- [ ] Import is adjusted ABOVE the comment block (line 2), NOT at line 4
+- [ ] Place cursor on line 5 (inside the `/* */` block), paste
+- [ ] Import is adjusted ABOVE the comment block (line 3), NOT at line 5
 
 #### 6.3.4 — Cursor on a `//` comment line within a comment group
 
@@ -416,12 +416,12 @@ Style must be set to index 0. Source files must NOT contain `export class` (othe
   // Line two of comment
   // Line three of comment
   ```
-- [ ] Place cursor on line 1, paste → import adjusted to line 0 (above the comment block)
+- [ ] Place cursor on line 2, paste → import adjusted to line 1 (above the comment block)
 
 #### 6.3.5 — Cursor on a non-comment line
 
-- [ ] Open `typescript/destinations/with-imports.ts`, place cursor on line 3 (`export const x = 1;`)
-- [ ] Copy `typescript/src/foo.ts`, paste → import inserted at line 3
+- [ ] Open `typescript/destinations/with-imports.ts`, place cursor on line 4 (`export const x = 1;`)
+- [ ] Copy `typescript/src/foo.ts`, paste → import inserted at line 4
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.3.6 — Column is always 0
@@ -438,8 +438,8 @@ Style must be set to index 0. Source files must NOT contain `export class` (othe
 
   export const x = 1;
   ```
-- [ ] Place cursor on line 2 (`// standalone note`), paste
-- [ ] Import inserted at line 2 (AT the comment, pushing it to line 3 — unlike a comment group where the import moves above the block)
+- [ ] Place cursor on line 3 (`// standalone note`), paste
+- [ ] Import inserted at line 3 (AT the comment, pushing it to line 4 — unlike a comment group where the import moves above the block)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 ---
@@ -512,7 +512,7 @@ Drag a file from the Explorer sidebar into an open `.ts` editor. Universal DnD b
 
 - [ ] Drag `typescript/rejected/sibling.js` from Explorer into `typescript/src/bar.ts`
 - [ ] Warning toast: `Auto Import: Cannot import .js into .ts files.`
-- [ ] No Auto Import import inserted (the drop edit resolves to `null` → VS Code falls back to its default text-drop, so the raw path text may land — distinct from paste, which inserts nothing at all)
+- [ ] No Auto Import import inserted — the provider returns a suppressing empty edit that out-ranks VS Code's default drop, so nothing lands (no stray path text — the same no-op as paste)
 
 ### 9.3 — Placement with Bottom mode
 
@@ -523,7 +523,7 @@ Drag a file from the Explorer sidebar into an open `.ts` editor. Universal DnD b
 ### 9.4 — Placement with Top mode
 
 - [ ] In the extension settings, set **Import statement placement** to `Top`
-- [ ] Drag `typescript/src/foo.ts` into `typescript/destinations/with-imports.ts` → import lands at line 0
+- [ ] Drag `typescript/src/foo.ts` into `typescript/destinations/with-imports.ts` → import lands at line 1
 
 ### 9.5 — Placement with Cursor mode
 
@@ -534,16 +534,16 @@ Drag a file from the Explorer sidebar into an open `.ts` editor. Universal DnD b
 
 - [ ] Ensure **Import statement placement** is still set to `Cursor`
 - [ ] Open `typescript/destinations/single-comment.ts`
-- [ ] Drag `typescript/src/foo.ts` and drop onto line 2 (`// standalone note`)
-- [ ] Import inserted at line 2 (at the comment, pushing it down — same as paste Cursor behavior §6.3.7)
+- [ ] Drag `typescript/src/foo.ts` and drop onto line 3 (`// standalone note`)
+- [ ] Import inserted at line 3 (at the comment, pushing it down — same as paste Cursor behavior §6.3.7)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 9.5.2 — Drop into a multi-line comment block
 
 - [ ] Ensure **Import statement placement** is still set to `Cursor`
 - [ ] Open `typescript/destinations/multiline-comment.ts`
-- [ ] Drag `typescript/src/foo.ts` and drop onto line 4 (inside the `/* */` block)
-- [ ] Import is adjusted ABOVE the comment block (line 2) — same as paste Cursor behavior (§6.3.3)
+- [ ] Drag `typescript/src/foo.ts` and drop onto line 5 (inside the `/* */` block)
+- [ ] Import is adjusted ABOVE the comment block (line 3) — same as paste Cursor behavior (§6.3.3)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 ### 9.6 — Column is always 0
@@ -558,7 +558,7 @@ Drag a file from the Explorer sidebar into an open `.ts` editor. Universal DnD b
 ### 9.8 — Angular naming applies
 
 - [ ] Drag `typescript/src/angular/user.service.ts` (no `export class`) into `typescript/src/bar.ts`
-- [ ] Import is `import { UserService } from './angular/user.service';`
+- [ ] Import is `import { ${1:UserService} } from './angular/user.service';`
 
 ### 9.9 — `preserveScriptFileExtension` respected
 
@@ -580,16 +580,16 @@ The drop provider is registered only for the 12 `DROP_LANGUAGE_SELECTORS` langua
 
 ### 10.1 — Empty `.ts` file
 
-- [ ] Copy `typescript/src/foo.ts`, paste into `typescript/destinations/empty.ts` → import at line 0
+- [ ] Copy `typescript/src/foo.ts`, paste into `typescript/destinations/empty.ts` → import at line 1
 
 ### 10.2 — File with only whitespace
 
-- [ ] Copy `typescript/src/foo.ts`, paste into `typescript/destinations/whitespace-only.ts` → import at line 0 (no import markers found)
+- [ ] Copy `typescript/src/foo.ts`, paste into `typescript/destinations/whitespace-only.ts` → import at line 1 (no import markers found)
 
 ### 10.3 — Large file (500+ lines)
 
 - [ ] Copy `typescript/src/foo.ts`, paste into `typescript/destinations/large-file.ts` (520 lines, imports at top)
-- [ ] Bottom mode still finds the last import correctly (inserts on line 3, after the three imports)
+- [ ] Bottom mode still finds the last import correctly (inserts on line 4, after the three imports)
 
 ### 10.4 — Import inside a string literal (Bottom mode)
 
@@ -597,7 +597,7 @@ The drop provider is registered only for the 12 `DROP_LANGUAGE_SELECTORS` langua
   ```ts
   export const msg = "you should import this";
   ```
-- [ ] Bottom mode: the string `import ` inside a string literal IS detected as an import marker (known heuristic limitation — not a bug)
+- [ ] Bottom mode: the string `import ` inside a string literal is **NOT** detected as an import marker — `isImportLine` requires a line-leading keyword, so the string is skipped and Bottom finds no real import (falls back to the top of the file)
 
 ### 10.5 — File with mixed import styles (Bottom mode)
 
@@ -608,7 +608,7 @@ The drop provider is registered only for the 12 `DROP_LANGUAGE_SELECTORS` langua
 
   export const x = 1;
   ```
-- [ ] Bottom mode: import inserted on line 2 (after the `require(` line, which is the last import marker)
+- [ ] Bottom mode: import inserted on line 3 (after the `require(` line, which is the last import marker)
 
 ---
 

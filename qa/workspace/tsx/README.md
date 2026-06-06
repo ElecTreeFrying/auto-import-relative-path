@@ -101,17 +101,17 @@ tsx/
 | `assets/data.json` | 1.10 | Data — `${1:name}` |
 | `assets/config.yaml` | 1.11 | Data — `${1:name}` |
 | `assets/manual.pdf` | 1.12 | Document — `${1:name}` (empty placeholder) |
-| `destinations/empty.tsx` | 6.1.1, 6.2.2 | Empty file — Bottom/Top fall back to line 0 |
+| `destinations/empty.tsx` | 6.1.1, 6.2.2 | Empty file — Bottom/Top fall back to line 1 |
 | `destinations/with-imports.tsx` | 6.1.2, 6.2.1, 6.3.1, 6.3.2, 6.3.5, 9.4, 9.5 | Two imports + code — placement tests |
 | `destinations/with-require.tsx` | 6.1.3 | `require()` — Bottom detects as import marker |
 | `destinations/commented-imports.tsx` | 6.1.4 | Comment skipping — Bottom ignores commented import |
-| `destinations/comments-only.tsx` | 6.1.5 | Only comments — Bottom falls back to line 0 |
+| `destinations/comments-only.tsx` | 6.1.5 | Only comments — Bottom falls back to line 1 |
 | `destinations/multiline-comment.tsx` | 6.3.3, 9.6.2 | Cursor inside `/* */` block — adjusts above block |
 | `destinations/comment-group.tsx` | 6.3.4 | Cursor on `//` line — adjusts above group |
 | `destinations/single-comment.tsx` | 6.3.7, 9.6.1 | Single isolated `//` — no block adjustment |
 | `destinations/leading-star.tsx` | 6.3.8, 10.1 | Leading-`*` line is a **comment** (NOT Markdown) — counter-case to `.md`/`.mdx` |
 | `destinations/leading-star.mdx` | 10.1 | Byte-identical to `leading-star.tsx` — the `.mdx` ≠ `.tsx` proof |
-| `destinations/string-with-import.tsx` | 10.2 | `import` inside string literal — known heuristic |
+| `destinations/string-with-import.tsx` | 10.2 | `import` inside string literal — NOT a Bottom marker (line-leading only) |
 | `destinations/mixed-imports.tsx` | 10.3 | `import` + `require` mixed — Bottom finds last |
 
 ## File count

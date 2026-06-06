@@ -27,7 +27,7 @@ Every `.svelte` behavior flows from a single routing fact in that builder: it br
 - `src/commands/copy-paste.ts` — Insert Import from Selected File (sequential copy + paste)
 - `src/commands/paste-import-with-style.ts` — Paste as Import (Pick Style) command
 - `src/commands/set-default-import-style.ts` — Set Default Import Style command
-- `src/drop/provider.ts` — `AutoImportOnDropProvider` (drag-and-drop import; registered for `scheme:'file'` only). A rejected pair (or empty snippet) → `'not-supported'` toast + return `null` → VS Code falls back to a raw text-drop
+- `src/drop/provider.ts` — `AutoImportOnDropProvider` (drag-and-drop import; registered for `scheme:'file'` only). A rejected pair (or empty snippet) → `'not-supported'` toast + `suppressDrop()` (an empty edit that out-ranks VS Code's default) → nothing inserted
 - `src/editor/insert-snippet.ts` — `insertSnippetAtSfcScript` (the `.vue`/`.svelte` placement orchestrator; column 0 for script destinations)
 - `src/editor/placement.ts` — `computeSfcPlacement` / `findSfcScriptBounds` (block selection preference; create-if-missing wrapper; `findBottomLineInRange`; `detectBlockIndentation`; `adjustForCommentBlock`)
 - `src/config/settings.ts` — `getAutoImportSetting` / `setAutoImportSetting`; confirms there is **no** `svelteImportStyle` — the framework script arm reads/writes `('script', 'typescript')` → `typescriptImportStyle`
@@ -245,7 +245,7 @@ A hand-typed / drifted `typescriptImportStyle` value (matching no enum descripti
 
 - [ ] In `settings.json`, set `auto-import.importStatement.script.typescriptImportStyle` to a value not in the dropdown, e.g. `import xyz from '_relativePath_';`
 - [ ] Copy `svelte/src/Widget.tsx`, paste into `svelte/src/App.svelte` → `import { $1 } from './Widget';` (style-0 named shape — **NOT** empty)
-- [ ] The tab stop is a **bare `$1`**. The `default:` arm runs **no** Angular naming (Angular lives only in `case 0`) and `.svelte` passes **no** `detectedImportName`, so even an Angular-suffixed source drifts to a bare tab stop: copy `svelte/src/angular/user.component.ts`, paste → `import { $1 } from './angular/user.component';` (**NOT** `import { UserComponent }`)
+- [ ] The tab stop is a **bare `$1`**. The `default:` arm runs **no** Angular naming (Angular lives only in `case 0`) and `.svelte` passes **no** `detectedImportName`, so even an Angular-suffixed source drifts to a bare tab stop: copy `svelte/src/angular/user.component.ts`, paste → `import { $1 } from './angular/user.component';` (**NOT** `import { ${1:UserComponent} }`)
 - [ ] Restore: set **TypeScript / TSX import style** back to `import { name } from '_relativePath_';`
 
 > This is the same drift behavior as [mdx.md §4D.1](mdx.md#4d--style-name-drift-config-drift-safety-net) — the shared `typescript.ts` `default:` arm has no Angular branch. The PascalCase pre-fill in §5 is a **`case 0`-only** effect and does not survive style-name drift.
@@ -263,27 +263,27 @@ Style must be set to index 0 (`import { name } from '_relativePath_';`).
 ### 5.1 — `.component` suffix
 
 - [ ] Copy `svelte/src/angular/user.component.ts` (no `export class`) → paste into `svelte/src/App.svelte`
-- [ ] Output: `import { UserComponent } from './angular/user.component';` (PascalCase identifier filled directly — a committed identifier, **not** an editable `${1:…}` tab stop)
+- [ ] Output: `import { ${1:UserComponent} } from './angular/user.component';` (PascalCase identifier pre-filled as an **editable** `${1:…}` tab stop, like the detected-class case in `.ts`)
 
 ### 5.2 — `.directive` suffix
 
 - [ ] Copy `svelte/src/angular/highlight.directive.ts` → paste into `svelte/src/App.svelte`
-- [ ] Output: `import { HighlightDirective } from './angular/highlight.directive';`
+- [ ] Output: `import { ${1:HighlightDirective} } from './angular/highlight.directive';`
 
 ### 5.3 — `.pipe` suffix
 
 - [ ] Copy `svelte/src/angular/trim.pipe.ts` → paste into `svelte/src/App.svelte`
-- [ ] Output: `import { TrimPipe } from './angular/trim.pipe';`
+- [ ] Output: `import { ${1:TrimPipe} } from './angular/trim.pipe';`
 
 ### 5.4 — `.service` suffix
 
 - [ ] Copy `svelte/src/angular/user.service.ts` → paste into `svelte/src/App.svelte`
-- [ ] Output: `import { UserService } from './angular/user.service';`
+- [ ] Output: `import { ${1:UserService} } from './angular/user.service';`
 
 ### 5.5 — `.module` suffix
 
 - [ ] Copy `svelte/src/angular/auth.module.ts` → paste into `svelte/src/App.svelte`
-- [ ] Output: `import { AuthModule } from './angular/auth.module';`
+- [ ] Output: `import { ${1:AuthModule} } from './angular/auth.module';`
 
 ### 5.6 — Non-Angular source (no suffix match)
 
@@ -300,13 +300,13 @@ This is the signature `.svelte` ≠ `.ts` case. A `.ts` source containing `expor
 ### 5.8 — Angular naming fires for a `.js` source (the `.svelte` ≠ `.tsx` distinction)
 
 - [ ] Copy `svelte/src/angular/widget.component.js` (an Angular-suffixed **`.js`** source) → paste into `svelte/src/App.svelte`
-- [ ] Output: `import { WidgetComponent } from './angular/widget.component';` — PascalCase filled, because **all four** script extensions route to the TS builder here. Contrast `.tsx`/`.mdx`, where a `.js` source takes the JS fallback and gets a bare `import $1` (no Angular naming)
+- [ ] Output: `import { ${1:WidgetComponent} } from './angular/widget.component';` — PascalCase filled (editable tab stop), because **all four** script extensions route to the TS builder here. Contrast `.tsx`/`.mdx`, where a `.js` source takes the JS fallback and gets a bare `import $1` (no Angular naming)
 
 ### 5.9 — Preserve-extension identifier stability
 
-- [ ] With **Preserve script file extension in imports** unchecked (default): copy `svelte/src/angular/user.component.ts`, paste → `import { UserComponent } from './angular/user.component';`
-- [ ] Check the **Preserve script file extension in imports** checkbox, copy `svelte/src/angular/user.component.ts`, paste → `import { UserComponent } from './angular/user.component.ts';`
-- [ ] The identifier is **identical** (`UserComponent`) in both cases — never `UserComponentTs` — because the extension is stripped before the name is derived; only the path string changes
+- [ ] With **Preserve script file extension in imports** unchecked (default): copy `svelte/src/angular/user.component.ts`, paste → `import { ${1:UserComponent} } from './angular/user.component';`
+- [ ] Check the **Preserve script file extension in imports** checkbox, copy `svelte/src/angular/user.component.ts`, paste → `import { ${1:UserComponent} } from './angular/user.component.ts';`
+- [ ] The identifier is **identical** (`${1:UserComponent}`) in both cases — never `UserComponentTs` — because the extension is stripped before the name is derived; only the path string changes
 - [ ] Restore: uncheck **Preserve script file extension in imports**
 
 ### 5.10 — Angular suffix, illegal derived identifier (guard)
@@ -320,7 +320,7 @@ This is the signature `.svelte` ≠ `.ts` case. A `.ts` source containing `expor
 
 `.svelte` uses the **`sfc-script`** placement mode: every import is constrained **inside the SFC `<script>` block** (`computeSfcPlacement` / `insertSnippetAtSfcScript`, the **same** orchestrator as `.vue`). The generic Top/Bottom/Cursor section that `.ts`/`.tsx`/`.mdx` use is **NOT** emitted — placement here always resolves to a position **within the chosen `<script>` block**, and the column is always **0** (`.svelte ∈ SCRIPT_FILE_EXTENSIONS`).
 
-**Block selection preference** (`findSfcScriptBounds`): `<script setup>` **>** an instance `<script>` (one without `context=`) **>** any `<script>`. Svelte has no `<script setup>` (that is Vue's composition-API tag), so for Svelte this resolves to: a plain instance **`<script>` wins over a `<script context="module">`** block; a `<script context="module">` block is selected only when it is the **only** `<script>` present. If **no** `<script>` block exists at all, a new `<script>\n…\n</script>\n` wrapper is created at line 0 and all three placement modes converge there.
+**Block selection preference** (`findSfcScriptBounds`): `<script setup>` **>** an instance `<script>` (one without `context=`) **>** any `<script>`. Svelte has no `<script setup>` (that is Vue's composition-API tag), so for Svelte this resolves to: a plain instance **`<script>` wins over a `<script context="module">`** block; a `<script context="module">` block is selected only when it is the **only** `<script>` present. If **no** `<script>` block exists at all, a new `<script>\n…\n</script>\n` wrapper is created at line 1 and all three placement modes converge there.
 
 ### 6.1 — Block selection preference (instance `<script>` wins over `<script context="module">`)
 
@@ -336,7 +336,7 @@ This is the signature `.svelte` ≠ `.ts` case. A `.ts` source containing `expor
 
   <div></div>
   ```
-- [ ] With `importStatementPlacement = "Bottom"`, copy `svelte/src/Widget.tsx`, paste → import inserted on line 6 (inside the **instance `<script>`** block, after `import { Header }`, before its `</script>`), NOT in the `<script context="module">` block
+- [ ] With `importStatementPlacement = "Bottom"`, copy `svelte/src/Widget.tsx`, paste → import inserted on line 7 (inside the **instance `<script>`** block, after `import { Header }`, before its `</script>`), NOT in the `<script context="module">` block
 - [ ] This proves the `context=` exclusion: `findScriptBlock(lines, '<script', 'context=')` skips any opening tag containing `context=`, so the plain instance `<script>` (tier 2) is selected over the module block (tier 3)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
@@ -353,7 +353,7 @@ This is the signature `.svelte` ≠ `.ts` case. A `.ts` source containing `expor
 
   <div></div>
   ```
-- [ ] Copy `svelte/src/Widget.tsx`, paste → import inserted on line 3 (after `import { Footer }`, before `</script>`): `import { $1 } from '../src/Widget';`
+- [ ] Copy `svelte/src/Widget.tsx`, paste → import inserted on line 4 (after `import { Footer }`, before `</script>`): `import { $1 } from '../src/Widget';`
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.2.2 — Empty block (no imports yet)
@@ -366,7 +366,7 @@ This is the signature `.svelte` ≠ `.ts` case. A `.ts` source containing `expor
 
   <div></div>
   ```
-- [ ] Copy `svelte/src/Widget.tsx`, paste → import inserted on line 1 (just after the opening `<script>` tag — Bottom falls back to "just after the opening tag" when the block has no `IMPORT_INDICATORS` line)
+- [ ] Copy `svelte/src/Widget.tsx`, paste → import inserted on line 2 (just after the opening `<script>` tag — Bottom falls back to "just after the opening tag" when the block has no `IMPORT_INDICATORS` line)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.2.3 — `<script context="module">` selected via tier-3 fallback (no instance `<script>`)
@@ -379,7 +379,7 @@ This is the signature `.svelte` ≠ `.ts` case. A `.ts` source containing `expor
 
   <div></div>
   ```
-- [ ] Copy `svelte/src/Widget.tsx`, paste → import inserted on line 1 (inside the **`<script context="module">`** block) — with no instance `<script>`, the tier-2 exclusion misses and `findSfcScriptBounds` falls to tier 3 (any `<script>`), selecting the module block
+- [ ] Copy `svelte/src/Widget.tsx`, paste → import inserted on line 2 (inside the **`<script context="module">`** block) — with no instance `<script>`, the tier-2 exclusion misses and `findSfcScriptBounds` falls to tier 3 (any `<script>`), selecting the module block
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.2.4 — `require()` marker inside the block
@@ -392,7 +392,7 @@ This is the signature `.svelte` ≠ `.ts` case. A `.ts` source containing `expor
 
   <div></div>
   ```
-- [ ] Copy `svelte/src/Widget.tsx`, paste → import inserted on line 2 (after the `require(` line — `require(` is one of the `IMPORT_INDICATORS` markers, scanned **within the block** by `findBottomLineInRange`)
+- [ ] Copy `svelte/src/Widget.tsx`, paste → import inserted on line 3 (after the `require(` line — `require(` is one of the `IMPORT_INDICATORS` markers, scanned **within the block** by `findBottomLineInRange`)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.2.5 — Column is always 0
@@ -406,7 +406,7 @@ This is the signature `.svelte` ≠ `.ts` case. A `.ts` source containing `expor
 #### 6.3.1 — Block with existing imports
 
 - [ ] Open `svelte/destinations/with-imports.svelte` (same content as §6.2.1)
-- [ ] Copy `svelte/src/Widget.tsx`, paste → import inserted on line 1 (just after the opening `<script>` tag, **before** `import { Header }`)
+- [ ] Copy `svelte/src/Widget.tsx`, paste → import inserted on line 2 (just after the opening `<script>` tag, **before** `import { Header }`)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.3.2 — Column is always 0
@@ -419,14 +419,14 @@ This is the signature `.svelte` ≠ `.ts` case. A `.ts` source containing `expor
 
 #### 6.4.1 — Cursor strictly inside the block
 
-- [ ] Open `svelte/destinations/with-imports.svelte`, place cursor on line 2 (the `import { Footer }` line)
-- [ ] Copy `svelte/src/Widget.tsx`, paste → import inserted **at** line 2 (the cursor line is strictly between the instance `<script>` bounds, so it is honored)
+- [ ] Open `svelte/destinations/with-imports.svelte`, place cursor on line 3 (the `import { Footer }` line)
+- [ ] Copy `svelte/src/Widget.tsx`, paste → import inserted **at** line 3 (the cursor line is strictly between the instance `<script>` bounds, so it is honored)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.4.2 — Cursor outside the block → falls to Bottom-in-block
 
-- [ ] Open `svelte/destinations/with-imports.svelte`, place cursor on line 5 (`<div></div>`, in the markup)
-- [ ] Copy `svelte/src/Widget.tsx`, paste → import inserted on line 3 (after `import { Footer }` — when the cursor is **not** strictly between the block bounds, Cursor falls back to Bottom-within-block)
+- [ ] Open `svelte/destinations/with-imports.svelte`, place cursor on line 6 (`<div></div>`, in the markup)
+- [ ] Copy `svelte/src/Widget.tsx`, paste → import inserted on line 4 (after `import { Footer }` — when the cursor is **not** strictly between the block bounds, Cursor falls back to Bottom-within-block)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.4.3 — Cursor on a comment line inside the block (adjusted above)
@@ -443,7 +443,7 @@ This is the signature `.svelte` ≠ `.ts` case. A `.ts` source containing `expor
 
   <div></div>
   ```
-- [ ] Place cursor on line 3 (the `/*` opener), copy `svelte/src/Widget.tsx`, paste → import is adjusted **above** the comment block (line 3 → inserted at the `/*` line position, pushing the block down) — `adjustForCommentBlock` applies inside the `<script>` block
+- [ ] Place cursor on line 4 (the `/*` opener), copy `svelte/src/Widget.tsx`, paste → import is adjusted **above** the comment block (line 4 → inserted at the `/*` line position, pushing the block down) — `adjustForCommentBlock` applies inside the `<script>` block
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 ### 6.5 — Create-if-missing wrapper (no `<script>` block)
@@ -452,14 +452,14 @@ This is the signature `.svelte` ≠ `.ts` case. A `.ts` source containing `expor
   ```svelte
   <div></div>
   ```
-- [ ] Copy `svelte/src/Widget.tsx`, paste → a new `<script>` block is created at line 0 wrapping the import:
+- [ ] Copy `svelte/src/Widget.tsx`, paste → a new `<script>` block is created at line 1 wrapping the import:
   ```svelte
   <script>
   import { $1 } from '../src/Widget';
   </script>
   <div></div>
   ```
-- [ ] Repeat with **Top** and **Cursor** placement — **all three modes converge** on the same created wrapper at line 0 (the create-if-missing branch returns before the placement switch)
+- [ ] Repeat with **Top** and **Cursor** placement — **all three modes converge** on the same created wrapper at line 1 (the create-if-missing branch returns before the placement switch)
 - [ ] Undo (`Cmd+Z`) after each to restore the file
 
 ### 6.6 — Detected indentation
@@ -510,7 +510,7 @@ Run via Command Palette: `Auto Import: Paste as Import (Pick Style)`, or click *
 
 - [ ] Copy `svelte/src/angular/user.component.ts`, run the command in `svelte/src/App.svelte`
 - [ ] The style-0 item's **label** is `import { UserComponent } from 'user.component';` (basename preview, Angular PascalCase filled — `generateAngularLegacyImportName` runs on the label path too)
-- [ ] Selecting it inserts `import { UserComponent } from './angular/user.component';` (full path)
+- [ ] Selecting it inserts `import { ${1:UserComponent} } from './angular/user.component';` (full path)
 - [ ] Styles 1–6 show a bare `name` placeholder in their labels (Angular fills only style 0)
 
 ### 7.4 — Asset source: single fixed variant (direct insert)
@@ -569,14 +569,14 @@ Drag a file from the Explorer sidebar into an open `.svelte` editor. A drop reus
 - [ ] Drag `svelte/assets/logo.png` into `svelte/src/App.svelte` → `import ${1:name} from '../assets/logo.png';` (the named-default asset shape, byte-identical to §2.2)
 - [ ] Drag `svelte/assets/clip.mp4` into `svelte/src/App.svelte` → `import ${1:url} from '../assets/clip.mp4';` (the url-default asset shape — av / text-track — byte-identical to §2.3; cursor lands on the `${1:url}` placeholder. `theme.mp3` / `subs.vtt` are interchangeable)
 
-### 9.3 — Unsupported-pair drop → raw-text fallback
+### 9.3 — Unsupported-pair drop → drop suppression (nothing inserted)
 
-Because `.svelte` is **allow-list**, a gated-out source has no snippet to offer. The drop edit resolves to `null`, so VS Code falls back to its **default text-drop** and the **raw path text** lands — distinct from paste, which inserts nothing at all. (This case does **not** exist for accept-all `.tsx`, where every source builds a snippet.)
+Because `.svelte` is **allow-list**, a gated-out source has no snippet to offer. The provider returns a suppressing empty edit that out-ranks VS Code's default drop, so **nothing is inserted** — the same no-op as paste. (This case does **not** exist for accept-all `.tsx`, where every source builds a snippet.)
 
 - [ ] Drag `svelte/assets/global.css` (a `.css` — gated out) into `svelte/src/App.svelte`
-- [ ] Warning toast: `Auto Import: Cannot import .css into .svelte files.` **AND** no import is inserted — instead the **raw file path text** is dropped (VS Code's default text-drop)
-- [ ] Repeat with `svelte/assets/Demo.vue` and `svelte/assets/page.mdx` → same `not-supported` toast + raw-text fallback
-- [ ] Undo (`Cmd+Z`) to remove the dropped raw text
+- [ ] Warning toast: `Auto Import: Cannot import .css into .svelte files.` **AND** no import is inserted — the provider suppresses the drop, so nothing lands (no stray path text)
+- [ ] Repeat with `svelte/assets/Demo.vue` and `svelte/assets/page.mdx` → same `not-supported` toast + suppressed drop
+- [ ] No text was inserted, so there is nothing to undo
 
 ### 9.4 — Placement with Bottom mode
 
@@ -588,13 +588,13 @@ Because `.svelte` is **allow-list**, a gated-out source has no snippet to offer.
 ### 9.5 — Placement with Top mode
 
 - [ ] Set **Import statement placement** to `Top`
-- [ ] Drag `svelte/src/Widget.tsx` into `svelte/destinations/with-imports.svelte` → import lands on line 1 (just after the opening `<script>` tag)
+- [ ] Drag `svelte/src/Widget.tsx` into `svelte/destinations/with-imports.svelte` → import lands on line 2 (just after the opening `<script>` tag)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 ### 9.6 — Placement with Cursor mode (comment adjustment)
 
 - [ ] Set **Import statement placement** to `Cursor`
-- [ ] Open `svelte/destinations/comment-cursor.svelte` (content as in §6.4.3), drag `svelte/src/Widget.tsx` and drop onto line 3 (the `/*` opener)
+- [ ] Open `svelte/destinations/comment-cursor.svelte` (content as in §6.4.3), drag `svelte/src/Widget.tsx` and drop onto line 4 (the `/*` opener)
 - [ ] Import is adjusted **above** the comment block (same as paste Cursor §6.4.3 — `computeImportPlacement` applies `adjustForCommentBlock` within the block on drop too)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
@@ -605,7 +605,7 @@ Because `.svelte` is **allow-list**, a gated-out source has no snippet to offer.
 ### 9.8 — Angular naming applies on drop
 
 - [ ] Drag `svelte/src/angular/user.component.ts` (no `export class`) into `svelte/src/App.svelte`
-- [ ] Import is `import { UserComponent } from './angular/user.component';` (Angular PascalCase, same as paste §5.1)
+- [ ] Import is `import { ${1:UserComponent} } from './angular/user.component';` (Angular PascalCase, same as paste §5.1)
 
 ### 9.9 — `preserveScriptFileExtension` respected on drop
 
@@ -617,7 +617,7 @@ Because `.svelte` is **allow-list**, a gated-out source has no snippet to offer.
 ### 9.10 — Wrapper created on drop into a script-less `.svelte`
 
 - [ ] Open `svelte/destinations/template-only.svelte` (no `<script>` block; content as in §6.5)
-- [ ] Drag `svelte/src/Widget.tsx` → a new `<script>` wrapper is created at line 0 with the import inside — byte-identical to the paste-side §6.5 block:
+- [ ] Drag `svelte/src/Widget.tsx` → a new `<script>` wrapper is created at line 1 with the import inside — byte-identical to the paste-side §6.5 block:
   ```svelte
   <script>
   import { $1 } from '../src/Widget';
@@ -632,9 +632,9 @@ Because `.svelte` is **allow-list**, a gated-out source has no snippet to offer.
 
 ## 10 — Edge cases
 
-### 10.1 — `require()` / `import`-in-string false positives are scoped to the `<script>` block
+### 10.1 — `require()` marker detection is scoped to the `<script>` block
 
-Bottom placement scans for `IMPORT_INDICATORS` markers, but for `.svelte` the scan (`findBottomLineInRange`) is **bounded by the `<script>` block** — a marker outside the block does not move the insertion point.
+Bottom placement scans for import lines (`isImportLine`), but for `.svelte` the scan (`findBottomLineInRange`) is **bounded by the `<script>` block** — a marker outside the block does not move the insertion point.
 
 - [ ] Set **Import statement placement** to `Bottom`
 - [ ] Open `svelte/destinations/with-require.svelte` (content as in §6.2.4) → paste `svelte/src/Widget.tsx` lands after the `const fs = require('fs');` line (the `require(` marker counts, inside the block)
@@ -649,7 +649,7 @@ Bottom placement scans for `IMPORT_INDICATORS` markers, but for `.svelte` the sc
 
   <div></div>
   ```
-- [ ] Bottom mode: the substring `import ` inside the string literal IS detected as an import marker (known heuristic limitation — not a bug); the import lands after that line, **within the `<script>` block**
+- [ ] Bottom mode: the substring `import ` inside the string literal is **NOT** detected as an import marker — `isImportLine` requires a line-leading keyword, so the string is skipped; with no real import in the `<script>` block, Bottom falls back to just after the opening `<script>` tag (the import lands above the `const msg` line, inside the block)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 ### 10.3 — `.svelte` → `.svelte` self-import is a NAMED ASSET import
@@ -674,7 +674,7 @@ A `.svelte` source dropped into a `.svelte` destination is **asset-routed**, not
 - [ ] Placement — SFC `<script>`-block confined: block-selection preference (instance `<script>` > `<script context="module">`) + Bottom (5, incl. module-only tier-3 fallback) + Top (2) + Cursor (3) + create-if-missing + detected indentation (≈13 cases; **no** generic Top/Bottom/Cursor section)
 - [ ] Paste as Import (Pick Style) — 7 TS items / label-vs-inserted / style-0 Angular label / asset direct-insert (4 cases; no 0-variant case)
 - [ ] Set Default Import Style — TS persist / no-`svelteImportStyle` shared-setting cross-effect / asset `no-configurable-style` (3 cases)
-- [ ] Drag-and-drop — happy script / happy asset (named + url) / **unsupported-pair raw-text fallback** / placement (Bottom/Top/Cursor in-block) / column 0 / Angular-on-drop / preserve / **wrapper-create-on-drop** + asset-in-wrapper (11 cases)
+- [ ] Drag-and-drop — happy script / happy asset (named + url) / **unsupported-pair drop suppression** / placement (Bottom/Top/Cursor in-block) / column 0 / Angular-on-drop / preserve / **wrapper-create-on-drop** + asset-in-wrapper (11 cases)
 - [ ] Edge cases — in-block `require(` + string-literal false positives / `.svelte`→`.svelte` named-asset-import quirk (3 cases)
 
 **Total: ~80 test cases**

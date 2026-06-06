@@ -179,7 +179,7 @@ PascalCase each segment.
 | `.service` | `UserService` |
 | `.module` | `UserModule` |
 
-A path matching **no** suffix → bare `$1` (not a PascalCased basename). The trailing
+The derived name — like a detected exported-class name — is emitted as a **pre-filled, editable** `${1:Name}` tab stop (`generateAngularLegacyImportName` returns `${1:<derived>}`), not a committed literal. A path matching **no** suffix → bare `$1` (not a PascalCased basename). The trailing
 `.ts`/`.tsx`/`.js`/`.jsx` is stripped **before** deriving the name, so the identifier is
 **stable** across `preserveScriptFileExtension` on/off (never `…ComponentTs`) — only the path
 string changes. The derived PascalCase name is then validated against `/^[A-Za-z_$][\w$]*$/`
@@ -202,9 +202,11 @@ comment adjustment. One mode per destination / source-type.
 | `sfc-script` | `.vue` `.svelte` | Same shape as `astro-frontmatter`, bounded by the `<script>` block: selection prefers `<script setup>` over an instance `<script>` (no `context=`) over any `<script>`. No `<script>` → a new `<script>\n<import>\n</script>\n` block at line 0. |
 
 **`IMPORT_INDICATORS`** (the 9 Bottom-anchor markers): `import ` · `require(` · `@import '` ·
-`@import "` · `@import url(` · `@use '` · `@use "` · `@forward '` · `@forward "`. A `require(`
-line counts; an `import ` substring **inside a string literal** is a (false-positive) marker;
-commented-out marker lines (`//`, `/*`, leading `*`) are skipped.
+`@import "` · `@import url(` · `@use '` · `@use "` · `@forward '` · `@forward "`. Detected via
+`isImportLine`: the 8 keyword markers must start the trimmed line, so an `import ` substring
+**inside a string literal** is **not** a marker; `require(` matches anywhere on the line (a
+`require(` substring inside a string literal stays a residual false positive); commented-out
+marker lines (`//`, `/*`, leading `*`) are skipped.
 
 **Markdown-star quirk** (`.md` and `.mdx` only): a line whose first non-whitespace char is `*`
 is treated as **content** (bullet / `*italic*` / `**bold**` / `***`), **not** a block-comment

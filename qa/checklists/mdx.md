@@ -294,27 +294,27 @@ Style must be set to index 0 (`import { name } from '_relativePath_';`).
 ### 5.1 — `.component` suffix
 
 - [ ] Copy `mdx/src/angular/user.component.ts` (no `export class`) → paste into `mdx/src/Page.mdx`
-- [ ] Output: `import { UserComponent } from './angular/user.component';` (PascalCase identifier filled directly — a committed identifier, **not** an editable `${1:…}` tab stop)
+- [ ] Output: `import { ${1:UserComponent} } from './angular/user.component';` (PascalCase identifier pre-filled as an **editable** `${1:…}` tab stop, like the detected-class case in `.ts`)
 
 ### 5.2 — `.directive` suffix
 
 - [ ] Copy `mdx/src/angular/highlight.directive.ts` → paste into `mdx/src/Page.mdx`
-- [ ] Output: `import { HighlightDirective } from './angular/highlight.directive';`
+- [ ] Output: `import { ${1:HighlightDirective} } from './angular/highlight.directive';`
 
 ### 5.3 — `.pipe` suffix
 
 - [ ] Copy `mdx/src/angular/trim.pipe.ts` → paste into `mdx/src/Page.mdx`
-- [ ] Output: `import { TrimPipe } from './angular/trim.pipe';`
+- [ ] Output: `import { ${1:TrimPipe} } from './angular/trim.pipe';`
 
 ### 5.4 — `.service` suffix
 
 - [ ] Copy `mdx/src/angular/user.service.ts` → paste into `mdx/src/Page.mdx`
-- [ ] Output: `import { UserService } from './angular/user.service';`
+- [ ] Output: `import { ${1:UserService} } from './angular/user.service';`
 
 ### 5.5 — `.module` suffix
 
 - [ ] Copy `mdx/src/angular/auth.module.ts` → paste into `mdx/src/Page.mdx`
-- [ ] Output: `import { AuthModule } from './angular/auth.module';`
+- [ ] Output: `import { ${1:AuthModule} } from './angular/auth.module';`
 
 ### 5.6 — Non-Angular `.ts`/`.tsx` source (no suffix match)
 
@@ -331,13 +331,13 @@ This is the signature `.mdx` ≠ `.ts` case. A `.ts`/`.tsx` source containing `e
 ### 5.8 — Angular naming is `.ts`/`.tsx`-source-only (`.js`/`.jsx` source → JS fallback)
 
 - [ ] Copy `mdx/src/angular/widget.component.js` (an Angular-suffixed `.js` source) → paste into `mdx/src/Page.mdx`
-- [ ] Output: `import $1 from './angular/widget.component';` — a **bare** default-import, NOT `import { WidgetComponent }`. A `.js`/`.jsx` source takes the JS **fallback**, which has no Angular naming. Contrast §5.1 (a `.component.ts` source → `import { UserComponent }`)
+- [ ] Output: `import $1 from './angular/widget.component';` — a **bare** default-import, NOT `import { ${1:WidgetComponent} }`. A `.js`/`.jsx` source takes the JS **fallback**, which has no Angular naming. Contrast §5.1 (a `.component.ts` source → `import { ${1:UserComponent} }`)
 
 ### 5.9 — Preserve-extension identifier stability
 
-- [ ] With **Preserve script file extension in imports** unchecked (default): copy `mdx/src/angular/user.component.ts`, paste → `import { UserComponent } from './angular/user.component';`
-- [ ] Check the **Preserve script file extension in imports** checkbox, copy `mdx/src/angular/user.component.ts`, paste → `import { UserComponent } from './angular/user.component.ts';`
-- [ ] The identifier is **identical** (`UserComponent`) in both cases — never `UserComponentTs` — because the extension is stripped before the name is derived; only the path string changes
+- [ ] With **Preserve script file extension in imports** unchecked (default): copy `mdx/src/angular/user.component.ts`, paste → `import { ${1:UserComponent} } from './angular/user.component';`
+- [ ] Check the **Preserve script file extension in imports** checkbox, copy `mdx/src/angular/user.component.ts`, paste → `import { ${1:UserComponent} } from './angular/user.component.ts';`
+- [ ] The identifier is **identical** (`${1:UserComponent}`) in both cases — never `UserComponentTs` — because the extension is stripped before the name is derived; only the path string changes
 - [ ] Restore: uncheck **Preserve script file extension in imports**
 
 ### 5.10 — Angular suffix, illegal derived identifier (guard)
@@ -357,7 +357,7 @@ This is the signature `.mdx` ≠ `.ts` case. A `.ts`/`.tsx` source containing `e
 
 #### 6.1.1 — Empty file
 
-- [ ] Copy `mdx/src/Widget.tsx`, paste into `mdx/destinations/empty.mdx` → import inserted at line 0
+- [ ] Copy `mdx/src/Widget.tsx`, paste into `mdx/destinations/empty.mdx` → import inserted at line 1
 
 #### 6.1.2 — File with existing imports
 
@@ -368,7 +368,7 @@ This is the signature `.mdx` ≠ `.ts` case. A `.ts`/`.tsx` source containing `e
 
   # Page
   ```
-- [ ] Copy `mdx/src/Widget.tsx`, paste → import inserted on line 2 (after `import { Footer }`, before the blank line)
+- [ ] Copy `mdx/src/Widget.tsx`, paste → import inserted on line 3 (after `import { Footer }`, before the blank line)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.1.3 — File with `require()` import
@@ -377,7 +377,7 @@ This is the signature `.mdx` ≠ `.ts` case. A `.ts`/`.tsx` source containing `e
   ```mdx
   const fs = require('fs');
   ```
-- [ ] Copy `mdx/src/Widget.tsx`, paste → import inserted on line 1 (after the `require(` line — `require(` is one of the `IMPORT_INDICATORS` markers)
+- [ ] Copy `mdx/src/Widget.tsx`, paste → import inserted on line 2 (after the `require(` line — `require(` is one of the `IMPORT_INDICATORS` markers)
 
 #### 6.1.4 — File with comments containing the `import` keyword
 
@@ -386,7 +386,7 @@ This is the signature `.mdx` ≠ `.ts` case. A `.ts`/`.tsx` source containing `e
   // import { Footer } from '../src/Footer';
   import { Header } from '../src/Header';
   ```
-- [ ] The commented line is skipped — import inserted on line 2 (after the real import, NOT after the comment)
+- [ ] The commented line is skipped — import inserted on line 3 (after the real import, NOT after the comment)
 
 #### 6.1.5 — File with only comments
 
@@ -395,7 +395,7 @@ This is the signature `.mdx` ≠ `.ts` case. A `.ts`/`.tsx` source containing `e
   // This file has no imports
   /* Just comments */
   ```
-- [ ] No import marker found → import inserted at line 0
+- [ ] No import marker found → import inserted at line 1
 
 #### 6.1.6 — Column is always 0
 
@@ -408,12 +408,12 @@ This is the signature `.mdx` ≠ `.ts` case. A `.ts`/`.tsx` source containing `e
 #### 6.2.1 — File with existing imports
 
 - [ ] Open `mdx/destinations/with-imports.mdx` (same content as §6.1.2)
-- [ ] Copy `mdx/src/Widget.tsx`, paste → import inserted at line 0 (before `import { Header }`)
+- [ ] Copy `mdx/src/Widget.tsx`, paste → import inserted at line 1 (before `import { Header }`)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.2.2 — Empty file
 
-- [ ] Copy `mdx/src/Widget.tsx`, paste into `mdx/destinations/empty.mdx` → import at line 0
+- [ ] Copy `mdx/src/Widget.tsx`, paste into `mdx/destinations/empty.mdx` → import at line 1
 
 #### 6.2.3 — Column is always 0
 
@@ -425,8 +425,8 @@ This is the signature `.mdx` ≠ `.ts` case. A `.ts`/`.tsx` source containing `e
 
 #### 6.3.1 — Cursor on a blank line
 
-- [ ] Open `mdx/destinations/with-imports.mdx`, place cursor on line 2 (the blank line)
-- [ ] Copy `mdx/src/Widget.tsx`, paste → import inserted at line 2
+- [ ] Open `mdx/destinations/with-imports.mdx`, place cursor on line 3 (the blank line)
+- [ ] Copy `mdx/src/Widget.tsx`, paste → import inserted at line 3
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.3.2 — Cursor at end of file
@@ -447,8 +447,8 @@ This is the signature `.mdx` ≠ `.ts` case. A `.ts`/`.tsx` source containing `e
 
   # Page
   ```
-- [ ] Place cursor on line 2 (the `/*` opener), paste → import is adjusted ABOVE the block (line 2) — a `/*` line is a comment continuation even in `.mdx`
-- [ ] Undo, then place cursor on line 4 (the ` * about this module` line), paste → import is inserted **AT** line 4 (NOT above) — in `.mdx`, a leading `*` is **content**, not a comment continuation. **Contrast `.tsx`**, where this same line adjusts above (see §10.1)
+- [ ] Place cursor on line 3 (the `/*` opener), paste → import is adjusted ABOVE the block (line 3) — a `/*` line is a comment continuation even in `.mdx`
+- [ ] Undo, then place cursor on line 5 (the ` * about this module` line), paste → import is inserted **AT** line 5 (NOT above) — in `.mdx`, a leading `*` is **content**, not a comment continuation. **Contrast `.tsx`**, where this same line adjusts above (see §10.1)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.3.4 — Cursor on a `//` comment line within a comment group
@@ -459,12 +459,12 @@ This is the signature `.mdx` ≠ `.ts` case. A `.ts`/`.tsx` source containing `e
   // Line two of comment
   // Line three of comment
   ```
-- [ ] Place cursor on line 1, paste → import adjusted to line 0 (above the comment block — `//` lines adjust above in `.mdx` just as in `.tsx`)
+- [ ] Place cursor on line 2, paste → import adjusted to line 1 (above the comment block — `//` lines adjust above in `.mdx` just as in `.tsx`)
 
 #### 6.3.5 — Cursor on a non-comment line
 
-- [ ] Open `mdx/destinations/with-imports.mdx`, place cursor on line 3 (`# Page`)
-- [ ] Copy `mdx/src/Widget.tsx`, paste → import inserted at line 3
+- [ ] Open `mdx/destinations/with-imports.mdx`, place cursor on line 4 (`# Page`)
+- [ ] Copy `mdx/src/Widget.tsx`, paste → import inserted at line 4
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.3.6 — Column is always 0
@@ -481,8 +481,8 @@ This is the signature `.mdx` ≠ `.ts` case. A `.ts`/`.tsx` source containing `e
 
   # Page
   ```
-- [ ] Place cursor on line 2 (`// standalone note`), paste
-- [ ] Import inserted at line 2 (AT the comment, pushing it to line 3 — unlike a comment group where the import moves above the block)
+- [ ] Place cursor on line 3 (`// standalone note`), paste
+- [ ] Import inserted at line 3 (AT the comment, pushing it to line 4 — unlike a comment group where the import moves above the block)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.3.8 — Cursor on a leading-`*` line (IS Markdown — the `.mdx` divergence from `.tsx`)
@@ -497,9 +497,9 @@ This is the signature `.mdx` ≠ `.ts` case. A `.ts`/`.tsx` source containing `e
    */
   export const Page = () => null;
   ```
-- [ ] Place cursor on line 4 (the ` * The second body line…` line), paste
-- [ ] Import is inserted **AT** line 4 — in `.mdx`, a leading `*` is **content** (bullet / emphasis), so `adjustForCommentBlock` does not treat it as a comment continuation (`isMarkdownDestination('.mdx')` is `true`)
-- [ ] **Contrast:** in `.tsx`, the same leading-`*` line is a **comment continuation**, so the import is pushed **above** the block (line 2) — see §10.1
+- [ ] Place cursor on line 5 (the ` * The second body line…` line), paste
+- [ ] Import is inserted **AT** line 5 — in `.mdx`, a leading `*` is **content** (bullet / emphasis), so `adjustForCommentBlock` does not treat it as a comment continuation (`isMarkdownDestination('.mdx')` is `true`)
+- [ ] **Contrast:** in `.tsx`, the same leading-`*` line is a **comment continuation**, so the import is pushed **above** the block (line 3) — see §10.1
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 ---
@@ -556,7 +556,7 @@ Run via Command Palette: `Auto Import: Paste as Import (Pick Style)`, or click *
 
 - [ ] Copy `mdx/src/angular/user.component.ts`, run the command in `mdx/src/Page.mdx`
 - [ ] The style-0 item's **label** is `import { UserComponent } from 'user.component';` (basename preview, Angular PascalCase filled — `generateAngularLegacyImportName` runs on the label path too)
-- [ ] Selecting it inserts `import { UserComponent } from './angular/user.component';` (full path)
+- [ ] Selecting it inserts `import { ${1:UserComponent} } from './angular/user.component';` (full path)
 - [ ] Styles 1–6 show a bare `name` placeholder in their labels (Angular fills only style 0)
 
 ### 7.5 — Asset source: single fixed variant (direct insert)
@@ -626,7 +626,7 @@ Drag a file from the Explorer sidebar into an open `.mdx` editor. A drop reuses 
 
 - [ ] Drag `mdx/assets/logo.png` into `mdx/src/Page.mdx` → `import ${1:name} from '../assets/logo.png';` (the fixed asset shape, byte-identical to §2.3)
 
-> **No raw-text-fallback drop.** `.mdx` accepts every source **and** renders a non-empty snippet for all of them, so a drop never resolves to `null` — there is no raw-path text fallback. This is the contrast to [jsx.md §9.3](jsx.md#93--unsupported-pair-ts--tsx--jsx-raw-text-fallback), where a `.ts`/`.tsx` source builds an empty snippet and VS Code's default text-drop drops the raw path. `.mdx` has no such case.
+> **No suppressed-drop case.** `.mdx` accepts every source **and** renders a non-empty snippet for all of them, so no drop is ever empty/unsupported — there is no suppressed-drop case. This is the contrast to [jsx.md §9.3](jsx.md#93--unsupported-pair-ts--tsx--jsx-drop-suppression), where a `.ts`/`.tsx` source builds an empty snippet and the provider suppresses the drop (nothing inserted). `.mdx` has no such case.
 
 ### 9.4 — Placement with Bottom mode
 
@@ -638,7 +638,7 @@ Drag a file from the Explorer sidebar into an open `.mdx` editor. A drop reuses 
 ### 9.5 — Placement with Top mode
 
 - [ ] Set **Import statement placement** to `Top`
-- [ ] Drag `mdx/src/Widget.tsx` into `mdx/destinations/with-imports.mdx` → import lands at line 0
+- [ ] Drag `mdx/src/Widget.tsx` into `mdx/destinations/with-imports.mdx` → import lands at line 1
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 ### 9.6 — Placement with Cursor mode (comment-block adjustment)
@@ -647,15 +647,15 @@ Drag a file from the Explorer sidebar into an open `.mdx` editor. A drop reuses 
 
 #### 9.6.1 — Drop onto a single `//` comment line
 
-- [ ] Open `mdx/destinations/single-comment.mdx`, drag `mdx/src/Widget.tsx` and drop onto line 2 (`// standalone note`)
-- [ ] Import inserted at line 2 (at the comment, pushing it down — same as paste Cursor §6.3.7)
+- [ ] Open `mdx/destinations/single-comment.mdx`, drag `mdx/src/Widget.tsx` and drop onto line 3 (`// standalone note`)
+- [ ] Import inserted at line 3 (at the comment, pushing it down — same as paste Cursor §6.3.7)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 9.6.2 — Drop into a multi-line comment block
 
-- [ ] Open `mdx/destinations/multiline-comment.mdx`, drag `mdx/src/Widget.tsx` and drop onto line 2 (the `/*` opener)
-- [ ] Import is adjusted ABOVE the comment block (line 2) — same as paste Cursor §6.3.3 (a `/*` line is a comment continuation in `.mdx`)
-- [ ] Undo, then drop onto line 4 (the ` * ` body line) → import lands **AT** line 4 — the markdown-star quirk applies on drop too (`computeImportPlacement` passes `isMarkdownDestination('.mdx')`), so a leading `*` is content. Contrast `.tsx`, where it adjusts above (see §10.1)
+- [ ] Open `mdx/destinations/multiline-comment.mdx`, drag `mdx/src/Widget.tsx` and drop onto line 3 (the `/*` opener)
+- [ ] Import is adjusted ABOVE the comment block (line 3) — same as paste Cursor §6.3.3 (a `/*` line is a comment continuation in `.mdx`)
+- [ ] Undo, then drop onto line 5 (the ` * ` body line) → import lands **AT** line 5 — the markdown-star quirk applies on drop too (`computeImportPlacement` passes `isMarkdownDestination('.mdx')`), so a leading `*` is content. Contrast `.tsx`, where it adjusts above (see §10.1)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 ### 9.7 — Column is always 0
@@ -665,7 +665,7 @@ Drag a file from the Explorer sidebar into an open `.mdx` editor. A drop reuses 
 ### 9.8 — Angular naming applies on drop
 
 - [ ] Drag `mdx/src/angular/user.component.ts` (no `export class`) into `mdx/src/Page.mdx`
-- [ ] Import is `import { UserComponent } from './angular/user.component';` (Angular PascalCase, same as paste §5.1)
+- [ ] Import is `import { ${1:UserComponent} } from './angular/user.component';` (Angular PascalCase, same as paste §5.1)
 
 ### 9.9 — `preserveScriptFileExtension` respected on drop
 
@@ -685,8 +685,8 @@ Drag a file from the Explorer sidebar into an open `.mdx` editor. A drop reuses 
 `.mdx` and `.tsx` share the **same** `tsx.ts` builder (`dispatch.ts` routes both there), so their imports are byte-identical. They diverge only at **Cursor placement on a leading-`*` line**: `isMarkdownDestination` is `true` for `.mdx` but `false` for `.tsx`, which flips `adjustForCommentBlock`'s treatment of `*`.
 
 - [ ] Set **Import statement placement** to `Cursor`
-- [ ] Open `mdx/destinations/leading-star.mdx` (content as in §6.3.8), place cursor on line 4 (the ` * …` line), copy `mdx/src/Widget.tsx`, paste → import lands **AT** that line (line 4) — in `.mdx`, `*` is content (bullet / emphasis), not a comment
-- [ ] Open `mdx/destinations/leading-star.tsx` (byte-identical content), place cursor on the same ` * …` line, paste → import lands **ABOVE** the block (line 2) — in `.tsx`, `*` is a comment continuation
+- [ ] Open `mdx/destinations/leading-star.mdx` (content as in §6.3.8), place cursor on line 5 (the ` * …` line), copy `mdx/src/Widget.tsx`, paste → import lands **AT** that line (line 5) — in `.mdx`, `*` is content (bullet / emphasis), not a comment
+- [ ] Open `mdx/destinations/leading-star.tsx` (byte-identical content), place cursor on the same ` * …` line, paste → import lands **ABOVE** the block (line 3) — in `.tsx`, `*` is a comment continuation
 - [ ] The two buffers are identical and use the same builder, yet the insertion line differs — the only difference is `isMarkdownDestination`. Restore both files (`Cmd+Z`)
 
 ### 10.2 — Import inside a string literal (Bottom mode)
@@ -696,7 +696,7 @@ Drag a file from the Explorer sidebar into an open `.mdx` editor. A drop reuses 
   ```mdx
   export const msg = "you should import this";
   ```
-- [ ] Bottom mode: the substring `import ` inside the string literal IS detected as an import marker (known heuristic limitation — not a bug); the import lands after that line
+- [ ] Bottom mode: the substring `import ` inside the string literal is **NOT** detected as an import marker — `isImportLine` requires a line-leading keyword, so the string is skipped; with no real import found, Bottom falls back to the top of the file (the import lands above the `export const` line)
 
 ### 10.3 — File with `require()` marker (Bottom mode)
 
@@ -707,7 +707,7 @@ Drag a file from the Explorer sidebar into an open `.mdx` editor. A drop reuses 
 
   # Page
   ```
-- [ ] Bottom mode: import inserted on line 2 (after the `require(` line, which is the last import marker)
+- [ ] Bottom mode: import inserted on line 3 (after the `require(` line, which is the last import marker)
 
 ### 10.4 — JS-fallback recap
 

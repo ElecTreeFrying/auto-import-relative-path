@@ -104,17 +104,17 @@ mdx/
 | `assets/data.json` | 1.10 | Data — `${1:name}` |
 | `assets/config.yaml` | 1.11 | Data — `${1:name}` |
 | `assets/manual.pdf` | 1.12 | Document — `${1:name}` (empty placeholder) |
-| `destinations/empty.mdx` | 6.1.1, 6.2.2 | Empty file — Bottom/Top fall back to line 0 |
+| `destinations/empty.mdx` | 6.1.1, 6.2.2 | Empty file — Bottom/Top fall back to line 1 |
 | `destinations/with-imports.mdx` | 6.1.2, 6.2.1, 6.3.1, 6.3.2, 6.3.5, 9.4, 9.5 | Two imports + `# Page` — placement tests |
 | `destinations/with-require.mdx` | 6.1.3 | `require()` — Bottom detects as import marker |
 | `destinations/commented-imports.mdx` | 6.1.4 | Comment skipping — Bottom ignores commented import |
-| `destinations/comments-only.mdx` | 6.1.5 | Only comments — Bottom falls back to line 0 |
+| `destinations/comments-only.mdx` | 6.1.5 | Only comments — Bottom falls back to line 1 |
 | `destinations/multiline-comment.mdx` | 6.3.3, 9.6.2 | Cursor inside `/* */` block — `/*`/`*/` adjust above; the `*` body line lands **AT** (markdown-star) |
 | `destinations/comment-group.mdx` | 6.3.4 | Cursor on `//` line — adjusts above group |
 | `destinations/single-comment.mdx` | 6.3.7, 9.6.1 | Single isolated `//` — no block adjustment |
 | `destinations/leading-star.mdx` | 6.3.8, 10.1 | Leading-`*` line **IS** Markdown content (lands AT) — the markdown-star quirk |
 | `destinations/leading-star.tsx` | 10.1 | Byte-identical to `leading-star.mdx` — the `.mdx` ≠ `.tsx` proof (in `.tsx` the `*` is a comment → adjusts above) |
-| `destinations/string-with-import.mdx` | 10.2 | `import` inside string literal — known heuristic |
+| `destinations/string-with-import.mdx` | 10.2 | `import` inside string literal — NOT a Bottom marker (line-leading only) |
 | `destinations/mixed-imports.mdx` | 10.3 | `import` + `require` mixed — Bottom finds last |
 
 ## File count

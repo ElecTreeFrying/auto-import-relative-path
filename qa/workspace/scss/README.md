@@ -33,10 +33,10 @@ scss/
 │       ├── icon.svg              Image source → url('./images/icon.svg')   (empty placeholder)
 │       └── _icon.png             Image source → url('./images/_icon.png')  (leading _ NOT stripped; empty)
 ├── destinations/                 Pre-filled .scss placement targets (undo after each paste)
-│   ├── empty.scss                Empty file (Bottom → line 0)
+│   ├── empty.scss                Empty file (Bottom → line 1)
 │   ├── with-imports.scss         @use + @forward (Bottom anchor / Top / Cursor content line)
 │   ├── commented-imports.scss    Commented marker skipped; real @use anchors
-│   ├── comments-only.scss        Only comments → no anchor, line 0
+│   ├── comments-only.scss        Only comments → no anchor, line 1
 │   ├── multiline-comment.scss    /* */ block (Cursor adjusts above)
 │   ├── single-comment.scss       Lone // line (Cursor inserts at it)
 │   ├── comment-group.scss        // run (Cursor walks above the whole group)
@@ -60,10 +60,10 @@ scss/
 | `src/images/logo.png` | §1.3, §2.2, §4-image, §6.4, §7.3, §9.6 | Image source → inline `url('./images/logo.png')` (empty) |
 | `src/images/icon.svg` | §1.4 | Image accept row (`.svg`) → `url('./images/icon.svg')` (empty) |
 | `src/images/_icon.png` | §10.2 | Image leading `_` NOT normalized → `url('./images/_icon.png')` (empty) |
-| `destinations/empty.scss` | §6.1.1 | Empty file — Bottom inserts at line 0 |
+| `destinations/empty.scss` | §6.1.1 | Empty file — Bottom inserts at line 1 |
 | `destinations/with-imports.scss` | §6.1.2, §6.2.1, §6.3.4, §9.3, §9.4 | `@use`+`@forward` — Bottom / Top / Cursor anchors |
 | `destinations/commented-imports.scss` | §6.1.3 | Commented `// @use` skipped; real `@use` anchors |
-| `destinations/comments-only.scss` | §6.1.4 | Only comments → no marker, line 0 |
+| `destinations/comments-only.scss` | §6.1.4 | Only comments → no marker, line 1 |
 | `destinations/multiline-comment.scss` | §6.3.1, §9.5.2 | `/* */` block — Cursor adjusts above |
 | `destinations/single-comment.scss` | §6.3.2, §9.5.1 | Lone `//` — Cursor inserts at the line |
 | `destinations/comment-group.scss` | §6.3.3 | `//` run — Cursor walks above the whole group |

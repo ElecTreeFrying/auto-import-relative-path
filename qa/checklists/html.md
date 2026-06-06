@@ -305,7 +305,7 @@ body line, paste `html/src/scripts/app.js` (inserts `<script src="../src/scripts
 Undo (`Cmd+Z`) and re-place the cursor on the empty body line between each mode, so
 every mode is evaluated from the same start state:
 
-- [ ] `importStatementPlacement` = **Top** → import lands at the **cursor line** (NOT line 0)
+- [ ] `importStatementPlacement` = **Top** → import lands at the **cursor line** (NOT the top of the file)
 - [ ] `importStatementPlacement` = **Bottom** → import lands at the **cursor line** (NOT after the last import / end of file)
 - [ ] `importStatementPlacement` = **Cursor** → import lands at the **cursor line**
 - [ ] All three produce the **same** result → confirms the setting is ignored. Restore to `Bottom`.
@@ -410,14 +410,14 @@ placement cases below).
       line → inserts `<script src="./src/scripts/app.js"></script>` (identical to §2 script).
 - [ ] **(b) unsupported-pair drop** — drag `html/rejected/widget.ts` → toast
       `Auto Import: Cannot import .ts into .html files.` **and no import is inserted**; the
-      drop edit resolves to `null`, so VS Code falls back to its default text-drop and the
-      **raw path text** lands (distinct from paste, which inserts nothing at all).
+      provider returns a suppressing empty edit that out-ranks VS Code's default drop, so
+      **nothing lands** (no stray path text — the same no-op as paste).
 - [ ] **(b′) `.html` → `.html` drop** — drag `html/rejected/page.html` → toast
-      `Auto Import: Cannot import .html into .html files.` + raw-path fallback (no import).
+      `Auto Import: Cannot import .html into .html files.` + suppressed drop (nothing inserted).
 - [ ] **(c-i) setting ignored on drop** — drag `html/src/scripts/app.js` onto the empty
       body line of `html/destinations/blank.html` under `importStatementPlacement` =
       **Top**, then **Bottom**, then **Cursor** → all three insert
-      `<script src="../src/scripts/app.js"></script>` at the **drop line** (NOT line 0,
+      `<script src="../src/scripts/app.js"></script>` at the **drop line** (NOT the top of the file,
       NOT end of file). Restore the setting to `Bottom`; `Cmd+Z` after each.
 - [ ] **(c-ii) column follows the drop** — drop `app.js` onto **column 6** (end of the
       six-space line 2) of `html/destinations/indented.html` →

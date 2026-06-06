@@ -179,7 +179,7 @@ A hand-typed / drifted `javascriptImportStyle` value (matching no enum descripti
 #### 6.1.1 — Empty file
 
 - [ ] Copy `javascript/src/foo.js`, paste into `javascript/destinations/empty.js`
-- [ ] Import inserted at line 0
+- [ ] Import inserted at line 1
 
 #### 6.1.2 — File with existing imports
 
@@ -190,7 +190,7 @@ A hand-typed / drifted `javascriptImportStyle` value (matching no enum descripti
 
   export const x = 1;
   ```
-- [ ] Copy `javascript/src/foo.js`, paste → import inserted on line 2 (after `import { bar }`, before the blank line)
+- [ ] Copy `javascript/src/foo.js`, paste → import inserted on line 3 (after `import { bar }`, before the blank line)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.1.3 — File with `require()` import
@@ -199,7 +199,7 @@ A hand-typed / drifted `javascriptImportStyle` value (matching no enum descripti
   ```js
   const fs = require('fs');
   ```
-- [ ] Copy `javascript/src/foo.js`, paste → import inserted on line 1 (after the `require(` line — `require(` is one of the `IMPORT_INDICATORS` markers)
+- [ ] Copy `javascript/src/foo.js`, paste → import inserted on line 2 (after the `require(` line — `require(` is one of the `IMPORT_INDICATORS` markers)
 
 #### 6.1.4 — File with comments containing `import` keyword
 
@@ -208,7 +208,7 @@ A hand-typed / drifted `javascriptImportStyle` value (matching no enum descripti
   // import { bar } from '../src/bar';
   import { foo } from '../src/foo';
   ```
-- [ ] The commented line is skipped — import inserted on line 2 (after the real import, NOT after the comment)
+- [ ] The commented line is skipped — import inserted on line 3 (after the real import, NOT after the comment)
 
 #### 6.1.5 — File with only comments
 
@@ -217,7 +217,7 @@ A hand-typed / drifted `javascriptImportStyle` value (matching no enum descripti
   // This file has no imports
   /* Just comments */
   ```
-- [ ] No import marker found → import inserted at line 0
+- [ ] No import marker found → import inserted at line 1
 
 #### 6.1.6 — Column is always 0
 
@@ -236,12 +236,12 @@ A hand-typed / drifted `javascriptImportStyle` value (matching no enum descripti
 
   export const x = 1;
   ```
-- [ ] Copy `javascript/src/foo.js`, paste → import inserted at line 0 (before `import { foo }`)
+- [ ] Copy `javascript/src/foo.js`, paste → import inserted at line 1 (before `import { foo }`)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.2.2 — Empty file
 
-- [ ] Copy `javascript/src/foo.js`, paste into `javascript/destinations/empty.js` → import at line 0
+- [ ] Copy `javascript/src/foo.js`, paste into `javascript/destinations/empty.js` → import at line 1
 
 #### 6.2.3 — Column is always 0
 
@@ -260,7 +260,7 @@ A hand-typed / drifted `javascriptImportStyle` value (matching no enum descripti
 
   export const x = 1;
   ```
-- [ ] Place cursor on line 2 (the blank line), copy `javascript/src/foo.js`, paste → import inserted at line 2
+- [ ] Place cursor on line 3 (the blank line), copy `javascript/src/foo.js`, paste → import inserted at line 3
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.3.2 — Cursor at end of file
@@ -281,8 +281,8 @@ A hand-typed / drifted `javascriptImportStyle` value (matching no enum descripti
    */
   export const x = 1;
   ```
-- [ ] Place cursor on line 4 (inside the `/* */` block), paste
-- [ ] Import is adjusted ABOVE the comment block (line 2), NOT at line 4
+- [ ] Place cursor on line 5 (inside the `/* */` block), paste
+- [ ] Import is adjusted ABOVE the comment block (line 3), NOT at line 5
 
 #### 6.3.4 — Cursor on a `//` comment line within a comment group
 
@@ -292,12 +292,12 @@ A hand-typed / drifted `javascriptImportStyle` value (matching no enum descripti
   // Line two of comment
   // Line three of comment
   ```
-- [ ] Place cursor on line 1, paste → import adjusted to line 0 (above the comment block)
+- [ ] Place cursor on line 2, paste → import adjusted to line 1 (above the comment block)
 
 #### 6.3.5 — Cursor on a non-comment line
 
-- [ ] Open `javascript/destinations/with-imports.js`, place cursor on line 3 (`export const x = 1;`)
-- [ ] Copy `javascript/src/foo.js`, paste → import inserted at line 3
+- [ ] Open `javascript/destinations/with-imports.js`, place cursor on line 4 (`export const x = 1;`)
+- [ ] Copy `javascript/src/foo.js`, paste → import inserted at line 4
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.3.6 — Column is always 0
@@ -314,8 +314,8 @@ A hand-typed / drifted `javascriptImportStyle` value (matching no enum descripti
 
   export const x = 1;
   ```
-- [ ] Place cursor on line 2 (`// standalone note`), paste
-- [ ] Import inserted at line 2 (AT the comment, pushing it to line 3 — unlike a comment group where the import moves above the block)
+- [ ] Place cursor on line 3 (`// standalone note`), paste
+- [ ] Import inserted at line 3 (AT the comment, pushing it to line 4 — unlike a comment group where the import moves above the block)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 ---
@@ -385,7 +385,7 @@ Drag a file from the Explorer sidebar into an open `.js` editor. A drop reuses t
 
 - [ ] Drag `javascript/rejected/helper.ts` from Explorer into `javascript/src/bar.js`
 - [ ] Warning toast: `Auto Import: Cannot import .ts into .js files.`
-- [ ] No Auto Import import inserted (the drop edit resolves to `null` → VS Code falls back to its default text-drop, so the raw path text may land — distinct from paste, which inserts nothing at all)
+- [ ] No Auto Import import inserted — the provider returns a suppressing empty edit that out-ranks VS Code's default drop, so nothing lands (no stray path text — the same no-op as paste)
 
 ### 9.3 — Placement with Bottom mode
 
@@ -396,7 +396,7 @@ Drag a file from the Explorer sidebar into an open `.js` editor. A drop reuses t
 ### 9.4 — Placement with Top mode
 
 - [ ] In the extension settings, set **Import statement placement** to `Top`
-- [ ] Drag `javascript/src/foo.js` into `javascript/destinations/with-imports.js` → import lands at line 0
+- [ ] Drag `javascript/src/foo.js` into `javascript/destinations/with-imports.js` → import lands at line 1
 
 ### 9.5 — Placement with Cursor mode
 
@@ -407,16 +407,16 @@ Drag a file from the Explorer sidebar into an open `.js` editor. A drop reuses t
 
 - [ ] Ensure **Import statement placement** is still set to `Cursor`
 - [ ] Open `javascript/destinations/single-comment.js`
-- [ ] Drag `javascript/src/foo.js` and drop onto line 2 (`// standalone note`)
-- [ ] Import inserted at line 2 (at the comment, pushing it down — same as paste Cursor behavior §6.3.7)
+- [ ] Drag `javascript/src/foo.js` and drop onto line 3 (`// standalone note`)
+- [ ] Import inserted at line 3 (at the comment, pushing it down — same as paste Cursor behavior §6.3.7)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 9.5.2 — Drop into a multi-line comment block
 
 - [ ] Ensure **Import statement placement** is still set to `Cursor`
 - [ ] Open `javascript/destinations/multiline-comment.js`
-- [ ] Drag `javascript/src/foo.js` and drop onto line 4 (inside the `/* */` block)
-- [ ] Import is adjusted ABOVE the comment block (line 2) — same as paste Cursor behavior (§6.3.3)
+- [ ] Drag `javascript/src/foo.js` and drop onto line 5 (inside the `/* */` block)
+- [ ] Import is adjusted ABOVE the comment block (line 3) — same as paste Cursor behavior (§6.3.3)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 ### 9.6 — Column is always 0
@@ -437,16 +437,16 @@ Drag a file from the Explorer sidebar into an open `.js` editor. A drop reuses t
 
 ### 10.1 — Empty `.js` file
 
-- [ ] Copy `javascript/src/foo.js`, paste into `javascript/destinations/empty.js` → import at line 0
+- [ ] Copy `javascript/src/foo.js`, paste into `javascript/destinations/empty.js` → import at line 1
 
 ### 10.2 — File with only whitespace
 
-- [ ] Copy `javascript/src/foo.js`, paste into `javascript/destinations/whitespace-only.js` → import at line 0 (no import markers found)
+- [ ] Copy `javascript/src/foo.js`, paste into `javascript/destinations/whitespace-only.js` → import at line 1 (no import markers found)
 
 ### 10.3 — Large file (500+ lines)
 
 - [ ] Copy `javascript/src/foo.js`, paste into `javascript/destinations/large-file.js` (520 lines, imports at top)
-- [ ] Bottom mode still finds the last import correctly (inserts on line 3, after the three imports)
+- [ ] Bottom mode still finds the last import correctly (inserts on line 4, after the three imports)
 
 ### 10.4 — Import inside a string literal (Bottom mode)
 
@@ -454,7 +454,7 @@ Drag a file from the Explorer sidebar into an open `.js` editor. A drop reuses t
   ```js
   const msg = "you should import this";
   ```
-- [ ] Bottom mode: the substring `import ` inside the string literal IS detected as an import marker (known heuristic limitation — not a bug); the import lands after that line
+- [ ] Bottom mode: the substring `import ` inside the string literal is **NOT** detected as an import marker — `isImportLine` requires a line-leading keyword, so the string is skipped; with no real import found, Bottom falls back to the top of the file (the import lands above the `const msg` line)
 
 ### 10.5 — File with mixed import styles (Bottom mode)
 
@@ -465,7 +465,7 @@ Drag a file from the Explorer sidebar into an open `.js` editor. A drop reuses t
 
   export const x = 1;
   ```
-- [ ] Bottom mode: import inserted on line 2 (after the `require(` line, which is the last import marker)
+- [ ] Bottom mode: import inserted on line 3 (after the `require(` line, which is the last import marker)
 
 ---
 

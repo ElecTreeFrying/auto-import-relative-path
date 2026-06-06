@@ -48,7 +48,7 @@ css/
 | `theme.css` | §1.1, §2.1, §3.1, §4.1–4.2, §4.5, §7.1, §8.1, §9.1, §10.2 | Stylesheet source → `@import './theme.css';` |
 | `logo.png` | §1.1, §2.2, §4.3, §6.5, §7.3, §8.3, §9.3, §10.1 | Image source → inline `url('./logo.png')` (empty placeholder) |
 | `vendor/normalize.css` | §7.2 | Nested stylesheet source — basename collapse (label `normalize.css`, insert `./vendor/normalize.css`) |
-| `placement/with-imports.css` | §6.1, §6.2 | Existing imports — Top inserts at line 0; Bottom anchors after the last import (`@import url()` form) |
+| `placement/with-imports.css` | §6.1, §6.2 | Existing imports — Top inserts at line 1; Bottom anchors after the last import (`@import url()` form) |
 | `placement/with-comment-block.css` | §6.3, §6.4, §9.4, §10.1 | `/* */` block — Cursor pushes `@import` above it; inline `url()` bypasses (§10.1) |
 | `placement/widget.css` | §6.1–6.4, §9.4 | Stylesheet source for the placement tests |
 | `placement/with-use.css` | §10.2 | `@use` line — shared stylesheet anchor (Bottom anchors after it) |

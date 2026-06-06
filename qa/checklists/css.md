@@ -269,7 +269,7 @@ forced to **column 0**.
 
 - [ ] **§6.1 — Top.** Set `Import statement placement` = `Top`. Open
   `css/placement/with-imports.css`, copy `css/placement/widget.css`, `Cmd/Ctrl+I` →
-  `@import './widget.css';` is inserted at **line 0**, before `@import './reset.css';`,
+  `@import './widget.css';` is inserted at **line 1**, before `@import './reset.css';`,
   column 0. `Cmd+Z`; restore the setting.
 
 - [ ] **§6.2 — Bottom (anchor).** Set placement = `Bottom`. Same files → `@import
@@ -365,13 +365,13 @@ into the editor at a position. Universal drag-and-drop mechanics are **`general.
 
 - [ ] **§9.1 — happy-path drop (stylesheet).** Drag `css/theme.css` and drop it into
   `css/app.css` → inserts `@import './theme.css';` — identical to §2.1. (With default
-  Bottom and no existing imports, it lands at line 0.) `Cmd+Z`.
+  Bottom and no existing imports, it lands at line 1.) `Cmd+Z`.
 
 - [ ] **§9.2 — unsupported-pair drop.** Drag `css/rejects/styles.scss` and drop it into
   `css/app.css` → warning toast `Auto Import: Cannot import .scss into .css files.` **and no
-  import is generated**. Because the drop edit resolves to `null`, VS Code falls back to its
-  default text-drop and the **raw path text** lands at the drop point (distinct from paste,
-  which inserts nothing at all). `Cmd+Z`.
+  import is generated**. The provider returns a suppressing empty edit that
+  out-ranks VS Code's default drop, so **nothing is inserted** (no stray path text — the same
+  no-op as paste). `Cmd+Z`.
 
 - [ ] **§9.3 — image drop = inline `url()` at the drop position.** Drag `css/logo.png` and
   drop it inside the `background-image: ` value in `css/app.css` → `url('./logo.png')` is
@@ -407,7 +407,7 @@ into the editor at a position. Universal drag-and-drop mechanics are **`general.
   shared across stylesheets, so `@use '…'` / `@forward '…'` lines (Sass syntax) are treated as
   anchors even in a `.css` file. Open `css/placement/with-use.css`, set placement = `Bottom`,
   copy `css/theme.css`, `Cmd/Ctrl+I` → `@import './theme.css';` lands **after** the
-  `@use './tokens.css';` line (line 1). Confirms the anchor set is shared, not CSS-only.
+  `@use './tokens.css';` line (line 2). Confirms the anchor set is shared, not CSS-only.
   `Cmd+Z`; restore placement.
 
 ---

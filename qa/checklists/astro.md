@@ -29,7 +29,7 @@ Every `.astro` behavior flows from a single routing fact in that builder: it bra
 - `src/commands/copy-paste.ts` — Insert Import from Selected File (sequential copy + paste)
 - `src/commands/paste-import-with-style.ts` — Paste as Import (Pick Style) command
 - `src/commands/set-default-import-style.ts` — Set Default Import Style command
-- `src/drop/provider.ts` — `AutoImportOnDropProvider` (drag-and-drop import; registered for `scheme:'file'` only). A rejected pair (or empty snippet) → `'not-supported'` toast + return `null` → VS Code falls back to a raw text-drop
+- `src/drop/provider.ts` — `AutoImportOnDropProvider` (drag-and-drop import; registered for `scheme:'file'` only). A rejected pair (or empty snippet) → `'not-supported'` toast + `suppressDrop()` (an empty edit that out-ranks VS Code's default) → nothing inserted
 - `src/editor/insert-snippet.ts` — `insertSnippetAtAstroFrontmatter` (the `.astro` placement orchestrator; column 0 for script destinations)
 - `src/editor/placement.ts` — `computeAstroPlacement` / `findAstroFrontmatterBounds` (plain first-two-`---`-fence scan; create-if-missing wrapper; `findBottomLineInRange`; `detectBlockIndentation`; `adjustForCommentBlock`)
 - `src/config/settings.ts` — `getAutoImportSetting` / `setAutoImportSetting`; confirms there is **no** `astroImportStyle` — the framework script arm reads/writes `('script', 'typescript')` → `typescriptImportStyle`
@@ -140,7 +140,7 @@ One case per branch of `framework-component.ts` — a script source (TS arm), a 
 - [ ] Copy `astro/src/model.ts` (`Cmd+Shift+A`), open `astro/src/App.astro`, press `Cmd+I`
 - [ ] Import inserted: `import { $1 } from './model';` (the TS **named** shape — the `typescriptImportStyle` default)
 - [ ] Cursor lands on the `$1` tab stop inside the curly braces
-- [ ] Import is at column 0 inside the `---` frontmatter (on line 1, between the two fences); trailing newline appended after the import line
+- [ ] Import is at column 0 inside the `---` frontmatter (on line 2, between the two fences); trailing newline appended after the import line
 
 ### 2.2 — Non-script asset, named-default (image)
 
@@ -246,7 +246,7 @@ A hand-typed / drifted `typescriptImportStyle` value (matching no enum descripti
 
 - [ ] In `settings.json`, set `auto-import.importStatement.script.typescriptImportStyle` to a value not in the dropdown, e.g. `import xyz from '_relativePath_';`
 - [ ] Copy `astro/src/Widget.tsx`, paste into `astro/src/App.astro` → `import { $1 } from './Widget';` (style-0 named shape — **NOT** empty)
-- [ ] The tab stop is a **bare `$1`**. The `default:` arm runs **no** Angular naming (Angular lives only in `case 0`) and `.astro` passes **no** `detectedImportName`, so even an Angular-suffixed source drifts to a bare tab stop: copy `astro/src/angular/user.component.ts`, paste → `import { $1 } from './angular/user.component';` (**NOT** `import { UserComponent }`)
+- [ ] The tab stop is a **bare `$1`**. The `default:` arm runs **no** Angular naming (Angular lives only in `case 0`) and `.astro` passes **no** `detectedImportName`, so even an Angular-suffixed source drifts to a bare tab stop: copy `astro/src/angular/user.component.ts`, paste → `import { $1 } from './angular/user.component';` (**NOT** `import { ${1:UserComponent} }`)
 - [ ] Restore: set **TypeScript / TSX import style** back to `import { name } from '_relativePath_';`
 
 > This is the same drift behavior as [mdx.md §4D.1](mdx.md#4d--style-name-drift-config-drift-safety-net) and [svelte.md §4C](svelte.md#4c--style-name-drift-config-drift-safety-net) — the shared `typescript.ts` `default:` arm has no Angular branch. The PascalCase pre-fill in §5 is a **`case 0`-only** effect and does not survive style-name drift.
@@ -264,27 +264,27 @@ Style must be set to index 0 (`import { name } from '_relativePath_';`).
 ### 5.1 — `.component` suffix
 
 - [ ] Copy `astro/src/angular/user.component.ts` (no `export class`) → paste into `astro/src/App.astro`
-- [ ] Output: `import { UserComponent } from './angular/user.component';` (PascalCase identifier filled directly — a committed identifier, **not** an editable `${1:…}` tab stop)
+- [ ] Output: `import { ${1:UserComponent} } from './angular/user.component';` (PascalCase identifier pre-filled as an **editable** `${1:…}` tab stop, like the detected-class case in `.ts`)
 
 ### 5.2 — `.directive` suffix
 
 - [ ] Copy `astro/src/angular/highlight.directive.ts` → paste into `astro/src/App.astro`
-- [ ] Output: `import { HighlightDirective } from './angular/highlight.directive';`
+- [ ] Output: `import { ${1:HighlightDirective} } from './angular/highlight.directive';`
 
 ### 5.3 — `.pipe` suffix
 
 - [ ] Copy `astro/src/angular/trim.pipe.ts` → paste into `astro/src/App.astro`
-- [ ] Output: `import { TrimPipe } from './angular/trim.pipe';`
+- [ ] Output: `import { ${1:TrimPipe} } from './angular/trim.pipe';`
 
 ### 5.4 — `.service` suffix
 
 - [ ] Copy `astro/src/angular/user.service.ts` → paste into `astro/src/App.astro`
-- [ ] Output: `import { UserService } from './angular/user.service';`
+- [ ] Output: `import { ${1:UserService} } from './angular/user.service';`
 
 ### 5.5 — `.module` suffix
 
 - [ ] Copy `astro/src/angular/auth.module.ts` → paste into `astro/src/App.astro`
-- [ ] Output: `import { AuthModule } from './angular/auth.module';`
+- [ ] Output: `import { ${1:AuthModule} } from './angular/auth.module';`
 
 ### 5.6 — Non-Angular source (no suffix match)
 
@@ -301,13 +301,13 @@ This is the signature `.astro` ≠ `.ts` case. A `.ts` source containing `export
 ### 5.8 — Angular naming fires for a `.js` source (the `.astro` ≠ `.tsx` distinction)
 
 - [ ] Copy `astro/src/angular/widget.component.js` (an Angular-suffixed **`.js`** source) → paste into `astro/src/App.astro`
-- [ ] Output: `import { WidgetComponent } from './angular/widget.component';` — PascalCase filled, because **all four** script extensions route to the TS builder here. Contrast `.tsx`/`.mdx`, where a `.js` source takes the JS fallback and gets a bare `import $1` (no Angular naming)
+- [ ] Output: `import { ${1:WidgetComponent} } from './angular/widget.component';` — PascalCase filled (editable tab stop), because **all four** script extensions route to the TS builder here. Contrast `.tsx`/`.mdx`, where a `.js` source takes the JS fallback and gets a bare `import $1` (no Angular naming)
 
 ### 5.9 — Preserve-extension identifier stability
 
-- [ ] With **Preserve script file extension in imports** unchecked (default): copy `astro/src/angular/user.component.ts`, paste → `import { UserComponent } from './angular/user.component';`
-- [ ] Check the **Preserve script file extension in imports** checkbox, copy `astro/src/angular/user.component.ts`, paste → `import { UserComponent } from './angular/user.component.ts';`
-- [ ] The identifier is **identical** (`UserComponent`) in both cases — never `UserComponentTs` — because the extension is stripped before the name is derived; only the path string changes
+- [ ] With **Preserve script file extension in imports** unchecked (default): copy `astro/src/angular/user.component.ts`, paste → `import { ${1:UserComponent} } from './angular/user.component';`
+- [ ] Check the **Preserve script file extension in imports** checkbox, copy `astro/src/angular/user.component.ts`, paste → `import { ${1:UserComponent} } from './angular/user.component.ts';`
+- [ ] The identifier is **identical** (`${1:UserComponent}`) in both cases — never `UserComponentTs` — because the extension is stripped before the name is derived; only the path string changes
 - [ ] Restore: uncheck **Preserve script file extension in imports**
 
 ### 5.10 — Angular suffix, illegal derived identifier (guard)
@@ -321,7 +321,7 @@ This is the signature `.astro` ≠ `.ts` case. A `.ts` source containing `export
 
 `.astro` uses the **`astro-frontmatter`** placement mode: every import is constrained **inside the `---` frontmatter fences** (`computeAstroPlacement` / `insertSnippetAtAstroFrontmatter`). The generic Top/Bottom/Cursor section that `.ts`/`.tsx`/`.mdx` use is **NOT** emitted — placement here always resolves to a position **within the frontmatter block**, and the column is always **0** (`.astro ∈ SCRIPT_FILE_EXTENSIONS`).
 
-**Frontmatter bounds** (`findAstroFrontmatterBounds`): a plain scan for the **first two** lines whose `trim() === '---'`. Unlike `.vue`/`.svelte`'s `<script>`-block finder, there is **no** block-selection preference — `.astro` has **no** `<script setup>` / `<script context="module">` analog, so there is no "instance vs module" tier and **no block-selection-preference sub-case**. If **fewer than two** `---` fences exist, a new `---\n…\n---\n` block is created at line 0 and all three placement modes converge there.
+**Frontmatter bounds** (`findAstroFrontmatterBounds`): a plain scan for the **first two** lines whose `trim() === '---'`. Unlike `.vue`/`.svelte`'s `<script>`-block finder, there is **no** block-selection preference — `.astro` has **no** `<script setup>` / `<script context="module">` analog, so there is no "instance vs module" tier and **no block-selection-preference sub-case**. If **fewer than two** `---` fences exist, a new `---\n…\n---\n` block is created at line 1 and all three placement modes converge there.
 
 ### 6.1 — Bottom placement (default: `importStatementPlacement = "Bottom"`)
 
@@ -336,7 +336,7 @@ This is the signature `.astro` ≠ `.ts` case. A `.ts` source containing `export
 
   <h1>{title}</h1>
   ```
-- [ ] Copy `astro/src/Widget.tsx`, paste → import inserted on line 3 (after `import { Footer }`, before the closing `---`): `import { $1 } from '../src/Widget';`
+- [ ] Copy `astro/src/Widget.tsx`, paste → import inserted on line 4 (after `import { Footer }`, before the closing `---`): `import { $1 } from '../src/Widget';`
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.1.2 — Empty frontmatter (no imports yet)
@@ -349,7 +349,7 @@ This is the signature `.astro` ≠ `.ts` case. A `.ts` source containing `export
 
   <h1>{title}</h1>
   ```
-- [ ] Copy `astro/src/Widget.tsx`, paste → import inserted on line 1 (just after the opening `---` — Bottom falls back to "just after the opening fence" when the frontmatter has no `IMPORT_INDICATORS` line)
+- [ ] Copy `astro/src/Widget.tsx`, paste → import inserted on line 2 (just after the opening `---` — Bottom falls back to "just after the opening fence" when the frontmatter has no `IMPORT_INDICATORS` line)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.1.3 — `require()` marker inside the frontmatter
@@ -362,7 +362,7 @@ This is the signature `.astro` ≠ `.ts` case. A `.ts` source containing `export
 
   <h1>{title}</h1>
   ```
-- [ ] Copy `astro/src/Widget.tsx`, paste → import inserted on line 2 (after the `require(` line — `require(` is one of the `IMPORT_INDICATORS` markers, scanned **within the fences** by `findBottomLineInRange`)
+- [ ] Copy `astro/src/Widget.tsx`, paste → import inserted on line 3 (after the `require(` line — `require(` is one of the `IMPORT_INDICATORS` markers, scanned **within the fences** by `findBottomLineInRange`)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.1.4 — Column is always 0
@@ -376,7 +376,7 @@ This is the signature `.astro` ≠ `.ts` case. A `.ts` source containing `export
 #### 6.2.1 — Frontmatter with existing imports
 
 - [ ] Open `astro/destinations/with-imports.astro` (same content as §6.1.1)
-- [ ] Copy `astro/src/Widget.tsx`, paste → import inserted on line 1 (just after the opening `---`, **before** `import { Header }`)
+- [ ] Copy `astro/src/Widget.tsx`, paste → import inserted on line 2 (just after the opening `---`, **before** `import { Header }`)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.2.2 — Column is always 0
@@ -389,16 +389,16 @@ This is the signature `.astro` ≠ `.ts` case. A `.ts` source containing `export
 
 #### 6.3.1 — Cursor strictly inside the fences
 
-- [ ] Open `astro/destinations/with-imports.astro`, place cursor on line 2 (the `import { Footer }` line)
-- [ ] Copy `astro/src/Widget.tsx`, paste → import inserted **at** line 2 (the cursor line is strictly between the `---` fences, so it is honored)
+- [ ] Open `astro/destinations/with-imports.astro`, place cursor on line 3 (the `import { Footer }` line)
+- [ ] Copy `astro/src/Widget.tsx`, paste → import inserted **at** line 3 (the cursor line is strictly between the `---` fences, so it is honored)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.3.2 — Cursor in the template body → falls to Bottom-in-fences (the fence-vs-template fallback)
 
 This is the distinctive `.astro` placement case — the analog of `.vue`/`.svelte`'s "cursor outside the script block", but keyed on the `---` fences.
 
-- [ ] Open `astro/destinations/with-imports.astro`, place cursor on line 5 (`<h1>{title}</h1>`, in the **template body** below the closing `---`)
-- [ ] Copy `astro/src/Widget.tsx`, paste → import inserted on line 3 (after `import { Footer }`, **inside the fences**) — when the cursor is **not** strictly between the fence bounds (`rawCursorLine > openingLine && rawCursorLine < closingLine` is false), Cursor falls back to Bottom-within-fences. The import does **not** land at the cursor in the markup
+- [ ] Open `astro/destinations/with-imports.astro`, place cursor on line 6 (`<h1>{title}</h1>`, in the **template body** below the closing `---`)
+- [ ] Copy `astro/src/Widget.tsx`, paste → import inserted on line 4 (after `import { Footer }`, **inside the fences**) — when the cursor is **not** strictly between the fence bounds (`rawCursorLine > openingLine && rawCursorLine < closingLine` is false), Cursor falls back to Bottom-within-fences. The import does **not** land at the cursor in the markup
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 #### 6.3.3 — Cursor on a comment line inside the fences (adjusted above)
@@ -415,7 +415,7 @@ This is the distinctive `.astro` placement case — the analog of `.vue`/`.svelt
 
   <h1>{title}</h1>
   ```
-- [ ] Place cursor on line 3 (the `/*` opener), copy `astro/src/Widget.tsx`, paste → import is adjusted **above** the comment block (inserted at the `/*` line position, pushing the block down) — `adjustForCommentBlock` applies inside the frontmatter. **`.astro` is not Markdown**, so a leading `*` line IS treated as a comment continuation (unlike `.md`/`.mdx`)
+- [ ] Place cursor on line 4 (the `/*` opener), copy `astro/src/Widget.tsx`, paste → import is adjusted **above** the comment block (inserted at the `/*` line position, pushing the block down) — `adjustForCommentBlock` applies inside the frontmatter. **`.astro` is not Markdown**, so a leading `*` line IS treated as a comment continuation (unlike `.md`/`.mdx`)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 ### 6.4 — Create-if-missing frontmatter (no `---` fences)
@@ -424,14 +424,14 @@ This is the distinctive `.astro` placement case — the analog of `.vue`/`.svelt
   ```astro
   <h1>{title}</h1>
   ```
-- [ ] Copy `astro/src/Widget.tsx`, paste → a new `---` frontmatter block is created at line 0 wrapping the import:
+- [ ] Copy `astro/src/Widget.tsx`, paste → a new `---` frontmatter block is created at line 1 wrapping the import:
   ```astro
   ---
   import { $1 } from '../src/Widget';
   ---
   <h1>{title}</h1>
   ```
-- [ ] Repeat with **Top** and **Cursor** placement — **all three modes converge** on the same created wrapper at line 0 (the create-if-missing branch returns before the placement switch)
+- [ ] Repeat with **Top** and **Cursor** placement — **all three modes converge** on the same created wrapper at line 1 (the create-if-missing branch returns before the placement switch)
 - [ ] Undo (`Cmd+Z`) after each to restore the file
 
 ### 6.5 — Detected indentation
@@ -482,7 +482,7 @@ Run via Command Palette: `Auto Import: Paste as Import (Pick Style)`, or click *
 
 - [ ] Copy `astro/src/angular/user.component.ts`, run the command in `astro/src/App.astro`
 - [ ] The style-0 item's **label** is `import { UserComponent } from 'user.component';` (basename preview, Angular PascalCase filled — `generateAngularLegacyImportName` runs on the label path too)
-- [ ] Selecting it inserts `import { UserComponent } from './angular/user.component';` (full path)
+- [ ] Selecting it inserts `import { ${1:UserComponent} } from './angular/user.component';` (full path)
 - [ ] Styles 1–6 show a bare `name` placeholder in their labels (Angular fills only style 0)
 
 ### 7.4 — Asset source: single fixed variant (direct insert)
@@ -541,14 +541,14 @@ Drag a file from the Explorer sidebar into an open `.astro` editor. A drop reuse
 - [ ] Drag `astro/assets/logo.png` into `astro/src/App.astro` → `import ${1:name} from '../assets/logo.png';` (the named-default asset shape, byte-identical to §2.2)
 - [ ] Drag `astro/assets/clip.mp4` into `astro/src/App.astro` → `import ${1:url} from '../assets/clip.mp4';` (the url-default asset shape — av / text-track — byte-identical to §2.3; cursor lands on the `${1:url}` placeholder. `theme.mp3` / `subs.vtt` are interchangeable)
 
-### 9.3 — Unsupported-pair drop → raw-text fallback
+### 9.3 — Unsupported-pair drop → drop suppression (nothing inserted)
 
-Because `.astro` is **allow-list**, a gated-out source has no snippet to offer. The drop edit resolves to `null`, so VS Code falls back to its **default text-drop** and the **raw path text** lands — distinct from paste, which inserts nothing at all. (This case does **not** exist for accept-all `.tsx`, where every source builds a snippet.)
+Because `.astro` is **allow-list**, a gated-out source has no snippet to offer. The provider returns a suppressing empty edit that out-ranks VS Code's default drop, so **nothing is inserted** — the same no-op as paste. (This case does **not** exist for accept-all `.tsx`, where every source builds a snippet.)
 
 - [ ] Drag `astro/assets/global.css` (a `.css` — gated out) into `astro/src/App.astro`
-- [ ] Warning toast: `Auto Import: Cannot import .css into .astro files.` **AND** no import is inserted — instead the **raw file path text** is dropped (VS Code's default text-drop)
-- [ ] Repeat with `astro/assets/page.html` and `astro/assets/manual.pdf` → same `not-supported` toast + raw-text fallback. (Note: `.vue`/`.svelte`/`.md`/`.mdx` are **accepted** by `.astro`, so they do **not** trigger this fallback — pick from the five reject categories only)
-- [ ] Undo (`Cmd+Z`) to remove the dropped raw text
+- [ ] Warning toast: `Auto Import: Cannot import .css into .astro files.` **AND** no import is inserted — the provider suppresses the drop, so nothing lands (no stray path text)
+- [ ] Repeat with `astro/assets/page.html` and `astro/assets/manual.pdf` → same `not-supported` toast + suppressed drop. (Note: `.vue`/`.svelte`/`.md`/`.mdx` are **accepted** by `.astro`, so they do **not** trigger this path — pick from the five reject categories only)
+- [ ] No text was inserted, so there is nothing to undo
 
 ### 9.4 — Placement with Bottom mode
 
@@ -560,13 +560,13 @@ Because `.astro` is **allow-list**, a gated-out source has no snippet to offer. 
 ### 9.5 — Placement with Top mode
 
 - [ ] Set **Import statement placement** to `Top`
-- [ ] Drag `astro/src/Widget.tsx` into `astro/destinations/with-imports.astro` → import lands on line 1 (just after the opening `---`)
+- [ ] Drag `astro/src/Widget.tsx` into `astro/destinations/with-imports.astro` → import lands on line 2 (just after the opening `---`)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 ### 9.6 — Placement with Cursor mode (comment adjustment)
 
 - [ ] Set **Import statement placement** to `Cursor`
-- [ ] Open `astro/destinations/comment-cursor.astro` (content as in §6.3.3), drag `astro/src/Widget.tsx` and drop onto line 3 (the `/*` opener)
+- [ ] Open `astro/destinations/comment-cursor.astro` (content as in §6.3.3), drag `astro/src/Widget.tsx` and drop onto line 4 (the `/*` opener)
 - [ ] Import is adjusted **above** the comment block (same as paste Cursor §6.3.3 — `computeImportPlacement` applies `adjustForCommentBlock` within the fences on drop too)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
@@ -577,7 +577,7 @@ Because `.astro` is **allow-list**, a gated-out source has no snippet to offer. 
 ### 9.8 — Angular naming applies on drop
 
 - [ ] Drag `astro/src/angular/user.component.ts` (no `export class`) into `astro/src/App.astro`
-- [ ] Import is `import { UserComponent } from './angular/user.component';` (Angular PascalCase, same as paste §5.1)
+- [ ] Import is `import { ${1:UserComponent} } from './angular/user.component';` (Angular PascalCase, same as paste §5.1)
 
 ### 9.9 — `preserveScriptFileExtension` respected on drop
 
@@ -589,7 +589,7 @@ Because `.astro` is **allow-list**, a gated-out source has no snippet to offer. 
 ### 9.10 — Wrapper created on drop into a frontmatter-less `.astro`
 
 - [ ] Open `astro/destinations/template-only.astro` (no `---` frontmatter; content as in §6.4)
-- [ ] Drag `astro/src/Widget.tsx` → a new `---` frontmatter block is created at line 0 with the import inside — byte-identical to the paste-side §6.4 block:
+- [ ] Drag `astro/src/Widget.tsx` → a new `---` frontmatter block is created at line 1 with the import inside — byte-identical to the paste-side §6.4 block:
   ```astro
   ---
   import { $1 } from '../src/Widget';
@@ -604,9 +604,9 @@ Because `.astro` is **allow-list**, a gated-out source has no snippet to offer. 
 
 ## 10 — Edge cases
 
-### 10.1 — `require()` / `import`-in-string false positives are scoped to the frontmatter fences
+### 10.1 — `require()` marker detection is scoped to the frontmatter fences
 
-Bottom placement scans for `IMPORT_INDICATORS` markers, but for `.astro` the scan (`findBottomLineInRange`) is **bounded by the `---` fences** — a marker outside the frontmatter does not move the insertion point.
+Bottom placement scans for import lines (`isImportLine`), but for `.astro` the scan (`findBottomLineInRange`) is **bounded by the `---` fences** — a marker outside the frontmatter does not move the insertion point.
 
 - [ ] Set **Import statement placement** to `Bottom`
 - [ ] Open `astro/destinations/with-require.astro` (content as in §6.1.3) → paste `astro/src/Widget.tsx` lands after the `const fs = require('fs');` line (the `require(` marker counts, inside the fences)
@@ -621,7 +621,7 @@ Bottom placement scans for `IMPORT_INDICATORS` markers, but for `.astro` the sca
 
   <h1>{title}</h1>
   ```
-- [ ] Bottom mode: the substring `import ` inside the string literal IS detected as an import marker (known heuristic limitation — not a bug); the import lands after that line, **within the `---` fences**
+- [ ] Bottom mode: the substring `import ` inside the string literal is **NOT** detected as an import marker — `isImportLine` requires a line-leading keyword, so the string is skipped; with no real import in the frontmatter, Bottom falls back to just after the opening `---` fence (the import lands above the `const msg` line, inside the fences)
 - [ ] Undo (`Cmd+Z`) to restore the file
 
 ### 10.3 — The named-asset import family (every accepted non-script source is asset-routed)
@@ -653,7 +653,7 @@ Bottom placement scans for `IMPORT_INDICATORS` markers, but for `.astro` the sca
 - [ ] Placement — frontmatter `---`-fence confined: Bottom (4, incl. empty-frontmatter fallback + in-fence `require(`) + Top (2) + Cursor (3, incl. **fence-vs-template fallback** + comment-adjust) + create-if-missing + detected indentation (≈12 cases; **no** generic Top/Bottom/Cursor section; **no** block-selection-preference sub-case)
 - [ ] Paste as Import (Pick Style) — 7 TS items / label-vs-inserted / style-0 Angular label / asset direct-insert (4 cases; no 0-variant case)
 - [ ] Set Default Import Style — TS persist / no-`astroImportStyle` shared-setting cross-effect / asset `no-configurable-style` (3 cases)
-- [ ] Drag-and-drop — happy script / happy asset (named + url) / **unsupported-pair raw-text fallback** / placement (Bottom/Top/Cursor in-fence) / column 0 / Angular-on-drop / preserve / **wrapper-create-on-drop** + asset-in-wrapper (11 cases)
+- [ ] Drag-and-drop — happy script / happy asset (named + url) / **unsupported-pair drop suppression** / placement (Bottom/Top/Cursor in-fence) / column 0 / Angular-on-drop / preserve / **wrapper-create-on-drop** + asset-in-wrapper (11 cases)
 - [ ] Edge cases — in-fence `require(` + string-literal false positives / **named-asset import family** (`.astro`/`.vue`/`.svelte`/`.md`/`.mdx`→`.astro`, 5 members) (7 cases)
 
 **Total: ~84 test cases**

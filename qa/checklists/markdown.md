@@ -96,7 +96,7 @@ suffices.
 ```
 
 `markdown/destinations/blank.md` — the cursor goes on the **empty line 2** (between the
-heading and the body line), so a mis-honored Top would jump to line 0 and a mis-honored
+heading and the body line), so a mis-honored Top would jump to the top of the file and a mis-honored
 Bottom to the end — both observably wrong.
 ```md
 # Blank doc
@@ -286,7 +286,7 @@ A trailing newline is appended (the link is a standalone line).
 (inserts `![${1:alt-text}](../src/images/logo.png)`). Undo (`Cmd+Z`) and re-place the
 cursor on the empty line 2 between each mode, so every mode starts from the same state:
 
-- [ ] `importStatementPlacement` = **Top** → import lands at the **cursor line** (line 2, **NOT** line 0 above the heading)
+- [ ] `importStatementPlacement` = **Top** → import lands at the **cursor line** (line 2, **NOT** the top of the file above the heading)
 - [ ] `importStatementPlacement` = **Bottom** → import lands at the **cursor line** (line 2, **NOT** after `Body text.` / end of file)
 - [ ] `importStatementPlacement` = **Cursor** → import lands at the **cursor line** (line 2)
 - [ ] All three produce the **same** result → confirms the setting is ignored. Restore to `Bottom`.
@@ -388,13 +388,13 @@ placement cases below).
 - [ ] **(a) happy-path drop** — drag `markdown/src/images/logo.png` onto the empty line of
       `markdown/notes.md` → inserts `![${1:alt-text}](./src/images/logo.png)` (identical to §2 image).
 - [ ] **(b) unsupported-pair drop** — drag `markdown/rejected/widget.ts` → toast
-      `Auto Import: Cannot import .ts into .md files.` **and no import is inserted**; the drop
-      edit resolves to `null`, so VS Code falls back to its default text-drop and the **raw
-      path text** lands (distinct from paste, which inserts nothing at all).
+      `Auto Import: Cannot import .ts into .md files.` **and no import is inserted**; the
+      provider returns a suppressing empty edit that out-ranks VS Code's default drop, so
+      **nothing lands** (no stray path text — the same no-op as paste).
 - [ ] **(c-i) setting ignored on drop** — drag `markdown/src/images/logo.png` onto the empty
       line 2 of `markdown/destinations/blank.md` under `importStatementPlacement` = **Top**,
       then **Bottom**, then **Cursor** → all three insert
-      `![${1:alt-text}](../src/images/logo.png)` at the **drop line** (NOT line 0, NOT end of
+      `![${1:alt-text}](../src/images/logo.png)` at the **drop line** (NOT the top of the file, NOT end of
       file). Restore the setting to `Bottom`; `Cmd+Z` after each.
 - [ ] **(c-ii) column follows the drop** — drop `markdown/src/images/logo.png` onto **column 6**
       (end of the six-space line 2) of `markdown/destinations/indented.md` →

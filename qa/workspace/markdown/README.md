@@ -52,7 +52,7 @@ markdown/
 | `destinations/indented.md` | §6, §9c-ii | Line 2 = six spaces — column follows the cursor/drop (col 6, NOT 0) |
 | `destinations/with-comments.md` | §6, §9c-iii, §10 | markdown `*` bullet lands at it (content, not a comment); `//` / `/*` runs push above |
 | `destinations/with-comments.tsx` | §10 | Byte-identical `.tsx` contrast — a leading `*` **is** a comment continuation (import pushed above) |
-| `rejected/widget.ts` | §1, §9b | `.ts` reject; also drives the unsupported-pair drop (raw-path fallback) |
+| `rejected/widget.ts` | §1, §9b | `.ts` reject; also drives the unsupported-pair drop (drop suppressed, no insert) |
 | `rejected/App.vue` | §1 | `.vue` reject (`.svelte`/`.astro` reject identically) |
 | `rejected/theme.css` | §1 | `.css` reject (`.scss` rejects identically — `.md` accepts **no** stylesheet) |
 | `rejected/page.html` | §1 | `.html` reject |

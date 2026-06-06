@@ -9,10 +9,13 @@ Covers shared infrastructure that behaves identically regardless of which destin
 - `src/commands/copy-paste.ts` — Insert Import from Selected File (sequential copy + paste)
 - `src/commands/paste-import-with-style.ts` — Paste as Import (Pick Style) command
 - `src/commands/set-default-import-style.ts` — Set Default Import Style command
+- `src/commands/set-import-placement.ts` — Set Import Placement command
+- `src/commands/toggle-preserve-script-extension.ts` — Toggle Preserve Script File Extension command
+- `src/commands/reset-import-styles.ts` — Reset All Import Styles to Defaults command (+ Undo restore)
 - `src/editor/notification.ts` — all toast messages and button actions
 - `src/path/relative.ts` — relative path computation
 - `src/drop/provider.ts` — `AutoImportOnDropProvider` (drag-and-drop)
-- `src/config/settings.ts` — `getAutoImportSetting` / `setAutoImportSetting`
+- `src/config/settings.ts` — `getAutoImportSetting` / `setAutoImportSetting` / `inspectAutoImportSetting`
 
 ---
 
@@ -38,7 +41,7 @@ Covers shared infrastructure that behaves identically regardless of which destin
 
 ### How the commands work
 
-The extension has three main commands. Each interacts with the **active editor** — the editor tab where your text cursor is blinking. Click into an editor tab to make it active.
+The extension has three keyboard-bound commands (of eight total — the other five are Command Palette–only). Each interacts with the **active editor** — the editor tab where your text cursor is blinking. Click into an editor tab to make it active.
 
 | Command | Shortcut | How to use |
 |---|---|---|
@@ -150,7 +153,7 @@ These tests verify the shared validation in `commands/paste-import.ts` that runs
 
 ## 5 — Notification reference
 
-Verify exact wording for every toast the extension can produce.
+Verify exact wording for every toast the copy / paste / drop flow produces. (The settings-command toasts — `placement-saved`, `preserve-script-extension-toggled`, and `styles-reset` / `no-styles-to-reset` / `styles-restored`, plus the **Undo** button — are verified with their commands in [§12](#12--settings-commands).)
 
 ### Info toasts
 
@@ -433,7 +436,7 @@ The extension reads settings fresh on every operation — there is no caching. C
 
 - [ ] Copy `general/source.ts`, paste into `general/destination.ts` with `importStatementPlacement = "Bottom"`
 - [ ] Change the setting to `"Top"`
-- [ ] Paste again — the import lands at line 0 (Top), not after the previous import (Bottom)
+- [ ] Paste again — the import lands at line 1 (Top), not after the previous import (Bottom)
 - [ ] Undo both inserts and restore `"Bottom"`
 
 ### 11.3 — Preserve extension change takes effect immediately
@@ -442,6 +445,54 @@ The extension reads settings fresh on every operation — there is no caching. C
 - [ ] Check the **Preserve script file extension in imports** checkbox
 - [ ] Paste again — the path now includes `.ts`
 - [ ] Undo both inserts and uncheck the checkbox
+
+---
+
+## 12 — Settings commands
+
+The three settings commands act on global configuration only — no source/destination pair, no clipboard, no gating; each works with no editor open. Restore every setting you change at the end of its test.
+
+### 12.1 — Set Import Placement — QuickPick + current marker
+
+- [ ] Command Palette → `Auto Import: Set Import Placement`
+- [ ] QuickPick placeholder: `Set import placement`
+- [ ] Three items `Top` / `Bottom` / `Cursor`, each with a `detail` line (e.g. Cursor → `Insert at the current cursor position.`)
+- [ ] The current value (default `Bottom`) shows `$(check) Current` and appears **first**
+
+### 12.2 — Set Import Placement — persist + toast + marker moves
+
+- [ ] Select `Top` → info toast: `Auto Import: Import placement saved — Top`
+- [ ] VS Code Settings → `auto-import.preferences.importStatementPlacement` is now `Top`
+- [ ] Reopen the command → `Top` now shows `$(check) Current` and is first
+- [ ] Restore: run again, select `Bottom`
+
+### 12.3 — Set Import Placement — Escape dismisses silently
+
+- [ ] Run the command, press `Escape` → no toast, no setting change
+
+### 12.4 — Toggle Preserve Script File Extension
+
+- [ ] Confirm **Preserve script file extension in imports** is unchecked (default `false`); this command has no QuickPick
+- [ ] Command Palette → `Auto Import: Toggle Preserve Script File Extension` → info toast: `Auto Import: Preserve script file extension — On`
+- [ ] VS Code Settings → `auto-import.importStatement.script.preserveScriptFileExtension` is now `true`
+- [ ] Run again → info toast: `Auto Import: Preserve script file extension — Off`; setting back to `false`
+
+### 12.5 — Reset All Import Styles — nothing customized
+
+- [ ] With no import-style override set (clear any left from §10/§11), Command Palette → `Auto Import: Reset All Import Styles to Defaults`
+- [ ] Info toast: `Auto Import: No custom import styles to reset.` — **no** Undo button, no setting change
+
+### 12.6 — Reset All Import Styles — reset a customized style
+
+- [ ] Set one style: run `Auto Import: Set Default Import Style` on `general/source.ts` → `general/destination.ts`, pick a non-default TS style (writes a Global `typescriptImportStyle` override)
+- [ ] Run `Auto Import: Reset All Import Styles to Defaults` → info toast: `Auto Import: Reset 1 import style to defaults` (plural `styles` if more than one was customized), carrying an **Undo** button
+- [ ] VS Code Settings → the changed style is back to its default; `preserveScriptFileExtension` and `importStatementPlacement` are **untouched**
+
+### 12.7 — Reset All Import Styles — Undo restores
+
+- [ ] Click **Undo** on the 12.6 toast → info toast: `Auto Import: Import styles restored.`
+- [ ] VS Code Settings → the 12.6 customized value is back
+- [ ] Restore: clear that override so no customization lingers
 
 ---
 
@@ -458,5 +509,6 @@ The extension reads settings fresh on every operation — there is no caching. C
 - [ ] Pick Style universal mechanics (5 cases)
 - [ ] Set Default universal mechanics (7 cases)
 - [ ] Settings mid-session (3 cases)
+- [ ] Settings commands — Placement / Toggle Preserve / Reset (7 cases)
 
-**Total: 55 test cases**
+**Total: 62 test cases**
