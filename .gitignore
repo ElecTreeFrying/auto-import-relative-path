@@ -24,9 +24,10 @@ process
 
 # Claude Code
 .claude/*
+!.claude/agents/
+!.claude/skills/
+!.claude/workflows/
+.claude/agents/state/
 
 # Large local media (screen-recording tests — not shipped)
 assets/*.mov
-
-# Local generated QA checklist (computed [x] = covered by src + tests; gitignored, not shipped)
-_checklist

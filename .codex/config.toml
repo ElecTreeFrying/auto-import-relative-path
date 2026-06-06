@@ -1,0 +1,2 @@
+project_doc_fallback_filenames = ["CLAUDE.md"]
+project_doc_max_bytes = 65536
