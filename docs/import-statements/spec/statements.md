@@ -31,6 +31,10 @@ Every `package.json` setting carries a `default`. These are the shipped defaults
 | `markup.markdownImageImportStyle` | **`"![alt-text](_relativePath_)"`** (changed) |
 | `markup.htmlVideoImportStyle` | `"<video src=\"_relativePath_\" controls></video>"` (new) |
 | `markup.htmlAudioImportStyle` | `"<audio src=\"_relativePath_\" controls></audio>"` (new) |
+| `latex.preserveGraphicsFileExtension` | `true` (new — **keep**, inverted from the script/stylesheet preserve toggles) |
+| `latex.graphicsImportStyle` | `"\\begin{figure}[htbp] \\centering \\includegraphics[width=0.5\\textwidth]{_relativePath_} \\caption{} \\label{fig:} \\end{figure}"` (new) |
+| `latex.inputImportStyle` | `"\\input{_relativePath_}"` (new) |
+| `latex.bibliographyImportStyle` | `"\\addbibresource{_relativePath_}"` (new) |
 
 **The 5 flagged rows:**
 
@@ -47,6 +51,8 @@ Every `package.json` setting carries a `default`. These are the shipped defaults
 
 Existing users who customised a setting keep their persisted value — defaults apply only to fresh installs and explicit resets. Existing users on a **removed** value fall back automatically to the new default; see [Removed-value fallback policy](#removed-value-fallback-policy).
 
+The four `latex.*` settings shipped **after** v1 with the LaTeX (`.tex`) destination — they are not part of the v1 default audit. `preserveGraphicsFileExtension` defaults to `true` (keep), deliberately inverted from `script.preserveScriptFileExtension` / `styleSheet.preserveStylesheetFileExtension` (both `false`). Full design: [latex.md](latex.md).
+
 ## Picker inventory (counts)
 
 Per-setting enum size, as shipped. (The soft picker-bloat ceiling and its rationale live in [../CRITERIA.md](../CRITERIA.md).)
@@ -62,6 +68,9 @@ Per-setting enum size, as shipped. (The soft picker-bloat ceiling and its ration
 | HTML audio | 2 | Media setting (default `<audio controls>`) |
 | CSS | 2 | `@import` quoted-path vs. `url()` |
 | MD image | 3 | HTML `<img>` escape hatch for CLS dimensions; pure Markdown can't express them |
+| LaTeX graphics | 3 | Own `latex.*` namespace — `figure` float (default) / sized / bare `\includegraphics` |
+| LaTeX `\input` | 2 | `\input` (default, inline) / `\include` (chapter-level) |
+| LaTeX bibliography | 2 | `\addbibresource` (default — biblatex, keeps `.bib`) / `\bibliography` (BibTeX, drops `.bib`) |
 | CSS image, MD link, HTML stylesheet | 1 | UI-parity-only — single hardcoded shape, never hits `resolveStyleIndex` (syntax ceiling: nothing canonical to add) |
 | **JSX/TSX/MDX non-script dispatch** (hardcoded `_react.ts:buildAssetImportStatement` switch) | 1 guard + 3 switch groups (CSS Modules guard / default-import / media+text-track URL / side-effect) | Not a `package.json` setting — groups are coarser-grained than enum entries (each group covers many source extensions). The CSS-Modules basename guard sits *before* the switch; within the switch, default-import is the 1st group, media+text-track URL the 2nd (the 3rd distinct shape overall), side-effect the 3rd, with a `null` default for anything that slipped past gating. Each group carves a genuinely-distinct semantic (default-import vs. side-effect vs. URL vs. CSS-Modules-class-map), not a per-extension variant. |
 
@@ -212,6 +221,32 @@ Full design: [media-files.md](media-files.md). As shipped:
 |---|-------|--------|
 | 1 | `<track src="_relativePath_" kind="subtitles" srclang="en" label="English"></track>` | ← **default** |
 
+### LaTeX (`.tex`)
+
+Full design: [latex.md](latex.md). The 13th destination, and the first non-script destination to ship its **own** multi-shape picker namespace (`latex.*`). Source classification is by raw extension — `determineImportType` returns `'image'` for `.tex`, `.bib`, and `.eps` alike, so `latex.ts:buildSnippet` branches on `sourceFileExt` directly.
+
+**LaTeX graphics** — `latex.graphicsImportStyle` (`TEX_GRAPHICS_IMPORT_OPTIONS`, 3 entries). Accepted sources: `.pdf` / `.png` / `.jpg` / `.jpeg` / `.eps` (engine-renderable; `.svg` / `.gif` / `.webp` / `.avif` rejected — see [../decisions/latex.md](../decisions/latex.md)). `${path}` honours `latex.preserveGraphicsFileExtension` (default keep).
+
+| # | Shape | Status |
+|---|-------|--------|
+| 1 | `\begin{figure}[htbp] \centering \includegraphics[width=0.5\textwidth]{_relativePath_} \caption{} \label{fig:} \end{figure}` | ← **default** — full figure float (issue #5's block); rendered multi-line, `\caption` before `\label` |
+| 2 | `\includegraphics[width=0.5\textwidth]{_relativePath_}` | new — sized, no float |
+| 3 | `\includegraphics{_relativePath_}` | new — bare, natural size |
+
+**LaTeX `\input`** — `latex.inputImportStyle` (`TEX_INPUT_IMPORT_OPTIONS`, 2 entries). The `.tex` extension is always dropped (`\include` requires it omitted).
+
+| # | Shape | Status |
+|---|-------|--------|
+| 1 | `\input{_relativePath_}` | ← **default** — inline, no page break |
+| 2 | `\include{_relativePath_}` | new — chapter-level (page break, `\includeonly`-able) |
+
+**LaTeX bibliography** — `latex.bibliographyImportStyle` (`TEX_BIBLIOGRAPHY_IMPORT_OPTIONS`, 2 entries).
+
+| # | Shape | Status |
+|---|-------|--------|
+| 1 | `\addbibresource{_relativePath_}` | ← **default** — modern biblatex; keeps `.bib` |
+| 2 | `\bibliography{_relativePath_}` | new — legacy BibTeX; drops `.bib` |
+
 ---
 
 ## Snippet placeholder spec
@@ -359,6 +394,34 @@ JSX/TSX/MDX *script* sources delegate to JS/TS via `_react.ts:buildReactImport`'
 |---|---|---|---|
 | 1 | `<track src="_relativePath_" kind="subtitles" srclang="en" label="English">` | `` `<track src="${path}" kind="subtitles" srclang="${1:en}" label="${2:English}"></track>` `` — two tab stops: language code → label. | ← **default** |
 
+### LaTeX (`latex.ts` — `buildTexGraphicsImportSnippetByStyle` / `buildTexInputImportSnippetByStyle` / `buildTexBibliographyImportSnippetByStyle`)
+
+The figure (graphics #1) is the **only multi-line `SnippetString`** in the extension. `${path}` for graphics is governed by `latex.preserveGraphicsFileExtension` (default keep); `\input` drops `.tex`; `\addbibresource` keeps `.bib` (`${path}${ext}`), `\bibliography` drops it (`${ext}` = the source extension, e.g. `.bib`).
+
+**Graphics (`buildTexGraphicsImportSnippetByStyle`):**
+
+| # | Enum `description` | `SnippetString` shape | Status |
+|---|---|---|---|
+| 1 | `\begin{figure}[htbp] \centering \includegraphics[width=0.5\textwidth]{_relativePath_} \caption{} \label{fig:} \end{figure}` | the six lines `\begin{figure}[htbp]` / `    \centering` / `    \includegraphics[width=0.5\textwidth]{${path}}` / `    \caption{${1:caption}}` / `    \label{fig:${2:label}}` / `\end{figure}`, joined with `\n`. `\caption` precedes `\label` for correct `\ref` numbering. | ← **default** |
+| 2 | `\includegraphics[width=0.5\textwidth]{_relativePath_}` | `` `\includegraphics[width=${1:0.5}\textwidth]{${path}}` `` — tab stop on the width fraction. | new |
+| 3 | `\includegraphics{_relativePath_}` | `` `\includegraphics{${path}}` `` — no tab stop. | new |
+
+**`\input` (`buildTexInputImportSnippetByStyle`):**
+
+| # | Enum `description` | `SnippetString` shape | Status |
+|---|---|---|---|
+| 1 | `\input{_relativePath_}` | `` `\input{${path}}` `` | ← **default** |
+| 2 | `\include{_relativePath_}` | `` `\include{${path}}` `` | new |
+
+**Bibliography (`buildTexBibliographyImportSnippetByStyle`):**
+
+| # | Enum `description` | `SnippetString` shape | Status |
+|---|---|---|---|
+| 1 | `\addbibresource{_relativePath_}` | `` `\addbibresource{${path}${ext}}` `` (keeps `.bib`) | ← **default** |
+| 2 | `\bibliography{_relativePath_}` | `` `\bibliography{${path}}` `` (drops `.bib`) | new |
+
+Each `…ByStyle` switch ends in a `default:` returning style 1 (figure / `\input` / `\addbibresource`) — the Removed-value fallback policy. The picker label for the multi-line figure is collapsed to one line by `variants.ts:renderLabel` (`.replace(/\n\s*/g, ' ')`), a no-op for every other (single-line) shape.
+
 ---
 
 ## Removed-value fallback policy
@@ -383,6 +446,7 @@ Removed-value users transparently get the new default with zero broken pastes. T
 
 - `src/snippets/_styles.ts` — the `*_IMPORT_OPTIONS` tables (canonical target for the "Final list" tables above), `ImportStyle[]`, and `resolveStyleIndex` at `_styles.ts:7` (undefined-on-no-match routes to the per-language `default:` branch).
 - `src/snippets/languages/*.ts` — per-language `buildXImportSnippetByStyle` switches (`typescript.ts` also holds `generateAngularLegacyImportName` + `LEGACY_ANGULAR_FILE_SUFFIXES`; `css.ts` holds `buildCssImageImportSnippet`).
+- `src/snippets/languages/latex.ts` — the LaTeX builder (graphics / `\input` / bibliography `byStyle` switches + the `isTexGraphicsSource` / `resolveGraphicsPath` helpers; the figure is the only multi-line snippet). The `latex` config namespace lives in `src/config/settings.ts`; the `TEX_*_IMPORT_OPTIONS` tables in `src/snippets/_styles.ts`.
 - `src/snippets/_react.ts` — `buildReactImport` (`_react.ts:17`) and the JSX/TSX/MDX non-script `buildAssetImportStatement` switch (`_react.ts:48-94`: guard `52-54`, default-import `57-74`, media+text-track `75-83`, side-effect `84-90`, `default: null` `91-92`).
 - `src/snippets/variants.ts` — the `buildReactNonScriptVariant` mirror of the asset switch.
 - `src/snippets/dispatch.ts` — destination-extension routing.

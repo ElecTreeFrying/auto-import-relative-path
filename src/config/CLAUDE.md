@@ -10,7 +10,7 @@ Workspace-config access for the extension.
 
 Top-level group → `{ namespace, settings }`. `namespace` is the fully qualified VS Code config path; `settings` is a sub-object that maps short aliases ↔ property names. Splitting metadata (`namespace`) out of the alias space means an alias can never collide with a metadata key.
 
-Four namespaces:
+Five namespaces:
 
 | `namespaceKey` | `vscode.workspace.getConfiguration(...)` namespace |
 |----------------|-----------------------------------------------------|
@@ -18,6 +18,7 @@ Four namespaces:
 | `script` | `auto-import.importStatement.script` |
 | `stylesheet` | `auto-import.importStatement.styleSheet` |
 | `markup` | `auto-import.importStatement.markup` |
+| `latex` | `auto-import.importStatement.latex` |
 
 The `Object.freeze` is intentional — mutations throw at runtime. Treat the map as a configuration constant.
 

@@ -187,6 +187,40 @@ describe('gating/isPairSupported', () => {
     });
   });
 
+  describe('LaTeX destination (clause 10)', () => {
+    it('.tex → .tex accepted (\\input / \\include, same-extension)', () => {
+      assert.strictEqual(isPairSupported(info('.tex', '.tex')), true);
+    });
+
+    it('.png → .tex accepted (graphics)', () => {
+      assert.strictEqual(isPairSupported(info('.png', '.tex')), true);
+    });
+
+    it('.pdf → .tex accepted (graphics)', () => {
+      assert.strictEqual(isPairSupported(info('.pdf', '.tex')), true);
+    });
+
+    it('.eps → .tex accepted (graphics)', () => {
+      assert.strictEqual(isPairSupported(info('.eps', '.tex')), true);
+    });
+
+    it('.bib → .tex accepted (bibliography)', () => {
+      assert.strictEqual(isPairSupported(info('.bib', '.tex')), true);
+    });
+
+    it('.svg → .tex rejected (not pdflatex-renderable)', () => {
+      assert.strictEqual(isPairSupported(info('.svg', '.tex')), false);
+    });
+
+    it('.ts → .tex rejected', () => {
+      assert.strictEqual(isPairSupported(info('.ts', '.tex')), false);
+    });
+
+    it('.tex → .ts rejected (a .tex source only targets .tex)', () => {
+      assert.strictEqual(isPairSupported(info('.tex', '.ts')), false);
+    });
+  });
+
   // Each destination's allow-list checked with BOTH an in-list accept and an out-of-list reject,
   // so a future edit that widens or narrows one table is caught from the same destination.
   describe('allow-list boundaries (accept and reject share one destination)', () => {
@@ -197,6 +231,7 @@ describe('gating/isPairSupported', () => {
       [ '.jpg', '.scss', true ], [ '.html', '.scss', false ],
       [ '.json', '.svelte', true ], [ '.md', '.vue', false ],
       [ '.svelte', '.astro', true ], [ '.scss', '.astro', false ],
+      [ '.pdf', '.tex', true ], [ '.svg', '.tex', false ],
     ];
     for (const [ src, dest, expected ] of pairs) {
       it(`${src} → ${dest} ${expected ? 'accepted' : 'rejected'}`, () => {

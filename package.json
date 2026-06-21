@@ -1,7 +1,7 @@
 {
   "name": "auto-import",
   "displayName": "Auto Import Relative Path",
-  "description": "Never type an import path again. Drag a file in — or press a keystroke — to generate a relative-path import for JavaScript, TypeScript, React, Next.js, Angular, Vue, Svelte, Astro, MDX, CSS, SCSS, HTML & Markdown. 38 import styles, framework-aware placement, image/video/audio tags. Works with any bundler or runtime — Vite, webpack, Rollup, esbuild, Node.js, Deno, Bun.",
+  "description": "Never type an import path again. Drag a file in — or press a keystroke — to generate a relative-path import for JavaScript, TypeScript, React, Next.js, Angular, Vue, Svelte, Astro, MDX, CSS, SCSS, HTML, Markdown & LaTeX. 45 import styles, framework-aware placement, image/video/audio tags, LaTeX figures. Works with any bundler or runtime — Vite, webpack, Rollup, esbuild, Node.js, Deno, Bun.",
   "publisher": "ElecTreeFrying",
   "version": "0.6.1",
   "author": {
@@ -58,7 +58,9 @@
     "onLanguage:svelte",
     "onLanguage:astro",
     "onLanguage:mdx",
-    "workspaceContains:**/*.mdx"
+    "onLanguage:latex",
+    "workspaceContains:**/*.mdx",
+    "workspaceContains:**/*.tex"
   ],
   "galleryBanner": {
     "color": "#494949",
@@ -91,8 +93,8 @@
     "deno",
     "bun",
     "vite",
-    "parcel",
-    "turbopack",
+    "tex",
+    "overleaf",
     "esm",
     "commonjs",
     "require",
@@ -169,7 +171,7 @@
         "properties": {
           "auto-import.preferences.importStatementPlacement": {
             "title": "Import statement placement",
-            "description": "Where to insert generated import statements in the destination file. Forced to 'Cursor' for HTML, Markdown, and when importing a non-stylesheet into a stylesheet. For .astro files, placement is constrained to the frontmatter block; for .vue and .svelte files, to the script block. Default: Bottom.",
+            "description": "Where to insert generated import statements in the destination file. Forced to 'Cursor' for HTML, Markdown, LaTeX, and when importing a non-stylesheet into a stylesheet. For .astro files, placement is constrained to the frontmatter block; for .vue and .svelte files, to the script block. Default: Bottom.",
             "type": "string",
             "default": "Bottom",
             "enum": [
@@ -407,6 +409,56 @@
               "Bare inline image — most common Markdown image form",
               "Inline image syntax with hover-text title",
               "HTML embed for sizing — Core Web Vitals CLS prevention"
+            ]
+          },
+          "auto-import.importStatement.latex.preserveGraphicsFileExtension": {
+            "title": "Preserve graphics file extension in LaTeX imports",
+            "description": "Keep the source .pdf / .png / .jpg / .jpeg / .eps extension on the generated \\includegraphics path. LaTeX can resolve an extensionless path against its configured graphics formats, but keeping the extension is unambiguous and matches the dropped file, so this is on by default.",
+            "type": "boolean",
+            "default": true
+          },
+          "auto-import.importStatement.latex.graphicsImportStyle": {
+            "title": "LaTeX graphics (figure) style",
+            "description": "Snippet inserted at the cursor when a graphic (.pdf, .png, .jpg, .jpeg, .eps) is imported into a .tex destination. '_relativePath_' is replaced with the computed relative path. The default figure float places \\caption before \\label so \\ref resolves to the figure number.",
+            "type": "string",
+            "default": "\\begin{figure}[htbp] \\centering \\includegraphics[width=0.5\\textwidth]{_relativePath_} \\caption{} \\label{fig:} \\end{figure}",
+            "enum": [
+              "\\begin{figure}[htbp] \\centering \\includegraphics[width=0.5\\textwidth]{_relativePath_} \\caption{} \\label{fig:} \\end{figure}",
+              "\\includegraphics[width=0.5\\textwidth]{_relativePath_}",
+              "\\includegraphics{_relativePath_}"
+            ],
+            "enumDescriptions": [
+              "Figure float — centered, sized, with caption and label",
+              "Sized graphic — width as a fraction of \\textwidth, no float",
+              "Bare graphic — natural size, no float"
+            ]
+          },
+          "auto-import.importStatement.latex.inputImportStyle": {
+            "title": "LaTeX \\input / \\include style",
+            "description": "Snippet inserted at the cursor when a .tex source is imported into a .tex destination. The .tex extension is omitted (LaTeX convention; \\include requires it). '_relativePath_' is replaced with the computed relative path.",
+            "type": "string",
+            "default": "\\input{_relativePath_}",
+            "enum": [
+              "\\input{_relativePath_}",
+              "\\include{_relativePath_}"
+            ],
+            "enumDescriptions": [
+              "Inline include — \\input (no page break)",
+              "Chapter include — \\include (page break, \\includeonly-able)"
+            ]
+          },
+          "auto-import.importStatement.latex.bibliographyImportStyle": {
+            "title": "LaTeX bibliography style",
+            "description": "Snippet inserted at the cursor when a .bib source is imported into a .tex destination. \\addbibresource (biblatex) keeps the .bib extension; \\bibliography (BibTeX) drops it. '_relativePath_' is replaced with the computed relative path.",
+            "type": "string",
+            "default": "\\addbibresource{_relativePath_}",
+            "enum": [
+              "\\addbibresource{_relativePath_}",
+              "\\bibliography{_relativePath_}"
+            ],
+            "enumDescriptions": [
+              "Modern biblatex — \\addbibresource (keeps .bib)",
+              "Legacy BibTeX — \\bibliography (drops .bib)"
             ]
           }
         }

@@ -219,6 +219,17 @@ The TS slot freed by the drop went to `const name = await import('_relativePath_
 
 **Pattern this exemplifies:** a shape can hit Criterion 1 in one language and fail it in another when the language's import culture differs (named-only TS vs. mixed-export JS). Re-apply the criteria per-language when culture asymmetries appear; don't assume symmetry. This complements Criterion 3 (Framework-portable) which addresses cross-toolchain asymmetries — this pattern addresses cross-language ones. See the named principle below.
 
+### Why LaTeX graphics gate to `.pdf` / `.png` / `.jpg` / `.jpeg` / `.eps` and reject `.svg` / `.gif` / `.webp` / `.avif`
+
+LaTeX (`.tex`) accepts graphics sources for `\includegraphics`, but its accepted set is **not** the web `IMAGE_FILE_EXTENSIONS` set. Read Criterion 3 (Framework-portable) as **engine-portable**: an `\includegraphics` call must compile under the mainstream engines (`pdflatex` / `xelatex` / `lualatex`).
+
+- `.pdf` / `.png` / `.jpg` / `.jpeg` — `pdflatex`-native. Pass C3.
+- `.eps` — native under `latex`+`dvips`, auto-converted under `pdflatex` (`epstopdf`). C3-borderline, but the classic LaTeX vector format; admitted for academic parity (the `.mov` / `.m4a` precedent in [decisions/media-files.md](decisions/media-files.md)).
+- `.svg` — needs the `svg` package shelling out to Inkscape (`--shell-escape` + an Inkscape install). Fails C3.
+- `.gif` / `.webp` / `.avif` — no LaTeX engine renders them natively. Fail C3.
+
+This is the same gate that keeps `.mkv` / `.avi` out of HTML `<video>` (the imports compile, but nothing renders them — the "a parser accepting a token ≠ a feature backs it" sub-rule). **The lesson: when a destination has an engine/runtime with its own format support, re-derive the accepted set from that engine — never inherit a sibling destination's source list.** LaTeX's graphics set lives in its own `TEX_GRAPHICS_FILE_EXTENSIONS` constant precisely so it cannot drift into reusing `IMAGE_FILE_EXTENSIONS`. See [decisions/latex.md](decisions/latex.md).
+
 ---
 
 ## Named patterns

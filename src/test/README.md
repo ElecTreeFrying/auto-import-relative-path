@@ -15,7 +15,7 @@ Mocha BDD tests. The suite's fixtures live in [`fixtures/`](fixtures/) — self-
 | `config/` | Workspace-config access tests (`settings`) |
 | `constants/` | Gating-table tests (`extensions`) |
 | `snippets/` | Snippet builder, dispatch, variants, class-name, react, and styles tests, plus `dispatch-variants-parity` — a structural test that reads source to pin the dispatch↔variants destination switch |
-| `snippets/languages/` | Per-language snippet builder tests (9 files: 8 per-destination-language plus `framework-component` for the shared Vue/Svelte/Astro path) |
+| `snippets/languages/` | Per-language snippet builder tests (10 files: 9 per-destination-language — incl. `latex` — plus `framework-component` for the shared Vue/Svelte/Astro path) |
 | `fixtures/` | Self-contained fixture tree (paste sources + destinations) opened by the 15 fixture-driven tests via `FIXTURE_ROOT`; excluded from `tsc`/ESLint |
 
 ## Running

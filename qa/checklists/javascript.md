@@ -429,7 +429,7 @@ Drag a file from the Explorer sidebar into an open `.js` editor. A drop reuses t
 - [ ] Drag `javascript/src/foo.js` into `javascript/src/bar.js` → path is `'./foo.js'`
 - [ ] In the extension settings, uncheck the **Preserve script file extension in imports** checkbox to restore the default
 
-> **Universal drop precondition** (untitled / unsaved buffer is a no-op): cross-cutting across all 12 destinations and verified once in [typescript.md §9.10](typescript.md#910--universal-drop-precondition-cross-cutting--verified-once-here) — **not** re-tested here.
+> **Universal drop precondition** (untitled / unsaved buffer is a no-op): cross-cutting across all 13 destinations and verified once in [typescript.md §9.10](typescript.md#910--universal-drop-precondition-cross-cutting--verified-once-here) — **not** re-tested here.
 
 ---
 

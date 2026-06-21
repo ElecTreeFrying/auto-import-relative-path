@@ -22,6 +22,9 @@ describe('commands/reset-import-styles', () => {
       setAutoImportSetting('markup', 'htmlVideo', undefined),
       setAutoImportSetting('markup', 'htmlAudio', undefined),
       setAutoImportSetting('markup', 'markdownImage', undefined),
+      setAutoImportSetting('latex', 'graphics', undefined),
+      setAutoImportSetting('latex', 'input', undefined),
+      setAutoImportSetting('latex', 'bibliography', undefined),
     ]);
   });
 
@@ -47,6 +50,44 @@ describe('commands/reset-import-styles', () => {
     assert.ok(
       typeof jsDefault === 'string' && jsDefault.length > 0 && jsDefault !== SENTINEL,
       `expected the package.json default, got ${String(jsDefault)}`,
+    );
+  });
+
+  // The LaTeX style settings (latex.graphics/input/bibliography) joined RESETTABLE_STYLES — a reset
+  // must clear them too, or "Reset All Import Styles" would silently skip the LaTeX destination.
+  it('resets a customized LaTeX style (latex.graphics is in RESETTABLE_STYLES)', async () => {
+    await setAutoImportSetting('latex', 'graphics', SENTINEL);
+
+    await executeResetImportStyles();
+
+    assert.strictEqual(
+      inspectAutoImportSetting('latex', 'graphics')?.globalValue,
+      undefined,
+      'latex.graphics override should have been removed',
+    );
+  });
+
+  it('resets a customized LaTeX style (latex.input is in RESETTABLE_STYLES)', async () => {
+    await setAutoImportSetting('latex', 'input', SENTINEL);
+
+    await executeResetImportStyles();
+
+    assert.strictEqual(
+      inspectAutoImportSetting('latex', 'input')?.globalValue,
+      undefined,
+      'latex.input override should have been removed',
+    );
+  });
+
+  it('resets a customized LaTeX style (latex.bibliography is in RESETTABLE_STYLES)', async () => {
+    await setAutoImportSetting('latex', 'bibliography', SENTINEL);
+
+    await executeResetImportStyles();
+
+    assert.strictEqual(
+      inspectAutoImportSetting('latex', 'bibliography')?.globalValue,
+      undefined,
+      'latex.bibliography override should have been removed',
     );
   });
 

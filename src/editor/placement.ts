@@ -128,9 +128,9 @@ export function isInlineSnippet(sourceFileExt: FileExtension, destinationFileExt
   );
 }
 
-/** Returns `true` for destinations (`.html`, `.md`) where imports insert at the cursor line. */
+/** Returns `true` for destinations (`.html`, `.md`, `.tex`) where imports insert at the cursor line. */
 export function shouldRepositionCursor(destinationFileExt: FileExtension): boolean {
-  return destinationFileExt === '.html' || destinationFileExt === '.md';
+  return destinationFileExt === '.html' || destinationFileExt === '.md' || destinationFileExt === '.tex';
 }
 
 /** Returns `true` for Markdown destinations (`.md`, `.mdx`) where a leading `*` is content, not a comment. */

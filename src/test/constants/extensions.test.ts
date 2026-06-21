@@ -4,6 +4,7 @@ import {
   IMAGE_FILE_EXTENSIONS,
   MEDIA_FILE_EXTENSIONS,
   TEXT_TRACK_FILE_EXTENSIONS,
+  TEX_GRAPHICS_FILE_EXTENSIONS,
   HTML_SUPPORTED_EXTENSIONS,
   MARKDOWN_SUPPORTED_EXTENSIONS,
   CSS_SUPPORTED_EXTENSIONS,
@@ -11,6 +12,7 @@ import {
   VUE_SUPPORTED_EXTENSIONS,
   SVELTE_SUPPORTED_EXTENSIONS,
   ASTRO_SUPPORTED_EXTENSIONS,
+  TEX_SUPPORTED_EXTENSIONS,
   CROSS_IMPORT_DESTINATIONS,
   SCRIPT_FILE_EXTENSIONS,
   STYLESHEET_FILE_EXTENSIONS,
@@ -101,10 +103,27 @@ describe('constants/extensions', () => {
     }
   });
 
-  it('CROSS_IMPORT_DESTINATIONS has exactly 10 members', () => {
-    assert.strictEqual(CROSS_IMPORT_DESTINATIONS.length, 10);
-    for (const ext of [ '.html', '.md', '.css', '.scss', '.tsx', '.mdx', '.jsx', '.vue', '.svelte', '.astro' ]) {
+  it('CROSS_IMPORT_DESTINATIONS has exactly 11 members', () => {
+    assert.strictEqual(CROSS_IMPORT_DESTINATIONS.length, 11);
+    for (const ext of [ '.html', '.md', '.css', '.scss', '.tsx', '.mdx', '.jsx', '.vue', '.svelte', '.astro', '.tex' ]) {
       assert.ok(CROSS_IMPORT_DESTINATIONS.includes(ext as any), `missing ${ext}`);
+    }
+  });
+
+  it('TEX_GRAPHICS_FILE_EXTENSIONS is the pdflatex-renderable set (.pdf, .png, .jpg, .jpeg, .eps)', () => {
+    assert.deepStrictEqual(TEX_GRAPHICS_FILE_EXTENSIONS, [ '.pdf', '.png', '.jpg', '.jpeg', '.eps' ]);
+    for (const ext of [ '.svg', '.gif', '.webp', '.avif' ]) {
+      assert.ok(!TEX_GRAPHICS_FILE_EXTENSIONS.includes(ext as any), `${ext} is not LaTeX-renderable and must stay out`);
+    }
+  });
+
+  it('TEX_SUPPORTED_EXTENSIONS has 7 entries (.tex, .bib + 5 graphics)', () => {
+    assert.strictEqual(TEX_SUPPORTED_EXTENSIONS.length, 7);
+    for (const ext of [ '.tex', '.bib', '.pdf', '.png', '.jpg', '.jpeg', '.eps' ]) {
+      assert.ok(TEX_SUPPORTED_EXTENSIONS.includes(ext as any), `missing ${ext}`);
+    }
+    for (const ext of [ '.svg', '.ts', '.css' ]) {
+      assert.ok(!TEX_SUPPORTED_EXTENSIONS.includes(ext as any), `${ext} should not be in TeX`);
     }
   });
 

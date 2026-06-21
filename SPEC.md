@@ -1,6 +1,6 @@
 # Auto Import Relative Path — Functionality Specification
 
-A VS Code extension that generates relative-path import statements for JS, TS, JSX, TSX, MDX, CSS, SCSS, HTML, Markdown, Vue, Svelte, and Astro files. Two input gestures: **copy-paste** (copy a source file's path, open a destination, paste) and **drag-and-drop** (drag a file from the Explorer into an open editor). Both compute the relative path and insert the correctly-shaped import statement for that language pair. Eight commands, three keybindings, one drop provider, sixteen configuration settings.
+A VS Code extension that generates relative-path import statements for JS, TS, JSX, TSX, MDX, CSS, SCSS, HTML, Markdown, Vue, Svelte, Astro, and LaTeX files. Two input gestures: **copy-paste** (copy a source file's path, open a destination, paste) and **drag-and-drop** (drag a file from the Explorer into an open editor). Both compute the relative path and insert the correctly-shaped import statement for that language pair. Eight commands, three keybindings, one drop provider, twenty configuration settings.
 
 ---
 
@@ -31,11 +31,11 @@ A VS Code extension that generates relative-path import statements for JS, TS, J
 
 ## Drag-and-Drop Import
 
-Dragging a file from VS Code's Explorer tree into a supported editor generates the same import snippet as the paste commands. The drop provider activates for all 12 supported destination languages and uses the same snippet styles, gating rules, and configuration settings — no separate configuration is needed.
+Dragging a file from VS Code's Explorer tree into a supported editor generates the same import snippet as the paste commands. The drop provider activates for all 13 supported destination languages and uses the same snippet styles, gating rules, and configuration settings — no separate configuration is needed.
 
 ### Supported destination languages
 
-The provider registers against: JavaScript, JavaScriptReact, TypeScript, TypeScriptReact, CSS, SCSS, HTML, Markdown, Vue, Svelte, Astro, and MDX. Each language is registered with `scheme: 'file'`, so the provider activates only for on-disk, file-backed documents; untitled, in-memory, and non-`file`-scheme (e.g. remote or virtual) documents are excluded even when their language is one of the 12 above.
+The provider registers against eleven VS Code language IDs — JavaScript, JavaScriptReact, TypeScript, TypeScriptReact, CSS, SCSS, HTML, Markdown, Vue, Svelte, Astro — plus two **file-pattern** selectors, `**/*.mdx` and `**/*.tex`, because neither MDX nor LaTeX has a guaranteed VS Code language ID (a `.tex` file opens as plaintext without a LaTeX extension installed). Each entry is registered with `scheme: 'file'`, so the provider activates only for on-disk, file-backed documents; untitled, in-memory, and non-`file`-scheme (e.g. remote or virtual) documents are excluded even when their language is one of the 13 above.
 
 Beyond the per-language `scheme: 'file'` filter, the provider is registered with `dropMimeTypes: [ 'text/uri-list' ]`, so VS Code only invokes it for drag payloads carrying a `text/uri-list` MIME type (the standard Explorer drag payload) — a second registration-time gate alongside the language/scheme selector. Because of this gate, the `text/plain` fallback below is reached only when a drag does carry `text/uri-list` but its first-line value is empty/whitespace.
 
@@ -65,7 +65,7 @@ Beyond the per-language `scheme: 'file'` filter, the provider is registered with
 
 ## Supported File Extensions
 
-35 extensions across 15 categories.
+38 extensions across 18 categories.
 
 | Category | Extensions | Count |
 |---|---|---|
@@ -84,6 +84,9 @@ Beyond the per-language `scheme: 'file'` filter, the provider is registered with
 | Vue | `.vue` | 1 |
 | Svelte | `.svelte` | 1 |
 | Astro | `.astro` | 1 |
+| LaTeX | `.tex` | 1 |
+| Bibliography | `.bib` | 1 |
+| Encapsulated PostScript | `.eps` | 1 |
 
 ---
 
@@ -91,7 +94,7 @@ Beyond the per-language `scheme: 'file'` filter, the provider is registered with
 
 Which source extensions each destination accepts. A source-destination pair not listed here is rejected with a "Cannot import" warning.
 
-Exactly ten destinations may import a source of a *different* extension (the cross-import set): `.html`, `.md`, `.css`, `.scss`, `.tsx`, `.mdx`, `.jsx`, `.vue`, `.svelte`, `.astro`. Every other destination accepts only its own extension (the same-extension default; see `.js`/`.ts` below). The per-destination tables that follow detail the accepted sources for each destination.
+Exactly eleven destinations may import a source of a *different* extension (the cross-import set): `.html`, `.md`, `.css`, `.scss`, `.tsx`, `.mdx`, `.jsx`, `.vue`, `.svelte`, `.astro`, `.tex`. Every other destination accepts only its own extension (the same-extension default; see `.js`/`.ts` below). The per-destination tables that follow detail the accepted sources for each destination.
 
 ### Same-extension destinations
 
@@ -106,7 +109,7 @@ Exactly ten destinations may import a source of a *different* extension (the cro
 
 These accept script sources through their configurable import style, plus a broad set of non-script sources through hardcoded per-category dispatch.
 
-Mechanically, `.jsx`/`.tsx`/`.mdx` carry NO per-destination source allow-list in `gating.ts` — unlike the stylesheet, markup, and same-extension destinations below (each backed by a `*_SUPPORTED_EXTENSIONS` clause), these three are accepted purely by membership in `CROSS_IMPORT_DESTINATIONS` and therefore accept ANY source extension that clears the cross-import gate. The table below enumerates today's full 35-extension set, so it is exhaustive in practice; but a newly added file extension is auto-accepted into these three destinations with no gating change. It still needs a source branch in the shared `_react.ts:buildAssetImportStatement` switch — the single canonical asset switch, reached for JSX/TSX/MDX from the default paste flow via `buildReactImport` and the style-picker flow via `variants.ts:buildReactNonScriptVariant` (and, for non-script sources into `.vue`/`.svelte`/`.astro` destinations, from `languages/framework-component.ts`) — to emit a non-empty snippet; without one the extension falls through to that switch's `default:` (`null`), which the paste flow wraps as an empty `SnippetString` and the picker flow drops as a missing variant.
+Mechanically, `.jsx`/`.tsx`/`.mdx` carry NO per-destination source allow-list in `gating.ts` — unlike the stylesheet, markup, and same-extension destinations below (each backed by a `*_SUPPORTED_EXTENSIONS` clause), these three are accepted purely by membership in `CROSS_IMPORT_DESTINATIONS` and therefore accept ANY source extension that clears the cross-import gate. The table below enumerates the 35 asset/script extensions that have a JSX/TSX/MDX shape, so it is exhaustive in practice. (The three LaTeX-only extensions — `.tex`, `.bib`, `.eps` — clear the cross-import gate too, but have no branch in the asset switch, so a `.tex`/`.bib`/`.eps` source dropped into `.jsx`/`.tsx`/`.mdx` falls through to `default:` (`null`) → not-supported.) A newly added file extension is likewise auto-accepted into these three destinations with no gating change. It still needs a source branch in the shared `_react.ts:buildAssetImportStatement` switch — the single canonical asset switch, reached for JSX/TSX/MDX from the default paste flow via `buildReactImport` and the style-picker flow via `variants.ts:buildReactNonScriptVariant` (and, for non-script sources into `.vue`/`.svelte`/`.astro` destinations, from `languages/framework-component.ts`) — to emit a non-empty snippet; without one the extension falls through to that switch's `default:` (`null`), which the paste flow wraps as an empty `SnippetString` and the picker flow drops as a missing variant.
 
 | Source category | Extensions | `.jsx` | `.tsx` | `.mdx` |
 |---|---|---|---|---|
@@ -160,9 +163,19 @@ Mechanically, `.jsx`/`.tsx`/`.mdx` carry NO per-destination source allow-list in
 | YAML | `.yaml`, `.yml` | Yes | Yes | Yes |
 | Markdown | `.md`, `.mdx` | — | — | Yes |
 
+### LaTeX destination
+
+`.tex` accepts three source kinds, each dispatched by the source extension. The graphics set is the **engine-renderable** formats only — `.svg`, `.gif`, `.webp`, `.avif` are rejected (`pdflatex` cannot render them without a plugin + shell-escape), so they do not appear here even though they are accepted by other destinations.
+
+| Source category | Extensions | `.tex` |
+|---|---|---|
+| Self (file inclusion) | `.tex` | Yes — `\input` / `\include` |
+| Bibliography | `.bib` | Yes — `\addbibresource` / `\bibliography` |
+| Graphics | `.pdf`, `.png`, `.jpg`, `.jpeg`, `.eps` | Yes — `figure` / `\includegraphics` |
+
 ### Rejection rules
 
-Pair gating is implemented by `isPairSupported(info)` in `src/gating.ts`, a single boolean that reads only the source/destination extension fields (no path data) and evaluates nine reject clauses in order: the universal cross-import gate, the explicit `.html → .html` reject, then seven per-destination allow-list guards. The first matching clause rejects; a pair is accepted only by surviving all nine — there is no positive early-return. (The same-file and empty-snippet rules below are separate checks in the calling commands/drop provider, not part of this boolean.)
+Pair gating is implemented by `isPairSupported(info)` in `src/gating.ts`, a single boolean that reads only the source/destination extension fields (no path data) and evaluates ten reject clauses in order: the universal cross-import gate, the explicit `.html → .html` reject, then eight per-destination allow-list guards (the eighth being the `.tex` LaTeX destination). The first matching clause rejects; a pair is accepted only by surviving all ten — there is no positive early-return. (The same-file and empty-snippet rules below are separate checks in the calling commands/drop provider, not part of this boolean.)
 
 1. **Same file**: source path equals destination path (case-insensitive) — "A file cannot import itself."
 2. **Unsupported pair**: source extension not in the destination's accepted list — "Cannot import {ext} into {ext} files."
@@ -378,6 +391,40 @@ Every shape in this table keeps the full real source extension on the path verba
 
 Script sources (`.ts`, `.tsx`, `.js`, `.jsx`) use the TypeScript import style. Non-script sources are dispatched by source category through the **same `buildAssetImportStatement` switch used by JSX/TSX/MDX** (`_react.ts`) — `import name from` for images, data, YAML, and components (and, for Astro destinations, Markdown sources); `import url from` for media and text tracks — with the full source extension preserved on the path. (The accepted category set is narrower here than for JSX/TSX/MDX: framework destinations don't accept fonts, stylesheets, or CSS Modules.)
 
+### LaTeX
+
+`.tex` is the only destination that ships its **own** picker namespace for non-script sources (`auto-import.importStatement.latex.*`). Source classification is by raw extension — graphics → `figure`/`\includegraphics`, `.tex` → `\input`/`\include`, `.bib` → `\addbibresource`/`\bibliography`.
+
+#### LaTeX graphics
+
+3 configurable styles. Setting: **`auto-import.importStatement.latex.graphicsImportStyle`**. Default: index 0. Used for `.pdf`/`.png`/`.jpg`/`.jpeg`/`.eps` sources imported into `.tex` destinations. The path keeps its extension unless `preserveGraphicsFileExtension` is off (it defaults to *on* — keep).
+
+| Index | Snippet | Description |
+|---|---|---|
+| **0** | `\begin{figure}[htbp] … \includegraphics[width=0.5\textwidth]{./path} … \caption{…} \label{fig:…} \end{figure}` | Figure float — **(default)**; rendered multi-line |
+| 1 | `\includegraphics[width=0.5\textwidth]{./path}` | Sized graphic, no float |
+| 2 | `\includegraphics{./path}` | Bare graphic, natural size |
+
+Index 0 is the only **multi-line** snippet in the extension — it renders as six lines, with `\caption` emitted **before** `\label` so `\ref` resolves to the figure number (a `\label` placed above its `\caption` captures the section counter). The `caption` and `label` placeholders are pre-filled editable tab stops (caption → label). Index 1 puts an editable `0.5` tab stop on the width fraction.
+
+#### LaTeX `\input` / `\include`
+
+2 configurable styles. Setting: **`auto-import.importStatement.latex.inputImportStyle`**. Default: index 0. Used for `.tex` sources imported into `.tex` destinations. The `.tex` extension is always dropped from the path (`\include` requires it omitted).
+
+| Index | Snippet | Description |
+|---|---|---|
+| **0** | `\input{./path}` | Inline include, no page break **(default)** |
+| 1 | `\include{./path}` | Chapter-level — page break, `\includeonly`-able |
+
+#### LaTeX bibliography
+
+2 configurable styles. Setting: **`auto-import.importStatement.latex.bibliographyImportStyle`**. Default: index 0. Used for `.bib` sources imported into `.tex` destinations.
+
+| Index | Snippet | Description |
+|---|---|---|
+| **0** | `\addbibresource{./path.bib}` | Modern biblatex — keeps `.bib` **(default)** |
+| 1 | `\bibliography{./path}` | Legacy BibTeX — drops `.bib` |
+
 ---
 
 ## Placement
@@ -416,10 +463,10 @@ These overrides take effect regardless of the user's placement setting.
 
 | Condition | Forced placement | Reason |
 |---|---|---|
-| HTML or Markdown destination (`.html`, `.md` — **not** `.mdx`) | Cursor (line and column) | No canonical "top of file" for embedded tags. |
+| HTML, Markdown, or LaTeX destination (`.html`, `.md`, `.tex` — **not** `.mdx`) | Cursor (line and column) | No canonical "top of file" for embedded tags; for LaTeX, line 0 is the preamble (before `\documentclass`), so a figure / `\input` belongs in the body at the cursor. |
 | Non-stylesheet source into stylesheet destination (e.g., image into `.css`/`.scss`) | Inline at exact cursor position (line and column), no trailing newline | `url()` is a CSS value fragment, not a standalone statement. |
 
-`.mdx` is intentionally excluded from this forced-cursor override (`shouldRepositionCursor` checks only `.html`/`.md`); it follows the user's Top/Bottom/Cursor setting, though it is still treated as Markdown for `*`-comment handling (see Cursor mode above).
+`.mdx` is intentionally excluded from this forced-cursor override (`shouldRepositionCursor` checks `.html`/`.md`/`.tex`); it follows the user's Top/Bottom/Cursor setting, though it is still treated as Markdown for `*`-comment handling (see Cursor mode above).
 
 ### Astro frontmatter constraint
 
@@ -455,9 +502,9 @@ If no script block exists, a new `<script>`/`</script>` pair is created at line 
 |---|---|
 | Script (`.ts`, `.tsx`, `.mdx`, `.js`, `.jsx`, `.vue`, `.svelte`, `.astro`) | Column 0 |
 | Stylesheet (`.css`, `.scss`) | Column 0 |
-| HTML, Markdown | Cursor's current column |
+| HTML, Markdown, LaTeX | Cursor's current column |
 
-**Newline**: every non-inline import has a trailing newline appended before insertion, so each import occupies its own line. The inline `url()` path (the overrides row above) is the only exception. For the no-frontmatter and no-script-block fallbacks, this appended newline is also what lands the synthesized closing fence/tag on its own line — the created blocks are `---\n<import>\n---\n` and `<script>\n<import>\n</script>\n`.
+**Newline**: every non-inline import has a trailing newline appended before insertion, so each import occupies its own line. The inline `url()` path (the overrides row above) is the only exception. For the no-frontmatter and no-script-block fallbacks, this appended newline is also what lands the synthesized closing fence/tag on its own line — the created blocks are `---\n<import>\n---\n` and `<script>\n<import>\n</script>\n`. The LaTeX figure shape is itself multi-line (six lines joined by `\n`); it is inserted as one block at the cursor line, and VS Code re-indents its interior lines to the insertion column.
 
 ---
 
@@ -499,6 +546,17 @@ If no script block exists, a new `<script>`/`</script>` pair is created at line 
 | `auto-import.importStatement.markup.markdownImportStyle` | string | `"[text](_relativePath_)"` | 1 value (hardcoded) |
 | `auto-import.importStatement.markup.markdownImageImportStyle` | string | `"![alt-text](_relativePath_)"` | 3 enum values (see Markdown image styles) |
 
+### LaTeX
+
+| Setting | Type | Default | Values |
+|---|---|---|---|
+| `auto-import.importStatement.latex.preserveGraphicsFileExtension` | boolean | `true` | `true` / `false` |
+| `auto-import.importStatement.latex.graphicsImportStyle` | string | figure float (multi-line) | 3 enum values (see LaTeX graphics styles) |
+| `auto-import.importStatement.latex.inputImportStyle` | string | `"\\input{_relativePath_}"` | 2 enum values (see LaTeX `\input` styles) |
+| `auto-import.importStatement.latex.bibliographyImportStyle` | string | `"\\addbibresource{_relativePath_}"` | 2 enum values (see LaTeX bibliography styles) |
+
+`preserveGraphicsFileExtension` defaults to `true` (keep the extension), inverted from the two script/stylesheet preserve booleans (both `false`): keeping the dragged file's exact extension is unambiguous and always compiles, where LaTeX's "omit and let the engine resolve" convention is the opt-in.
+
 **Note**: four settings have only a single enum value (`cssImageImportStyle`, `scssImageImportStyle`, `htmlStyleSheetImportStyle`, `markdownImportStyle`). These appear in the VS Code Settings UI for completeness but are not configurable at runtime — the extension always produces the one hardcoded shape.
 
 ---
@@ -524,7 +582,7 @@ The user clicks a file in the explorer and runs **Insert Import from Selected Fi
 
 ### Workflow: Pick Style
 
-Same validation as Paste. Shows a QuickPick with all applicable styles for the current source-destination pair. The picker placeholder reads "Select an import style". The picker enables `matchOnDescription`, so typing also filters against each row's description column — the style's short tag when it declares one (true for 35 of the 38 styled entries), otherwise the full style-description string. If only one style applies, the import is inserted directly without showing the picker. Pressing Escape dismisses the picker silently.
+Same validation as Paste. Shows a QuickPick with all applicable styles for the current source-destination pair. The picker placeholder reads "Select an import style". The picker enables `matchOnDescription`, so typing also filters against each row's description column — the style's short tag when it declares one (true for 42 of the 45 styled entries), otherwise the full style-description string. If only one style applies, the import is inserted directly without showing the picker. Pressing Escape dismisses the picker silently.
 
 Each picker row's primary label is the rendered import shape itself, but (a) the path is shortened to the source file's basename — a source at `../../components/widget.tsx` shows as `widget`, keeping rows width-stable regardless of nesting depth — and (b) snippet placeholder syntax is converted to plain identifiers for display (`${1:styles}` → `styles`, `${1:name}`/`$1` → `name`, `${1:url}` → `url`, `@use '...' as ${1:*}` → `as *`). The full relative path is restored in the text actually inserted. The row's secondary text is the style's tag (or its full description when no tag is defined; empty for single-shape hardcoded destinations) — this is what "filter by description" matches against.
 
@@ -532,7 +590,7 @@ The picker is a one-shot override: it neither reads nor writes any persisted `*I
 
 ### Workflow: Set Default Style
 
-Same validation as Pick Style. Shows a QuickPick with placeholder "Set default import style". The picker enables `matchOnDescription`, so typing also filters against each row's description column — the style's short tag when it declares one (true for 35 of the 38 styled entries), otherwise the full style-description string. The current default is marked with a checkmark icon and appears first. If the persisted value does not match any offered style (for example, a custom value hand-typed into `settings.json`), no item is marked and the styles appear in their natural order with no current-default indicator. Selecting a style persists the choice to VS Code global settings and shows a confirmation toast. Pressing Escape dismisses the picker silently — no setting is written and no confirmation toast appears. Destinations with only one hardcoded shape show a "No configurable style" warning instead.
+Same validation as Pick Style. Shows a QuickPick with placeholder "Set default import style". The picker enables `matchOnDescription`, so typing also filters against each row's description column — the style's short tag when it declares one (true for 42 of the 45 styled entries), otherwise the full style-description string. The current default is marked with a checkmark icon and appears first. If the persisted value does not match any offered style (for example, a custom value hand-typed into `settings.json`), no item is marked and the styles appear in their natural order with no current-default indicator. Selecting a style persists the choice to VS Code global settings and shows a confirmation toast. Pressing Escape dismisses the picker silently — no setting is written and no confirmation toast appears. Destinations with only one hardcoded shape show a "No configurable style" warning instead.
 
 ### Clipboard validation
 
@@ -588,6 +646,7 @@ The two near-duplicate empty/non-absolute messages differ by originating command
 - **`.scss` source → `.scss` destination**: the `.scss` extension is stripped by default and kept when `preserveStylesheetFileExtension` is on. (A `.css` source into `.scss` always keeps `.css` — Sass needs it.)
 - **`.css` source → `.css` destination**: the `.css` extension is ALWAYS kept; the CSS builder does not consult `preserveStylesheetFileExtension`.
 - **HTML, Markdown, and all other source types** (images, fonts, media, data, documents, YAML, components) always preserve the full extension.
+- **LaTeX graphics** (`.pdf`/`.png`/`.jpg`/`.jpeg`/`.eps` → `.tex`): the extension is **kept** by default and dropped when `preserveGraphicsFileExtension` is off — the *inverse* default of the script/stylesheet toggles. **LaTeX `\input`/`\include`** (`.tex` → `.tex`): the `.tex` extension is always dropped (`\include` requires it omitted). **LaTeX bibliography**: `\addbibresource` keeps `.bib`, `\bibliography` drops it.
 
 **Exception — JSX/TSX/MDX non-script sources**: when a non-script source (including `.css`, `.scss`, `.md`, `.mdx`, `.html`, images, media) is imported into a `.jsx`/`.tsx`/`.mdx` destination, the full real source extension is ALWAYS kept on the path regardless of either preserve setting — the non-script branch in `_react.ts` never reads the setting.
 
@@ -620,6 +679,9 @@ These show default text that the user can overwrite by typing.
 | `en` | Language code | HTML text track (`srclang="en"`) |
 | `English` | Language label | HTML text track (`label="English"`) |
 | `*` | Wildcard alias (overwrite to namespace) | SCSS `@use as *` (index 1) |
+| `caption` | Figure caption text | LaTeX figure (`\caption{caption}`) |
+| `label` | Figure label (after `fig:`) | LaTeX figure (`\label{fig:label}`) |
+| `0.5` | Graphic width fraction of `\textwidth` | LaTeX sized graphic (`width=0.5\textwidth`, index 1) |
 
 ### Tab stops
 
@@ -631,4 +693,4 @@ HTML image index 0 uses the literal word `sample` as alt text — this is static
 
 ## Activation
 
-The extension activates on any of the 12 supported destination languages (`onLanguage:javascript`, `onLanguage:typescriptreact`, etc.) so the drop provider is registered before the user's first drag. Invoking any of the eight contributed commands also triggers activation — each carries an implicit `onCommand` activation event — so the extension activates from a cold start even before one of the 12 languages is opened, e.g. running Copy File Path or Set Default Import Style.
+The extension activates on any of the 13 supported destination languages (`onLanguage:javascript`, `onLanguage:typescriptreact`, `onLanguage:latex`, etc.) so the drop provider is registered before the user's first drag. Because MDX and LaTeX have no guaranteed VS Code language ID, two `workspaceContains` activation events (`workspaceContains:**/*.mdx`, `workspaceContains:**/*.tex`) also fire when such a file is present in the workspace. Invoking any of the eight contributed commands likewise triggers activation — each carries an implicit `onCommand` activation event — so the extension activates from a cold start even before one of the 13 languages is opened, e.g. running Copy File Path or Set Default Import Style.

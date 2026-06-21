@@ -66,7 +66,7 @@ hard rule.
 ## Stability rules
 
 - **`RECIPE.md` is the single source of truth for checklist shape.** It is shared
-  by all 12 destinations; per-language divergence is structurally impossible.
+  by all 13 destinations; per-language divergence is structurally impossible.
 - **`PROFILE.md` is frozen — but "frozen" means freeze-after-review, NOT auto-tracking
   of `src/`.** It is read from disk every session, never re-derived per-session. A
   destination's behavior changes only by editing its PROFILE row and regenerating —
@@ -85,7 +85,7 @@ provide by construction:
 
 | Guarantee | Mechanism |
 |-----------|-----------|
-| **Consistency across languages** | Every checklist is rendered through the same `RECIPE.md` over the same frozen `PROFILE.md` — one rule, one IR, all 12 destinations |
+| **Consistency across languages** | Every checklist is rendered through the same `RECIPE.md` over the same frozen `PROFILE.md` — one rule, one IR, all 13 destinations |
 | **Determinism across sessions** | The IR is frozen and human-reviewed; no session re-derives it, so two runs cannot diverge |
 | **Resumability across sessions** | Runbook `[ ]` → `[x]` state lives on disk and survives session death; the loop picks up at the first unchecked box |
 | **Data preservation (TS migration)** | The parity gate refuses to ship the regenerated `typescript.md` until every case in the old one has a verified home in the new file |

@@ -17,7 +17,7 @@
 
 > **Never type an import path again.**
 
-**Angular** · **React** · **Vue** · **Svelte** · **Astro** · JS · TS · CSS · SCSS · HTML · Markdown
+**Angular** · **React** · **Vue** · **Svelte** · **Astro** · **LaTeX** · JS · TS · CSS · SCSS · HTML · Markdown
 
 Drag a file or press a key — the right import lands in your editor. Path, syntax, and placement handled automatically.
 
@@ -46,9 +46,9 @@ Drag a file or press a key — the right import lands in your editor. Path, synt
 
 - **Eight commands, three keystrokes** — Copy, Paste, and Auto on the keyboard; *Pick Style*, *Set Default Style*, *Set Import Placement*, *Toggle Preserve Script File Extension*, and *Reset All Import Styles* from the Command Palette
 - **Drag-and-drop from Explorer** — drag any supported file into an editor to insert the import at the drop position, no keyboard required
-- **Built for every major framework** — Angular, React, Vue, Svelte, Astro — plus vanilla JS/TS, CSS/SCSS, HTML, and Markdown
-- **35 source extensions** — scripts, stylesheets, images, fonts, video, audio, text tracks, data, documents, components
-- **38 configurable import styles** — ES modules, CommonJS, dynamic `import()`, `@use`, `@forward`, `@import`, HTML tags, Markdown syntax
+- **Built for every major framework** — Angular, React, Vue, Svelte, Astro — plus vanilla JS/TS, CSS/SCSS, HTML, Markdown, and **LaTeX** (drag an image in → a `figure` float; drop a `.tex` → `\input`; a `.bib` → `\addbibresource`)
+- **38 source extensions** — scripts, stylesheets, images, fonts, video, audio, text tracks, data, documents, components, LaTeX graphics
+- **45 configurable import styles** — ES modules, CommonJS, dynamic `import()`, `@use`, `@forward`, `@import`, HTML tags, Markdown syntax, LaTeX `figure` / `\includegraphics` / `\input` / `\addbibresource`
 - **Framework-aware placement** — imports land inside Astro `---` frontmatter and Vue / Svelte `<script>` blocks automatically
 - **Smart identifiers** — exported class detection for TypeScript, Angular PascalCase auto-fill, CSS Modules `styles` binding
 - **~8 KB gzipped, zero dependencies, no telemetry**
@@ -98,8 +98,8 @@ The extension is **destination-driven** — the file open in your editor decides
 | `.js` | `.js` | JavaScript import style (7 configurable) |
 | `.ts` | `.ts` | TypeScript import style (7 configurable) |
 | `.jsx` | All except `.ts`, `.tsx` | JS style for scripts; per-category dispatch for others |
-| `.tsx` | All 35 extensions | TS style for `.ts`/`.tsx`; JS style for `.js`/`.jsx`; per-category for others |
-| `.mdx` | All 35 extensions | Same as `.tsx` |
+| `.tsx` | All asset & script extensions | TS style for `.ts`/`.tsx`; JS style for `.js`/`.jsx`; per-category for others |
+| `.mdx` | All asset & script extensions | Same as `.tsx` |
 | `.css` | `.css`, images | `@import` style (configurable) or inline `url()` for images |
 | `.scss` | `.scss`, `.css`, images | `@use` / `@forward` / `@import` (configurable) or inline `url()` for images |
 | `.html` | `.js`, `.css`, images, video, audio, `.vtt` | `<script>`, `<link>`, `<img>`, `<video>`, `<audio>`, `<track>` |
@@ -107,8 +107,9 @@ The extension is **destination-driven** — the file open in your editor decides
 | `.vue` | `.vue`, scripts, images, media, data | TS style for scripts; per-category default import (`import name`/`import url`) for assets |
 | `.svelte` | `.svelte`, scripts, images, media, data | TS style for scripts; per-category default import (`import name`/`import url`) for assets |
 | `.astro` | `.astro`, `.vue`, `.svelte`, scripts, images, media, data, `.md`, `.mdx` | TS style for scripts; per-category default import (`import name`/`import url`) for assets and components |
+| `.tex` | `.tex`, `.bib`, graphics (`.pdf`/`.png`/`.jpg`/`.jpeg`/`.eps`) | `\input`/`\include` · `\addbibresource`/`\bibliography` · `figure`/`\includegraphics` |
 
-See [SPEC — §Supported File Extensions][SPEC-extensions] for the full 35-extension breakdown by category.
+See [SPEC — §Supported File Extensions][SPEC-extensions] for the full 38-extension breakdown by category.
 
 [SPEC-extensions]: SPEC.md#supported-file-extensions
 
@@ -128,6 +129,7 @@ See [SPEC — §Supported File Extensions][SPEC-extensions] for the full 35-exte
 | Stylesheets | `.css`, `.scss` |
 | Markup | `.html`, `.md` |
 | Components | `.vue`, `.svelte`, `.astro` |
+| LaTeX | `.tex` (document) · `.bib` (bibliography) · `.eps` (graphics) |
 
 </details>
 
@@ -375,6 +377,52 @@ See [SPEC — §Vue / Svelte / Astro][SPEC-framework] for import routing details
 
 [SPEC-framework]: SPEC.md#vue--svelte--astro
 
+### LaTeX
+
+LaTeX (`.tex`) is the only destination with its **own** picker namespace for non-script sources. The source extension picks the relationship: graphics → `figure`/`\includegraphics`, `.tex` → `\input`/`\include`, `.bib` → `\addbibresource`/`\bibliography`.
+
+**Graphics — 3 styles**
+
+Setting: `auto-import.importStatement.latex.graphicsImportStyle`
+
+Used for `.pdf`, `.png`, `.jpg`, `.jpeg`, `.eps` sources imported into `.tex` destinations. (Web-only formats `.svg`/`.gif`/`.webp`/`.avif` are rejected — `pdflatex` can't render them.)
+
+| # | Snippet | Description |
+|---|---|---|
+| **0** | `\begin{figure}[htbp]` … `\includegraphics[width=0.5\textwidth]{./path}` … `\caption{}` `\label{fig:}` … `\end{figure}` | Figure float **(default)** — multi-line |
+| 1 | `\includegraphics[width=0.5\textwidth]{./path}` | Sized graphic, no float |
+| 2 | `\includegraphics{./path}` | Bare graphic |
+
+The default is a full `figure` float (the only multi-line snippet) with `\caption` before `\label` so `\ref` numbers correctly; `caption` and `label` are editable placeholders.
+
+**`\input` / `\include` — 2 styles**
+
+Setting: `auto-import.importStatement.latex.inputImportStyle`
+
+Used for `.tex` sources imported into `.tex` destinations. The `.tex` extension is always dropped.
+
+| # | Snippet | Description |
+|---|---|---|
+| **0** | `\input{./path}` | Inline include **(default)** |
+| 1 | `\include{./path}` | Chapter-level (page break) |
+
+**Bibliography — 2 styles**
+
+Setting: `auto-import.importStatement.latex.bibliographyImportStyle`
+
+Used for `.bib` sources imported into `.tex` destinations.
+
+| # | Snippet | Description |
+|---|---|---|
+| **0** | `\addbibresource{./path.bib}` | Modern biblatex — keeps `.bib` **(default)** |
+| 1 | `\bibliography{./path}` | Legacy BibTeX — drops `.bib` |
+
+> **Keep the extension by default.** `auto-import.importStatement.latex.preserveGraphicsFileExtension` defaults to *on* (keep `fig.png`) — the inverse of the script/stylesheet toggles, because keeping the dragged file's exact extension is unambiguous and always compiles.
+
+See [SPEC — §LaTeX][SPEC-latex] for full details.
+
+[SPEC-latex]: SPEC.md#latex
+
 ---
 
 ## Placement
@@ -408,7 +456,7 @@ These take effect regardless of the user's setting:
 
 | Condition | Forced placement | Reason |
 |---|---|---|
-| HTML or Markdown destination | Cursor (line and column) | No canonical import block for embedded tags. |
+| HTML, Markdown, or LaTeX destination | Cursor (line and column) | No canonical import block for embedded tags; for LaTeX, line 0 is the preamble. |
 | Image into `.css` / `.scss` | Inline at cursor (line and column), no trailing newline | `url()` is a CSS value fragment, not a statement. |
 
 See [SPEC — §Placement Overrides][SPEC-overrides] for the complete override logic.
@@ -453,7 +501,7 @@ See [SPEC — §Vue / Svelte Script Block][SPEC-sfc] for the full constraint log
 |---|---|
 | Script (`.js`, `.ts`, `.jsx`, `.tsx`, `.mdx`, `.vue`, `.svelte`, `.astro`) | Column 0 |
 | Stylesheet (`.css`, `.scss`) | Column 0 |
-| HTML, Markdown | Cursor's current column |
+| HTML, Markdown, LaTeX | Cursor's current column |
 
 See [SPEC — §Insertion Column][SPEC-column] for column rules by destination type.
 
@@ -511,6 +559,17 @@ Values: `Top`, `Bottom`, `Cursor`. See [Placement](#placement).
 
 `htmlStyleSheetImportStyle` and `markdownImportStyle` have a single shape and are not configurable at runtime.
 
+### LaTeX
+
+| Setting | Type | Default |
+|---|---|---|
+| `auto-import.importStatement.latex.preserveGraphicsFileExtension` | boolean | `true` |
+| `auto-import.importStatement.latex.graphicsImportStyle` | string | `figure` float (multi-line) |
+| `auto-import.importStatement.latex.inputImportStyle` | string | `\input{_relativePath_}` |
+| `auto-import.importStatement.latex.bibliographyImportStyle` | string | `\addbibresource{_relativePath_}` |
+
+`preserveGraphicsFileExtension` keeps the source extension on `\includegraphics` paths and **defaults to on** — inverted from the two script/stylesheet preserve booleans (both `false`).
+
 See [SPEC — §Configuration Reference][SPEC-config] for every setting with all enum values.
 
 [SPEC-config]: SPEC.md#configuration-reference
@@ -521,7 +580,7 @@ See [SPEC — §Configuration Reference][SPEC-config] for every setting with all
 
 - **Relative path** — computed from the destination file's directory to the source file. Always uses forward slashes, including on Windows.
 - **`./` prefix** — added when source and destination are in the same directory, or when the computed path doesn't already start with `.`. Ensures ES module compatibility.
-- **Extension stripping** — script and stylesheet extensions are stripped by default. Override with `preserveScriptFileExtension` and `preserveStylesheetFileExtension`. All other source types (images, fonts, media, data, documents, components) always keep the full extension.
+- **Extension stripping** — script and stylesheet extensions are stripped by default. Override with `preserveScriptFileExtension` and `preserveStylesheetFileExtension`. All other source types (images, fonts, media, data, documents, components) always keep the full extension. **LaTeX** is the inverse: graphics *keep* their extension by default (toggle `preserveGraphicsFileExtension`, which defaults to *on*), `\input`/`\include` always drop `.tex`, and `\addbibresource` keeps `.bib` while `\bibliography` drops it.
 - **SCSS partial normalization** — a leading `_` on the last path segment is stripped. `_variables.scss` becomes `variables` in the import path.
 - **SCSS `.css` preservation** — `.css` is always kept on SCSS import paths regardless of the `preserveStylesheetFileExtension` setting.
 - **Angular PascalCase** — TypeScript index 0 only: source paths containing `.component`, `.directive`, `.pipe`, `.service`, or `.module` get a pre-filled PascalCase identifier. `app-root.component.ts` produces `{ AppRootComponent }`.
@@ -541,7 +600,7 @@ See [SPEC — §Path Computation][SPEC-path] for the complete path logic includi
 - **Same-directory imports always get `./`.** You'll never see a bare `Button` — it's always `./Button`, which ES modules and bundlers require.
 - **Drag from Explorer for zero-keystroke imports.** Drag a file from the sidebar directly into your editor — the import lands at the drop position with the same style as paste. Great for quickly pulling in components or assets without touching the keyboard.
 - **Mixing CSS into SCSS just works.** The `.css` extension is preserved even when `preserveStylesheetFileExtension` is off, because Sass needs it.
-- **HTML and Markdown ignore your placement setting.** Insertion is always at the cursor for these languages. Leave `importStatementPlacement` set to `Bottom` for scripts — it won't affect your markup.
+- **HTML, Markdown, and LaTeX ignore your placement setting.** Insertion is always at the cursor for these languages (for LaTeX, in the document body — never the preamble). Leave `importStatementPlacement` set to `Bottom` for scripts — it won't affect your markup.
 - **Rebind anything.** `extension.copyFilePath`, `extension.pasteImport`, and `extension.copyPaste` are rebindable from VS Code's keyboard shortcuts editor. The five Command Palette–only commands can be given keybindings from the same editor.
 
 ---

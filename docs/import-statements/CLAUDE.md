@@ -40,10 +40,12 @@ Every file in this tree, with its layer:
 | [spec/statements.md](spec/statements.md) | spec | Per-language picker shapes + defaults + snippet placeholder spec (canonical source for `src/snippets/_styles.ts`). | **SEALED / Shipped** |
 | [spec/framework-components.md](spec/framework-components.md) | spec | Vue/Svelte/Astro SFC destinations through the shared `framework-component.ts` builder. | **SEALED / Shipped** |
 | [spec/media-files.md](spec/media-files.md) | spec | Video/audio/text-track support for JSX/TSX/MDX/HTML/Vue/Svelte/Astro. | **SEALED / Shipped** |
+| [spec/latex.md](spec/latex.md) | spec | LaTeX (`.tex`) destination — graphics→`figure`, `.tex`→`\input`, `.bib`→`\addbibresource`, via `latex.ts` + the `latex.*` settings. | **SEALED / Shipped** |
 | [decisions/CLAUDE.md](decisions/CLAUDE.md) | decisions | Required-sections contract + criterion-tagging convention for the ledgers. | **LIVING gate** |
 | [decisions/statements.md](decisions/statements.md) | decisions | Why each picker shape is in/out, the 5-flagged defaults, "Things considered and rejected" appendix. | **LIVING gate** |
 | [decisions/framework-components.md](decisions/framework-components.md) | decisions | Locked-in v1 framework decisions + framework rejection ledger. | **LIVING gate** |
 | [decisions/media-files.md](decisions/media-files.md) | decisions | Media criteria application, cross-cutting design choices, media rejection ledger. | **LIVING gate** |
+| [decisions/latex.md](decisions/latex.md) | decisions | LaTeX criteria application (engine-renderable graphics gate, keep-extension default), locked-in decisions, rejection ledger. | **LIVING gate** |
 | [future/CLAUDE.md](future/CLAUDE.md) | future | Backlog contract + index + the December 2026 checkpoint. | **DEFERRED** |
 | [future/auto-detect-extensions.md](future/auto-detect-extensions.md) | future | Tri-state enum (`"never"`/`"always"`/`"auto"`) intended to replace the `preserve*FileExtension` booleans. Not implemented. | **DEFERRED** (revisit December 2026) |
 | [future/framework-roadmap.md](future/framework-roadmap.md) | future | PascalCase auto-naming + joint SFC concerns (`<style>`/CSS-source, `.ts`/`.js`-into-SFC, `.md`/`.mdx`-as-source). Not implemented. | **DEFERRED** (revisit on trigger) |
@@ -83,4 +85,4 @@ Every doc in this tree is interconnected. When updating any file, check and sync
 ## See also
 
 - `../../src/snippets/CLAUDE.md` — the shipped dispatch + snippet-builder rules (the canonical code-side anchor: `buildReactImport` and the single `buildAssetImportStatement` asset switch live in `src/snippets/_react.ts`).
-- `../../src/gating.ts` — `isPairSupported`, the nine-clause source/destination pair check.
+- `../../src/gating.ts` — `isPairSupported`, the ten-clause source/destination pair check.

@@ -317,7 +317,7 @@ All tests use `preserveScriptFileExtension = false` (default) unless noted. Veri
 
 ## 8 — Drag-and-drop (universal behaviors)
 
-These behaviors are identical across all 12 destination languages.
+These behaviors are identical across all 13 destination languages.
 
 ### 8.1 — Same-file rejection via DnD
 

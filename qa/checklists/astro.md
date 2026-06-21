@@ -598,7 +598,7 @@ Because `.astro` is **allow-list**, a gated-out source has no snippet to offer. 
 - [ ] Undo, then drag `astro/assets/logo.png` → the wrapper is created with the **single-variant asset** shape inside: `import ${1:name} from '../assets/logo.png';`
 - [ ] Undo (`Cmd+Z`) to restore the file
 
-> **Universal drop precondition** (untitled / unsaved buffer is a no-op): cross-cutting across all 12 destinations and verified once in [typescript.md §9.10](typescript.md#910--universal-drop-precondition-cross-cutting--verified-once-here) — **not** re-tested here.
+> **Universal drop precondition** (untitled / unsaved buffer is a no-op): cross-cutting across all 13 destinations and verified once in [typescript.md §9.10](typescript.md#910--universal-drop-precondition-cross-cutting--verified-once-here) — **not** re-tested here.
 
 ---
 

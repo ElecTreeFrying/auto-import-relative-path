@@ -19,7 +19,8 @@ qa/
 │   ├── scss.md          .scss destination — 5 @use/@forward/@import styles + image url() arm, partial-_ norm, placement, gating, DnD
 │   ├── vue.md           .vue destination — allow-list gating, one-table 7-TS-style script arm (all four script exts) + fixed asset arm, Angular-only smart ids, SFC <script>-block placement, DnD drop suppression
 │   ├── astro.md         .astro destination — allow-list gating (widest accept-list), one-table 7-TS-style script arm (all four script exts) + fixed asset arm, Angular-only smart ids, frontmatter ---fence placement, DnD drop suppression
-│   └── svelte.md        .svelte destination — allow-list gating, one-table 7-TS-style script arm (all four script exts) + fixed asset arm, Angular-only smart ids, SFC <script>-block placement (no <script setup>), DnD drop suppression
+│   ├── svelte.md        .svelte destination — allow-list gating, one-table 7-TS-style script arm (all four script exts) + fixed asset arm, Angular-only smart ids, SFC <script>-block placement (no <script setup>), DnD drop suppression
+│   └── latex.md         .tex destination — allow-list gating (graphics/.tex/.bib; web images .svg/.gif/.webp/.avif rejected), 3-way source-ext dispatch (figure / \input / \addbibresource) + preserve-graphics toggle, forced-cursor placement (body not preamble), multi-line figure
 ├── workspace/           Fixture workspace — open in EDH via File > Open Folder
 │   ├── general/         Fixtures for general.md
 │   ├── javascript/      Fixtures for javascript.md
@@ -33,7 +34,8 @@ qa/
 │   ├── scss/            Fixtures for scss.md
 │   ├── vue/             Fixtures for vue.md
 │   ├── astro/           Fixtures for astro.md
-│   └── svelte/          Fixtures for svelte.md
+│   ├── svelte/          Fixtures for svelte.md
+│   └── latex/           Fixtures for latex.md
 └── demo-workspace/      Standalone framework sandbox (Vue/Svelte/Astro/React + real node_modules)
 ```
 
@@ -61,6 +63,7 @@ qa/
 | [`vue.md`](checklists/vue.md) | [`vue/`](workspace/vue/) | Allow-list gating, one-table two-arm style model (7 TS styles for all four script sources **or** fixed asset shape), Angular-only smart identifiers, SFC `<script>`-block placement, shared `typescriptImportStyle`, QuickPick, drag-and-drop incl. drop suppression |
 | [`astro.md`](checklists/astro.md) | [`astro/`](workspace/astro/) | Allow-list gating (widest accept-list), one-table two-arm style model (7 TS styles for all four script sources **or** fixed asset shape), Angular-only smart identifiers, frontmatter `---`-fence placement, shared `typescriptImportStyle`, QuickPick, drag-and-drop incl. drop suppression |
 | [`svelte.md`](checklists/svelte.md) | [`svelte/`](workspace/svelte/) | Allow-list gating, one-table two-arm style model (7 TS styles for all four script sources **or** fixed asset shape), Angular-only smart identifiers, SFC `<script>`-block placement (no `<script setup>`), shared `typescriptImportStyle`, QuickPick, drag-and-drop incl. drop suppression |
+| [`latex.md`](checklists/latex.md) | [`latex/`](workspace/latex/) | Allow-list gating (`.tex`/`.bib` + graphics; web images `.svg`/`.gif`/`.webp`/`.avif` rejected), 3-way source-extension dispatch (graphics→`figure`/`\includegraphics` · `.tex`→`\input`/`\include` · `.bib`→`\addbibresource`/`\bibliography`) + `preserveGraphicsFileExtension` toggle, no smart identifiers, `forced-cursor` placement (body not preamble), Pick Style, Set Default (all 3 arms configurable), drag-and-drop, multi-line `figure` + `%`-comment edges |
 
 ## Demo workspace
 

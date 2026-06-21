@@ -44,6 +44,7 @@ const SCENARIOS: Scenario[] = [
   { name: 'script Cursor', fixture: 'with-imports.ts', source: 'src/bar.ts', cursorLine: 1, cursorColumn: 0, placement: 'Cursor', flat: true },
   { name: 'html forced cursor (non-zero column preserved)', fixture: 'pages/index.html', source: 'pages/app.js', cursorLine: 8, cursorColumn: 2, flat: true },
   { name: 'markdown forced cursor', fixture: 'docs/guide.md', source: 'docs/architecture.md', cursorLine: 3, cursorColumn: 0, flat: true },
+  { name: 'latex forced cursor (non-zero column preserved)', fixture: 'paper/main.tex', source: 'assets/logo.png', cursorLine: 6, cursorColumn: 2, flat: true },
   { name: 'inline image into stylesheet', fixture: 'styles/reset.css', source: 'assets/logo.png', cursorLine: 3, cursorColumn: 16, flat: true },
   { name: 'astro frontmatter Bottom', fixture: 'src/App.astro', source: 'src/bar.ts', cursorLine: 1, cursorColumn: 0, placement: 'Bottom', flat: false },
   { name: 'astro frontmatter Top', fixture: 'src/App.astro', source: 'src/bar.ts', cursorLine: 1, cursorColumn: 0, placement: 'Top', flat: false },

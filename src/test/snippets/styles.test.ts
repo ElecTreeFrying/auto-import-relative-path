@@ -17,6 +17,9 @@ import {
   HTML_STYLESHEET_IMPORT_OPTIONS,
   MARKDOWN_IMPORT_OPTIONS,
   MARKDOWN_IMAGE_IMPORT_OPTIONS,
+  TEX_GRAPHICS_IMPORT_OPTIONS,
+  TEX_INPUT_IMPORT_OPTIONS,
+  TEX_BIBLIOGRAPHY_IMPORT_OPTIONS,
 } from '../../snippets/_styles';
 
 describe('snippets/styles', () => {
@@ -67,6 +70,18 @@ describe('snippets/styles', () => {
 
     it('MARKDOWN_IMAGE_IMPORT_OPTIONS has 3 entries', () => {
       assert.strictEqual(MARKDOWN_IMAGE_IMPORT_OPTIONS.length, 3);
+    });
+
+    it('TEX_GRAPHICS_IMPORT_OPTIONS has 3 entries', () => {
+      assert.strictEqual(TEX_GRAPHICS_IMPORT_OPTIONS.length, 3);
+    });
+
+    it('TEX_INPUT_IMPORT_OPTIONS has 2 entries', () => {
+      assert.strictEqual(TEX_INPUT_IMPORT_OPTIONS.length, 2);
+    });
+
+    it('TEX_BIBLIOGRAPHY_IMPORT_OPTIONS has 2 entries', () => {
+      assert.strictEqual(TEX_BIBLIOGRAPHY_IMPORT_OPTIONS.length, 2);
     });
   });
 
@@ -160,6 +175,9 @@ describe('snippets/styles', () => {
       { setting: 'auto-import.importStatement.markup.htmlStyleSheetImportStyle', table: HTML_STYLESHEET_IMPORT_OPTIONS },
       { setting: 'auto-import.importStatement.markup.markdownImportStyle', table: MARKDOWN_IMPORT_OPTIONS },
       { setting: 'auto-import.importStatement.markup.markdownImageImportStyle', table: MARKDOWN_IMAGE_IMPORT_OPTIONS },
+      { setting: 'auto-import.importStatement.latex.graphicsImportStyle', table: TEX_GRAPHICS_IMPORT_OPTIONS },
+      { setting: 'auto-import.importStatement.latex.inputImportStyle', table: TEX_INPUT_IMPORT_OPTIONS },
+      { setting: 'auto-import.importStatement.latex.bibliographyImportStyle', table: TEX_BIBLIOGRAPHY_IMPORT_OPTIONS },
     ];
 
     for (const { setting, table } of CASES) {

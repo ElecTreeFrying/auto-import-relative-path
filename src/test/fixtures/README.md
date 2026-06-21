@@ -92,11 +92,11 @@ workspace/
 
 ## Coverage matrix
 
-Every cell of the source-extension × destination-extension matrix is reachable from this fixture. Each gating clause in `src/gating.ts:isPairSupported` has at least one positive and one negative fixture.
+Every cell of the source-extension × destination-extension matrix is reachable from this fixture. Each gating clause in `src/gating.ts:isPairSupported` has at least one positive and one negative fixture — **except** the tenth (`.tex` / LaTeX) clause, covered by hand-built `FilePathInfo` in `gating.test.ts` and `snippets/languages/latex.test.ts` (the LaTeX builder reads no files, so it needs no fixture).
 
 | Capability | Where to look |
 |------------|---------------|
-| All 12 destination snippet builders (`.ts/.tsx/.js/.jsx/.mdx/.css/.scss/.html/.md/.vue/.svelte/.astro`) | `src/` has destinations for all 12: `.ts/.js/.jsx/.tsx` (baseline), `.vue/.svelte/.astro` (`App.*`), `.mdx` (`docs/example.mdx`); `styles/` for `.css/.scss`; `pages/` for `.html`; `docs/` for `.md` |
+| 12 of the 13 destination snippet builders (`.ts/.tsx/.js/.jsx/.mdx/.css/.scss/.html/.md/.vue/.svelte/.astro`) | `src/` has destinations for these 12: `.ts/.js/.jsx/.tsx` (baseline), `.vue/.svelte/.astro` (`App.*`), `.mdx` (`docs/example.mdx`); `styles/` for `.css/.scss`; `pages/` for `.html`; `docs/` for `.md`. The 13th destination, **LaTeX (`.tex`)**, is exercised **fixture-free** in `snippets/languages/latex.test.ts` (hand-built `FilePathInfo` — the LaTeX builder reads no files), so no `.tex` fixture exists. |
 | Style-picker variants for `pasteImportWithStyle` + `setDefaultImportStyle` (every applicable shape per source/destination pair) | same fixtures as the row above — both pickers reuse the destination switch in `snippets/variants.ts:buildImportSnippetVariants` |
 | All 5 Angular auto-naming suffixes (`.component`, `.module`, `.directive`, `.pipe`, `.service`) | `src/components/` |
 | Non-Angular TS file (negative auto-name case) | `src/helpers.ts`, `src/utils/*.ts`, `src/lib-style modules` |

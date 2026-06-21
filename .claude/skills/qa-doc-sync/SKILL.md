@@ -167,7 +167,7 @@ auto-commit (the maintainer commits docs).
 
 | Target | What stays in sync |
 |--------|--------------------|
-| `qa/checklists/README.md` | `## Inventory` table — **Cases** column + scope cells; the 13-row workspace-counterpart map |
+| `qa/checklists/README.md` | `## Inventory` table — **Cases** column + scope cells; the 14-row workspace-counterpart map |
 | `qa/checklists/CLAUDE.md` | `## Files` per-checklist scope rows |
 | `qa/README.md` | `## Layout` tree (checklist one-liners + workspace dirs) + `## Current inventory` table |
 | `qa/CLAUDE.md` | checklist↔workspace sync rule, propagation rule, execution order, "Adding a new language" |

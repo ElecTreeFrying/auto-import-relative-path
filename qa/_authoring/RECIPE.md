@@ -52,8 +52,10 @@ destination's `PROFILE.md` fields.
 
 ## Per-quirk slots — resolved from `profile.pathQuirks`
 
-Note the **two preserve namespaces**: the *script* key `preserveScriptFileExtension`
-and the *stylesheet* key `preserveStylesheetFileExtension` are different settings.
+Note the **three preserve namespaces**: the *script* key `preserveScriptFileExtension`,
+the *stylesheet* key `preserveStylesheetFileExtension`, and the *LaTeX-graphics* key
+`preserveGraphicsFileExtension` are different settings (the last defaults to **`true`/keep**,
+inverted from the other two).
 
 - **`partial-filename-normalization`** (`.scss`) → add a subsection under item 4
   demonstrating `_partial.scss` → `partial`.
@@ -70,7 +72,16 @@ and the *stylesheet* key `preserveStylesheetFileExtension` are different setting
 - **`always-preserve-extension`** (`.html`/`.md`) → omit the
   `preserveScriptFileExtension` toggle tests. **Scope:** this suppression applies to
   `.html`/`.md`/`.css` only — it does **not** bleed into `.scss`, which DOES have a
-  toggle test (against `preserveStylesheetFileExtension`).
+  toggle test (against `preserveStylesheetFileExtension`), nor into `.tex` (below).
+- **`graphics-preserve-toggle`** (`.tex`) → add an item-4 subsection testing
+  **`preserveGraphicsFileExtension`** on a **graphics** source: on (the default) →
+  `\includegraphics{./plot.png}`, off → `\includegraphics{./plot}` (fixture
+  `figures/plot.png`), with a restore step. This is the **third** preserve namespace —
+  default **`true`/keep**, *inverted* from the script/stylesheet toggles. It applies to
+  **graphics sources only**: a `.tex` source (`\input`/`\include`) **always drops** `.tex`,
+  and `.bib` is **per-style** (`\addbibresource` keeps `.bib`, `\bibliography` drops it), so
+  neither exposes a toggle. Like the `.scss` toggle, it must NOT be suppressed by any
+  always-preserve rule.
 
 ## Item detail
 
@@ -78,7 +89,9 @@ and the *stylesheet* key `preserveStylesheetFileExtension` are different setting
 → "every other extension rejected". *allow-list* → enumerate accepted (table
 members) vs rejected rows; the reject column is the mechanical complement
 `SOURCE_UNIVERSE − accept-list`, sampling ≥1 member from **each** reject category
-present (image/media/text-track when not accepted; always fonts + `.pdf`; data
+present (image/media/text-track when not accepted; always fonts + `.pdf` — **except `.tex`**,
+which accepts `.pdf` as graphics, so its reject sample uses the web-image formats
+`.svg`/`.gif`/`.webp`/`.avif` that `pdflatex` can't render; data
 `.json`/`.yaml`/`.yml` for every destination except `.vue`/`.svelte`/`.astro`,
 which accept them) — this reproduces `typescript.md`'s `.yaml`/`.woff2`/`.pdf`/
 `.json`/`.vtt`/media reject rows. *accept-all* (`.jsx`/`.tsx`/`.mdx`) → an
@@ -145,8 +158,9 @@ across languages". Emit only the destination's mode cases:
   lone-`//` vs `/* */`-block vs grouped-`//` Cursor adjustment);
 - `stylesheet` → Bottom anchored on `@use`/`@forward`/`@import` (stylesheet fixture);
 - `inline-url` → the image-source exact-line+column, no-newline, setting-ignored case;
-- `forced-cursor` (`.html`/`.md`) → Top/Bottom/Cursor all insert at the cursor LINE
-  (setting has no effect), column follows the cursor, + the markdown-star case for `.md`;
+- `forced-cursor` (`.html`/`.md`/`.tex`) → Top/Bottom/Cursor all insert at the cursor LINE
+  (setting has no effect), column follows the cursor, + the markdown-star case for `.md`
+  and the `.tex` body-not-preamble case (line 0 is the preamble);
 - `astro-frontmatter`/`sfc-script` → the container-confined section (create-if-missing,
   block/fence selection preference, Top/Bottom/Cursor-within-bounds, detected
   indentation).
@@ -196,9 +210,9 @@ wrapper **creates** the `---`/`<script>` wrapper, else constrains within it; (ii
 **non-script** asset drop emits the same single-variant asset shape as the item-2/item-4
 non-script arm, placed inside the (created-if-missing) wrapper. **Universal drop
 precondition** (cross-cutting — emit **once**, not per-language; general.md does not
-cover it): the gesture is registered only for the 12 `DROP_LANGUAGE_SELECTORS`
-language IDs and only for `scheme:'file'` — a drop into an untitled/unsaved buffer is
-a no-op.
+cover it): the gesture is registered only for the 13 `DROP_LANGUAGE_SELECTORS`
+entries (11 language IDs + the `.mdx` / `.tex` file-pattern selectors) and only for
+`scheme:'file'` — a drop into an untitled/unsaved buffer is a no-op.
 
 **Item 10 — Edge cases.** Include the destination-specific edge cases the profile
 surfaces — e.g. the `.md`/`.mdx` **markdown-star** Cursor case (cursor on a

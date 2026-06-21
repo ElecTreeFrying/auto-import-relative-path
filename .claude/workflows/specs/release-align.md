@@ -30,13 +30,13 @@ Baseline for "what's new this release" = the latest release **git tag** (`git de
 the changelog targets `1.0.0`).
 
 ### Canonical invariants to derive + assert everywhere
-- **5 commands** — `extension.copyFilePath`, `pasteImport`, `copyPaste`, `pasteImportWithStyle`, `setDefaultImportStyle`
-- **16 settings** — the `auto-import.*` configuration keys (+ their enum values)
-- **12 destination languages** — `onLanguage:*` events ↔ drop selectors ↔ dispatch
+- **8 commands** — `extension.copyFilePath`, `pasteImport`, `copyPaste`, `pasteImportWithStyle`, `setDefaultImportStyle`, `setImportPlacement`, `togglePreserveScriptExtension`, `resetImportStyles`
+- **20 settings** — the `auto-import.*` configuration keys (+ their enum values), incl. the `auto-import.importStatement.latex.*` namespace
+- **13 destination languages** — `onLanguage:*` events ↔ drop selectors ↔ dispatch (11 by language ID; `.mdx` and `.tex` by file pattern + `workspaceContains`)
 - **3 keybindings** — `cmd/ctrl+shift+a`, `cmd/ctrl+i`, `alt+d`
 - **1 drop provider**
 - **engine** `^1.97.0`
-- **"35 extensions / 15 categories"** claims
+- **"38 extensions / 18 categories"** claims
 - **version reconcile** — `package.json` vs the `CHANGELOG` Unreleased heading must agree at publish
 
 ## Scope — files & emphasis tiers

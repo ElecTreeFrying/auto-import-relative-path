@@ -349,7 +349,7 @@ This is the signature `.mdx` ≠ `.ts` case. A `.ts`/`.tsx` source containing `e
 
 ## 6 — Placement modes
 
-`.mdx` uses the **generic** placement mode (column 0; full Top / Bottom / Cursor honoring) — the same mechanism as `.ts`/`.js`/`.jsx`/`.tsx`. `.mdx` is **not** forced-cursor (`shouldRepositionCursor` checks only `.html`/`.md`), so the Top/Bottom/Cursor setting is honored and the column is always 0.
+`.mdx` uses the **generic** placement mode (column 0; full Top / Bottom / Cursor honoring) — the same mechanism as `.ts`/`.js`/`.jsx`/`.tsx`. `.mdx` is **not** forced-cursor (`shouldRepositionCursor` checks only `.html`/`.md`/`.tex`), so the Top/Bottom/Cursor setting is honored and the column is always 0.
 
 **Bottom and Top placement are byte-identical to `.tsx`.** The one divergence is **Cursor placement on a leading-`*` line**: `isMarkdownDestination('.mdx')` is `true`, so a leading `*` is treated as Markdown content (bullet / emphasis), not a comment continuation (§6.3.8). `//` and `/*` lines still adjust above. This is the basis for the §10 `.mdx` ≠ `.tsx` proof.
 
@@ -674,7 +674,7 @@ Drag a file from the Explorer sidebar into an open `.mdx` editor. A drop reuses 
 - [ ] Drag `mdx/assets/logo.png` → path is still `'../assets/logo.png'` (asset extensions are kept regardless — the toggle is script-namespace)
 - [ ] Uncheck **Preserve script file extension in imports** to restore the default
 
-> **Universal drop precondition** (untitled / unsaved buffer is a no-op): cross-cutting across all 12 destinations and verified once in [typescript.md §9.10](typescript.md#910--universal-drop-precondition-cross-cutting--verified-once-here) — **not** re-tested here.
+> **Universal drop precondition** (untitled / unsaved buffer is a no-op): cross-cutting across all 13 destinations and verified once in [typescript.md §9.10](typescript.md#910--universal-drop-precondition-cross-cutting--verified-once-here) — **not** re-tested here.
 
 ---
 

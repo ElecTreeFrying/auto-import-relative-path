@@ -278,6 +278,10 @@ describe('editor/placement', () => {
       assert.strictEqual(shouldRepositionCursor('.md' as FileExtension), true);
     });
 
+    it('.tex returns true (figure / \\input inserts in the body at the cursor, never the preamble)', () => {
+      assert.strictEqual(shouldRepositionCursor('.tex' as FileExtension), true);
+    });
+
     it('.ts returns false', () => {
       assert.strictEqual(shouldRepositionCursor('.ts' as FileExtension), false);
     });
@@ -397,6 +401,18 @@ describe('editor/placement', () => {
         text,
         '.md' as FileExtension,
         '.md' as FileExtension,
+        2, 0,
+      );
+      assert.strictEqual(result.isInline, false);
+      assert.strictEqual(result.line, 2);
+    });
+
+    it('repositions cursor for LaTeX destination (body cursor line, not the preamble at line 0)', () => {
+      const text = '\\documentclass{article}\n\\begin{document}\nSome prose.\n\\end{document}';
+      const result = computeImportPlacement(
+        text,
+        '.tex' as FileExtension,
+        '.png' as FileExtension,
         2, 0,
       );
       assert.strictEqual(result.isInline, false);

@@ -39,13 +39,23 @@ const AUTO_IMPORT_CONFIG = freeze({
       markdownImage: 'markdownImageImportStyle',
     }),
   }),
+  latex: freeze({
+    namespace: 'auto-import.importStatement.latex',
+    settings: freeze({
+      preserve: 'preserveGraphicsFileExtension',
+      graphics: 'graphicsImportStyle',
+      input: 'inputImportStyle',
+      bibliography: 'bibliographyImportStyle',
+    }),
+  }),
 });
 
 export type AutoImportConfigNamespace =
   | 'preferences'
   | 'script'
   | 'stylesheet'
-  | 'markup';
+  | 'markup'
+  | 'latex';
 
 type SettingsKeyMap = {
   preferences: 'placement';
@@ -53,6 +63,7 @@ type SettingsKeyMap = {
   stylesheet: 'preserve' | 'css' | 'cssImage' | 'scss' | 'scssImage';
   markup: 'htmlScript' | 'htmlImage' | 'htmlVideo' | 'htmlAudio'
         | 'htmlStyleSheet' | 'markdown' | 'markdownImage';
+  latex: 'preserve' | 'graphics' | 'input' | 'bibliography';
 };
 
 export type AutoImportSettingKey = SettingsKeyMap[AutoImportConfigNamespace];

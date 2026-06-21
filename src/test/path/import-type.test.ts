@@ -70,4 +70,12 @@ describe('determineImportType', () => {
     assert.strictEqual(determineImportType('/project/fonts/sans.woff'), 'image');
     assert.strictEqual(determineImportType('/project/docs/report.pdf'), 'image');
   });
+
+  // LaTeX sources (.tex / .bib / .eps) all fall to the 'image' default — which is exactly why
+  // snippets/languages/latex.ts dispatches on the raw extension instead of consulting ImportType.
+  it('LaTeX source extensions fall to the image default (latex.ts branches on the raw extension)', () => {
+    assert.strictEqual(determineImportType('/project/paper/intro.tex'), 'image');
+    assert.strictEqual(determineImportType('/project/paper/refs.bib'), 'image');
+    assert.strictEqual(determineImportType('/project/figures/diagram.eps'), 'image');
+  });
 });

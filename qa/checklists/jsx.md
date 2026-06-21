@@ -509,7 +509,7 @@ This is `.jsx`'s **only** suppressed drop — every other source is accepted, bu
 - [ ] Drag `jsx/assets/logo.png` → path is still `'../assets/logo.png'` (asset extensions are kept regardless — the toggle is script-namespace)
 - [ ] Uncheck **Preserve script file extension in imports** to restore the default
 
-> **Universal drop precondition** (untitled / unsaved buffer is a no-op): cross-cutting across all 12 destinations and verified once in [typescript.md §9.10](typescript.md#910--universal-drop-precondition-cross-cutting--verified-once-here) — **not** re-tested here.
+> **Universal drop precondition** (untitled / unsaved buffer is a no-op): cross-cutting across all 13 destinations and verified once in [typescript.md §9.10](typescript.md#910--universal-drop-precondition-cross-cutting--verified-once-here) — **not** re-tested here.
 
 ---
 

@@ -390,7 +390,7 @@ into the editor at a position. Universal drag-and-drop mechanics are **`general.
 - [ ] **§9.6 — untitled-buffer no-op (pointer, not retested here).** The drop gesture is
   registered only for **saved** (`scheme: 'file'`) files across the 12 drop languages; a
   drop into an untitled/unsaved buffer is a no-op. This cross-cutting precondition is
-  verified **once for all 12 destinations** in `typescript.md §9.10` — not duplicated here.
+  verified **once for all 13 destinations** in `typescript.md §9.10` — not duplicated here.
 
 ---
 

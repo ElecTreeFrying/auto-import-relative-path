@@ -134,7 +134,7 @@ Default imports emit the `$1` placeholder for the component name. The legacy-Ang
 ## Behavior
 
 - **Extension handling.** Script sources respect the `script.preserveScriptFileExtension` boolean (default `false`) — the shared builder appends the source extension only when the flag is set. Non-script asset sources always carry their full extension on the path (the asset switch keys on it).
-- **Gating.** `gating.ts:isPairSupported` is nine-clause; the `.vue`/`.svelte`/`.astro` per-destination allow-list checks are the seventh, eighth, and ninth clauses (`gating.ts:35`/`38`/`41`), each rejecting a source not in the matching `*_SUPPORTED_EXTENSIONS` table. `.jsx`/`.tsx`/`.mdx` destinations have no per-destination filter, which is why they accept `.vue`/`.svelte`/`.astro` sources with no gating change.
+- **Gating.** `gating.ts:isPairSupported` is ten-clause; the `.vue`/`.svelte`/`.astro` per-destination allow-list checks are the seventh, eighth, and ninth clauses (`gating.ts:35`/`38`/`41`), each rejecting a source not in the matching `*_SUPPORTED_EXTENSIONS` table (the tenth clause is the `.tex` LaTeX destination, `gating.ts:44`). `.jsx`/`.tsx`/`.mdx` destinations have no per-destination filter, which is why they accept `.vue`/`.svelte`/`.astro` sources with no gating change.
 - **Media lockstep.** `VUE_/SVELTE_/ASTRO_SUPPORTED_EXTENSIONS` spread `...MEDIA_FILE_EXTENSIONS` and `...TEXT_TRACK_FILE_EXTENSIONS`; media/text-track sources emit the `${1:url}` shape via the asset switch. See [media-files.md](media-files.md).
 
 ## Code map

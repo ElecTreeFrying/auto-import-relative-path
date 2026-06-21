@@ -11,6 +11,7 @@ import * as scss from './languages/scss';
 import * as html from './languages/html';
 import * as markdown from './languages/markdown';
 import * as frameworkComponent from './languages/framework-component';
+import * as latex from './languages/latex';
 
 export async function buildImportSnippet(info: FilePathInfo): Promise<vscode.SnippetString> {
   switch (info.destinationFileExt) {
@@ -35,6 +36,8 @@ export async function buildImportSnippet(info: FilePathInfo): Promise<vscode.Sni
     case '.svelte':
     case '.astro':
       return frameworkComponent.buildSnippet(info);
+    case '.tex':
+      return latex.buildSnippet(info);
     default:
       return new vscode.SnippetString('');
   }

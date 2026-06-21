@@ -12,6 +12,7 @@ This is the spec layer's index and its **cross-cutting behavior model** — the 
 | [statements.md](statements.md) | The per-language picker (the shipped enum), each language's default, and the snippet-placeholder spec for every builder. |
 | [framework-components.md](framework-components.md) | Vue (`.vue`) / Svelte (`.svelte`) / Astro (`.astro`) SFC destinations — default-import-as-component, via the single shared `framework-component.ts` builder. |
 | [media-files.md](media-files.md) | Video / audio / text-track support across JSX/TSX/MDX/HTML/Vue/Svelte/Astro. |
+| [latex.md](latex.md) | LaTeX (`.tex`) destination — graphics→`figure`/`\includegraphics`, `.tex`→`\input`/`\include`, `.bib`→`\addbibresource`/`\bibliography`, via `latex.ts` + its own `latex.*` picker namespace. |
 
 ## Dispatch model
 
@@ -29,11 +30,11 @@ Import generation is a two-stage dispatch keyed on the **destination** file's ex
 
 ## Gating
 
-A source→destination pair is admitted by `gating.ts:isPairSupported`, a **nine-clause** check:
+A source→destination pair is admitted by `gating.ts:isPairSupported`, a **ten-clause** check:
 
 1. One `CROSS_IMPORT_DESTINATIONS` guard (the cross-language allow-gate).
 2. An `.html`↔`.html` block (HTML may not import HTML).
-3. Through 9 — seven per-destination allow-lists, one per destination family, including the `.vue`/`.svelte`/`.astro` framework destinations (`gating.ts:35`, `gating.ts:38`, `gating.ts:41`).
+3. Through 10 — eight per-destination allow-lists, one per destination family, including the `.vue`/`.svelte`/`.astro` framework destinations (`gating.ts:35`, `gating.ts:38`, `gating.ts:41`) and the `.tex` LaTeX destination (`gating.ts:44`).
 
 A pair that no clause admits is not supported and produces no snippet.
 
@@ -79,4 +80,4 @@ The tri-state auto-detect enum that would replace `preserveScriptFileExtension` 
 - [statements.md](statements.md) · [framework-components.md](framework-components.md) · [media-files.md](media-files.md) — the per-area specs.
 - [../CRITERIA.md](../CRITERIA.md) — the rubric admitting each shape; [../decisions/](../decisions/CLAUDE.md) — why each shape is in or out; [../future/](../future/CLAUDE.md) — designed but unbuilt work.
 - `../../../src/snippets/CLAUDE.md` — the shipped dispatch + snippet-builder rules (`buildReactImport` and the single `buildAssetImportStatement` asset switch live in `src/snippets/_react.ts`).
-- `../../../src/gating.ts` — `isPairSupported`, the nine-clause source/destination pair check.
+- `../../../src/gating.ts` — `isPairSupported`, the ten-clause source/destination pair check.

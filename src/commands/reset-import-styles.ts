@@ -18,10 +18,11 @@ interface StyleSnapshot extends StyleRef {
 }
 
 /**
- * The nine configurable import-style settings reset by {@link executeResetImportStyles}. Excludes
- * the two `preserve…FileExtension` booleans, `importStatementPlacement` (owned by
- * `set-import-placement.ts`), and the four dormant single-shape keys (`cssImage`, `scssImage`,
- * `htmlStyleSheet`, `markdown`) — resetting a one-value setting is meaningless.
+ * The twelve configurable import-style settings reset by {@link executeResetImportStyles}. Excludes
+ * the three `preserve…FileExtension` booleans (`script`, `stylesheet`, and `latex` graphics),
+ * `importStatementPlacement` (owned by `set-import-placement.ts`), and the four dormant single-shape
+ * keys (`cssImage`, `scssImage`, `htmlStyleSheet`, `markdown`) — resetting a one-value setting is
+ * meaningless.
  */
 const RESETTABLE_STYLES: ReadonlyArray<StyleRef> = [
   { namespace: 'script', key: 'javascript' },
@@ -33,6 +34,9 @@ const RESETTABLE_STYLES: ReadonlyArray<StyleRef> = [
   { namespace: 'markup', key: 'htmlVideo' },
   { namespace: 'markup', key: 'htmlAudio' },
   { namespace: 'markup', key: 'markdownImage' },
+  { namespace: 'latex', key: 'graphics' },
+  { namespace: 'latex', key: 'input' },
+  { namespace: 'latex', key: 'bibliography' },
 ];
 
 /**

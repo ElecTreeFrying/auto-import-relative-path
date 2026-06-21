@@ -24,6 +24,14 @@ export const TEXT_TRACK_FILE_EXTENSIONS: FileExtension[] = [
   '.vtt',
 ];
 
+export const TEX_GRAPHICS_FILE_EXTENSIONS: FileExtension[] = [
+  '.pdf',
+  '.png',
+  '.jpg',
+  '.jpeg',
+  '.eps',
+];
+
 export const HTML_SUPPORTED_EXTENSIONS: FileExtension[] = [
   '.js',
   '.css',
@@ -94,6 +102,12 @@ export const ASTRO_SUPPORTED_EXTENSIONS: FileExtension[] = [
   ...TEXT_TRACK_FILE_EXTENSIONS,
 ];
 
+export const TEX_SUPPORTED_EXTENSIONS: FileExtension[] = [
+  '.tex',
+  '.bib',
+  ...TEX_GRAPHICS_FILE_EXTENSIONS,
+];
+
 export const SCRIPT_FILE_EXTENSIONS: FileExtension[] = [
   '.ts',
   '.tsx',
@@ -121,4 +135,5 @@ export const CROSS_IMPORT_DESTINATIONS: FileExtension[] = [
   '.vue',
   '.svelte',
   '.astro',
+  '.tex',
 ];

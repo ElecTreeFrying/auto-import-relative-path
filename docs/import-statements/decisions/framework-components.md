@@ -75,7 +75,7 @@ These are shapes evaluated and **declined** — not pending work. Deferred-but-i
 - [`../future/framework-roadmap.md`](../future/framework-roadmap.md) — the deferred-but-intended framework backlog: PascalCase auto-naming (P1.5 / P2.5 / P3.5) and the joint SFC concerns (`.css`/`.scss`-into-SFC, `.ts`/`.js` destinations accepting SFC sources, `.md`/`.mdx` as a source for `.vue`/`.svelte`).
 - [`media-files.md`](media-files.md) — sibling decision ledger; media extensions flow into `VUE_/SVELTE_/ASTRO_SUPPORTED_EXTENSIONS` in lockstep.
 - [`CLAUDE.md`](CLAUDE.md) — the decisions-layer contract (and the blessed deviation note for this file).
-- `src/gating.ts:isPairSupported` — the per-destination `.vue` / `.svelte` / `.astro` clauses (lines 35 / 38 / 41 of the nine-clause check).
+- `src/gating.ts:isPairSupported` — the per-destination `.vue` / `.svelte` / `.astro` clauses (lines 35 / 38 / 41 of the ten-clause check; the `.tex` clause is the tenth).
 - `src/snippets/_react.ts:71-73` — the `.vue` / `.svelte` / `.astro` cases in the `buildAssetImportStatement` default-import group.
 - `src/snippets/languages/framework-component.ts` — the single shared `.vue` / `.svelte` / `.astro` builder.
 - `src/snippets/languages/typescript.ts:generateAngularLegacyImportName` — Angular auto-naming (index 0 / named imports); the deferred framework PascalCase auto-naming needs a separate default-import pathway and cannot extend this mechanism (see [`../future/framework-roadmap.md`](../future/framework-roadmap.md)).

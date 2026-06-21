@@ -65,6 +65,16 @@ All three are fully supported destinations. Script sources (`.ts` / `.tsx` / `.j
 
 If no frontmatter or script block exists, one is created at line 0 automatically. Inserted imports also **match the surrounding indentation** — the extension reads the indentation of existing lines inside the frontmatter or `<script>` block (or inherits the block's own indentation when it's empty), so generated imports line up with your code. See [README — §Supported Languages](README.md#supported-languages) and [SPEC — §Framework component destinations](SPEC.md#framework-component-destinations) for the full accepted-source lists.
 
+### How do LaTeX imports work?
+
+LaTeX (`.tex`) is a fully supported destination with its **own** style settings. The source extension picks the relationship:
+
+- **Graphics** (`.pdf` / `.png` / `.jpg` / `.jpeg` / `.eps`) → a `figure` float by default (`\begin{figure}…\includegraphics…\caption…\label…\end{figure}`), or a bare / sized `\includegraphics`. Web-only formats (`.svg` / `.gif` / `.webp` / `.avif`) are rejected — `pdflatex` can't render them.
+- **`.tex`** → `\input{…}` (default) or `\include{…}`; the `.tex` extension is dropped.
+- **`.bib`** → `\addbibresource{…bib}` (modern biblatex, default) or `\bibliography{…}` (legacy BibTeX).
+
+Imports land in the document **body** at the cursor — never the preamble (line 0). The graphics extension is **kept** by default; toggle `auto-import.importStatement.latex.preserveGraphicsFileExtension` to drop it. See [README — §LaTeX](README.md#latex) and [SPEC — §LaTeX](SPEC.md#latex).
+
 ### Why are some configurations single-option dropdowns?
 
 HTML stylesheet (`<link>`), Markdown link (`[text](path)`), and CSS/SCSS image (`url('…')`) shapes each have a single canonical form. The dropdowns exist for VS Code settings-UI parity. They will gain options as soon as multiple are sensible. If you want a different default, [open an issue][issues] with your preferred shape.
@@ -120,8 +130,9 @@ Each section below is **symptom → cause → fix**. If your issue isn't here, [
 
 **Causes:**
 
-- The destination file language isn't in the 12 supported destination languages.
+- The destination file language isn't in the 13 supported destination languages.
 - The source/destination pair isn't supported — the same gating rules apply as for the paste commands.
+- For a **`.tex`** destination: VS Code has no built-in LaTeX language, so the drop matches `.tex` by file pattern (not language) — this works regardless of whether a LaTeX extension is installed; if it still doesn't fire, confirm the file is saved to disk (the provider is `scheme: 'file'` only).
 
 **Fix:** Check the [supported languages table][langs]. The drop provider uses the same gating as the paste commands.
 
@@ -167,7 +178,7 @@ Each section below is **symptom → cause → fix**. If your issue isn't here, [
 
 **Fix:** Change the setting (<kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>,</kbd>, search `auto-import`).
 
-> **Note:** For `.html` and `.md` destinations, and when importing a non-stylesheet into a stylesheet, placement is **always** forced to `Cursor` regardless of the setting. Those contexts don't have an "import block" to attach to. **`.mdx` is the exception among Markdown files:** it respects your `Top` / `Bottom` / `Cursor` setting like a script file (only `.md` is force-cursored), while still treating a leading `*` as prose rather than a comment.
+> **Note:** For `.html`, `.md`, and `.tex` destinations, and when importing a non-stylesheet into a stylesheet, placement is **always** forced to `Cursor` regardless of the setting. Those contexts don't have an "import block" to attach to — for LaTeX, line 0 is the preamble, so a figure / `\input` belongs in the body at the cursor. **`.mdx` is the exception among Markdown files:** it respects your `Top` / `Bottom` / `Cursor` setting like a script file (only `.md` is force-cursored), while still treating a leading `*` as prose rather than a comment.
 
 ---
 
@@ -266,7 +277,7 @@ See [README — §Commands & Keybindings](README.md#commands--keybindings) for t
 
 To accept a new source extension for an existing destination (e.g. `.yaml` for `.html`):
 
-1. **`src/constants/extensions.ts`** — add the source to the matching `*_SUPPORTED_EXTENSIONS` table (`HTML_SUPPORTED_EXTENSIONS`, `MARKDOWN_SUPPORTED_EXTENSIONS`, `CSS_SUPPORTED_EXTENSIONS`, `SCSS_SUPPORTED_EXTENSIONS`, `VUE_SUPPORTED_EXTENSIONS`, `SVELTE_SUPPORTED_EXTENSIONS`, or `ASTRO_SUPPORTED_EXTENSIONS`).
+1. **`src/constants/extensions.ts`** — add the source to the matching `*_SUPPORTED_EXTENSIONS` table (`HTML_SUPPORTED_EXTENSIONS`, `MARKDOWN_SUPPORTED_EXTENSIONS`, `CSS_SUPPORTED_EXTENSIONS`, `SCSS_SUPPORTED_EXTENSIONS`, `VUE_SUPPORTED_EXTENSIONS`, `SVELTE_SUPPORTED_EXTENSIONS`, `ASTRO_SUPPORTED_EXTENSIONS`, or `TEX_SUPPORTED_EXTENSIONS`).
 2. **`src/snippets/languages/<destination>.ts`** — make sure the per-language `buildSnippet` knows how to handle that source. The shared gating in `src/gating.ts` won't catch a source that lands at the per-language `switch`'s `default:` and emits an empty snippet.
 
 ### Adding a new file extension

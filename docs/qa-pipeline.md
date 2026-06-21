@@ -4,7 +4,7 @@ How the extension's per-language manual-QA checklists are generated — and why 
 
 ## The problem
 
-The extension supports **12 destination languages** (`.ts`, `.js`, `.jsx`, `.tsx`, `.mdx`, `.css`, `.scss`, `.html`, `.md`, `.vue`, `.svelte`, `.astro`), each with its own import-statement shapes, gating, placement, and smart-identifier rules. Manual QA needs one checklist per language — thirteen in all (a shared `general.md` plus one per language).
+The extension supports **13 destination languages** (the 13th, LaTeX `.tex`, was added after this pipeline was built). The manual-QA corpus described here covers all **13** (`.ts`, `.js`, `.jsx`, `.tsx`, `.mdx`, `.css`, `.scss`, `.html`, `.md`, `.vue`, `.svelte`, `.astro`, `.tex`), each with its own import-statement shapes, gating, placement, and smart-identifier rules. Manual QA needs one checklist per covered language — fourteen in all (a shared `general.md` plus one per language). LaTeX was folded in last: the `.tex` checklist (`qa/checklists/latex.md`) and its workspace (`qa/workspace/latex/`) were authored after the initial sweep.
 
 Hand-writing those checklists invites two failures:
 
@@ -53,7 +53,7 @@ The completeness bar: anything a checklist needs to assert must be derivable fro
 
 `RECIPE.md` is the back end: a single **section skeleton** every checklist is rendered through. It lists the numbered sections (gating matrix, happy-path paste, all-N-styles, smart-identifier, placement, pick-style, set-default, drag-and-drop, edge cases, sign-off), each marked **required** or **conditional** — and the conditions resolve against the IR fields. A destination with `smartId = none` simply omits the smart-identifier section; a stylesheet destination picks up its path-quirk sub-sections.
 
-One recipe shared by all 12 destinations is why per-language divergence is *structurally* impossible: there is only one rule to render through.
+One recipe shared by all 13 destinations is why per-language divergence is *structurally* impossible: there is only one rule to render through.
 
 The recipe also enforces one boundary: **`general.md` is assumed to have passed.** That shared checklist owns every destination-neutral behavior (clipboard validation, same-file rejection, notification wording, the universal QuickPick / drag-and-drop mechanics). Each generated per-language checklist emits only the destination-specific *delta* and cross-references `general.md` for the shared parts — it never re-tests them.
 
@@ -63,7 +63,7 @@ Three properties fall out of the construction:
 
 | Property | Why it holds |
 |----------|--------------|
-| **Consistency** | one `RECIPE.md` over one `PROFILE.md`, shared by all 12 destinations |
+| **Consistency** | one `RECIPE.md` over one `PROFILE.md`, shared by all 13 destinations |
 | **Determinism** | the IR is frozen and human-reviewed; no run re-derives it, so the same input yields the same checklist |
 | **Resumability** | generation state lives on disk as runbook `[ ]`/`[x]` checkboxes, so a session can die and resume at the first unchecked box |
 
@@ -89,7 +89,7 @@ This doc is the *why*. The runnable pipeline lives in `../qa/_authoring/`:
 | [`_authoring/README.md`](../qa/_authoring/README.md) | the operator's note — how to run a generation session, stability rules, the full guarantees + failure-mode tables |
 | [`_authoring/RECIPE.md`](../qa/_authoring/RECIPE.md) | the section rule (the back end) |
 | [`_authoring/PROFILE.md`](../qa/_authoring/PROFILE.md) | the frozen IR (one row per destination) |
-| [`../qa/checklists/`](../qa/checklists/) | the generated output — `general.md` + 12 per-language checklists |
+| [`../qa/checklists/`](../qa/checklists/) | the generated output — `general.md` + 13 per-language checklists |
 
 For *why a given import shape exists* (the behavior the IR profiles), see the sibling design tree [`import-statements/`](import-statements/CLAUDE.md).
 

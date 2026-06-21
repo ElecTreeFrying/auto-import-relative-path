@@ -32,7 +32,7 @@ describe('config/settings', () => {
   });
 });
 
-// Only ('script','javascript') was round-tripped above; the alias map has four namespaces and a wrong
+// Only ('script','javascript') was round-tripped above; the alias map has five namespaces and a wrong
 // path in any of them silently reads/writes the wrong backing setting. One round-trip per other namespace.
 describe('config/settings — namespace alias coverage', () => {
   const SENTINEL = 'ns-roundtrip-sentinel';
@@ -53,5 +53,11 @@ describe('config/settings — namespace alias coverage', () => {
     await setAutoImportSetting('markup', 'htmlScript', SENTINEL);
     assert.strictEqual(getAutoImportSetting('markup', 'htmlScript'), SENTINEL);
     await setAutoImportSetting('markup', 'htmlScript', undefined);
+  });
+
+  it('round-trips (latex, graphics) through the alias map', async () => {
+    await setAutoImportSetting('latex', 'graphics', SENTINEL);
+    assert.strictEqual(getAutoImportSetting('latex', 'graphics'), SENTINEL);
+    await setAutoImportSetting('latex', 'graphics', undefined);
   });
 });

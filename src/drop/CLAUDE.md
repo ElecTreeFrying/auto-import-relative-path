@@ -5,7 +5,7 @@ Drag-and-drop import provider registered via the VS Code `DocumentDropEditProvid
 ## Files
 
 - `provider.ts` — `AutoImportOnDropProvider` class implementing `DocumentDropEditProvider`.
-- `selector.ts` — `DROP_LANGUAGE_SELECTORS` constant: `DocumentSelector` covering all 12 supported destination languages (`scheme: 'file'` only).
+- `selector.ts` — `DROP_LANGUAGE_SELECTORS` constant: `DocumentSelector` covering all 13 supported destination languages (`scheme: 'file'` only).
 
 ## `provider.ts` — `AutoImportOnDropProvider`
 
@@ -45,7 +45,7 @@ Drag-and-drop import provider registered via the VS Code `DocumentDropEditProvid
 
 ## `selector.ts` — `DROP_LANGUAGE_SELECTORS`
 
-Twelve entries covering every supported destination language: `javascript`, `javascriptreact`, `typescript`, `typescriptreact`, `css`, `scss`, `html`, `markdown`, `vue`, `svelte`, `astro`, `mdx`. All entries use `scheme: 'file'`.
+Thirteen entries covering every supported destination language: eleven matched by VS Code language ID (`javascript`, `javascriptreact`, `typescript`, `typescriptreact`, `css`, `scss`, `html`, `markdown`, `vue`, `svelte`, `astro`), plus `.mdx` and `.tex` matched by **file pattern** (`**/*.mdx`, `**/*.tex`) — neither has a guaranteed VS Code language ID (VS Code ships no LaTeX language; a `.tex` file opens as plaintext without a LaTeX extension). All entries use `scheme: 'file'`.
 
 These are VS Code language IDs, whereas the four-site sync and `dispatch.ts` are keyed on file extension — so the two move independently:
 

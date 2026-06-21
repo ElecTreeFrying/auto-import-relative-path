@@ -7,6 +7,7 @@ import {
   MARKDOWN_SUPPORTED_EXTENSIONS,
   SCSS_SUPPORTED_EXTENSIONS,
   SVELTE_SUPPORTED_EXTENSIONS,
+  TEX_SUPPORTED_EXTENSIONS,
   VUE_SUPPORTED_EXTENSIONS,
 } from './constants/extensions';
 
@@ -39,6 +40,9 @@ export function isPairSupported(info: FilePathInfo): boolean {
     return false;
   }
   if (destinationFileExt === '.astro' && !ASTRO_SUPPORTED_EXTENSIONS.includes(sourceFileExt)) {
+    return false;
+  }
+  if (destinationFileExt === '.tex' && !TEX_SUPPORTED_EXTENSIONS.includes(sourceFileExt)) {
     return false;
   }
   return true;

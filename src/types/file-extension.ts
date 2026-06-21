@@ -68,4 +68,10 @@ type ScriptFileExtension =
 
 type DataFileExtension = '.json';
 
-export type FileExtension = WebFileExtension | ScriptFileExtension | DataFileExtension | DocumentFileExtension | MediaFileExtension | FrameworkComponentFileExtension;
+type LatexFileExtension = '.tex';
+
+type BibliographyFileExtension = '.bib';
+
+type EncapsulatedPostScriptFileExtension = '.eps';
+
+export type FileExtension = WebFileExtension | ScriptFileExtension | DataFileExtension | DocumentFileExtension | MediaFileExtension | FrameworkComponentFileExtension | LatexFileExtension | BibliographyFileExtension | EncapsulatedPostScriptFileExtension;

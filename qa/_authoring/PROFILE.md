@@ -14,10 +14,10 @@ source code  →  PROFILE.md (IR)  →  ../checklists/{lang}.md (output)
               human-reviewed, frozen
 ```
 
-One row per destination — **12 destinations**: `.ts` `.js` `.jsx` `.tsx` `.mdx`
-`.css` `.scss` `.html` `.md` `.vue` `.svelte` `.astro`. (`.tsx` and `.mdx` are
-separate rows even though `.mdx` is byte-identical to `.tsx`.) Each row carries
-**six fields**. Everything a generator needs must be derivable from these fields: if
+One row per destination — **13 destinations**: `.ts` `.js` `.jsx` `.tsx` `.mdx`
+`.css` `.scss` `.html` `.md` `.vue` `.svelte` `.astro` `.tex`. (`.tsx` and `.mdx` are
+separate rows even though `.mdx` is byte-identical to `.tsx`; `.tex` was added when
+the extension gained the LaTeX destination.) Each row carries **six fields**. Everything a generator needs must be derivable from these fields: if
 a checklist behavior has no home in a field below, the field is incomplete.
 
 ## Field index
@@ -38,11 +38,11 @@ Session 2 filled each field from these source-of-truth files:
 | Field | Source files |
 |-------|--------------|
 | `gating` + `SOURCE_UNIVERSE` | `src/gating.ts`, `src/constants/extensions.ts`, `src/types/file-extension.ts` |
-| `styles` + fixed asset shapes | `src/snippets/variants.ts`, `src/snippets/dispatch.ts`, `src/snippets/_styles.ts`, `src/snippets/_react.ts` (incl. the shared `buildAssetImportStatement`), `src/snippets/languages/framework-component.ts`; source-ext→branch map from `src/path/import-type.ts` |
+| `styles` + fixed asset shapes | `src/snippets/variants.ts`, `src/snippets/dispatch.ts`, `src/snippets/_styles.ts`, `src/snippets/_react.ts` (incl. the shared `buildAssetImportStatement`), `src/snippets/languages/framework-component.ts`, `src/snippets/languages/latex.ts`; source-ext→branch map from `src/path/import-type.ts` (LaTeX branches on the raw extension, not `determineImportType`) |
 | `smartId` | `src/snippets/languages/typescript.ts`, `src/snippets/_class-name.ts`, `src/snippets/variants.ts` |
 | `defaultStyle` | `package.json` (`contributes.configuration` enums + `default`) |
 | `placement` | `src/editor/placement.ts`, `src/editor/insert-snippet.ts` |
-| `pathQuirks` | `src/snippets/languages/{scss,css,html,markdown}.ts` |
+| `pathQuirks` | `src/snippets/languages/{scss,css,html,markdown,latex}.ts` |
 
 ---
 
@@ -84,9 +84,16 @@ complement `SOURCE_UNIVERSE − accept-list`.
 | data | `.json` `.yaml` `.yml` |
 | fonts | `.woff` `.woff2` `.ttf` `.eot` |
 | document | `.pdf` |
+| latex | `.tex` |
+| bibliography | `.bib` |
+| eps (LaTeX vector graphics) | `.eps` |
 
 > `MEDIA_FILE_EXTENSIONS` is video+audio only; `.vtt` lives in `TEXT_TRACK_FILE_EXTENSIONS`. Both
 > are spread together into the HTML/Vue/Svelte/Astro accept-lists.
+> `.tex`/`.bib`/`.eps` were added with the LaTeX destination; `.pdf` (formerly document-only,
+> JSX/TSX/MDX-reachable) is also a LaTeX **graphics** source. `TEX_GRAPHICS_FILE_EXTENSIONS` =
+> `.pdf` `.png` `.jpg` `.jpeg` `.eps` — the `pdflatex`-renderable set, deliberately **not** the web
+> `IMAGE_FILE_EXTENSIONS` (no `.svg`/`.gif`/`.webp`/`.avif`).
 
 ## `gating` per destination
 
@@ -108,9 +115,11 @@ set is `SOURCE_UNIVERSE − accept`.
 | `.jsx` | accept-all | every source (in `CROSS_IMPORT_DESTINATIONS`, no per-dest clause) — no source-ext reject rows; only the universal same-file reject (general.md) |
 | `.tsx` | accept-all | every source |
 | `.mdx` | accept-all | every source |
+| `.tex` | allow-list | `TEX_SUPPORTED_EXTENSIONS` = `.tex` `.bib` + LaTeX graphics (`.pdf` `.png` `.jpg` `.jpeg` `.eps`). **Web images `.svg`/`.gif`/`.webp`/`.avif` rejected** (not `pdflatex`-renderable); fonts / media / `.vtt` / data / scripts / stylesheets / markup all rejected. |
 
 > `.vue`/`.svelte`/`.astro` are the only destinations that accept data (`.json`/`.yaml`/`.yml`);
-> every allow-list destination rejects fonts and `.pdf`. The RECIPE item-1 reject column samples
+> every allow-list destination rejects fonts and `.pdf` **except `.tex`, which accepts `.pdf` as a
+> graphics source** (with `.png`/`.jpg`/`.jpeg`/`.eps`). The RECIPE item-1 reject column samples
 > ≥1 member from each reject category present.
 
 ## `styles` per destination
@@ -131,6 +140,7 @@ literal strings + tab-stops from `_styles.ts`) + the **fixed/hardcoded shapes** 
 | `.html` | source-**type** (6) | script `HTML_SCRIPT_IMPORT_OPTIONS` (5) · image `HTML_IMAGE_IMPORT_OPTIONS` (3) · video `HTML_VIDEO_IMPORT_OPTIONS` (4) · audio `HTML_AUDIO_IMPORT_OPTIONS` (2) · stylesheet fixed `<link href="<path>" rel="stylesheet">` · text-track fixed `<track …>`. The image/video/audio **style-0 entries are tagless** (description falls back to full text). |
 | `.md` | source-**type** | markdown → fixed `[${1:text}](<path>)` (hardcoded; `markdown` setting dormant; **not** in the image style count) · image → `MARKDOWN_IMAGE_IMPORT_OPTIONS` (3) |
 | `.vue` / `.svelte` / `.astro` | `framework-component.ts` | source-**extension** split: **script** (`.ts`/`.tsx`/`.js`/`.jsx`) → `TYPESCRIPT_IMPORT_OPTIONS` (7), style-0 Angular PascalCase, no exported-class fill, styles 1–6 bare `$1`; **non-script** → fixed asset shapes (shared `buildAssetImportStatement`). Script paths honor `preserve`; non-script keep the full ext. Fonts/plain-stylesheets/CSS-modules are gated out, so only the named-default + url-default arms are reachable. |
+| `.tex` | `latex.ts` source-**extension** (3) | graphics (`.pdf`/`.png`/`.jpg`/`.jpeg`/`.eps`) → `TEX_GRAPHICS_IMPORT_OPTIONS` (3); `.tex` → `TEX_INPUT_IMPORT_OPTIONS` (2); `.bib` → `TEX_BIBLIOGRAPHY_IMPORT_OPTIONS` (2). Dispatched on the **raw source extension** (`determineImportType` returns `image` for all three and can't distinguish them). **All three arms configurable** — no fixed/hardcoded shapes; the graphics default is the only **multi-line** snippet. |
 
 **Fixed non-script asset shapes** (shared by the React trio **and** the framework trio
 (`.vue`/`.svelte`/`.astro`) — `src/snippets/_react.ts:buildAssetImportStatement`, the single
@@ -158,7 +168,7 @@ Two independent mechanisms — exported-class detection and Angular-legacy Pasca
 | `.ts` | **both** — exported-class (`readExportedClassName`, called by `typescript.ts:buildSnippet` + `variants.ts` `.ts` case) **and** Angular PascalCase. A detected class beats Angular. |
 | `.tsx` / `.mdx` | **Angular-PascalCase only** (style 0), for `.ts`/`.tsx` sources via the TS-primary path; **no exported-class fill** (`readExportedClassName` is never called for tsx/mdx). `.js`/`.jsx` sources → JS builder → none. [Delta #2] |
 | `.vue` / `.svelte` / `.astro` | **Angular-PascalCase only** (style 0), **script sources only** via the TS builder; non-script sources take fixed asset shapes and never reach Angular naming. `framework-component.ts` calls `buildTypeScriptImportSnippet` *without* a `detectedImportName`, so exported-class fill is inert but `generateAngularLegacyImportName` still fires. (Unlike `.tsx`/`.mdx`, a `.js`/`.jsx` script source **does** reach Angular here — all four script exts route to the TS builder.) |
-| `.js` `.jsx` `.css` `.scss` `.html` `.md` | **none** |
+| `.js` `.jsx` `.css` `.scss` `.html` `.md` `.tex` | **none** |
 
 **Exported-class half** (`.ts` only, style 0): `EXPORTED_CLASS_PATTERN =
 /^export\s+(?:abstract\s+)?class\s+(\w+)/m`. Matches `export class Name` / `export abstract class
@@ -197,7 +207,7 @@ comment adjustment. One mode per destination / source-type.
 | `generic` | `.ts` `.js` `.jsx` `.tsx` `.mdx` | Full Top/Bottom/Cursor; **column 0**. Bottom = after the last non-comment line containing an `IMPORT_INDICATORS` marker (empty/comments-only → line 0). Top = line 0. Cursor = `adjustForCommentBlock` (a `/* */` block or grouped `//` run pushes the import above; a lone `//` inserts at the line). **`.mdx` is `generic`/column-0** — the explicit counter-case to `.md`. |
 | `stylesheet` | `.css` `.scss` (stylesheet source) | Like `generic` (column 0, honors the setting) but Bottom anchors after the last `@use`/`@forward`/`@import` line — an observably different anchor. |
 | `inline-url` | `.css` `.scss` (image / non-stylesheet source) | The `isInlineSnippet` exception (precedes every placement branch): insert the `url('<path>')` value at the **exact** cursor/drop line **and column**, **no** trailing newline, **no** column-0 forcing. The placement setting has **no effect**. |
-| `forced-cursor` | `.html` `.md` | Insert at the **cursor line** always (Top/Bottom/Cursor have no effect); column **follows the cursor** (not forced to 0). Comment-block adjustment applies; `.md` uses the markdown-star quirk. |
+| `forced-cursor` | `.html` `.md` `.tex` | Insert at the **cursor line** always (Top/Bottom/Cursor have no effect); column **follows the cursor** (not forced to 0). Comment-block adjustment applies; `.md` uses the markdown-star quirk. **`.tex`** inserts in the document **body** (line 0 is the LaTeX preamble); its default `figure` shape is the only **multi-line** snippet (VS Code re-indents the interior lines to the insertion column). |
 | `astro-frontmatter` | `.astro` | Top/Bottom/Cursor honored but **constrained within the `---` fences** (Top = after the opening `---`; Bottom = after the last `IMPORT_INDICATORS` line within the fences, fallback just after the opening `---`; Cursor = cursor line only when strictly between the fences, else Bottom-within-fences). No fences → a new `---\n<import>\n---\n` block at line 0; all three modes converge. Inserted lines adopt the block's detected indentation. |
 | `sfc-script` | `.vue` `.svelte` | Same shape as `astro-frontmatter`, bounded by the `<script>` block: selection prefers `<script setup>` over an instance `<script>` (no `context=`) over any `<script>`. No `<script>` → a new `<script>\n<import>\n</script>\n` block at line 0. |
 
@@ -217,8 +227,10 @@ above in `.md`/`.mdx`; only leading `*` is reclassified.)
 
 ## `pathQuirks` per destination
 
-Extension-preservation is **two-namespaced** — the script key `preserveScriptFileExtension` and
-the stylesheet key `preserveStylesheetFileExtension` are different settings.
+Extension-preservation is **three-namespaced** — the script key `preserveScriptFileExtension`, the
+stylesheet key `preserveStylesheetFileExtension`, and the LaTeX-graphics key
+`preserveGraphicsFileExtension` are different settings (the last defaults to **`true`/keep**,
+inverted from the other two, which default to `false`/strip).
 
 | Dest | `pathQuirks` |
 |------|--------------|
@@ -227,6 +239,7 @@ the stylesheet key `preserveStylesheetFileExtension` are different settings.
 | `.ts` `.js` `.jsx` `.tsx` `.mdx` | respect **`preserveScriptFileExtension`** (script sources); for `.jsx`/`.tsx`/`.mdx`, **non-script** asset imports always keep the full extension (not toggled) |
 | `.html` `.md` | always preserve the full extension (no toggle) |
 | `.vue` `.svelte` `.astro` | **`preserveScriptFileExtension`** for script sources; non-script sources always keep the full extension (via the shared `buildAssetImportStatement`) [fills the §4.6 gap] |
+| `.tex` | **`preserveGraphicsFileExtension`** for graphics sources — **default `true`/keep** (inverted from the script/stylesheet toggles): on → `\includegraphics{./plot.png}`, off → `\includegraphics{./plot}` (restore after). `.tex` sources (`\input`/`\include`) **always drop** `.tex`. `.bib` is **per-style**: `\addbibresource` keeps `.bib`, `\bibliography` drops it. |
 
 ## `defaultStyle` per destination
 
@@ -260,6 +273,9 @@ destination, so the string is frozen here (the index alone is insufficient).
 | `.md` · image source | 0 | `![${1:alt-text}](<path>)` |
 | `.vue` / `.svelte` / `.astro` · script source | 0 (TS) | `import { $1 } from '<path>';` (Angular PascalCase on style 0 if the path matches a suffix; no exported-class fill) |
 | `.vue` / `.svelte` / `.astro` · non-script source | — (fixed) | the asset shape for its source type (see `styles`) |
+| `.tex` · graphics source | 0 | `\begin{figure}[htbp]` / `\centering` / `\includegraphics[width=0.5\textwidth]{<path>}` / `\caption{${1:caption}}` / `\label{fig:${2:label}}` / `\end{figure}` — six lines joined by `\n`; `\caption` before `\label` |
+| `.tex` · `.tex` source | 0 | `\input{<path>}` (`.tex` always dropped) |
+| `.tex` · `.bib` source | 0 | `\addbibresource{<path>.bib}` (keeps `.bib`) |
 
 > Fixed-shape branches (md-link, css/scss-image, html-link/track, jsx/tsx/mdx non-script,
 > **vue/svelte/astro non-script**) carry no configurable setting → `Set Default Import Style`

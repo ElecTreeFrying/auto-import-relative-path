@@ -459,9 +459,9 @@ Drag a file from the Explorer sidebar into an open `.scss` editor. A drop reuses
 - [ ] Drag `scss/src/abstracts/_variables.scss` into `scss/src/main.scss` → `@use './abstracts/variables.scss';`
 - [ ] Restore: **uncheck** **Preserve stylesheet file extension in imports**
 
-### 9.9 — Universal drop precondition (cross-cutting — verified once for all 12 destinations)
+### 9.9 — Universal drop precondition (cross-cutting — verified once for all 13 destinations)
 
-- [ ] The "drop into an untitled/unsaved buffer is a no-op" precondition is tested once for all 12 destinations in [typescript.md §9.10](typescript.md#910--universal-drop-precondition-cross-cutting--verified-once-here) — not re-tested here
+- [ ] The "drop into an untitled/unsaved buffer is a no-op" precondition is tested once for all 13 destinations in [typescript.md §9.10](typescript.md#910--universal-drop-precondition-cross-cutting--verified-once-here) — not re-tested here
 
 ---
 

@@ -27,6 +27,7 @@ One module per destination language.
 | `html.ts` | HTML `<script>` (5 styles) / `<img>` (3) / `<video>` (4) / `<audio>` (2) configurable + `<link>` / `<track>` fixed. |
 | `markdown.ts` | Markdown link (fixed) + image (3 configurable styles). |
 | `framework-component.ts` | Vue/Svelte/Astro entry — script sources (`.ts`/`.tsx`/`.js`/`.jsx`) delegate to `buildTypeScriptImportSnippet` (extension stripped per preserve setting); non-script sources delegate to `../_react:buildAssetImportStatement`. All three share identical import semantics. |
+| `latex.ts` | LaTeX (`.tex`) — graphics→`figure`/`\includegraphics` (3 styles), `.tex`→`\input`/`\include` (2), `.bib`→`\addbibresource`/`\bibliography` (2). Branches on the raw source extension; resolves config inline; own `latex.*` settings namespace. The figure default is the only multi-line snippet. |
 
 `_`-prefixed files are internal to the `snippets/` subtree. Importing them from outside `snippets/` is a smell; `languages/` modules importing `../_styles`, `../_react`, and `../_class-name` is expected.
 

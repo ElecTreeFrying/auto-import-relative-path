@@ -84,3 +84,19 @@ export const MARKDOWN_IMAGE_IMPORT_OPTIONS: ImportStyle[] = [
   { value: 1, description: '![alt-text](_relativePath_ "Hover text")', tag: 'Inline image syntax with hover-text title' },
   { value: 2, description: '<img src="_relativePath_" alt="" width="" height="">', tag: 'HTML embed for sizing — Core Web Vitals CLS prevention' },
 ];
+
+export const TEX_GRAPHICS_IMPORT_OPTIONS: ImportStyle[] = [
+  { value: 0, description: '\\begin{figure}[htbp] \\centering \\includegraphics[width=0.5\\textwidth]{_relativePath_} \\caption{} \\label{fig:} \\end{figure}', tag: 'Figure float — centered, sized, with caption and label' },
+  { value: 1, description: '\\includegraphics[width=0.5\\textwidth]{_relativePath_}', tag: 'Sized graphic — width as a fraction of \\textwidth, no float' },
+  { value: 2, description: '\\includegraphics{_relativePath_}', tag: 'Bare graphic — natural size, no float' },
+];
+
+export const TEX_INPUT_IMPORT_OPTIONS: ImportStyle[] = [
+  { value: 0, description: '\\input{_relativePath_}', tag: 'Inline include — \\input (no page break)' },
+  { value: 1, description: '\\include{_relativePath_}', tag: 'Chapter include — \\include (page break, \\includeonly-able)' },
+];
+
+export const TEX_BIBLIOGRAPHY_IMPORT_OPTIONS: ImportStyle[] = [
+  { value: 0, description: '\\addbibresource{_relativePath_}', tag: 'Modern biblatex — \\addbibresource (keeps .bib)' },
+  { value: 1, description: '\\bibliography{_relativePath_}', tag: 'Legacy BibTeX — \\bibliography (drops .bib)' },
+];

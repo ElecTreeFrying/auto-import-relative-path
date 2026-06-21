@@ -17,6 +17,9 @@ import {
   HTML_SCRIPT_IMPORT_OPTIONS,
   HTML_VIDEO_IMPORT_OPTIONS,
   MARKDOWN_IMAGE_IMPORT_OPTIONS,
+  TEX_GRAPHICS_IMPORT_OPTIONS,
+  TEX_INPUT_IMPORT_OPTIONS,
+  TEX_BIBLIOGRAPHY_IMPORT_OPTIONS,
 } from './_styles';
 import { readExportedClassName } from './_class-name';
 import { buildAssetImportStatement } from './_react';
@@ -33,6 +36,13 @@ import {
   buildHtmlStylesheetImportSnippet,
 } from './languages/html';
 import { buildMarkdownImportSnippet, buildMarkdownImageImportSnippetByStyle } from './languages/markdown';
+import {
+  buildTexGraphicsImportSnippetByStyle,
+  buildTexInputImportSnippetByStyle,
+  buildTexBibliographyImportSnippetByStyle,
+  isTexGraphicsSource,
+  resolveGraphicsPath,
+} from './languages/latex';
 
 export interface ImportSnippetVariant {
   label: string;
@@ -91,6 +101,8 @@ export async function buildImportSnippetVariants(info: FilePathInfo): Promise<Im
       return buildHtmlVariants(sourceFilePath, fullPath, labelFullPath);
     case '.md':
       return buildMarkdownVariants(sourceFilePath, fullPath, labelFullPath);
+    case '.tex':
+      return buildTexVariants(sourceFileExt, relativePath);
     default:
       return [];
   }
@@ -287,6 +299,41 @@ function buildMarkdownVariants(sourceFilePath: string, fullPath: string, labelFu
   }
 }
 
+function buildTexVariants(sourceFileExt: FileExtension, relativePath: string): ImportSnippetVariant[] {
+  if (isTexGraphicsSource(sourceFileExt)) {
+    const graphicsPath = resolveGraphicsPath(relativePath, sourceFileExt);
+    const labelGraphicsPath = path.basename(graphicsPath);
+    return TEX_GRAPHICS_IMPORT_OPTIONS.map(opt =>
+      toStyledVariant(
+        opt,
+        buildTexGraphicsImportSnippetByStyle(opt.value, graphicsPath),
+        buildTexGraphicsImportSnippetByStyle(opt.value, labelGraphicsPath),
+        'latex', 'graphics',
+      ));
+  }
+  if (sourceFileExt === '.tex') {
+    const labelPath = path.basename(relativePath);
+    return TEX_INPUT_IMPORT_OPTIONS.map(opt =>
+      toStyledVariant(
+        opt,
+        buildTexInputImportSnippetByStyle(opt.value, relativePath),
+        buildTexInputImportSnippetByStyle(opt.value, labelPath),
+        'latex', 'input',
+      ));
+  }
+  if (sourceFileExt === '.bib') {
+    const labelPath = path.basename(relativePath);
+    return TEX_BIBLIOGRAPHY_IMPORT_OPTIONS.map(opt =>
+      toStyledVariant(
+        opt,
+        buildTexBibliographyImportSnippetByStyle(opt.value, relativePath, sourceFileExt),
+        buildTexBibliographyImportSnippetByStyle(opt.value, labelPath, sourceFileExt),
+        'latex', 'bibliography',
+      ));
+  }
+  return [];
+}
+
 function toStyledVariant(
   opt: ImportStyle,
   insertSnippet: vscode.SnippetString,
@@ -316,5 +363,6 @@ function toHardcodedVariant(
 function renderLabel(snippetText: string): string {
   return snippetText
     .replace(/\$\{\d+:([^}]+)\}/g, '$1')
-    .replace(/\$\d+/g, 'name');
+    .replace(/\$\d+/g, 'name')
+    .replace(/\n\s*/g, ' ');
 }

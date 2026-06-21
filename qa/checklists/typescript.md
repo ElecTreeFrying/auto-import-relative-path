@@ -568,7 +568,7 @@ Drag a file from the Explorer sidebar into an open `.ts` editor. Universal DnD b
 
 ### 9.10 — Universal drop precondition (cross-cutting — verified once here)
 
-The drop provider is registered only for the 12 `DROP_LANGUAGE_SELECTORS` language IDs and only for `scheme:'file'`. A drop into an untitled/unsaved buffer is a no-op — this applies to all 12 destinations and is tested once.
+The drop provider is registered only for the 13 `DROP_LANGUAGE_SELECTORS` entries (11 language IDs + the `.mdx`/`.tex` file-pattern selectors) and only for `scheme:'file'`. A drop into an untitled/unsaved buffer is a no-op — this applies to all 13 destinations and is tested once.
 
 - [ ] Open a new untitled buffer (`Cmd+N`) and leave it unsaved (its scheme is `untitled:`, not `file:`)
 - [ ] Drag `typescript/src/foo.ts` from the Explorer into the untitled buffer
