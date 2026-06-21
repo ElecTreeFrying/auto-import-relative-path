@@ -3,7 +3,7 @@
 ## [1.0.0] - Unreleased
 
 ### Breaking Changes
-- **Minimum VS Code version raised to `^1.115.0`.** Older VS Code installations will no longer load the extension.
+- **Minimum VS Code version raised to `^1.97.0`.** The new drag-and-drop import provider needs the drop-edit APIs (`DocumentDropOrPasteEditKind`, 3-argument `DocumentDropEdit`) finalized in VS Code 1.97 (February 2025); older installations will no longer load the extension. Recent Cursor, VSCodium, and Code Server builds that track the VS Code API at 1.97+ remain supported.
 - **TypeScript import styles reshuffled.** The "aliased default" shape (`import { $1 as $2 } from '…'`) has been removed. Three new shapes added: type-only import, mixed value + type import (TS 4.5+), and dynamic `await import()`. Net change: 5 → 7 entries — **style indices have shifted**; users with a non-default `typescriptImportStyle` should re-select their preferred shape in Settings.
 - **JavaScript import styles reshuffled.** Four legacy shapes removed: `import { default as name }`, `var = require()`, `var = import()`, `const = import()`. Two new shapes added: mixed default + named import, and `const = await import()`. Net change: 9 → 7 entries — **style indices have shifted**; users with a non-default `javascriptImportStyle` should re-select.
 - **SCSS default flipped from `@import` to `@use`.** The `@import url(…)` shape has been dropped entirely. Two new shapes added: `@use '…' as *` and `@forward '…'`. Users who relied on `@import` as the default should update their `scssImportStyle` setting.

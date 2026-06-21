@@ -1,7 +1,7 @@
 {
   "name": "auto-import",
   "displayName": "Auto Import Relative Path",
-  "description": "Generate relative-path imports by keystroke or drag-and-drop — JS, TS, JSX, TSX, MDX, CSS, SCSS, HTML, Markdown, Vue, Svelte, and Astro. 35 source extensions, 38 configurable styles, exported-class detection, framework-aware placement.",
+  "description": "Never type an import path again. Drag a file in — or press a keystroke — to generate a relative-path import for JavaScript, TypeScript, React, Next.js, Angular, Vue, Svelte, Astro, MDX, CSS, SCSS, HTML & Markdown. 38 import styles, framework-aware placement, image/video/audio tags. Works with any bundler or runtime — Vite, webpack, Rollup, esbuild, Node.js, Deno, Bun.",
   "publisher": "ElecTreeFrying",
   "version": "0.6.1",
   "author": {
@@ -10,7 +10,7 @@
   },
   "icon": "assets/extension-icon.png",
   "engines": {
-    "vscode": "^1.115.0"
+    "vscode": "^1.97.0"
   },
   "homepage": "https://github.com/ElecTreeFrying/auto-import-relative-path",
   "repository": {
@@ -21,6 +21,7 @@
     "email": "octobergroup721@gmail.com",
     "url": "https://github.com/ElecTreeFrying/auto-import-relative-path/issues"
   },
+  "qna": "https://github.com/ElecTreeFrying/auto-import-relative-path/issues",
   "pricing": "Free",
   "badges": [
     {
@@ -56,7 +57,8 @@
     "onLanguage:vue",
     "onLanguage:svelte",
     "onLanguage:astro",
-    "onLanguage:mdx"
+    "onLanguage:mdx",
+    "workspaceContains:**/*.mdx"
   ],
   "galleryBanner": {
     "color": "#494949",
@@ -64,48 +66,48 @@
   },
   "license": "MIT",
   "categories": [
-    "Snippets",
-    "Other"
+    "Programming Languages",
+    "Snippets"
   ],
   "keywords": [
     "auto import",
-    "auto import relative path",
     "relative import",
-    "relative path",
-    "import statement",
-    "import helper",
-    "import generator",
     "paste import",
-    "copy path",
+    "import statement",
     "copy file path",
-    "drag import",
-    "drop import",
     "drag and drop",
-    "explorer import",
-    "javascript",
-    "typescript",
+    "react",
+    "nextjs",
+    "angular",
+    "nuxt",
+    "sveltekit",
+    "remix",
     "jsx",
     "tsx",
-    "mdx",
-    "react",
-    "angular",
-    "vue",
-    "svelte",
-    "astro",
-    "css",
-    "scss",
     "sass",
-    "html",
-    "markdown",
-    "es modules",
+    "react native",
+    "expo",
+    "nodejs",
+    "deno",
+    "bun",
+    "vite",
+    "parcel",
+    "turbopack",
     "esm",
     "commonjs",
+    "require",
     "css modules",
-    "import style",
-    "snippet",
-    "productivity"
+    "monorepo",
+    "solidjs",
+    "qwik"
   ],
   "main": "./dist/extension.js",
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": true
+    },
+    "virtualWorkspaces": true
+  },
   "contributes": {
     "commands": [
       {
@@ -427,7 +429,7 @@
     "test:coverage": "npm run pretest && vscode-test --coverage"
   },
   "devDependencies": {
-    "@types/vscode": "^1.115.0",
+    "@types/vscode": "1.97.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "^22.19.18",
     "esbuild": "^0.28.0",

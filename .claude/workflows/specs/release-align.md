@@ -35,7 +35,7 @@ the changelog targets `1.0.0`).
 - **12 destination languages** — `onLanguage:*` events ↔ drop selectors ↔ dispatch
 - **3 keybindings** — `cmd/ctrl+shift+a`, `cmd/ctrl+i`, `alt+d`
 - **1 drop provider**
-- **engine** `^1.115.0`
+- **engine** `^1.97.0`
 - **"35 extensions / 15 categories"** claims
 - **version reconcile** — `package.json` vs the `CHANGELOG` Unreleased heading must agree at publish
 

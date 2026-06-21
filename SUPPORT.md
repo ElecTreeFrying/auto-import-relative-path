@@ -2,8 +2,8 @@
 
 Where to get help, how to diagnose common issues, and how to contribute. For features and configuration see the [README][README]; for the full specification see [SPEC.md][SPEC].
 
-[README]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/README.md
-[SPEC]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/SPEC.md
+[README]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/main/README.md
+[SPEC]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/main/SPEC.md
 
 ---
 
@@ -33,7 +33,7 @@ Where to get help, how to diagnose common issues, and how to contribute. For fea
 | [GitHub Issues][issues]     | Bug reports, feature requests, questions                          |
 | [VS Code Marketplace][marketplace] | Install page, reviews, version listings                    |
 
-[CHANGELOG]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/CHANGELOG.md
+[CHANGELOG]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/main/CHANGELOG.md
 [issues]: https://github.com/ElecTreeFrying/auto-import-relative-path/issues
 [marketplace]: https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import
 
@@ -45,11 +45,11 @@ Where to get help, how to diagnose common issues, and how to contribute. For fea
 
 **No.** It is 100% local — no telemetry, no network calls, no AI. The whole bundle is ~8 KB gzipped, and you can read every line of the [source on GitHub][source].
 
-[source]: https://github.com/ElecTreeFrying/auto-import-relative-path/tree/master/src
+[source]: https://github.com/ElecTreeFrying/auto-import-relative-path/tree/main/src
 
 ### Is it compatible with Cursor / VSCodium / Code Server?
 
-**Yes.** The extension uses only the public VS Code API. It runs in any host that implements the API at engine `^1.115.0` or later — including Cursor, VSCodium, Code Server, and other forks.
+**Yes.** The extension uses only the public VS Code API. It runs in any host that implements the API at engine `^1.97.0` or later — including Cursor, VSCodium, Code Server, and other forks.
 
 ### Does it work in monorepos / pnpm / Yarn workspaces?
 
@@ -137,7 +137,7 @@ Each section below is **symptom → cause → fix**. If your issue isn't here, [
 
 **Fix:** Select a file in the Explorer, make sure an editor tab is focused, and check the [supported languages table][langs] in the README. If your pair *should* be supported, [open an issue][issues].
 
-[langs]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/README.md#supported-languages
+[langs]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/main/README.md#supported-languages
 
 ---
 
@@ -306,4 +306,4 @@ If this extension saves you time, consider:
 - **Leaving a review** on the [VS Code Marketplace][marketplace]
 - **Donating** — addresses are listed in the [README's Support section][donate]
 
-[donate]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/master/README.md#support
+[donate]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/main/README.md#support

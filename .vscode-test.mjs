@@ -1,4 +1,11 @@
 import { defineConfig } from '@vscode/test-cli';
+import os from 'node:os';
+import path from 'node:path';
+
+// VS Code's default user-data-dir lives inside the project (.vscode-test/user-data). On deep project
+// paths that pushes the Extension Host IPC socket past macOS's ~103-char unix-socket limit
+// (listen EINVAL: ...-main.sock). Relocate it to a short temp path so `npm test` runs anywhere.
+const userDataDir = path.join(os.tmpdir(), 'auto-import-vscode-test');
 
 // Coverage is read ONLY from the `{ tests, coverage }` global form — a single-object
 // config silently drops it (see @vscode/test-cli config loader). Coverage is opt-in via the
@@ -10,6 +17,7 @@ export default defineConfig({
       mocha: {
         ui: 'bdd',
       },
+      launchArgs: [ '--user-data-dir', userDataDir ],
     },
   ],
   coverage: {

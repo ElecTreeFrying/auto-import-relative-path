@@ -28,23 +28,39 @@ function drop(doc: vscode.TextDocument, sourceRel: string) {
   return dropWith(doc, dataTransferFor(path.join(FIXTURE_ROOT, sourceRel)));
 }
 
+/**
+ * Asserts a *suppressed* drop: an empty `DocumentDropEdit` (empty `SnippetString`, no
+ * `additionalEdit`) rather than `null`. The empty edit out-ranks VS Code's built-in
+ * insert-relative-path default, resolving the drop to a no-op so nothing lands in the
+ * document — whereas `null` would cede to that default and insert a stray raw path. The
+ * empty `insertText` distinguishes it from an inline edit; the absent `additionalEdit`
+ * from a placement edit. See `suppressDrop()` in drop/provider.ts and the
+ * "`null` vs. `suppressDrop()`" section of src/drop/CLAUDE.md.
+ */
+function assertSuppressed(result: vscode.DocumentDropEdit | null) {
+  assert.ok(result, 'expected a suppressing DocumentDropEdit, not null (null cedes to VS Code\'s raw-path default)');
+  assert.strictEqual(result.title, 'Auto Import');
+  assert.strictEqual((result.insertText as vscode.SnippetString).value, '', 'a suppressing edit must insert nothing');
+  assert.strictEqual(result.additionalEdit, undefined, 'a suppressing edit must not carry a placement WorkspaceEdit');
+}
+
 describe('AutoImportOnDropProvider.provideDocumentDropEdits', () => {
-  it('returns null when the source/destination pair fails gating (.ts → .css)', async () => {
+  it('suppresses the drop (empty edit, not null) when the source/destination pair fails gating (.ts → .css)', async () => {
     const doc = await destDocument('styles/reset.css');
     const result = await drop(doc, 'src/bar.ts');
-    assert.strictEqual(result, null);
+    assertSuppressed(result);
   });
 
-  it('returns null when the dragged file is the destination itself (same-file)', async () => {
+  it('suppresses the drop (empty edit, not null) when the dragged file is the destination itself (same-file)', async () => {
     const doc = await destDocument('src/foo.ts');
     const result = await drop(doc, 'src/foo.ts');
-    assert.strictEqual(result, null);
+    assertSuppressed(result);
   });
 
-  it('returns null when gating passes but the snippet is empty (.ts → .jsx backstop)', async () => {
+  it('suppresses the drop (empty edit, not null) when gating passes but the snippet is empty (.ts → .jsx backstop)', async () => {
     const doc = await destDocument('src/badge.jsx');
     const result = await drop(doc, 'src/bar.ts');
-    assert.strictEqual(result, null);
+    assertSuppressed(result);
   });
 
   it('returns a placement drop edit with an attached WorkspaceEdit for a supported pair (.ts → .ts)', async () => {

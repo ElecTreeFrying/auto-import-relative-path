@@ -4,6 +4,7 @@ out/**
 node_modules/**
 src/**
 .gitignore
+.gitattributes
 esbuild.js
 **/tsconfig.json
 **/eslint.config.mjs
@@ -11,13 +12,14 @@ esbuild.js
 **/*.ts
 **/.vscode-test.*
 qa/**
-_checklist/**
+coverage/**
 CLAUDE.md
 SPEC.md
 SUPPORT.md
 package-lock.json
 process/**
 .claude/**
+.codex/**
 docs/**
 assets/*.gif
 assets/*.mov
