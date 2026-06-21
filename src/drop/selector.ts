@@ -1,6 +1,9 @@
 import * as vscode from 'vscode';
 
-/** All 12 destination languages the drop provider registers for (`scheme: 'file'` only). */
+/**
+ * The 12 destinations the drop provider registers for (`scheme: 'file'` only). Eleven are matched by
+ * VS Code language ID; `.mdx` is matched by file pattern, since it has no guaranteed language ID.
+ */
 export const DROP_LANGUAGE_SELECTORS: vscode.DocumentSelector = [
   { language: 'javascript', scheme: 'file' },
   { language: 'javascriptreact', scheme: 'file' },
@@ -13,5 +16,9 @@ export const DROP_LANGUAGE_SELECTORS: vscode.DocumentSelector = [
   { language: 'vue', scheme: 'file' },
   { language: 'svelte', scheme: 'file' },
   { language: 'astro', scheme: 'file' },
-  { language: 'mdx', scheme: 'file' },
+  // `.mdx` has no built-in or ecosystem-guaranteed language ID (VS Code ships none; we contribute none),
+  // so a `.mdx` file may open as plaintext — a `{ language: 'mdx' }` selector would miss it and the drop
+  // would fall back to VS Code's raw-path insert. Match it by file pattern so the drop fires regardless
+  // of language, the same way the paste commands key off `path.extname`. See src/drop/CLAUDE.md.
+  { pattern: '**/*.mdx', scheme: 'file' },
 ];
