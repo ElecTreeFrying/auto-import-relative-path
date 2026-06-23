@@ -86,7 +86,7 @@ describe('insertImportSnippet', () => {
     });
   });
 
-  describe('HTML/MD forced cursor', () => {
+  describe('HTML/MD/LaTeX forced cursor', () => {
     it('HTML destination inserts at cursor line regardless of placement setting', async () => {
       const editor = await openFixture('pages/index.html');
       const info = await setClipboard('pages/app.js');
@@ -106,6 +106,43 @@ describe('insertImportSnippet', () => {
       assert.ok(
         editor.document.lineAt(3).text.includes('[text](./architecture.md)'),
         `expected snippet at cursor line 3, got: "${editor.document.lineAt(3).text}"`
+      );
+    });
+
+    // The figure float is the extension's only multi-line snippet; forced-cursor must keep it in the
+    // document body (line 0 is the LaTeX preamble). Snippet text is representative — generation is
+    // covered in snippets/languages/latex.test.ts; this test exercises the real editor insertion.
+    it('LaTeX destination inserts the multi-line figure at the cursor body line, not the preamble', async () => {
+      const editor = await openFixture('paper/main.tex');
+      const info = await setClipboard('assets/logo.png');
+      await setCursor(editor, 5); // \section{Introduction} — document body
+      const figure = [
+        '\\begin{figure}[htbp]',
+        '  \\centering',
+        '  \\includegraphics[width=0.5\\textwidth]{./assets/logo.png}',
+        '  \\caption{}',
+        '  \\label{fig:}',
+        '\\end{figure}',
+      ].join('\n');
+      await insertAndWait(new vscode.SnippetString(figure), info);
+      assert.ok(
+        editor.document.lineAt(5).text.includes('\\begin{figure}'),
+        `expected figure at cursor line 5, got: "${editor.document.lineAt(5).text}"`
+      );
+      assert.ok(
+        editor.document.lineAt(0).text.includes('\\documentclass'),
+        `expected the preamble untouched at line 0, got: "${editor.document.lineAt(0).text}"`
+      );
+    });
+
+    it('LaTeX destination inserts a single-line \\input at the cursor line', async () => {
+      const editor = await openFixture('paper/main.tex');
+      const info = await setClipboard('assets/logo.png');
+      await setCursor(editor, 5);
+      await insertAndWait(new vscode.SnippetString('\\input{./chapters/intro}'), info);
+      assert.ok(
+        editor.document.lineAt(5).text.includes('\\input{./chapters/intro}'),
+        `expected \\input at cursor line 5, got: "${editor.document.lineAt(5).text}"`
       );
     });
   });
@@ -220,6 +257,18 @@ describe('insertImportSnippet', () => {
       const insertedLine = editor.document.lineAt(8).text;
       assert.ok(
         insertedLine.startsWith('  <script src'),
+        `expected insertion at column 2, got: "${insertedLine}"`
+      );
+    });
+
+    it('LaTeX destination uses cursor column', async () => {
+      const editor = await openFixture('paper/main.tex');
+      const info = await setClipboard('assets/logo.png');
+      await setCursor(editor, 6, 2); // the body paragraph is indented two spaces
+      await insertAndWait(new vscode.SnippetString('\\input{./chapters/intro}'), info);
+      const insertedLine = editor.document.lineAt(6).text;
+      assert.ok(
+        insertedLine.startsWith('  \\input'),
         `expected insertion at column 2, got: "${insertedLine}"`
       );
     });
