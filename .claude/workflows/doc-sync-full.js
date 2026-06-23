@@ -110,7 +110,7 @@ phase('Detect')
 const CONTRACTS = [
   { key: 'four-site-extension', desc: 'Four-site extension sync: an extension must agree across src/types/file-extension.ts (type union) -> src/constants/extensions.ts (runtime list) -> src/snippets/dispatch.ts -> src/snippets/variants.ts. Check the docs at root CLAUDE.md and the types/constants/snippets doc-pairs describe the CURRENT code at all four sites.' },
   { key: 'three-site-config', desc: 'Three-site config sync: setting enum strings byte-identical across package.json (contributes.configuration enums) -> src/snippets/_styles.ts -> each per-language switch in src/snippets/languages/. NOTE package.json is OUTSIDE src/. Check the docs match current code at all three sites.' },
-  { key: 'two-site-button', desc: 'Two-site button-label sync: toast button labels in src/editor/notification.ts must match the switch cases in src/commands/copy-file-path.ts character-for-character. Check the docs describing this still match the code.' },
+  { key: 'two-site-button', desc: 'Two-site button-label sync: toast button labels in src/editor/notification.ts must match the switch cases in src/commands/copy-file-path.ts (copy-success buttons) and src/commands/reset-import-styles.ts (styles-reset Undo) character-for-character. Check the docs describing this still match the code.' },
   { key: 'runtime-type-mirror', desc: 'Runtime-type mirror: IMAGE_FILE_EXTENSIONS mirrors ImageFileExtension; TEXT_TRACK_FILE_EXTENSIONS mirrors TextTrackFileExtension; MEDIA_FILE_EXTENSIONS is video+audio only (.vtt lives in TEXT_TRACK). Check src/constants and src/types docs match current code.' },
 ]
 

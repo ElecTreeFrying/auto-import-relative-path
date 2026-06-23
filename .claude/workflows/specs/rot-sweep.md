@@ -109,7 +109,7 @@ reads *all* member sites (committed ones as witnesses) so a half-finished edit i
 |---|---|
 | Four-site extension sync | `src/types/file-extension.ts`, `src/constants/extensions.ts`, `src/snippets/dispatch.ts`, `src/snippets/variants.ts` |
 | Three-site config sync | `package.json`, `src/snippets/_styles.ts`, `src/snippets/languages/*.ts` |
-| Two-site button-label sync | `src/editor/notification.ts`, `src/commands/copy-file-path.ts` |
+| Two-site button-label sync | `src/editor/notification.ts`, `src/commands/copy-file-path.ts`, `src/commands/reset-import-styles.ts` |
 | Runtime-type mirror | `src/constants/extensions.ts`, `src/types/file-extension.ts` |
 
 ## CHANGELOG — accurate Unreleased check

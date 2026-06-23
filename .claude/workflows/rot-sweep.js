@@ -69,11 +69,11 @@ const READONLY = 'READ-ONLY. Do NOT edit, create, or delete any file. Use git fo
 // contract finder runs only if the uncommitted set intersects its member files / dirs.
 const CONTRACTS = [
   { key: 'four-site-extension', members: [ 'src/types/file-extension.ts', 'src/constants/extensions.ts', 'src/snippets/dispatch.ts', 'src/snippets/variants.ts' ],
-    desc: 'Four-site extension sync: a file extension must agree across src/types/file-extension.ts (type union) -> src/constants/extensions.ts (runtime list) -> src/snippets/dispatch.ts -> src/snippets/variants.ts. (Non-script asset sources into JSX/TSX/MDX route through src/snippets/_react.ts:buildAssetImportStatement instead of dispatch.ts and skip the constants gating table.)' },
+    desc: 'Four-site extension sync: a file extension must agree across src/types/file-extension.ts (type union) -> src/constants/extensions.ts (runtime list) -> src/snippets/dispatch.ts -> src/snippets/variants.ts. (Non-script asset sources into JSX/TSX/MDX route through src/snippets/_react.ts:buildAssetImportStatement instead of dispatch.ts; only JSX/TSX/MDX-exclusive sources like fonts skip the constants gating table — images/media/docs/components also target gated destinations and keep their constants entries.)' },
   { key: 'three-site-config', members: [ 'package.json', 'src/snippets/_styles.ts' ], dirs: [ 'src/snippets/languages/' ],
     desc: 'Three-site config sync: setting enum strings byte-identical across package.json (contributes.configuration enums) -> src/snippets/_styles.ts -> each per-language switch in src/snippets/languages/. Four dormant single-shape keys (cssImage, scssImage, htmlStyleSheet, markdown) are kept in package.json for back-compat but NOT style-synced at runtime — do not flag those as drift.' },
-  { key: 'two-site-button', members: [ 'src/editor/notification.ts', 'src/commands/copy-file-path.ts' ],
-    desc: 'Two-site button-label sync: toast action button labels in src/editor/notification.ts must match the switch cases in src/commands/copy-file-path.ts character-for-character.' },
+  { key: 'two-site-button', members: [ 'src/editor/notification.ts', 'src/commands/copy-file-path.ts', 'src/commands/reset-import-styles.ts' ],
+    desc: 'Two-site button-label sync: toast action button labels in src/editor/notification.ts must match the switch cases in src/commands/copy-file-path.ts (copy-success buttons) and src/commands/reset-import-styles.ts (styles-reset Undo) character-for-character.' },
   { key: 'runtime-type-mirror', members: [ 'src/constants/extensions.ts', 'src/types/file-extension.ts' ],
     desc: 'Runtime-type mirror: IMAGE_FILE_EXTENSIONS mirrors ImageFileExtension; TEXT_TRACK_FILE_EXTENSIONS mirrors TextTrackFileExtension; MEDIA_FILE_EXTENSIONS is video+audio only (.vtt lives in TEXT_TRACK_FILE_EXTENSIONS); both spread together into destination lists. In src/constants/extensions.ts <-> src/types/file-extension.ts.' },
 ]

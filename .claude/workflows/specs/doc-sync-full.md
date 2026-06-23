@@ -46,7 +46,7 @@ file inventory / public exports / "where to add code".
 A dedicated pass checks the four multi-site contracts, since they span directories:
 - **Four-site extension sync** — `types/file-extension.ts` → `constants/extensions.ts` → `snippets/dispatch.ts` → `snippets/variants.ts`.
 - **Three-site config sync** — `package.json` (outside `src/`) → `snippets/_styles.ts` → per-language switches.
-- **Two-site button-label sync** — `editor/notification.ts` ↔ `commands/copy-file-path.ts`.
+- **Two-site button-label sync** — `editor/notification.ts` ↔ `commands/copy-file-path.ts` and `commands/reset-import-styles.ts`.
 - **Runtime-type mirror** — `constants/extensions.ts` ↔ `types/file-extension.ts`.
 
 ## Interconnection (the doc web must stay coherent)
