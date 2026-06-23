@@ -91,7 +91,7 @@ CSS Modules are special-cased for JSX / TSX / MDX destinations. A `.module.css` 
 
 **Yes.** Drag any supported source file from the Explorer sidebar and drop it into an open editor. The extension generates the same import snippet as the paste commands. Unsupported pairs are rejected with the same "Cannot import" warning. No keybinding or setting needed — it uses the same style configuration and placement setting as the paste commands.
 
-### Can I rebind `Ctrl+I` / `Cmd+I` / `Alt+D`?
+### Can I rebind `Ctrl+I` / `Cmd+I`, `Ctrl+Shift+A` / `Cmd+Shift+A`, or `Alt+D`?
 
 **Yes.** Open VS Code's keyboard shortcuts editor (<kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>K</kbd> <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>S</kbd>), search for `extension.copyFilePath`, `extension.pasteImport`, or `extension.copyPaste`, and rebind. Useful if `Cmd+I` clashes with another extension you use.
 

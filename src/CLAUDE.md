@@ -20,7 +20,7 @@ gating.ts                    # shared isPairSupported() — ten-clause pair chec
 
 **Allowed dependency direction (lower never imports higher):**
 
-- `commands → gating, editor, snippets, constants, types`
+- `commands → gating, editor, snippets, config, constants, types`
 - `drop → gating, editor, snippets, constants, types`
 - `gating → editor, constants, types`
 - `snippets → config, path, editor, types, constants`

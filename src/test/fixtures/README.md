@@ -52,12 +52,15 @@ workspace/
 │   ├── _partials/_nested.scss          nested partial (path-computation tests)
 │   └── components/_button.scss, _card.scss, _modal.scss, _spinner.scss
 ├── pages/
-│   ├── index.html, about.html, contact.html, pricing.html, 404.html
+│   ├── index.html, about.html          baseline HTML files
+│   ├── contact.html, pricing.html, 404.html   realistic page siblings (exploratory)
 │   └── with-resources.html             existing <script>, <link>, <img> (Bottom landing)
 ├── docs/
 │   ├── README.md, guide.md, CHANGELOG.md, CONTRIBUTING.md, architecture.md, api-reference.md
 │   ├── tutorials/getting-started.md, advanced-usage.md
 │   └── example.mdx                     MDX destination fixture
+├── paper/
+│   └── main.tex                        LaTeX (.tex) destination — forced-cursor placement
 ├── assets/
 │   ├── logo.png, icon.gif, photo.jpeg, photo.jpg, thumb.webp     baseline images
 │   ├── icon.svg, banner.avif                                      SVG + AVIF image sources
@@ -96,10 +99,10 @@ Every cell of the source-extension × destination-extension matrix is reachable 
 
 | Capability | Where to look |
 |------------|---------------|
-| 12 of the 13 destination snippet builders (`.ts/.tsx/.js/.jsx/.mdx/.css/.scss/.html/.md/.vue/.svelte/.astro`) | `src/` has destinations for these 12: `.ts/.js/.jsx/.tsx` (baseline), `.vue/.svelte/.astro` (`App.*`), `.mdx` (`docs/example.mdx`); `styles/` for `.css/.scss`; `pages/` for `.html`; `docs/` for `.md`. The 13th destination, **LaTeX (`.tex`)**, is exercised **fixture-free** in `snippets/languages/latex.test.ts` (hand-built `FilePathInfo` — the LaTeX builder reads no files), so no `.tex` fixture exists. |
+| 12 of the 13 destination snippet builders (`.ts/.tsx/.js/.jsx/.mdx/.css/.scss/.html/.md/.vue/.svelte/.astro`) | `src/` has destinations for these 12: `.ts/.js/.jsx/.tsx` (baseline), `.vue/.svelte/.astro` (`App.*`), `.mdx` (`docs/example.mdx`); `styles/` for `.css/.scss`; `pages/` for `.html`; `docs/` for `.md`. The 13th destination's snippet builder, **LaTeX (`.tex`)**, is exercised **fixture-free** in `snippets/languages/latex.test.ts` (hand-built `FilePathInfo` — the LaTeX builder reads no files); the `paper/main.tex` fixture exists only for the **placement** tests (`editor/placement-parity.test.ts`, `editor/insert-snippet.test.ts`), which need a real `.tex` document open. |
 | Style-picker variants for `pasteImportWithStyle` + `setDefaultImportStyle` (every applicable shape per source/destination pair) | same fixtures as the row above — both pickers reuse the destination switch in `snippets/variants.ts:buildImportSnippetVariants` |
 | All 5 Angular auto-naming suffixes (`.component`, `.module`, `.directive`, `.pipe`, `.service`) | `src/components/` |
-| Non-Angular TS file (negative auto-name case) | `src/helpers.ts`, `src/utils/*.ts`, `src/lib-style modules` |
+| Non-Angular TS file (negative auto-name case) | `src/helpers.ts`, `src/utils/*.ts`, `src/lib/` |
 | ES modules vs CommonJS (`module.exports`, `exports.x`, `var require`, `const require`) | `src/legacy/*.js`, `with-requires.js`, `src/sibling.js`, `src/other.js` |
 | `_partial.scss` filename normalization | `styles/_partial.scss`, `styles/_variables.scss`, `styles/components/_*.scss` |
 | Nested-partial path (`_partials/` directory keeps underscore) | `styles/_partials/_nested.scss` |
@@ -120,7 +123,7 @@ Every cell of the source-extension × destination-extension matrix is reachable 
 
 ## Maintenance notes
 
-- The baseline filenames (`foo.ts`, `bar.ts`, `helpers.ts`, `sibling.js`, `other.js`, `widget.tsx`, `badge.jsx`, `app-root.component.ts`, `auth.module.ts`, `highlight.directive.ts`, `trim.pipe.ts`, `user.service.ts`, `_partial.scss`, `_variables.scss`, `main.scss`, `secondary.scss`, `global.css`, `reset.css`, `_partials/_nested.scss`, `index.html`, `about.html`, `README.md`, `guide.md`, `logo.png`, `icon.gif`, `photo.jpeg`, `photo.jpg`, `thumb.webp`, `icon.svg`, `banner.avif`, `font.woff2`, `regular.ttf`, `config.json`, `config.yaml`, `locale.yml`, `empty-file.ts`, `comments-only.ts`, `my files/spaced.ts`, `App.vue`, `App.svelte`, `App.astro`, `clip.mp4`, `song.mp3`, `captions.vtt`, `texture.bmp`, `theme.module.css`) are **referenced directly by the fixture-driven test files under `src/test/`**. Renaming one silently breaks the suite — a test will try to open a fixture path that no longer exists.
+- The baseline filenames (`foo.ts`, `bar.ts`, `helpers.ts`, `sibling.js`, `other.js`, `widget.tsx`, `badge.jsx`, `app-root.component.ts`, `auth.module.ts`, `highlight.directive.ts`, `trim.pipe.ts`, `user.service.ts`, `_partial.scss`, `_variables.scss`, `main.scss`, `secondary.scss`, `global.css`, `reset.css`, `_partials/_nested.scss`, `index.html`, `about.html`, `README.md`, `guide.md`, `logo.png`, `icon.gif`, `photo.jpeg`, `photo.jpg`, `thumb.webp`, `icon.svg`, `banner.avif`, `font.woff2`, `regular.ttf`, `config.json`, `config.yaml`, `locale.yml`, `empty-file.ts`, `comments-only.ts`, `with-imports.ts`, `with-requires.js`, `my files/spaced.ts`, `App.vue`, `App.svelte`, `App.astro`, `clip.mp4`, `song.mp3`, `captions.vtt`, `texture.bmp`, `theme.module.css`, `main.tex`) are **referenced directly by the fixture-driven test files under `src/test/`**. Renaming one silently breaks the suite — a test will try to open a fixture path that no longer exists.
 - Realistic siblings (`api-client.ts`, the `Button.tsx` family, `_mixins.scss`, etc.) are free to rename — they're for ad-hoc exploratory QA.
 - Image and font files are zero-byte placeholders. The extension only inspects file extensions, so real binary content is unnecessary.
 

@@ -6,7 +6,7 @@ Per-language snippet builders and the destination-extension dispatch. The public
 
 | File | Purpose |
 |------|---------|
-| `dispatch.ts` | `buildImportSnippet()` — switches on `destinationFileExt` and delegates. The public entry point for the default paste flow. |
+| `dispatch.ts` | `buildImportSnippet(info): Promise<SnippetString>` — async; switches on `destinationFileExt` and delegates. The public entry point for the default paste flow and the drag-drop provider. |
 | `variants.ts` | `buildImportSnippetVariants()` — enumerates every applicable style for the current source/destination pair. Consumed by `pasteImportWithStyle` and `setDefaultImportStyle`; renders full-path snippets for insertion and basename-only labels for the QuickPick in parallel. |
 | `_react.ts` | Internal: `buildReactImport` (+ supporting `ReactImportOptions` interface / `BuildScriptSnippet` type) shared by JSX/TSX/MDX, plus `buildAssetImportStatement` — the single canonical non-script asset-shape switch reused by `buildReactImport`, `languages/framework-component.ts`, and `variants.ts`. Shape groups: CSS Modules → `${1:styles}`, images/data/docs/components → `${1:name}`, media/text-track → `${1:url}`, fonts/stylesheets → side-effect (detailed in [`CLAUDE.md`](CLAUDE.md)). |
 | `_styles.ts` | Internal: `ImportStyle` interface + `*_IMPORT_OPTIONS` tables + `resolveStyleIndex` lookup. |

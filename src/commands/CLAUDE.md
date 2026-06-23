@@ -26,7 +26,7 @@ Delegates to VS Code's built-in `copyFilePath`, then reads the clipboard and re-
 
 Calls `clearNotifications()` first. Three outcomes: `showNotification('copy-success', { basename })` on success; `showNotification('no-file-to-copy')` when the clipboard is empty or not an absolute path; `showNotification('no-extension', { basename })` when the copied file has no extension (e.g. `Makefile`, `Dockerfile`). All helpers live in `editor/notification.ts`.
 
-On success, the `copy-success` toast carries two action buttons — **Paste with Style** and **Paste Now** (in that render order, leftmost first) — and the post-toast `.then` handler dispatches `extension.pasteImportWithStyle` / `extension.pasteImport` based on which the user clicked. **Two-site byte-exact contract**: the button label strings in `editor/notification.ts` (lines 50–51) and the `switch` cases in this file (lines 23–30) must match character-for-character — `showInformationMessage` resolves with the literal clicked label, so any drift silently no-ops.
+On success, the `copy-success` toast carries two action buttons — **Paste with Style** and **Paste Now** (in that render order, leftmost first) — and the post-toast `.then` handler dispatches `extension.pasteImportWithStyle` / `extension.pasteImport` based on which the user clicked. **Two-site byte-exact contract**: the button label strings in `editor/notification.ts` (lines 53–54) and the `switch` cases in this file (lines 23–30) must match character-for-character — `showInformationMessage` resolves with the literal clicked label, so any drift silently no-ops.
 
 ## `paste-import.ts` — the heart of the gating logic
 
@@ -47,13 +47,13 @@ Gates paste on copy success: `const ok = await executeCopyFilePath(); if (!ok) {
 
 ## `paste-import-with-style.ts` — pick-style variant of paste-import
 
-Mirrors `paste-import.ts` step-by-step (clearNotifications → null-check editor → sequential fetch → clipboard sanity → same-file check → file-exists stat → twelve-clause gating), but swaps `buildImportSnippet()` for `snippets/variants.ts:buildImportSnippetVariants()`. Branches on `variants.length` after gating:
+Mirrors `paste-import.ts` step-by-step (clearNotifications → null-check editor → sequential fetch → clipboard sanity → same-file check → file-exists stat → twelve-clause gating), but swaps `buildImportSnippet()` for `snippets/variants.ts:buildImportSnippetVariants()`. After gating it computes `isEmptyVariantSet` — `variants.length === 0` **OR** `variants[0].snippetText` is `''` **OR** `'\n'` (any one suffices; a non-empty array can still be "empty" when its first snippet is blank) — and branches:
 
-- **0** → `'not-supported'` toast (defensive — gating already caught this).
-- **1** → insert directly via `insertImportSnippet(new vscode.SnippetString(variants[0].snippetText), info)`. Single-shape destinations (HTML, Markdown text, CSS image, SCSS image, JSX/TSX/MDX non-script source) take this path so the user gets the same silent-insert UX as `cmd+i`.
-- **≥2** → `vscode.window.showQuickPick` with `{ placeHolder: 'Select an import style', matchOnDescription: true }`. Cancellation (Esc) returns silently — no toast.
+- **`!isPairSupported(info) || isEmptyVariantSet`** → `'not-supported'` toast. A single OR guard: the gating check and the empty-variant check share one rejection (the `isEmptyVariantSet` half is defensive — gating already catches these).
+- otherwise **`variants.length === 1`** → insert directly via `insertImportSnippet(new vscode.SnippetString(variants[0].snippetText), info)`. Single-shape destinations (HTML, Markdown text, CSS image, SCSS image, JSX/TSX/MDX non-script source) take this path so the user gets the same silent-insert UX as `cmd+i`.
+- otherwise (**≥2**) → `vscode.window.showQuickPick` with `{ placeHolder: 'Select an import style', matchOnDescription: true }`. Cancellation (Esc) returns silently — no toast.
 
-The gating mirrors `paste-import.ts` via `src/gating.ts:isPairSupported(info)` clauses 1–10 (`CROSS_IMPORT_DESTINATIONS`, `.html → .html`, the four markup/stylesheet supported-extension checks, the three framework-component checks for Vue/Svelte/Astro, and the LaTeX `.tex` check). Clauses 11/12 (the `snippet.value === ''` / `'\n'` checks) collapse to `isEmptyVariantSet` (`variants.length === 0` plus two defensive checks on `variants[0].snippetText` (empty string or newline)). **Persisted style settings are not consulted**; the picker is a one-shot override.
+The gating mirrors `paste-import.ts` via `src/gating.ts:isPairSupported(info)` clauses 1–10 (`CROSS_IMPORT_DESTINATIONS`, `.html → .html`, the four markup/stylesheet supported-extension checks, the three framework-component checks for Vue/Svelte/Astro, and the LaTeX `.tex` check). Clauses 11/12 (the `snippet.value === ''` / `'\n'` checks) collapse into the `isEmptyVariantSet` disjunction above. **Persisted style settings are not consulted**; the picker is a one-shot override.
 
 ## `set-default-import-style.ts` — picker that persists instead of pasting
 
@@ -61,7 +61,7 @@ Mirrors `paste-import-with-style.ts` step-by-step through gating, clipboard chec
 
 - **Line 50:** if `!isPairSupported(info) || isEmptyVariantSet`, return `'not-supported'` toast — a single OR guard, not two separate checks.
 - **Lines 45–48:** `isEmptyVariantSet` is computed just above the guard: `variants.length === 0` or `variants[0].snippetText` is `''` or `'\n'`. It feeds the line-50 disjunction, so an empty variant set also yields the `'not-supported'` toast.
-- **Lines 54–55:** only after passing the first guard, if `variants.length === 1 || variants[0].setting === undefined`, return `'no-configurable-style'` toast. The second condition rejects hardcoded destinations (HTML, Markdown text, CSS/SCSS images, JSX/TSX/MDX non-script source) which have no configurable `ImportStyle` setting. The matching `*ImportStyle` settings exist in `package.json` for UI parity only and are flagged "Currently unused" in `_styles.ts`; persisting one would be misleading.
+- **Lines 54–55:** only after passing the first guard, if `variants.length === 1 || variants[0].setting === undefined`, return `'no-configurable-style'` toast. The second condition rejects hardcoded destinations (HTML, Markdown text, CSS/SCSS images, JSX/TSX/MDX non-script source) which have no configurable `ImportStyle` setting. The matching `*ImportStyle` settings exist in `package.json` for UI parity only and are flagged "Currently unused" in [`snippets/CLAUDE.md`](../snippets/CLAUDE.md); persisting one would be misleading.
 - **Lines 61+:** else (≥2 variants with defined settings and supported pair), show `vscode.window.showQuickPick`. On pick, calls `setAutoImportSetting(namespace, key, value)` (writer in `config/settings.ts`, mirror of `getAutoImportSetting`) with `vscode.ConfigurationTarget.Global` and emits `'default-style-saved'` info toast.
 
 The `(namespace, key, value)` triple comes from the new `setting?` field on `ImportSnippetVariant` (see [`snippets/CLAUDE.md`](../snippets/CLAUDE.md)). All styled variants in a single picker invocation share one `(namespace, key)` because the destination switch in `snippets/variants.ts` enumerates from one table per branch — the pair varies between picker runs but never within one. Cancellation (Esc) returns silently — no toast.
@@ -81,7 +81,7 @@ The same picker items appear in both `pasteImportWithStyle` and `setDefaultImpor
 ## Adding a new command
 
 1. New file here, kebab-case noun (no `.command.ts` suffix).
-2. Export `executeX: () => Promise<void>` (no `Command` suffix).
+2. Export `executeX: () => Promise<void>` (no `Command` suffix; exception: `executeCopyFilePath` returns `Promise<boolean>`).
 3. Re-export from `index.ts`.
 4. Register in `src/extension.ts:activate`.
 5. Add to `package.json:contributes.commands` (and optionally `contributes.keybindings`).

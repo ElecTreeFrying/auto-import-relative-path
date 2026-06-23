@@ -6,7 +6,7 @@ Pure path math. **No `vscode` import** — every file here is Node-testable. Don
 
 - `relative.ts` — `computeRelative(sourceFilePath, destinationFilePath)` returns the import-ready relative path.
 - `extension.ts` — `extractFileExtension` is a thin wrapper over `path.parse`; `removeFileExtension` strips the extension via string slicing.
-- `import-type.ts` — `determineImportType(filePath)` maps file extensions to one of seven `ImportType` values, or `null` (`.html` and `.scss`).
+- `import-type.ts` — `determineImportType(filePath)` maps file extensions to one of seven `ImportType` values (six explicit cases plus the `default:` `'image'` catch-all), or `null` (`.html` and `.scss`).
 
 ## `computeRelative` — the `./` prefix rule
 
@@ -25,7 +25,7 @@ This behaviour is intentional and regression-tested with extensionless paths (e.
 
 ## `determineImportType` — `ImportType | null`, not just `ImportType`
 
-Maps file extension to one of seven buckets, with two `null` returns:
+Maps file extension to one of seven buckets — six explicit cases plus the `default:` `'image'` catch-all — with two `null` returns:
 
 | Source extension | Returns |
 |------------------|---------|

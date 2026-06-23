@@ -23,8 +23,8 @@ Runtime gating tables for source/destination extension pairs.
 | `ASTRO_SUPPORTED_EXTENSIONS` | `gating.ts:isPairSupported` | Sources accepted for `.astro` destinations |
 | `TEX_SUPPORTED_EXTENSIONS` | `gating.ts:isPairSupported` | Sources accepted for `.tex` destinations — `.tex`, `.bib`, + `...TEX_GRAPHICS_FILE_EXTENSIONS` |
 | `CROSS_IMPORT_DESTINATIONS` | `gating.ts:isPairSupported` | Destinations allowed to import a *different* extension. Destinations not listed require source extension to equal destination extension. |
-| `SCRIPT_FILE_EXTENSIONS` | `editor/insert-snippet.ts:determineInsertionColumn`, `editor/placement.ts:determineInsertionColumn` | Force column-0 placement for script destinations. |
-| `STYLESHEET_FILE_EXTENSIONS` | `editor/placement.ts:isInlineSnippet`, `editor/insert-snippet.ts:determineInsertionColumn`, `editor/placement.ts:determineInsertionColumn` | Gate inline `url()` insertion for non-stylesheet sources; force column-0 placement for stylesheet destinations. |
+| `SCRIPT_FILE_EXTENSIONS` | `editor/insert-snippet.ts:determineInsertionColumn` (internal), `editor/placement.ts:determineInsertionColumn` (internal) | Force column-0 placement for script destinations. |
+| `STYLESHEET_FILE_EXTENSIONS` | `editor/placement.ts:isInlineSnippet`, `editor/insert-snippet.ts:determineInsertionColumn` (internal), `editor/placement.ts:determineInsertionColumn` (internal) | Gate inline `url()` insertion for non-stylesheet sources; force column-0 placement for stylesheet destinations. |
 
 ## Why both a runtime table and a compile-time type union exist
 

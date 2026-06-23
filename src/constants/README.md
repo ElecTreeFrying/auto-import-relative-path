@@ -13,7 +13,7 @@ Runtime gating tables for source/destination extension pairs.
 | `IMAGE_FILE_EXTENSIONS` | The seven `*_SUPPORTED_EXTENSIONS` lists | Base raster-image extension set; spread into the seven supported-extension lists. |
 | `MEDIA_FILE_EXTENSIONS` | The four `*_SUPPORTED_EXTENSIONS` lists that accept media (HTML, Vue, Svelte, Astro) | Video + audio extensions; spread into the four supported-extension lists that accept media. |
 | `TEXT_TRACK_FILE_EXTENSIONS` | The four `*_SUPPORTED_EXTENSIONS` lists that accept media (HTML, Vue, Svelte, Astro) | `.vtt`; spread into the four supported-extension lists that accept media. |
-| `TEX_GRAPHICS_FILE_EXTENSIONS` | `TEX_SUPPORTED_EXTENSIONS`, `languages/latex.ts` | LaTeX-renderable graphics (`.pdf`/`.png`/`.jpg`/`.jpeg`/`.eps`) — the engine-renderable set, not `IMAGE_FILE_EXTENSIONS`. |
+| `TEX_GRAPHICS_FILE_EXTENSIONS` | `TEX_SUPPORTED_EXTENSIONS`, `snippets/languages/latex.ts:isTexGraphicsSource` | LaTeX-renderable graphics (`.pdf`/`.png`/`.jpg`/`.jpeg`/`.eps`) — the engine-renderable set, not `IMAGE_FILE_EXTENSIONS`. |
 | `HTML_SUPPORTED_EXTENSIONS` | `gating.ts:isPairSupported` | Sources accepted when the destination is `.html`. |
 | `MARKDOWN_SUPPORTED_EXTENSIONS` | `gating.ts:isPairSupported` | Sources accepted when the destination is `.md`. |
 | `CSS_SUPPORTED_EXTENSIONS` | `gating.ts:isPairSupported` | Sources accepted when the destination is `.css`. |
@@ -23,8 +23,8 @@ Runtime gating tables for source/destination extension pairs.
 | `ASTRO_SUPPORTED_EXTENSIONS` | `gating.ts:isPairSupported` | Sources accepted when the destination is `.astro`. |
 | `TEX_SUPPORTED_EXTENSIONS` | `gating.ts:isPairSupported` | Sources accepted when the destination is `.tex` (`.tex`, `.bib`, + `...TEX_GRAPHICS_FILE_EXTENSIONS`). |
 | `CROSS_IMPORT_DESTINATIONS` | `gating.ts:isPairSupported` | Destinations allowed to import a *different* extension. Destinations not listed require source extension to equal destination extension. |
-| `SCRIPT_FILE_EXTENSIONS` | `editor/insert-snippet.ts:determineInsertionColumn`, `editor/placement.ts:determineInsertionColumn` | Force column-0 placement for script destinations. |
-| `STYLESHEET_FILE_EXTENSIONS` | `editor/placement.ts:isInlineSnippet`, `editor/insert-snippet.ts:determineInsertionColumn`, `editor/placement.ts:determineInsertionColumn` | Gate inline `url()` insertion; force column-0 placement for stylesheet destinations. |
+| `SCRIPT_FILE_EXTENSIONS` | `editor/insert-snippet.ts:determineInsertionColumn` (internal), `editor/placement.ts:determineInsertionColumn` (internal) | Force column-0 placement for script destinations. |
+| `STYLESHEET_FILE_EXTENSIONS` | `editor/placement.ts:isInlineSnippet`, `editor/insert-snippet.ts:determineInsertionColumn` (internal), `editor/placement.ts:determineInsertionColumn` (internal) | Gate inline `url()` insertion; force column-0 placement for stylesheet destinations. |
 
 ## Where to add a new entry
 
