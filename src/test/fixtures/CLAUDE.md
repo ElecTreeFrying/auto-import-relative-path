@@ -1,12 +1,12 @@
 # src/test/fixtures/CLAUDE.md
 
-Fixture files opened as documents by the **Mocha test suite** — every fixture-driven test under `src/test/` resolves its `FIXTURE_ROOT` here (≈175 files in the tree; only the referenced ones are opened). Never compiled, never linted, never imported as modules; the only code path *into* this directory is a test calling `vscode.workspace.openTextDocument(...)`. Copied from the former `qa/workspace/` when the suite was decoupled from the QA tree.
+Fixture files opened as documents by the **Mocha test suite** — every fixture-driven test under `src/test/` resolves its `FIXTURE_ROOT` here (only the referenced files are opened). Never compiled, never linted, never imported as modules; the only code path *into* this directory is a test calling `vscode.workspace.openTextDocument(...)`. The tree is deliberately independent of the top-level `qa/` tree.
 
 ## DO NOT scan this tree wholesale
 
 The tree is large, static, and yields no signal you can't get from this file or the sibling [`README.md`](README.md):
 
-- **Never** `find`, `grep`, or `ls -R` across the workspace. The ~174 files are placeholders — there is no needle in this haystack.
+- **Never** `find`, `grep`, or `ls -R` across the workspace. The files in this tree are placeholders — there is no needle in this haystack.
 - If a task names a specific fixture, `Edit` or `Write` precisely that file. Don't survey the surrounding tree first.
 - If a task asks "where is X covered?", read the sibling [`README.md`](README.md) only. Its `Layout`, `Coverage matrix`, and `Maintenance notes` sections are the index.
 - If a task asks "if I touch *this code*, which fixtures regression-test it?", read the `Fixture roles` table below.
@@ -15,7 +15,7 @@ The tree is large, static, and yields no signal you can't get from this file or 
 
 | Surface | Where the exclusion lives | What it means |
 |---------|---------------------------|---------------|
-| TypeScript compilation (`tsc -p .`) | `tsconfig.json` — `"exclude": ["src/test/fixtures"]` (overrides the `"include": ["src/**/*"]` that would otherwise pull this dir in) | `tsc` never compiles the ~85 `.ts/.tsx/.js/.jsx` fixtures — many import uninstalled packages, reference undeclared globals, or are syntactically invalid. |
+| TypeScript compilation (`tsc -p .`) | `tsconfig.json` — `"exclude": ["src/test/fixtures"]` (overrides the `"include": ["src/**/*"]` that would otherwise pull this dir in) | `tsc` never compiles the `.ts/.tsx/.js/.jsx` fixtures — many import uninstalled packages, reference undeclared globals, or are syntactically invalid. |
 | ESLint (`npm run lint`) | `eslint.config.mjs` — `ignores: [… "src/test/fixtures/**"]` | Fixtures are not held to project style rules. |
 | Mocha test runner (`npm test`) | excluded from `tsc` → never emitted to `out/`, so the `out/test/**/*.test.js` glob can't reach it | The runner cannot pick up anything inside this directory, even by accident. |
 
@@ -31,8 +31,8 @@ This table is the unique value of this `CLAUDE.md` versus the sibling [`README.m
 |---------------|------------------------|
 | `src/components/*.{component,module,directive,pipe,service}.ts` | `src/snippets/languages/typescript.ts:generateAngularLegacyImportName` — Angular PascalCase substitution at style index 0 only |
 | `styles/_*.scss`, `styles/_partials/_nested.scss`, `styles/components/_*.scss` | `src/snippets/languages/scss.ts:normalizePartialFilename` — leading-`_` strip on the *last* path segment |
-| `with-imports.ts`, `with-requires.js`, `styles/with-imports.css`, `styles/with-uses.scss`, `pages/with-resources.html` | `src/editor/placement.ts:IMPORT_INDICATORS` — Bottom-placement landing across all 9 markers |
-| `unsupported/{Main.java, styles.less, texture.bmp, render.avi, archive.zip}` | `src/gating.ts:isPairSupported` ten-clause conjunction + inline empty-snippet checks; `texture.bmp` additionally hits the JSX/TSX/MDX `_react.ts:default:` branch |
+| `with-imports.ts`, `with-requires.js`, `styles/with-imports.css`, `styles/with-uses.scss`, `pages/with-resources.html` | `src/editor/placement.ts:IMPORT_INDICATORS` — Bottom-placement landing across every marker |
+| `unsupported/{Main.java, styles.less, texture.bmp, render.avi, archive.zip}` | `src/gating.ts:isPairSupported` clauses + inline empty-snippet checks; `texture.bmp` additionally hits the JSX/TSX/MDX `_react.ts:default:` branch |
 | `empty-file.ts`, `whitespace-only.ts`, `single-char.ts`, `comments-only.ts` | Degenerate-document destinations; `comments-only.ts` specifically verifies that comment lines containing `import ` are correctly skipped by Bottom-placement (landing at line 0, not after the comment) |
 | `my files/spaced.ts`, `unicode-paths/{日本語.ts, café-menu.tsx}` | `src/path/relative.ts:computeRelative` — non-ASCII + space-containing path computation |
 | `deeply/nested/components/widgets/*`, `very-deep/level-01/.../level-09/extreme-leaf.ts` | `src/path/relative.ts` — multi-level `../` traversal (4 and 9 levels) |

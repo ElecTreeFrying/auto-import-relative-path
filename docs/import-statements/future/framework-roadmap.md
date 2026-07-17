@@ -1,12 +1,12 @@
 # Framework Components — Sub-Roadmap (Deferred)
 
-> **Status: DEFERRED — revisit on trigger (no date).** These items were filed as follow-ups during the phased Vue / Svelte / Astro design and remain **unbuilt**. None of them exists in `/src` today; the shipped framework surface is specified in [`../spec/framework-components.md`](../spec/framework-components.md). Each item below carries its own revisit trigger.
+> **Status: DEFERRED — revisit on trigger (no date).** These items were filed as follow-ups during the phased Vue / Svelte / Astro design and remain **unbuilt**. None of them exists in `/src`; the shipped framework surface is specified in [`../spec/framework-components.md`](../spec/framework-components.md). Each item below carries its own revisit trigger.
 >
 > **future/ vs decisions/.** This file holds designed-but-unbuilt work with implementation intent (it would ship if its trigger fires). Shapes that were *evaluated and declined* — Ember, Marko, Riot, Vue 2, the combined picker, framework auto-detection, the dedicated `*ImportStyle` settings, and the rest — are not here; they live in the rejection ledger at [`../decisions/framework-components.md`](../decisions/framework-components.md) with their own "revisit on demand" triggers.
 
 ## Overview
 
-The Vue (Phase 1), Svelte (Phase 2), and Astro (Phase 3) destinations all shipped, collapsed into a single shared `src/snippets/languages/framework-component.ts` builder. The phased design filed three classes of follow-up that did **not** ship and are still open:
+The Vue (Phase 1), Svelte (Phase 2), and Astro (Phase 3) destinations all shipped, collapsed into a single shared `src/snippets/languages/framework-component.ts` builder. The phased design filed follow-up classes that did **not** ship and are still open:
 
 1. **PascalCase auto-naming for default imports** — P1.5 (Vue) / P2.5 (Svelte) / P3.5 (Astro).
 2. **Joint SFC concerns** — `.css`/`.scss` sources into framework destinations; `.ts`/`.js` destinations accepting framework sources; `.md`/`.mdx` as sources for Vue/Svelte.
@@ -15,7 +15,7 @@ The Vue (Phase 1), Svelte (Phase 2), and Astro (Phase 3) destinations all shippe
 
 **What it is.** Frameworks recommend PascalCase component identifiers regardless of the on-disk filename: `my-button.vue` → `import MyButton from './my-button.vue';`. PascalCase auto-naming would derive the import identifier from the basename so the user does not have to retype it. This is the framework analogue of the existing Angular auto-naming (`generateAngularLegacyImportName` in `src/snippets/languages/typescript.ts`), which fires on `.component.ts` / `.directive.ts` / `.pipe.ts` / `.service.ts` / `.module.ts` basenames.
 
-**Why deferred — it needs a new index-2 default-import pathway, not the Angular index-0 mechanism.** All three frameworks export components as **defaults**, so the auto-name must land in a *default* import (`import MyButton from '…'`). The existing `generateAngularLegacyImportName` fires only at index 0 — the *named* import shape `import { name } from '…'`. Extending the Angular trigger list to include `.vue` / `.svelte` / `.astro` basenames would produce the wrong shape (a named import where a default import is required). PascalCase auto-naming therefore needs a **new default-import auto-naming pathway** that the index-0 Angular mechanism cannot be reused for. As built, `framework-component.ts` delegates straight to `buildTypeScriptImportSnippet`, which emits `$1` for default imports — no default-import auto-naming exists. (See `src/snippets/CLAUDE.md` and [`../decisions/statements.md`](../decisions/statements.md) §2b for the index-0 vs. default-import distinction.)
+**Why deferred — it needs a new index-1 default-import pathway, not the Angular index-0 mechanism.** All three frameworks export components as **defaults**, so the auto-name must land in a *default* import (`import MyButton from '…'`). The existing `generateAngularLegacyImportName` fires only at index 0 — the *named* import shape `import { name } from '…'`. Extending the Angular trigger list to include `.vue` / `.svelte` / `.astro` basenames would produce the wrong shape (a named import where a default import is required). PascalCase auto-naming therefore needs a **new default-import auto-naming pathway** that the index-0 Angular mechanism cannot be reused for. As built, `framework-component.ts` delegates straight to `buildTypeScriptImportSnippet`, which emits `$1` for default imports — no default-import auto-naming exists. (See `src/snippets/CLAUDE.md` and the TypeScript section of [`../decisions/statements.md`](../decisions/statements.md) for the index-0 vs. default-import distinction.)
 
 **Per-ecosystem ROI — Vue > Svelte > Astro.**
 
@@ -27,7 +27,7 @@ The Vue (Phase 1), Svelte (Phase 2), and Astro (Phase 3) destinations all shippe
 
 ## Joint SFC concerns
 
-These three span all of Vue / Svelte / Astro and were each filed as joint cross-framework concerns.
+These span all of Vue / Svelte / Astro and were each filed as joint cross-framework concerns.
 
 ### `.css` / `.scss` sources into `.vue` / `.svelte` / `.astro` destinations
 

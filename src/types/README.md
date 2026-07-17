@@ -7,8 +7,8 @@ Cross-cutting type unions used across the codebase. **String-literal unions, not
 | File | Public type | Purpose |
 |------|-------------|---------|
 | `file-extension.ts` | `FileExtension` | Umbrella union of every recognised file extension (`.ts`, `.css`, `.png`, etc.). The category sub-types are intentionally unexported. |
-| `import-type.ts` | `ImportType` | Seven-way classifier: `'script' \| 'stylesheet' \| 'markdown' \| 'image' \| 'video' \| 'audio' \| 'text-track'`. |
-| `notification.ts` | `NotificationType` | Fifteen-variant notification kind (eight warning, seven info). |
+| `import-type.ts` | `ImportType` | The classifier union: `'script' \| 'stylesheet' \| 'markdown' \| 'image' \| 'video' \| 'audio' \| 'text-track'`. |
+| `notification.ts` | `NotificationType` | Notification kind (warning + info variants). |
 
 `FileExtension` values are lowercase and dot-prefixed (`.ts`, `.css`, `.png`) to match `path.parse(filePath).ext`. `ImportType` and `NotificationType` values are lowercase but carry no dot — `ImportType` uses plain names (`'script'`, `'stylesheet'`) and `NotificationType` uses hyphenated names (`'same-file-path'`, `'not-supported'`). Compare with `===` against the literal — there are no enums here.
 

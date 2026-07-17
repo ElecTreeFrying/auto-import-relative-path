@@ -7,11 +7,11 @@ Drag-and-drop import provider. When a user drags a file from the explorer onto a
 | File | Export | What it does |
 |------|--------|--------------|
 | `provider.ts` | `AutoImportOnDropProvider` | Implements `DocumentDropEditProvider`; resolves the source path from `DataTransfer`, gates via `isPairSupported`, builds an import snippet via `snippets/dispatch.ts`, computes placement via `editor/placement.ts`, and returns a `DocumentDropEdit`. For same-file / unsupported / empty-snippet drops it returns a **suppressing empty edit** (`suppressDrop()`) so nothing is inserted; it returns `null` only when the dragged file can't be identified (ceding to VS Code's default drop). |
-| `selector.ts` | `DROP_LANGUAGE_SELECTORS` | `DocumentSelector` covering all 13 supported destination languages with `scheme: 'file'` (11 by language ID; `.mdx` and `.tex` by file pattern). |
+| `selector.ts` | `DROP_LANGUAGE_SELECTORS` | `DocumentSelector` covering every supported destination language with `scheme: 'file'` (by language ID, plus `.mdx` and `.tex` by file pattern). |
 
 ## Registration
 
-Registered in `src/extension.ts:activate` alongside the eight commands:
+Registered in `src/extension.ts:activate` alongside the commands:
 
 ```typescript
 vscode.languages.registerDocumentDropEditProvider(
@@ -27,6 +27,6 @@ The third argument restricts the provider to drops carrying a `text/uri-list` mi
 
 - New drop-related provider or helper → here.
 - New language ID for an existing file extension → add a `{ language, scheme: 'file' }` entry in `selector.ts` only. The four-site sync is keyed on the file extension (which already flows through `dispatch.ts`), so it needs no change.
-- New file extension (e.g. `.rs`) → add the `{ language, scheme: 'file' }` entry in `selector.ts` (unless its language ID is already listed) in addition to the four-site sync (`types/`, `constants/`, `dispatch.ts`, `variants.ts`).
+- New file extension → run the four-site sync (`types/`, `constants/`, `dispatch.ts`, `variants.ts`), then add a `selector.ts` entry: if the extension has a guaranteed VS Code language ID, add `{ language, scheme: 'file' }` (skip if that ID is already listed); if it has **none** (like `.mdx`/`.tex`, which can open as plaintext), add `{ pattern: '**/*.ext', scheme: 'file' }` instead so the drop fires however the file opens.
 
 See [`CLAUDE.md`](CLAUDE.md) (this directory) for the full flow, unsupported-pair handling, and how the drop flow differs from the command flow.

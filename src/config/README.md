@@ -6,13 +6,13 @@ Reads and writes user settings in VS Code's workspace configuration.
 
 | File | Public functions | Purpose |
 |------|------------------|---------|
-| `settings.ts` | `getAutoImportSetting<T>(namespaceKey, settingKey): T \| undefined`, `setAutoImportSetting<T>(namespaceKey, settingKey, value, target: ConfigurationTarget = ConfigurationTarget.Global): Thenable<void>`, `inspectAutoImportSetting<T>(namespaceKey, settingKey): ConfigurationInspectDetails<T> \| undefined` | Reader / writer / inspector over the frozen `AUTO_IMPORT_CONFIG` map. Writer defaults to `ConfigurationTarget.Global` (no `scope` field on any `package.json` setting); `inspect` returns VS Code's full default-vs-override record (used by `reset-import-styles.ts` to find Global overrides). |
+| `settings.ts` | `getAutoImportSetting<T>(namespaceKey, settingKey): T \| undefined`, `setAutoImportSetting<T>(namespaceKey, settingKey, value, target: ConfigurationTarget = ConfigurationTarget.Global): Thenable<void>`, `inspectAutoImportSetting<T>(namespaceKey, settingKey)` | Reader / writer / inspector over the frozen `AUTO_IMPORT_CONFIG` map. Writer defaults to `ConfigurationTarget.Global` (no `scope` field on any `package.json` setting); `inspect` returns VS Code's full default-vs-override record (used by `reset-import-styles.ts` to find Global overrides). |
 
-Also exported: the type aliases `AutoImportConfigNamespace` (the five namespace keys) and `AutoImportSettingKey` (all valid setting keys, derived from the internal `SettingsKeyMap`).
+Also exported: the type aliases `AutoImportConfigNamespace` (the namespace keys) and `AutoImportSettingKey` (all valid setting keys, derived from the internal `SettingsKeyMap`).
 
 ## Namespaces
 
-The map has five top-level groups:
+The map's top-level groups:
 
 - `preferences` — UX-level settings (e.g. import-statement placement).
 - `script` — JS/TS import-shape settings.

@@ -15,7 +15,7 @@ Tests must compile via `compile-tests` (tsc → `out/`) before `npm test`. The e
 
 ## Coverage
 
-- `npm run test:coverage` runs the suite with V8/c8 coverage (`vscode-test --coverage`); line coverage sits at ~96%. A plain `npm test` ignores coverage.
+- `npm run test:coverage` runs the suite with V8/c8 coverage (`vscode-test --coverage`); a plain `npm test` ignores coverage.
 - Coverage is read ONLY from the `{ tests, coverage }` form of `.vscode-test.mjs` — a single-object config silently drops the `coverage` block. Don't collapse it back to one object.
 - `tsconfig.json` has `sourceMap: true` so coverage maps back to `src/`, not the compiled `out/` JS.
 - The block is `coverage: { includeAll: true, exclude: ['**/test/**', '**/*.test.*', '**/types/**'], reporter: ['text', 'html'] }` — `includeAll` surfaces zero-test files as 0% instead of dropping them; `types/**` is excluded because it's type-only (the compiler is its test).

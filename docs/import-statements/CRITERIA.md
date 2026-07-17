@@ -1,6 +1,6 @@
 # Import Statements — Inclusion Criteria
 
-> **Status: LIVING — the rubric.** Update when the rubric itself shifts (a new criterion, a new tiebreaker, a ceiling adjustment), not for per-shape decisions. This is the finalized official version of the strategy/working corpus.
+> **Status: LIVING — the rubric.** Update when the rubric itself shifts (a new criterion, a new tiebreaker, a ceiling adjustment), not for per-shape decisions.
 
 The rubric for deciding which import-statement shapes ship in the picker for any language/destination this extension supports. Use this doc when:
 
@@ -149,13 +149,15 @@ When criteria conflict, apply in this order:
 
 ### Tiebreaker-1 fragility tags
 
-Three shapes ship **only because Frequency beats spec-recency** (Tiebreaker 1). They are the rubric's most fragile entries — the first ones to re-check whenever the language's import culture or default flips. Model them on the SCSS `@import` demotion (kept for back-compat but demoted from default to legacy slot): each is a candidate for the same demotion once its Frequency falls below the threshold.
+The shapes below ship **only because Frequency beats spec-recency** (Tiebreaker 1). They are the rubric's most fragile entries — the first ones to re-check whenever the language's import culture or default flips. Model them on the SCSS `@import` demotion (kept for back-compat but demoted from default to legacy slot): each is a candidate for the same demotion once its Frequency falls below the threshold.
 
 | Fragile shape | Slot | Why it's fragile / re-check trigger |
 |---------------|------|-------------------------------------|
 | CJS `require` (`const name = require('…')`) | JS slot 5 | Held purely on Node-scripts/Electron-main Frequency against the ESM spec direction. Re-check when CJS usage drops below 30% in Node codebases. |
 | TS named-default (`import { name } from '…'` as the **TS default**, index 0) | TS slot 0 | Pinned by the legacy-Angular auto-naming back-compat anchor, not by named imports being "more correct." Re-check when pre-standalone Angular (v2–v17) usage fades. |
 | `preserveScriptFileExtension` / `preserveStylesheetFileExtension` booleans | settings | Kept as plain booleans on current paste-frequency. Re-check at the auto-detect revisit (see [future/auto-detect-extensions.md](future/auto-detect-extensions.md)) — the tri-state design would promote one to a smarter default. |
+| `\bibliography{…}` (LaTeX bibliography slot 1, drops `.bib`) | LaTeX bib slot 1 | Held on legacy-BibTeX Frequency against the `biblatex` / `\addbibresource` spec direction. Re-check when `biblatex` adoption crosses the majority in supplied templates. Ships as `TEX_BIBLIOGRAPHY_IMPORT_OPTIONS` value 1 (`src/snippets/_styles.ts`); see [decisions/latex.md](decisions/latex.md). |
+| `latex.preserveGraphicsFileExtension` (defaults **`true`**) | settings | Kept on current paste-frequency (authors keep `fig.png`). Re-check when extensionless-graphics adoption rises. Ships in `src/config/settings.ts` + `package.json`; see [decisions/latex.md](decisions/latex.md). |
 
 ---
 
@@ -188,7 +190,7 @@ But Frequency tracks **paste-imports into HTML**, not the existence of Vite scaf
 
 `.scss → .html` is even rarer — canonical Vite/Webpack SCSS routes through JS imports (`import './style.scss'` from a JS module), not direct `<link href="./style.scss">` from HTML.
 
-`HTML_SUPPORTED_EXTENSIONS` deliberately stays at `.js` + `.css` + images. Real-but-fringe patterns (dev-server-only, set-once destinations, niche toolchains) fail Criterion 1 even when the use case is technically valid.
+`HTML_SUPPORTED_EXTENSIONS` deliberately does **not** add `.ts`/`.tsx`/`.scss` as HTML sources. Real-but-fringe patterns (dev-server-only, set-once destinations, niche toolchains) fail Criterion 1 even when the use case is technically valid.
 
 ### Why we promoted CSS Modules to dispatch instead of adding a JSX/TSX/MDX style
 
@@ -206,7 +208,7 @@ No correctness tiebreaker — omitting the attribute works in non-strict mode to
 
 Hits Frequency (named imports are equally common as default in modern TS) and Back-compat for the legacy Angular filename convention via the **legacy-Angular auto-naming** support (`app-root.component.ts` → `{ ${1:AppRootComponent} }` automatically — a pre-filled but editable tab stop). Fires only on this shape, only when the path matches one of the legacy suffixes (`.component` / `.directive` / `.pipe` / `.service` / `.module`), and only after the derived name validates against `/^[A-Za-z_$][\w$]*$/` (otherwise it falls back to `$1`).
 
-Add criterion exception: **"Legacy back-compat support"** can pin a non-obvious default. Losing the `{ name }` default would gut legacy-Angular auto-naming for codebases following the pre-standalone (v2–v17) convention. Documented in the decisions ledger. (This is one of the three Tiebreaker-1 fragility tags above — re-check it when pre-standalone Angular usage fades.)
+Add criterion exception: **"Legacy back-compat support"** can pin a non-obvious default. Losing the `{ name }` default would gut legacy-Angular auto-naming for codebases following the pre-standalone (v2–v17) convention. Documented in the decisions ledger. (This is one of the Tiebreaker-1 fragility tags above — re-check it when pre-standalone Angular usage fades.)
 
 ### Why we dropped mixed default+named (`import name, { other } from '…';`) from the TS picker but kept it in JS
 
@@ -215,7 +217,7 @@ Add criterion exception: **"Legacy back-compat support"** can pin a non-obvious 
 - **JS:** kept. Local JS modules genuinely export both default + named in real codebases (`import Logger, { Level } from './logger'`); JS culture doesn't enforce named-only as strictly as modern TS.
 - **TS:** dropped. Local TS modules rarely export both — modern TS conventions push named-only; the NPM-library motivation doesn't apply to relative paths.
 
-The TS slot freed by the drop went to `const name = await import('_relativePath_');` (dynamic — sibling of JS picker's slot 6). Both pickers stay at the 7-entry sweet spot. The TS rejection is documented in the decisions ledger's "Things considered and rejected" appendix for discoverability.
+The TS slot freed by the drop went to `const name = await import('_relativePath_');` (dynamic — sibling of JS picker's slot 6). Both pickers stay at the sweet spot. The TS rejection is documented in the decisions ledger's "Things considered and rejected" appendix for discoverability.
 
 **Pattern this exemplifies:** a shape can hit Criterion 1 in one language and fail it in another when the language's import culture differs (named-only TS vs. mixed-export JS). Re-apply the criteria per-language when culture asymmetries appear; don't assume symmetry. This complements Criterion 3 (Framework-portable) which addresses cross-toolchain asymmetries — this pattern addresses cross-language ones. See the named principle below.
 
@@ -240,12 +242,12 @@ These promote recurring rationales — used repeatedly across the spec and decis
 
 When a shape's variation is **fully determined** by something the tool can detect on its own — the source basename, the source extension, or project config — a picker has nothing for the user to vary over. Offering it as an enum row would force the user to know "this option only does something for a `.module.css`." So the shape becomes a **smarter default in code** (per-language dispatch), not a picker entry.
 
-Three instances ship today:
+The shipped instances, plus one designed but deferred:
 
 | Instance | Detected signal | Where it lives |
 |----------|-----------------|----------------|
-| CSS-Modules basename guard | `.module.css` / `.module.scss` basename | `src/snippets/_react.ts:52-54` (guard *before* the asset switch) |
-| Media / text-track URL bucket | audio-visual + `.vtt` source extension | `src/snippets/_react.ts:75-83` (the 3rd group of the asset switch) |
+| CSS-Modules basename guard | `.module.css` / `.module.scss` basename | `src/snippets/_react.ts` (the guard *before* the asset switch) |
+| Media / text-track URL bucket | audio-visual + `.vtt` source extension | `src/snippets/_react.ts` (the media/text-track group of the asset switch) |
 | Destination-runtime auto-detect (**DEFERRED**) | project runtime (Node ESM / Bun / Deno / bundler) | not shipped — generalizes source-type-conditional → destination-runtime-conditional. See [future/auto-detect-extensions.md](future/auto-detect-extensions.md). |
 
 **Relationship to the ceiling.** Correctness (Tiebreaker 5) can override the soft picker-bloat ceiling — and dispatch-promotion is *how* it does so without bloating the picker. A correctness-critical shape that fails Criterion 5 doesn't get jammed into the enum; it ships as dispatch logic, so the picker stays at its sweet spot and the right output still ships.
@@ -258,7 +260,7 @@ A shape that qualifies for one destination is **not** automatically admitted for
 - **`.md` as a source** — admitted **Astro-only**. Astro natively renders Markdown as a component; Vue/Svelte need a plugin, so `.md → .vue/.svelte` fails C3 (Framework-portable). One source, opposite verdicts across destinations.
 - **`.mdx`** — a **React-family destination** (imports `.tsx`/`.ts` components like TSX) but also a **valid asset source** when pasted *into* another file (`import ${1:name}` in the asset switch). Same extension, two roles depending on direction.
 
-State the divergence explicitly in the spec/decision ledger whenever it appears; don't paper over it for the sake of a tidy symmetric table. (Item 8 of the finalization drift-fix list calls these out as *intentional* asymmetries — they are correct, not drift.)
+State the divergence explicitly in the spec/decision ledger whenever it appears; don't paper over it for the sake of a tidy symmetric table. (These are *intentional* asymmetries — correct, not drift.)
 
 ---
 
@@ -277,7 +279,7 @@ When pruning to stay under the ceiling:
 
 Hard ceiling: **none** — but adding a 10th entry needs explicit reasoning in the PR description.
 
-The current per-setting picker inventory (entries as shipped) lives in [`spec/statements.md`](spec/statements.md).
+The per-setting picker inventory (entries as shipped) lives in [`spec/statements.md`](spec/statements.md).
 
 ---
 

@@ -5,8 +5,8 @@ Cross-cutting type unions used across the codebase. **String-literal unions, not
 ## Files
 
 - `file-extension.ts` — `FileExtension` union (the only export from this file).
-- `import-type.ts` — `ImportType` seven-way classifier.
-- `notification.ts` — `NotificationType` fifteen-variant notification kind (eight warning, seven info).
+- `import-type.ts` — the `ImportType` classifier.
+- `notification.ts` — the `NotificationType` notification kind (warning + info variants).
 
 ## `file-extension.ts` — only `FileExtension` is exported
 
@@ -19,7 +19,7 @@ One intentional type↔runtime divergence: the `MediaFileExtension` type include
 ### Four-site sync when adding/removing an extension
 
 1. The relevant category sub-type here.
-2. Runtime gating tables in `src/constants/extensions.ts` — required **only** for extensions that target a *gated* destination (HTML, MD, CSS, SCSS, Vue, Svelte, Astro, LaTeX). Source extensions that target **only** script-like destinations (`.jsx`/`.tsx`/`.mdx`) skip this site: those destinations accept any source via `CROSS_IMPORT_DESTINATIONS` and never consult a per-destination `*_SUPPORTED_EXTENSIONS` allow-list, so there is no table to add them to. The fonts `.woff`/`.woff2`/`.ttf`/`.eot` (`FontFileExtension`) are exactly this case — present in the `FileExtension` union (1) and in the `_react.ts` asset switch (3b), with **no** gating-table entry, because they import only into JSX/TSX/MDX. (This is a second, broader type↔runtime divergence beyond the `.vtt` one noted above.) `.pdf` (`DocumentFileExtension`) was formerly in this set too, but the LaTeX destination made it a **graphics source** — it now *does* carry gating-table entries (`TEX_GRAPHICS_FILE_EXTENSIONS` / `TEX_SUPPORTED_EXTENSIONS`) and imports into both JSX/TSX/MDX (via the asset switch) and `.tex` (gated). The new `.tex` / `.bib` / `.eps` extensions all target the gated `.tex` destination, so they take this site.
+2. Runtime gating tables in `src/constants/extensions.ts` — required **only** for extensions that target a *gated* destination (HTML, MD, CSS, SCSS, Vue, Svelte, Astro, LaTeX). Source extensions that target **only** script-like destinations (`.jsx`/`.tsx`/`.mdx`) skip this site: those destinations accept any source via `CROSS_IMPORT_DESTINATIONS` and never consult a per-destination `*_SUPPORTED_EXTENSIONS` allow-list, so there is no table to add them to. The fonts `.woff`/`.woff2`/`.ttf`/`.eot` (`FontFileExtension`) are exactly this case — present in the `FileExtension` union (1) and in the `_react.ts` asset switch (3b), with **no** gating-table entry, because they import only into JSX/TSX/MDX. (Another type↔runtime divergence, beyond the `.vtt` one noted above.) `.pdf` (`DocumentFileExtension`) is **not** in this set: it carries gating-table entries (`TEX_GRAPHICS_FILE_EXTENSIONS` / `TEX_SUPPORTED_EXTENSIONS`) and imports into both JSX/TSX/MDX (via the asset switch) and `.tex` (gated). The `.tex` / `.bib` / `.eps` extensions all target the gated `.tex` destination, so they take this site.
 3. The dispatch case(s). Two sub-sites, depending on what is new:
    - **3a — destination dispatch:** if the new extension is a *destination* language, add its `case` to `src/snippets/dispatch.ts:buildImportSnippet` (which switches on the **destination** extension).
    - **3b — source dispatch for non-script assets into JSX/TSX/MDX:** if the new extension is a non-script **source** (image, font, data, doc, media, component) imported into `.jsx`/`.tsx`/`.mdx`, add its `case` to the single canonical asset switch `src/snippets/_react.ts:buildAssetImportStatement` (which switches on the **source** extension). That switch is shared by the default paste flow (`buildReactImport` and `languages/framework-component.ts`) and the variant-picker flow (`variants.ts:buildReactNonScriptVariant`, which just calls it), so there is only one switch to update. For non-script sources into the *other* destination languages (HTML, CSS, SCSS, Markdown, …), the per-language builder in `src/snippets/languages/` classifies the source itself — do **not** add it to `_react.ts`.
@@ -29,7 +29,7 @@ A missing entry in (2) produces a silent fall-through to a `default:` branch —
 
 ## `import-type.ts` — `ImportType`
 
-Seven buckets: `'script' | 'stylesheet' | 'markdown' | 'image' | 'video' | 'audio' | 'text-track'`.
+The buckets: `'script' | 'stylesheet' | 'markdown' | 'image' | 'video' | 'audio' | 'text-track'`.
 
 - **Producer**: `path/import-type.ts:determineImportType` (which returns `ImportType | null` — see that file's CLAUDE.md for the two intentional `null` returns).
 - **Consumers**: `snippets/languages/{css,scss,html,markdown}.ts` and `snippets/variants.ts`. JSX/TSX/MDX **do not** consult `ImportType` in the default snippet flow — they branch on the raw source extension via `_react.ts`. In the `variants.ts` picker flow, JSX/TSX/MDX sources branch on the raw source extension via `buildReactNonScriptVariant`, which delegates to the shared `_react.ts:buildAssetImportStatement` switch, instead of consulting `ImportType`.
@@ -38,9 +38,9 @@ The `'image'` value is the catch-all default for unrecognised extensions — *no
 
 ## `notification.ts` — `NotificationType`
 
-Fifteen variants: `'same-file-path' | 'not-supported' | 'no-active-editor' | 'no-file-to-copy' | 'no-extension' | 'empty-clipboard' | 'source-not-found' | 'copy-success' | 'no-configurable-style' | 'default-style-saved' | 'placement-saved' | 'preserve-script-extension-toggled' | 'styles-reset' | 'no-styles-to-reset' | 'styles-restored'`. Six are raised from `commands/paste-import.ts` (`'same-file-path'`, `'not-supported'`, `'no-active-editor'`, `'no-extension'`, `'empty-clipboard'`, `'source-not-found'`), re-raised from `commands/paste-import-with-style.ts` and `commands/set-default-import-style.ts` for shared gating; `'no-file-to-copy'` and `'copy-success'` come from `commands/copy-file-path.ts` (which also raises `'no-extension'`); the next two (`'no-configurable-style'`, `'default-style-saved'`) are exclusive to `commands/set-default-import-style.ts`. The three settings commands raise their own info toasts: `'placement-saved'` from `commands/set-import-placement.ts`, `'preserve-script-extension-toggled'` from `commands/toggle-preserve-script-extension.ts`, and `'no-styles-to-reset'` / `'styles-reset'` / `'styles-restored'` from `commands/reset-import-styles.ts`. `drop/provider.ts` raises two (`'same-file-path'`, `'not-supported'`). Messages live in `editor/notification.ts`.
+The variants: `'same-file-path' | 'not-supported' | 'no-active-editor' | 'no-file-to-copy' | 'no-extension' | 'empty-clipboard' | 'source-not-found' | 'copy-success' | 'no-configurable-style' | 'default-style-saved' | 'placement-saved' | 'preserve-script-extension-toggled' | 'styles-reset' | 'no-styles-to-reset' | 'styles-restored'`. Raised from `commands/paste-import.ts`: `'same-file-path'`, `'not-supported'`, `'no-active-editor'`, `'no-extension'`, `'empty-clipboard'`, and `'source-not-found'`, re-raised from `commands/paste-import-with-style.ts` and `commands/set-default-import-style.ts` for shared gating; `'no-file-to-copy'` and `'copy-success'` come from `commands/copy-file-path.ts` (which also raises `'no-extension'`); `'no-configurable-style'` and `'default-style-saved'` are exclusive to `commands/set-default-import-style.ts`. The settings commands raise their own info toasts: `'placement-saved'` from `commands/set-import-placement.ts`, `'preserve-script-extension-toggled'` from `commands/toggle-preserve-script-extension.ts`, and `'no-styles-to-reset'` / `'styles-reset'` / `'styles-restored'` from `commands/reset-import-styles.ts`. `drop/provider.ts` raises `'same-file-path'` and `'not-supported'`. Messages live in `editor/notification.ts`.
 
-Nine variants are parameterized — see the overload signatures on `editor/notification.ts:showNotification`:
+The parameterized variants — see the overload signatures on `editor/notification.ts:showNotification`:
 - `'not-supported'` takes `{ sourceExt, destinationExt }` — interpolated as `Auto Import: Cannot import .X into .Y files.`
 - `'no-extension'` takes `{ basename }` — interpolated as `Auto Import: <basename> has no file extension.`
 - `'source-not-found'` takes `{ basename }` — interpolated as `Auto Import: Source file no longer exists: <basename>.`
@@ -51,4 +51,4 @@ Nine variants are parameterized — see the overload signatures on `editor/notif
 - `'preserve-script-extension-toggled'` takes `{ enabled }` — interpolated as `Auto Import: Preserve script file extension — On`/`Off` (info toast).
 - `'styles-reset'` takes `{ count }` — interpolated as `Auto Import: Reset 1 import style to defaults` (`count === 1`) / `Auto Import: Reset <count> import styles to defaults` (info toast, carries an **Undo** button).
 
-The remaining six take no payload. Eight variants render as warning toasts; the seven info variants (`'copy-success'`, `'default-style-saved'`, `'placement-saved'`, `'preserve-script-extension-toggled'`, `'styles-reset'`, `'no-styles-to-reset'`, `'styles-restored'`) render as info.
+The rest take no payload. Warning variants render as warnings; the info variants (`'copy-success'`, `'default-style-saved'`, `'placement-saved'`, `'preserve-script-extension-toggled'`, `'styles-reset'`, `'no-styles-to-reset'`, `'styles-restored'`) render as info.

@@ -10,7 +10,7 @@ Workspace-config access for the extension.
 
 Top-level group → `{ namespace, settings }`. `namespace` is the fully qualified VS Code config path; `settings` is a sub-object that maps short aliases ↔ property names. Splitting metadata (`namespace`) out of the alias space means an alias can never collide with a metadata key.
 
-Five namespaces:
+Namespaces:
 
 | `namespaceKey` | `vscode.workspace.getConfiguration(...)` namespace |
 |----------------|-----------------------------------------------------|
@@ -22,7 +22,7 @@ Five namespaces:
 
 The `Object.freeze` is intentional — mutations throw at runtime. Treat the map as a configuration constant.
 
-Four setting keys are **dormant** — `cssImage`, `scssImage`, `htmlStyleSheet`, and `markdown`. They exist in the map and in `package.json` for backward compatibility (single-shape settings with only one enum value — users may have them in their `settings.json` from prior versions), but no code path reads them via `getAutoImportSetting` or writes them via `setAutoImportSetting`. They must not be removed from `package.json` without migration tooling to clean up existing user configurations. Both `cssImage` and `scssImage` resolve to the same single-entry `CSS_IMAGE_IMPORT_OPTIONS` table in `src/snippets/_styles.ts`; `htmlStyleSheet` → `HTML_STYLESHEET_IMPORT_OPTIONS` and `markdown` → `MARKDOWN_IMPORT_OPTIONS` — all dead exports. There is no `SCSS_IMAGE_IMPORT_OPTIONS`: `scss.ts` reuses `buildCssImageImportSnippet` from `languages/css.ts` for image imports, the same builder `css.ts` calls. Either way the snippet builders hardcode the single shape directly and never call `resolveStyleIndex` (see [`src/snippets/CLAUDE.md`](../snippets/CLAUDE.md) → "Currently unused" tables, and the SCSS note below it).
+The **dormant** setting keys are `cssImage`, `scssImage`, `htmlStyleSheet`, and `markdown`. They exist in the map and in `package.json` for backward compatibility (single-shape settings with only one enum value — users may have them in their `settings.json` from prior versions), but no code path reads them via `getAutoImportSetting` or writes them via `setAutoImportSetting`. They must not be removed from `package.json` without migration tooling to clean up existing user configurations. Both `cssImage` and `scssImage` resolve to the same single-entry `CSS_IMAGE_IMPORT_OPTIONS` table in `src/snippets/_styles.ts`; `htmlStyleSheet` → `HTML_STYLESHEET_IMPORT_OPTIONS` and `markdown` → `MARKDOWN_IMPORT_OPTIONS` — all dead exports. There is no `SCSS_IMAGE_IMPORT_OPTIONS`: `scss.ts` reuses `buildCssImageImportSnippet` from `languages/css.ts` for image imports, the same builder `css.ts` calls. Either way the snippet builders hardcode the single shape directly and never call `resolveStyleIndex` (see [`src/snippets/CLAUDE.md`](../snippets/CLAUDE.md) → "Parity-only tables", and the SCSS note below it).
 
 ## Three-site byte-exact sync rule
 

@@ -32,9 +32,9 @@ aspirational.
 | `runbook-typescript-migration.md` | TS migration runbook — single-session exception (Phase 0 + A + A.5 parity + B-verify + C) | Archived — see `.claude/_archive/qa-pipeline/runbooks/` + git history |
 | `parity-ts.md` | TS parity inventory | Disposable; exists only during the TS migration session |
 
-> After this scaffold session only `README.md`, `RECIPE.md`, `PROFILE.md`, and
-> `LOOP-PROMPT.md` exist. The `runbook-*.md` files were written one per session as
-> each language was generated, and are now archived (see the Files table above).
+> Only `README.md`, `RECIPE.md`, `PROFILE.md`, and `LOOP-PROMPT.md` live here.
+> The `runbook-*.md` files were per-session artifacts, written one per language
+> generation, and are archived (see the Files table above).
 
 ## ⚠️ Two-tier checkbox rule
 
@@ -54,8 +54,8 @@ hard rule.
 ## How to run a session
 
 1. The generation order is fixed: the TypeScript migration first (it stress-tests
-   the pipeline), then the 11 remaining languages — each as a **checklist session**
-   (Phase A) followed by a **workspace session** (Phases B + C). The full order
+   the pipeline), then the remaining languages — each as a **checklist session**
+   (Phase A) followed by a **workspace session** (Phases B + C). (LaTeX `.tex` is the exception — folded in after the pipeline was retired, authored as a normal feature with no runbook; see `docs/qa-pipeline.md`.) The full order
    lives in the spec's execution-order section.
 2. Each language session writes its runbook (`runbook-{ext}-{phase}.md`) from the
    template, then is driven by pasting `LOOP-PROMPT.md` verbatim with `{lang}` and
@@ -66,7 +66,7 @@ hard rule.
 ## Stability rules
 
 - **`RECIPE.md` is the single source of truth for checklist shape.** It is shared
-  by all 13 destinations; per-language divergence is structurally impossible.
+  by every destination; per-language divergence is structurally impossible.
 - **`PROFILE.md` is frozen — but "frozen" means freeze-after-review, NOT auto-tracking
   of `src/`.** It is read from disk every session, never re-derived per-session. A
   destination's behavior changes only by editing its PROFILE row and regenerating —
@@ -85,11 +85,11 @@ provide by construction:
 
 | Guarantee | Mechanism |
 |-----------|-----------|
-| **Consistency across languages** | Every checklist is rendered through the same `RECIPE.md` over the same frozen `PROFILE.md` — one rule, one IR, all 13 destinations |
+| **Consistency across languages** | Every checklist is rendered through the same `RECIPE.md` over the same frozen `PROFILE.md` — one rule, one IR, every destination |
 | **Determinism across sessions** | The IR is frozen and human-reviewed; no session re-derives it, so two runs cannot diverge |
 | **Resumability across sessions** | Runbook `[ ]` → `[x]` state lives on disk and survives session death; the loop picks up at the first unchecked box |
 | **Data preservation (TS migration)** | The parity gate refuses to ship the regenerated `typescript.md` until every case in the old one has a verified home in the new file |
-| **Audit trail** | Each `runbook-{ext}-*.md` is committed alongside the deliverable it produced, so `git log` shows exactly which procedure generated each checklist |
+| **Audit trail** | Each `runbook-{ext}-*.md` is committed alongside the deliverable it produced, so `git log` shows exactly which procedure generated each checklist — except LaTeX, which has no `runbook-latex-*.md` (folded in after the pipeline was retired) |
 | **Sync safety** | Phase C is mandatory and validates `checklist ↔ workspace` 1:1, satisfying the propagation rule in [`../CLAUDE.md`](../CLAUDE.md) |
 | **Agent isolation** | Each runbook phase is bounded to one cognitive mode — generation, fixture creation, or wiring — so no single session competes for context across all three |
 | **Executable QA artifact** | Every checklist step names file + gesture + expected result, so the human tests by doing, never guessing — enforced by `RECIPE.md`'s executable-instruction rule and the Phase A self-verify |

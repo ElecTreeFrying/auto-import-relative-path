@@ -25,19 +25,19 @@ All three destinations reuse the **TypeScript picker** (`TYPESCRIPT_IMPORT_OPTIO
 
 **Accepted sources** (`VUE_SUPPORTED_EXTENSIONS`, gated in `gating.ts:isPairSupported`): `.vue`, `.ts`, `.js`, `.jsx`, `.tsx`, `.json`, `.yml`, `.yaml`, plus `...IMAGE_FILE_EXTENSIONS`, `...MEDIA_FILE_EXTENSIONS`, and `...TEXT_TRACK_FILE_EXTENSIONS` (image / video / audio / text-track spread in lockstep with the React surface). `.md` and `.mdx` are **not** accepted into `.vue` destinations (see decisions). `.vue` is in `CROSS_IMPORT_DESTINATIONS` (so it may import a *different* extension) and in `SCRIPT_FILE_EXTENSIONS` (so insertion forces column 0, matching `.ts`/`.js`).
 
-**Emitted snippet — `.vue` source → `.vue` destination (and any `.ts`/`.tsx` source → `.vue` destination):** the picked TS style applies directly with `${path}` substitution. The TS picker's seven shapes flow through unchanged:
+**Emitted snippet — `.vue` source → `.vue` destination (and any `.ts`/`.tsx` source → `.vue` destination):** the picked TS style applies directly with `${path}` substitution. The TS picker's shapes flow through unchanged:
 
 | Resolved TS style | Final `SnippetString` |
 |-------------------|----------------------|
-| `import name from '_relativePath_';` | `` `import ${1:name} from '${path}';` `` |
-| `import { name } from '_relativePath_';` | `` `import { ${1:name} } from '${path}';` `` |
-| `const name = await import('_relativePath_');` | `` `const ${1:name} = await import('${path}');` `` |
-| `import * as name from '_relativePath_';` | `` `import * as ${1:name} from '${path}';` `` |
+| `import name from '_relativePath_';` | `` `import $1 from '${path}';` `` |
+| `import { name } from '_relativePath_';` | `` `import { $1 } from '${path}';` `` |
+| `const name = await import('_relativePath_');` | `` `const $1 = await import('${path}');` `` |
+| `import * as name from '_relativePath_';` | `` `import * as $1 from '${path}';` `` |
 | `import '_relativePath_';` | `` `import '${path}';` `` |
-| `import type { name } from '_relativePath_';` | `` `import type { ${1:name} } from '${path}';` `` |
-| `import { name, type Type } from '_relativePath_';` | `` `import { ${1:name}, type ${2:Type} } from '${path}';` `` |
+| `import type { name } from '_relativePath_';` | `` `import type { $1 } from '${path}';` `` |
+| `import { name, type Type } from '_relativePath_';` | `` `import { $1, type $2 } from '${path}';` `` |
 
-**Mixed-stack — `.vue` source → `.jsx`/`.tsx`/`.mdx` destination:** falls into the default-import group of `buildAssetImportStatement` (`src/snippets/_react.ts:71`).
+**Mixed-stack — `.vue` source → `.jsx`/`.tsx`/`.mdx` destination:** falls into the default-import group of `buildAssetImportStatement` (`src/snippets/_react.ts`).
 
 | Group | `SnippetString` shape |
 |--------|----------------------|
@@ -49,21 +49,21 @@ All three destinations reuse the **TypeScript picker** (`TYPESCRIPT_IMPORT_OPTIO
 
 **Accepted sources** (`SVELTE_SUPPORTED_EXTENSIONS`): `.svelte`, `.ts`, `.js`, `.jsx`, `.tsx`, `.json`, `.yml`, `.yaml`, plus `...IMAGE_FILE_EXTENSIONS`, `...MEDIA_FILE_EXTENSIONS`, `...TEXT_TRACK_FILE_EXTENSIONS`. `.md` and `.mdx` are **not** accepted (see decisions). `.svelte` is in `CROSS_IMPORT_DESTINATIONS` and `SCRIPT_FILE_EXTENSIONS`.
 
-`.svelte.ts` / `.svelte.js` companion files (Svelte 5 rune-eligible plain modules) need **no special handling** — `path.parse('foo.svelte.ts').ext` returns `.ts`, so they flow through the existing TS source path *and* TS destination path. There is deliberately no `.svelte.ts` gating entry (one would shadow the natural `.ts` dispatch); a one-line note to that effect lives in the shared `framework-component.ts`.
+`.svelte.ts` / `.svelte.js` companion files (Svelte 5 rune-eligible plain modules) need **no special handling** — `path.parse('foo.svelte.ts').ext` returns `.ts`, so they flow through the existing TS source path *and* TS destination path. There is deliberately no `.svelte.ts` gating entry (one would shadow the natural `.ts` dispatch).
 
-**Emitted snippet — `.svelte` source → `.svelte` destination (and any `.ts`/`.tsx` source → `.svelte` destination):** the picked TS style applies directly with `${path}` substitution — the same seven shapes as Vue:
+**Emitted snippet — `.svelte` source → `.svelte` destination (and any `.ts`/`.tsx` source → `.svelte` destination):** the picked TS style applies directly with `${path}` substitution — the same shapes as Vue:
 
 | Resolved TS style | Final `SnippetString` |
 |-------------------|----------------------|
-| `import name from '_relativePath_';` | `` `import ${1:name} from '${path}';` `` |
-| `import { name } from '_relativePath_';` | `` `import { ${1:name} } from '${path}';` `` |
-| `const name = await import('_relativePath_');` | `` `const ${1:name} = await import('${path}');` `` |
-| `import * as name from '_relativePath_';` | `` `import * as ${1:name} from '${path}';` `` |
+| `import name from '_relativePath_';` | `` `import $1 from '${path}';` `` |
+| `import { name } from '_relativePath_';` | `` `import { $1 } from '${path}';` `` |
+| `const name = await import('_relativePath_');` | `` `const $1 = await import('${path}');` `` |
+| `import * as name from '_relativePath_';` | `` `import * as $1 from '${path}';` `` |
 | `import '_relativePath_';` | `` `import '${path}';` `` |
-| `import type { name } from '_relativePath_';` | `` `import type { ${1:name} } from '${path}';` `` |
-| `import { name, type Type } from '_relativePath_';` | `` `import { ${1:name}, type ${2:Type} } from '${path}';` `` |
+| `import type { name } from '_relativePath_';` | `` `import type { $1 } from '${path}';` `` |
+| `import { name, type Type } from '_relativePath_';` | `` `import { $1, type $2 } from '${path}';` `` |
 
-**Mixed-stack — `.svelte` source → `.jsx`/`.tsx`/`.mdx` destination:** falls into the default-import group of `buildAssetImportStatement` (`src/snippets/_react.ts:72`).
+**Mixed-stack — `.svelte` source → `.jsx`/`.tsx`/`.mdx` destination:** falls into the default-import group of `buildAssetImportStatement` (`src/snippets/_react.ts`).
 
 | Group | `SnippetString` shape |
 |--------|----------------------|
@@ -77,21 +77,21 @@ All three destinations reuse the **TypeScript picker** (`TYPESCRIPT_IMPORT_OPTIO
 
 **Accepted sources** (`ASTRO_SUPPORTED_EXTENSIONS`): `.astro`, `.ts`, `.js`, `.jsx`, `.tsx`, **`.vue`**, **`.svelte`**, `.json`, `.yml`, `.yaml`, **`.md`**, **`.mdx`**, plus `...IMAGE_FILE_EXTENSIONS`, `...MEDIA_FILE_EXTENSIONS`, `...TEXT_TRACK_FILE_EXTENSIONS`. `.vue` and `.svelte` are accepted because Astro Islands consume framework-island components; `.md`/`.mdx` are Astro-native (the `astro:content` collections API requires no plugin). `.astro` is in `CROSS_IMPORT_DESTINATIONS` and `SCRIPT_FILE_EXTENSIONS`.
 
-**Emitted snippet — `.astro` source → `.astro` destination (and `.ts`/`.tsx` source → `.astro` destination):** the picked TS style applies directly with `${path}` substitution — the same seven shapes as Vue / Svelte:
+**Emitted snippet — `.astro` source → `.astro` destination (and `.ts`/`.tsx` source → `.astro` destination):** the picked TS style applies directly with `${path}` substitution — the same shapes as Vue / Svelte:
 
 | Resolved TS style | Final `SnippetString` |
 |-------------------|----------------------|
-| `import name from '_relativePath_';` | `` `import ${1:name} from '${path}';` `` |
-| `import { name } from '_relativePath_';` | `` `import { ${1:name} } from '${path}';` `` |
-| `const name = await import('_relativePath_');` | `` `const ${1:name} = await import('${path}');` `` |
-| `import * as name from '_relativePath_';` | `` `import * as ${1:name} from '${path}';` `` |
+| `import name from '_relativePath_';` | `` `import $1 from '${path}';` `` |
+| `import { name } from '_relativePath_';` | `` `import { $1 } from '${path}';` `` |
+| `const name = await import('_relativePath_');` | `` `const $1 = await import('${path}');` `` |
+| `import * as name from '_relativePath_';` | `` `import * as $1 from '${path}';` `` |
 | `import '_relativePath_';` | `` `import '${path}';` `` |
-| `import type { name } from '_relativePath_';` | `` `import type { ${1:name} } from '${path}';` `` |
-| `import { name, type Type } from '_relativePath_';` | `` `import { ${1:name}, type ${2:Type} } from '${path}';` `` |
+| `import type { name } from '_relativePath_';` | `` `import type { $1 } from '${path}';` `` |
+| `import { name, type Type } from '_relativePath_';` | `` `import { $1, type $2 } from '${path}';` `` |
 
-**Astro Islands — `.vue` source → `.astro` destination and `.svelte` source → `.astro` destination:** routed through the same TS-picker dispatch as a regular default import; no new snippet shape — the seven-shape table above applies, and the user's chosen TS style controls the emitted shape.
+**Astro Islands — `.vue` source → `.astro` destination and `.svelte` source → `.astro` destination:** routed through the same TS-picker dispatch as a regular default import; no new snippet shape — the table above applies, and the user's chosen TS style controls the emitted shape.
 
-**Mixed-stack — `.astro` source → `.jsx`/`.tsx`/`.mdx` destination:** falls into the default-import group of `buildAssetImportStatement` (`src/snippets/_react.ts:73`).
+**Mixed-stack — `.astro` source → `.jsx`/`.tsx`/`.mdx` destination:** falls into the default-import group of `buildAssetImportStatement` (`src/snippets/_react.ts`).
 
 | Group | `SnippetString` shape |
 |--------|----------------------|
@@ -103,7 +103,7 @@ All three destinations reuse the **TypeScript picker** (`TYPESCRIPT_IMPORT_OPTIO
 
 ## Placement
 
-`.vue`/`.svelte`/`.astro` destinations are in `SCRIPT_FILE_EXTENSIONS`, so insertion is forced to column 0. Two destination-driven overrides constrain *where* the import lands; both honor the user's `Top`/`Bottom`/`Cursor` setting *within* their constrained region. The two implementations duplicate the precedence — the command flow in `insert-snippet.ts` and the drop flow in `placement.ts` — and are kept in sync.
+`.vue`/`.svelte`/`.astro` destinations are in `SCRIPT_FILE_EXTENSIONS`, so insertion is forced to column 0. Destination-driven overrides constrain *where* the import lands; both honor the user's `Top`/`Bottom`/`Cursor` setting *within* their constrained region. The two implementations duplicate the precedence — the command flow in `insert-snippet.ts` and the drop flow in `placement.ts` — and are kept in sync.
 
 ### Astro frontmatter override (`.astro`)
 
@@ -134,15 +134,16 @@ Default imports emit the `$1` placeholder for the component name. The legacy-Ang
 ## Behavior
 
 - **Extension handling.** Script sources respect the `script.preserveScriptFileExtension` boolean (default `false`) — the shared builder appends the source extension only when the flag is set. Non-script asset sources always carry their full extension on the path (the asset switch keys on it).
-- **Gating.** `gating.ts:isPairSupported` is ten-clause; the `.vue`/`.svelte`/`.astro` per-destination allow-list checks are the seventh, eighth, and ninth clauses (`gating.ts:35`/`38`/`41`), each rejecting a source not in the matching `*_SUPPORTED_EXTENSIONS` table (the tenth clause is the `.tex` LaTeX destination, `gating.ts:44`). `.jsx`/`.tsx`/`.mdx` destinations have no per-destination filter, which is why they accept `.vue`/`.svelte`/`.astro` sources with no gating change.
+- **Gating.** `gating.ts:isPairSupported` carries per-destination allow-list clauses for `.vue`/`.svelte`/`.astro`, each rejecting a source not in the matching `*_SUPPORTED_EXTENSIONS` table (the `.tex` LaTeX destination has its own clause). `.jsx`/`.tsx`/`.mdx` destinations have no per-destination filter, which is why they accept `.vue`/`.svelte`/`.astro` sources with no gating change.
 - **Media lockstep.** `VUE_/SVELTE_/ASTRO_SUPPORTED_EXTENSIONS` spread `...MEDIA_FILE_EXTENSIONS` and `...TEXT_TRACK_FILE_EXTENSIONS`; media/text-track sources emit the `${1:url}` shape via the asset switch. See [media-files.md](media-files.md).
 
 ## Code map
 
-- `src/gating.ts:35`/`38`/`41` — the `.vue`/`.svelte`/`.astro` per-destination gating clauses in `isPairSupported`.
+- `src/gating.ts` — the `.vue`/`.svelte`/`.astro` per-destination gating clauses in `isPairSupported`.
 - `src/snippets/dispatch.ts` — `.vue`/`.svelte`/`.astro` `case` arms fall through together to `frameworkComponent.buildSnippet(info)`; `.mdx` → `tsx.ts`.
+- `src/snippets/variants.ts` — `buildFrameworkComponentVariants`, the parallel pick-style / set-default enumeration for `.vue`/`.svelte`/`.astro`: the `case` arms mirror `dispatch.ts`, mapping `TYPESCRIPT_IMPORT_OPTIONS` for script sources and routing non-script sources through `buildReactNonScriptVariant` → the same `buildAssetImportStatement` switch.
 - `src/snippets/languages/framework-component.ts` — the single shared builder for all three destinations; script sources → `typescript.ts:buildTypeScriptImportSnippet`, non-script sources → `_react.ts:buildAssetImportStatement`.
-- `src/snippets/_react.ts:71-73` — `.vue`/`.svelte`/`.astro` `case`s in the default-import group of `buildAssetImportStatement` (mixed-stack into `.jsx`/`.tsx`/`.mdx`).
+- `src/snippets/_react.ts` — `.vue`/`.svelte`/`.astro` `case`s in the default-import group of `buildAssetImportStatement` (mixed-stack into `.jsx`/`.tsx`/`.mdx`).
 - `src/constants/extensions.ts` — `VUE_/SVELTE_/ASTRO_SUPPORTED_EXTENSIONS`, plus `.vue`/`.svelte`/`.astro` membership in `CROSS_IMPORT_DESTINATIONS` and `SCRIPT_FILE_EXTENSIONS`.
 - `src/editor/placement.ts` — `findAstroFrontmatterBounds`, `computeAstroPlacement`, `findSfcScriptBounds`, `computeSfcPlacement`, `IMPORT_INDICATORS`.
 - `src/editor/insert-snippet.ts` — `insertSnippetAtAstroFrontmatter`, `insertSnippetAtSfcScript`.

@@ -6,7 +6,7 @@ Pure path helpers. **No `vscode` import** — fully Node-testable. New helpers i
 
 | File | Public function | Purpose |
 |------|-----------------|---------|
-| `relative.ts` | `computeRelative(sourceFilePath, destinationFilePath): string` | Returns a Unix-style, extension-stripped relative path (with `./` prefix for same-directory imports). Regression-tested per CHANGELOG `0.6.1`. |
+| `relative.ts` | `computeRelative(sourceFilePath, destinationFilePath): string` | Returns a Unix-style, extension-stripped relative path (with `./` prefix for same-directory imports). Regression-tested in `src/test/path/relative.test.ts`. |
 | `extension.ts` | `extractFileExtension(filePath): FileExtension`, `removeFileExtension(filePath): string` | `extractFileExtension` is a thin wrapper over Node's `path.parse`; `removeFileExtension` is a string-slicing helper that removes the extension returned by `extractFileExtension`. |
 | `import-type.ts` | `determineImportType(filePath): ImportType \| null` | Classifies a source file as `'script' \| 'stylesheet' \| 'markdown' \| 'image' \| 'video' \| 'audio' \| 'text-track' \| null`. |
 

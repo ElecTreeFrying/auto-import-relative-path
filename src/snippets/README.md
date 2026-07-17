@@ -18,16 +18,16 @@ One module per destination language.
 
 | File | Purpose |
 |------|---------|
-| `javascript.ts` | JS shapes (7 styles) via `auto-import.importStatement.script.javascriptImportStyle`. |
-| `typescript.ts` | TS shapes (7 styles), with Angular PascalCase substitution at index 0. |
+| `javascript.ts` | JS shapes via `auto-import.importStatement.script.javascriptImportStyle`. |
+| `typescript.ts` | TS shapes, with Angular PascalCase substitution at index 0. |
 | `jsx.ts` | JSX entry — delegates to `_react.ts:buildReactImport` with JS as primary. |
 | `tsx.ts` | TSX/MDX entry — delegates to `_react.ts:buildReactImport` with TS primary, JS fallback for `.js`/`.jsx` sources. `.mdx` shares this builder via fall-through in `dispatch.ts`. |
-| `css.ts` | CSS shapes (2 styles); `buildCssImageImportSnippet` exported for SCSS reuse. |
-| `scss.ts` | SCSS shapes (5 styles), with partial-filename underscore stripping and asymmetric `.css` extension preservation. |
-| `html.ts` | HTML `<script>` (5 styles) / `<img>` (3) / `<video>` (4) / `<audio>` (2) configurable + `<link>` / `<track>` fixed. |
-| `markdown.ts` | Markdown link (fixed) + image (3 configurable styles). |
+| `css.ts` | CSS shapes; `buildCssImageImportSnippet` exported for SCSS reuse. |
+| `scss.ts` | SCSS shapes, with partial-filename underscore stripping and asymmetric `.css` extension preservation. |
+| `html.ts` | HTML `<script>` / `<img>` / `<video>` / `<audio>` configurable + `<link>` / `<track>` fixed. |
+| `markdown.ts` | Markdown link (fixed) + image (configurable styles). |
 | `framework-component.ts` | Vue/Svelte/Astro entry — script sources (`.ts`/`.tsx`/`.js`/`.jsx`) delegate to `buildTypeScriptImportSnippet` (extension stripped per preserve setting); non-script sources delegate to `../_react:buildAssetImportStatement`. All three share identical import semantics. |
-| `latex.ts` | LaTeX (`.tex`) — graphics→`figure`/`\includegraphics` (3 styles), `.tex`→`\input`/`\include` (2), `.bib`→`\addbibresource`/`\bibliography` (2). Branches on the raw source extension; resolves config inline; own `latex.*` settings namespace. The figure default is the only multi-line snippet. |
+| `latex.ts` | LaTeX (`.tex`) — graphics→`figure`/`\includegraphics`, `.tex`→`\input`/`\include`, `.bib`→`\addbibresource`/`\bibliography`. Branches on the raw source extension; resolves config inline; own `latex.*` settings namespace. The figure default is the only multi-line snippet. |
 
 `_`-prefixed files are internal to the `snippets/` subtree. Importing them from outside `snippets/` is a smell; `languages/` modules importing `../_styles`, `../_react`, and `../_class-name` is expected.
 
@@ -35,7 +35,7 @@ For per-file export signatures and the editing rules, see [`languages/README.md`
 
 ## Where to add new code
 
-- **New destination language** → a new module in `languages/` plus the full eight-step checklist: the 4-site extension sync (`src/types/file-extension.ts`, `src/constants/extensions.ts`, `dispatch.ts`, `variants.ts`), the 3-site style sync (`_styles.ts` + `package.json` + the per-language `switch`), an `isPairSupported` clause in `src/gating.ts`, and a selector entry in `src/drop/selector.ts`. See "Adding a new destination language" in [`CLAUDE.md`](CLAUDE.md) (this directory) for the ordered steps.
+- **New destination language** → a new module in `languages/` plus the full checklist: the four-site extension sync (`src/types/file-extension.ts`, `src/constants/extensions.ts`, `dispatch.ts`, `variants.ts`), the three-site style sync (`_styles.ts` + `package.json` + the per-language `switch`), an `isPairSupported` clause in `src/gating.ts`, and a selector entry in `src/drop/selector.ts`. See "Adding a new destination language" in [`CLAUDE.md`](CLAUDE.md) (this directory) for the ordered steps.
 - **New style for an existing language** → entry in the relevant `*_IMPORT_OPTIONS` table in `_styles.ts` + matching `enum` value in `package.json` + matching `case` in the per-language `switch`. See three-site sync in [`CLAUDE.md`](CLAUDE.md) (this directory) and [`src/config/CLAUDE.md`](../config/CLAUDE.md).
 
-See [`CLAUDE.md`](CLAUDE.md) (this directory) for the style-sync contracts, the "Currently unused" tables, and the JSX/TSX/MDX shared algorithm.
+See [`CLAUDE.md`](CLAUDE.md) (this directory) for the style-sync contracts, the parity-only tables, and the JSX/TSX/MDX shared algorithm.

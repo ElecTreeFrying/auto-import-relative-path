@@ -1,6 +1,6 @@
 # Media Files — Specification (v1)
 
-> **Status:** Shipped. **Code:** [`src/types/file-extension.ts`](../../../src/types/file-extension.ts), [`src/constants/extensions.ts`](../../../src/constants/extensions.ts), [`src/path/import-type.ts`](../../../src/path/import-type.ts), [`src/snippets/_react.ts`](../../../src/snippets/_react.ts), [`src/snippets/languages/html.ts`](../../../src/snippets/languages/html.ts), [`src/snippets/_styles.ts`](../../../src/snippets/_styles.ts).
+> **Status:** Shipped. **Code:** `src/types/file-extension.ts`, `src/constants/extensions.ts`, `src/path/import-type.ts`, `src/snippets/_react.ts`, `src/snippets/languages/html.ts`, `src/snippets/_styles.ts`.
 > **Why these shapes:** [decisions/media-files.md](../decisions/media-files.md) · **Rubric:** [../CRITERIA.md](../CRITERIA.md)
 
 ## Overview
@@ -9,7 +9,7 @@ Video, audio, and text-track source files paste as relative URL imports. The def
 
 ## File-extension union
 
-The media aliases live in [`src/types/file-extension.ts`](../../../src/types/file-extension.ts) and join into `FileExtension`:
+The media aliases live in `src/types/file-extension.ts` and join into `FileExtension`:
 
 ```typescript
 type VideoFileExtension = '.mp4' | '.webm' | '.mov';
@@ -22,14 +22,14 @@ type MediaFileExtension = VideoFileExtension | AudioFileExtension | TextTrackFil
 
 ## Gating
 
-The gating arrays live in [`src/constants/extensions.ts`](../../../src/constants/extensions.ts):
+The gating arrays live in `src/constants/extensions.ts`:
 
 ```typescript
 export const MEDIA_FILE_EXTENSIONS: FileExtension[] = ['.mp4', '.webm', '.mov', '.mp3', '.ogg', '.wav', '.m4a'];
 export const TEXT_TRACK_FILE_EXTENSIONS: FileExtension[] = ['.vtt'];
 ```
 
-`MEDIA_FILE_EXTENSIONS` holds video + audio only (7 entries); `.vtt` lives in its own `TEXT_TRACK_FILE_EXTENSIONS`. Both arrays are spread together into the destination lists:
+`MEDIA_FILE_EXTENSIONS` holds video + audio only; `.vtt` lives in its own `TEXT_TRACK_FILE_EXTENSIONS`. Both arrays are spread together into the destination lists:
 
 - `HTML_SUPPORTED_EXTENSIONS` carries `...MEDIA_FILE_EXTENSIONS, ...TEXT_TRACK_FILE_EXTENSIONS` — HTML accepts media for `<video>` / `<audio>` embeds and `.vtt` for `<track>` children.
 - The framework trio — `VUE_SUPPORTED_EXTENSIONS`, `SVELTE_SUPPORTED_EXTENSIONS`, `ASTRO_SUPPORTED_EXTENSIONS` — also spread both arrays, so media / text-track sources paste into `.vue` / `.svelte` / `.astro` destinations (default-import-as-URL via the shared `framework-component.ts` builder).
@@ -38,13 +38,13 @@ export const TEXT_TRACK_FILE_EXTENSIONS: FileExtension[] = ['.vtt'];
 
 ## Source classification
 
-`determineImportType` in [`src/path/import-type.ts`](../../../src/path/import-type.ts) returns `'video'`, `'audio'`, and `'text-track'` (three media-related returns), with the matching union in [`src/types/import-type.ts`](../../../src/types/import-type.ts). `languages/html.ts:buildSnippet` routes those returns to the `byStyle` functions for video / audio and to the hardcoded emit for text tracks.
+`determineImportType` in `src/path/import-type.ts` returns `'video'`, `'audio'`, and `'text-track'` (the media-related returns), with the matching union in `src/types/import-type.ts`. `languages/html.ts:buildSnippet` routes those returns to the `byStyle` functions for video / audio and to the hardcoded emit for text tracks.
 
 ## JSX/TSX/MDX — URL import
 
-Media and text-track sources land in the URL-import group of the canonical asset switch, `buildAssetImportStatement` in [`src/snippets/_react.ts`](../../../src/snippets/_react.ts), emitting `` `import ${1:url} from '${path}';` `` (placeholder `url` instead of `name` to signal URL-ness). `.vtt` joins the same group — the URL-import shape applies identically (consumers pass the imported URL to a `<track src>` JSX attribute). There is no picker setting: URL-import is the only shape that applies to every media source here.
+Media and text-track sources land in the URL-import group of the canonical asset switch, `buildAssetImportStatement` in `src/snippets/_react.ts`, emitting `` `import ${1:url} from '${path}';` `` (placeholder `url` instead of `name` to signal URL-ness). `.vtt` joins the same group — the URL-import shape applies identically (consumers pass the imported URL to a `<track src>` JSX attribute). There is no picker setting: URL-import is the only shape that applies to every media source here.
 
-`buildAssetImportStatement` is the single canonical asset switch — a `.module.css` / `.module.scss` basename **guard before the switch**, then three switch groups (default-import → `${1:name}`; media + text-track → `${1:url}`; side-effect → bare `import '<path>';`) and a `null` `default:`. The media + text-track group is the **2nd** of those three switch groups (the 3rd distinct shape overall, counting the pre-switch CSS-module guard). The switch is shared by `buildReactImport`, `languages/framework-component.ts`, and `variants.ts:buildReactNonScriptVariant` (one switch, three callers).
+`buildAssetImportStatement` is the single canonical asset switch — a `.module.css` / `.module.scss` basename **guard before the switch**, then three switch groups (default-import → `${1:name}`; media + text-track → `${1:url}`; side-effect → bare `import '<path>';`) and a `null` `default:`. The media + text-track group sits between the default-import and side-effect groups. The switch is shared by `buildReactImport`, `languages/framework-component.ts`, and `variants.ts:buildReactNonScriptVariant` (one switch, shared by all its callers).
 
 | Source-extension bucket | `SnippetString` shape |
 |-------------------------|----------------------|
@@ -54,7 +54,7 @@ Media and text-track sources land in the URL-import group of the canonical asset
 
 HTML carries two picker settings plus one hardcoded text-track shape.
 
-### Video — `auto-import.importStatement.markup.htmlVideoImportStyle` (4 options)
+### Video — `auto-import.importStatement.markup.htmlVideoImportStyle`
 
 | # | Shape | Status |
 |---|-------|--------|
@@ -63,7 +63,7 @@ HTML carries two picker settings plus one hardcoded text-track shape.
 | 3 | `<video src="_relativePath_" controls poster=""></video>` | controls + poster image placeholder |
 | 4 | `<video src="_relativePath_" controls preload="metadata"></video>` | long-form video; avoids pre-buffering (Core Web Vitals) |
 
-### Audio — `auto-import.importStatement.markup.htmlAudioImportStyle` (2 options)
+### Audio — `auto-import.importStatement.markup.htmlAudioImportStyle`
 
 | # | Shape | Status |
 |---|-------|--------|
@@ -104,16 +104,16 @@ HTML carries two picker settings plus one hardcoded text-track shape.
 |-------------------------|----------------------|
 | `.vtt` | `` `<track src="${path}" kind="subtitles" srclang="${1:en}" label="${2:English}"></track>` `` |
 
-The HTML option tables live in [`src/snippets/_styles.ts`](../../../src/snippets/_styles.ts) — `HTML_VIDEO_IMPORT_OPTIONS` (4 entries) and `HTML_AUDIO_IMPORT_OPTIONS` (2 entries), each with `tag` fields (the first entry of each has no `tag` and falls back to the full description in the QuickPick). There is no text-track options table — the single hardcoded shape needs none. The two settings (`markup.htmlVideoImportStyle`, `markup.htmlAudioImportStyle`) are declared in `package.json` with `enum` + `enumDescriptions`, and aliased (`htmlVideo`, `htmlAudio`) in `AUTO_IMPORT_CONFIG.markup.settings` with matching `AutoImportSettingKey` literals in [`src/config/settings.ts`](../../../src/config/settings.ts).
+The HTML option tables live in `src/snippets/_styles.ts` — `HTML_VIDEO_IMPORT_OPTIONS` and `HTML_AUDIO_IMPORT_OPTIONS`, each with `tag` fields (the first entry of each has no `tag` and falls back to the full description in the QuickPick). There is no text-track options table — the single hardcoded shape needs none. The two settings (`markup.htmlVideoImportStyle`, `markup.htmlAudioImportStyle`) are declared in `package.json` with `enum` + `enumDescriptions`, and aliased (`htmlVideo`, `htmlAudio`) in `AUTO_IMPORT_CONFIG.markup.settings` with matching `AutoImportSettingKey` literals in `src/config/settings.ts`.
 
 ## Code map
 
-- [`src/types/file-extension.ts`](../../../src/types/file-extension.ts) — `VideoFileExtension` / `AudioFileExtension` / `TextTrackFileExtension` / `MediaFileExtension` aliases joined into `FileExtension`.
-- [`src/constants/extensions.ts`](../../../src/constants/extensions.ts) — `MEDIA_FILE_EXTENSIONS` (video+audio, 7) and `TEXT_TRACK_FILE_EXTENSIONS` (`.vtt`); both spread into `HTML_SUPPORTED_EXTENSIONS` and the `VUE_` / `SVELTE_` / `ASTRO_` destination lists.
-- [`src/path/import-type.ts`](../../../src/path/import-type.ts) — `determineImportType` returns `'video'` / `'audio'` / `'text-track'` (three new returns); matching union in [`src/types/import-type.ts`](../../../src/types/import-type.ts).
-- [`src/snippets/_react.ts`](../../../src/snippets/_react.ts) — `buildAssetImportStatement` non-script switch carries the media + text-track URL-import group (shared by `buildReactImport`, `languages/framework-component.ts`, and `variants.ts:buildReactNonScriptVariant`).
-- [`src/snippets/languages/html.ts`](../../../src/snippets/languages/html.ts) — `buildHtmlVideoImportSnippetByStyle` + `buildHtmlAudioImportSnippetByStyle` styled builders; hardcoded `buildHtmlTextTrackImportSnippet`; `buildSnippet` routes the three `determineImportType` returns.
-- [`src/snippets/_styles.ts`](../../../src/snippets/_styles.ts) — `HTML_VIDEO_IMPORT_OPTIONS` (4) + `HTML_AUDIO_IMPORT_OPTIONS` (2) tables.
+- `src/types/file-extension.ts` — `VideoFileExtension` / `AudioFileExtension` / `TextTrackFileExtension` / `MediaFileExtension` aliases joined into `FileExtension`.
+- `src/constants/extensions.ts` — `MEDIA_FILE_EXTENSIONS` (video+audio, 7) and `TEXT_TRACK_FILE_EXTENSIONS` (`.vtt`); both spread into `HTML_SUPPORTED_EXTENSIONS` and the `VUE_` / `SVELTE_` / `ASTRO_` destination lists.
+- `src/path/import-type.ts` — `determineImportType` returns `'video'` / `'audio'` / `'text-track'` (the media-related returns); matching union in `src/types/import-type.ts`.
+- `src/snippets/_react.ts` — `buildAssetImportStatement` non-script switch carries the media + text-track URL-import group (shared by `buildReactImport`, `languages/framework-component.ts`, and `variants.ts:buildReactNonScriptVariant`).
+- `src/snippets/languages/html.ts` — `buildHtmlVideoImportSnippetByStyle` + `buildHtmlAudioImportSnippetByStyle` styled builders; hardcoded `buildHtmlTextTrackImportSnippet`; `buildSnippet` routes the three `determineImportType` returns.
+- `src/snippets/_styles.ts` — `HTML_VIDEO_IMPORT_OPTIONS` + `HTML_AUDIO_IMPORT_OPTIONS` tables.
 
 ## See also
 

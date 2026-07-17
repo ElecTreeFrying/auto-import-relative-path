@@ -1,6 +1,6 @@
 # decisions/CLAUDE.md
 
-The `decisions/` layer sits beside the `spec/` layer and records the **rationale** for what `spec/` describes: the criteria applied, the shapes locked in, and the alternatives rejected. These files record the decisions taken while specifying v1; the gate stays open. Designed-but-unbuilt work does not live here — that belongs in `../future/`.
+The `decisions/` layer sits beside the `spec/` layer and records the **rationale** for what `spec/` describes: the criteria applied, the shapes locked in, and the alternatives rejected. These files record the decisions behind each shipped spec area — v1 and later additions such as the LaTeX destination; the gate stays open. Designed-but-unbuilt work does not live here — that belongs in `../future/`.
 
 Each file here is a **living gate** for its spec area: criteria evaluations and rejection records that stay open for amendment as the design evolves. New shapes or choices can be added at any time, but each must pass the rubric and get its own row. The gate never seals — even where the matching `spec/` doc is shipped, the decision file stays open so a new shape can still earn a row.
 
@@ -20,8 +20,11 @@ Every rejection bullet must open with its criterion tag in parenthetical italics
 
 ## Sync rule
 
-These decision files and their matching `spec/` docs are tightly coupled pairs; the full tree-wide sync contract (spec doc ↔ `decisions/` companion, REGISTRY ↔ spec docs, CRITERIA ↔ everything, status table) is stated once, canonically, in the parent [../CLAUDE.md](../CLAUDE.md). Follow it from there — do not restate it here.
+These decision files and their matching `spec/` docs are tightly coupled pairs; the full tree-wide sync contract (spec doc ↔ `decisions/` companion, `spec/statements.md` ↔ design docs, CRITERIA ↔ everything, status table) is stated once, canonically, in the parent [../CLAUDE.md](../CLAUDE.md). Follow it from there — do not restate it here.
 
-## Deviation: `framework-components.md`
+## Deviations
 
-`framework-components.md` intentionally omits the criteria-application section. The Criterion 3 tension, picker-bloat checks, and TS-picker reuse justification are woven into the locked-in v1 decisions and the parent design — extracting them would fragment that reasoning. This file records the locked-in decisions and the rejection ledger only. This is an approved exception, not a pattern to follow. New decision files should include all three sections.
+These files deviate from the three-section contract. Both are approved exceptions, not patterns to follow — new decision files should include all three sections.
+
+- **`framework-components.md`** intentionally omits the **criteria-application** section. The Criterion 3 tension, picker-bloat checks, and TS-picker reuse justification are woven into the locked-in v1 decisions and the parent design — extracting them would fragment that reasoning. It records the locked-in decisions and the rejection ledger only.
+- **`statements.md`** has no standalone **Locked-in decisions** section. The recommended-defaults table (Change?/Rationale columns) under *Criteria application* and the per-language audit together record the locked-in choices, each anchored to the rubric inline — pulling them into a separate table would duplicate the per-language audit's narrative. It records the criteria application (carrying the locked-in defaults) and the rejection ledger.

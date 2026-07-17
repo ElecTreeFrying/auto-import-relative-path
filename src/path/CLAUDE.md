@@ -6,7 +6,7 @@ Pure path math. **No `vscode` import** — every file here is Node-testable. Don
 
 - `relative.ts` — `computeRelative(sourceFilePath, destinationFilePath)` returns the import-ready relative path.
 - `extension.ts` — `extractFileExtension` is a thin wrapper over `path.parse`; `removeFileExtension` strips the extension via string slicing.
-- `import-type.ts` — `determineImportType(filePath)` maps file extensions to one of seven `ImportType` values (six explicit cases plus the `default:` `'image'` catch-all), or `null` (`.html` and `.scss`).
+- `import-type.ts` — `determineImportType(filePath)` maps file extensions to the `ImportType` values (explicit cases plus the `default:` `'image'` catch-all), or `null` (`.html` and `.scss`).
 
 ## `computeRelative` — the `./` prefix rule
 
@@ -14,7 +14,7 @@ Returns a Unix-style path (`toUnixPath` replaces `\` with `/`) with the file ext
 
 **The `./` prefix is added when** `path.relative` produced a result that doesn't already start with `.` (a bare `'foo'` / `'utils/helper'`). Genuine same-directory imports are the common case — `path.relative` returns a bare filename, so they receive the `./` prefix here. Paths that already begin with `../` are left untouched (adding `./` would emit a redundant `./../…`).
 
-**Regression test.** This rule is regression-tested per CHANGELOG `0.6.1` ("Prepend './' to relative paths for same-directory imports"). Don't simplify the prefix logic without re-running the test.
+**Regression test.** This rule is regression-tested in `src/test/path/relative.test.ts` (the `computeRelative` `./`-prefix cases for same-directory and child-directory imports). Don't simplify the prefix logic without re-running the test.
 
 ## `extension.ts` — the empty-string-on-no-extension quirk
 
@@ -25,7 +25,7 @@ This behaviour is intentional and regression-tested with extensionless paths (e.
 
 ## `determineImportType` — `ImportType | null`, not just `ImportType`
 
-Maps file extension to one of seven buckets — six explicit cases plus the `default:` `'image'` catch-all — with two `null` returns:
+Maps file extension to buckets — explicit cases plus the `default:` `'image'` catch-all — with two `null` returns:
 
 | Source extension | Returns |
 |------------------|---------|
@@ -41,4 +41,4 @@ Maps file extension to one of seven buckets — six explicit cases plus the `def
 
 The `'image'` branch is **not** a guarantee that the source is image-like — it's a default. The runtime gating in `src/gating.ts:isPairSupported` is what makes that safe.
 
-Consumers: `snippets/languages/{css,scss,html,markdown}.ts` and `snippets/variants.ts`. JSX/TSX/MDX don't consult this — they branch on the raw source extension via `_react.ts`.
+Consumers: `snippets/languages/{css,scss,html,markdown}.ts` and `snippets/variants.ts`. JSX/TSX/MDX (via `_react.ts`) and `.tex` destinations (via `languages/latex.ts`) don't consult this — they branch on the raw source extension.

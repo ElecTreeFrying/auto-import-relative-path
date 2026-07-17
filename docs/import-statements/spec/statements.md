@@ -11,7 +11,9 @@ In every "Final list" table, **position 1 is the default** (marked `← **defaul
 
 ## Default per setting
 
-Every `package.json` setting carries a `default`. These are the shipped defaults. **5 are flagged below**: 3 are back-compat-affecting, 2 back new media settings. (Why each default is what it is, and the back-compat framing, lives in [decisions/statements.md](../decisions/statements.md).)
+Every `package.json` setting carries a `default`. These are the shipped defaults. **Flagged below**: the back-compat-affecting default changes and the new media settings. (Why each default is what it is, and the back-compat framing, lives in [decisions/statements.md](../decisions/statements.md).)
+
+> **Key namespaces.** Rows read `<group>.<name>`. Every group nests under `auto-import.importStatement.` **except** `preferences`, which is the top-level `auto-import.preferences` namespace — so placement's full key is `auto-import.preferences.importStatementPlacement`, **not** `auto-import.importStatement.preferences.…`.
 
 | Setting | Default |
 |---------|---------|
@@ -36,22 +38,22 @@ Every `package.json` setting carries a `default`. These are the shipped defaults
 | `latex.inputImportStyle` | `"\\input{_relativePath_}"` (new) |
 | `latex.bibliographyImportStyle` | `"\\addbibresource{_relativePath_}"` (new) |
 
-**The 5 flagged rows:**
+**The flagged rows:**
 
-*3 changed (all back-compat-affecting):*
+*Changed (all back-compat-affecting):*
 
 1. **SCSS** `@import '…';` → `@use '…';`
 2. **HTML script** drops the redundant `type="text/javascript"`
 3. **Markdown image** drops the `"Hover text"` title — bare inline
 
-*2 new media settings:*
+*New media settings:*
 
 4. **HTML video** `<video src="…" controls></video>` (new `htmlVideoImportStyle` setting)
 5. **HTML audio** `<audio src="…" controls></audio>` (new `htmlAudioImportStyle` setting)
 
 Existing users who customised a setting keep their persisted value — defaults apply only to fresh installs and explicit resets. Existing users on a **removed** value fall back automatically to the new default; see [Removed-value fallback policy](#removed-value-fallback-policy).
 
-The four `latex.*` settings shipped **after** v1 with the LaTeX (`.tex`) destination — they are not part of the v1 default audit. `preserveGraphicsFileExtension` defaults to `true` (keep), deliberately inverted from `script.preserveScriptFileExtension` / `styleSheet.preserveStylesheetFileExtension` (both `false`). Full design: [latex.md](latex.md).
+The `latex.*` settings arrived with the LaTeX (`.tex`) destination and sit outside the default audit above. `preserveGraphicsFileExtension` defaults to `true` (keep), deliberately inverted from `script.preserveScriptFileExtension` / `styleSheet.preserveStylesheetFileExtension` (both `false`). Full design: [latex.md](latex.md).
 
 ## Picker inventory (counts)
 
@@ -72,7 +74,7 @@ Per-setting enum size, as shipped. (The soft picker-bloat ceiling and its ration
 | LaTeX `\input` | 2 | `\input` (default, inline) / `\include` (chapter-level) |
 | LaTeX bibliography | 2 | `\addbibresource` (default — biblatex, keeps `.bib`) / `\bibliography` (BibTeX, drops `.bib`) |
 | CSS image, MD link, HTML stylesheet | 1 | UI-parity-only — single hardcoded shape, never hits `resolveStyleIndex` (syntax ceiling: nothing canonical to add) |
-| **JSX/TSX/MDX non-script dispatch** (hardcoded `_react.ts:buildAssetImportStatement` switch) | 1 guard + 3 switch groups (CSS Modules guard / default-import / media+text-track URL / side-effect) | Not a `package.json` setting — groups are coarser-grained than enum entries (each group covers many source extensions). The CSS-Modules basename guard sits *before* the switch; within the switch, default-import is the 1st group, media+text-track URL the 2nd (the 3rd distinct shape overall), side-effect the 3rd, with a `null` default for anything that slipped past gating. Each group carves a genuinely-distinct semantic (default-import vs. side-effect vs. URL vs. CSS-Modules-class-map), not a per-extension variant. |
+| **JSX/TSX/MDX non-script dispatch** (hardcoded `_react.ts:buildAssetImportStatement` switch) | a basename guard + switch groups (CSS Modules guard / default-import / media+text-track URL / side-effect) | Not a `package.json` setting — groups are coarser-grained than enum entries (each group covers many source extensions). The CSS-Modules basename guard sits *before* the switch; the switch runs default-import, then media+text-track URL, then side-effect, with a `null` default for anything that slipped past gating. Each group carves a genuinely-distinct semantic (default-import vs. side-effect vs. URL vs. CSS-Modules-class-map), not a per-extension variant. |
 
 > The `scssImageImportStyle` setting exists in `package.json` for UI parity but is **not consumed** at runtime — there is no `SCSS_IMAGE_IMPORT_OPTIONS` table; SCSS image sources reuse `buildCssImageImportSnippet`. It is therefore not a distinct row above.
 
@@ -106,7 +108,7 @@ Each section: the shipped enum (the "Final list"), with position 1 as the defaul
 | 6 | `import { name, type Type } from '_relativePath_';` | new (TS 4.5+ inline modifier — mixed value + type imports) |
 | 7 | `const name = await import('_relativePath_');` | new (dynamic import — sibling of JS shape 7) |
 
-The TS default at index 1 (`import { name }`) is a back-compat anchor: legacy-Angular auto-naming (`generateAngularLegacyImportName`) fires **only at this index** — for paths matching a suffix in `LEGACY_ANGULAR_FILE_SUFFIXES` (`.component` / `.directive` / `.pipe` / `.service` / `.module`), validated against `/^[A-Za-z_$][\w$]*$/`, else `$1`. Indices 2–7 use `$1`. A *named* import is the TS default precisely because of this anchor; index 1 is not reordered.
+The TS default at position 1 (`import { name }`, the code's first `switch` case) is a back-compat anchor: legacy-Angular auto-naming (`generateAngularLegacyImportName`) fires **only on this shape** — for paths matching a suffix in `LEGACY_ANGULAR_FILE_SUFFIXES` (`.component` / `.directive` / `.pipe` / `.service` / `.module`), validated against `/^[A-Za-z_$][\w$]*$/`, else `$1`. Every other shape uses `$1`. A *named* import is the TS default precisely because of this anchor; position 1 is not reordered.
 
 ### CSS (`CSS_IMPORT_OPTIONS`)
 
@@ -129,7 +131,7 @@ CSS image: single entry `url('_relativePath_')` ← **default**.
 
 SCSS image: single entry `url('_relativePath_')` ← **default** (reuses CSS form).
 
-### HTML script (`markup.htmlScriptImportStyle`) — 5 options
+### HTML script (`markup.htmlScriptImportStyle`)
 
 | # | Shape | Status |
 |---|-------|--------|
@@ -139,7 +141,7 @@ SCSS image: single entry `url('_relativePath_')` ← **default** (reuses CSS for
 | 4 | `<script src="_relativePath_" async></script>` | new — order-independent execution; right for analytics/ads/third-party tags |
 | 5 | `<script type="text/javascript" src="_relativePath_"></script>` | legacy — was previous default; kept for back-compat |
 
-### HTML image (`markup.htmlImageImportStyle`) — 3 options
+### HTML image (`markup.htmlImageImportStyle`)
 
 | # | Shape | Status |
 |---|-------|--------|
@@ -147,7 +149,7 @@ SCSS image: single entry `url('_relativePath_')` ← **default** (reuses CSS for
 | 2 | `<img src="_relativePath_" alt="" loading="lazy">` | new — opt-in for below-fold images |
 | 3 | `<img src="_relativePath_" alt="" width="" height="">` | new — Core Web Vitals CLS prevention; user fills in dimensions |
 
-### HTML stylesheet (`markup.htmlStyleSheetImportStyle`) — 1 option
+### HTML stylesheet (`markup.htmlStyleSheetImportStyle`)
 
 | # | Shape | Status |
 |---|-------|--------|
@@ -169,7 +171,7 @@ SCSS image: single entry `url('_relativePath_')` ← **default** (reuses CSS for
 
 ### JSX / TSX / MDX non-script dispatch (`_react.ts:buildAssetImportStatement`)
 
-JSX/TSX/MDX have no `package.json` enum of their own. Script sources delegate to the JS/TS finals above; non-script sources flow through `buildAssetImportStatement(sourceFileExt, importPath)`. The shape is a `.module.css`/`.module.scss` basename **guard before the switch**, then a 3-group `switch`; first match wins. `.mdx` destinations fall through to `tsx.ts` in `dispatch.ts` (identical import semantics); `.mdx` lives in `ScriptFileExtension`, `SCRIPT_FILE_EXTENSIONS`, and `CROSS_IMPORT_DESTINATIONS`. As a *source*, `.mdx` flows through the default-import group.
+JSX/TSX/MDX have no `package.json` enum of their own. Script sources delegate to the JS/TS finals above; non-script sources flow through `buildAssetImportStatement(sourceFileExt, importPath)`. The shape is a `.module.css`/`.module.scss` basename **guard before the switch**, then the `switch` groups; first match wins. `.mdx` destinations fall through to `tsx.ts` in `dispatch.ts` (identical import semantics); `.mdx` lives in `ScriptFileExtension`, `SCRIPT_FILE_EXTENSIONS`, and `CROSS_IMPORT_DESTINATIONS`. As a *source*, `.mdx` flows through the default-import group.
 
 | # | Source extensions | Emits | Status |
 |---|-------------------|-------|--------|
@@ -179,11 +181,11 @@ JSX/TSX/MDX have no `package.json` enum of their own. Script sources delegate to
 | group 3 (side-effect) | `.woff` / `.woff2` / `.ttf` / `.eot` / `.css` / `.scss` | `import '_relativePath_';` (global stylesheets only) | narrowed — `.module.*` peeled out via the guard |
 | `default:` | anything else | `null` → empty `SnippetString` (means an unsupported pair slipped past gating) | unchanged |
 
-> **Structure note.** `buildAssetImportStatement` is **not** "four peer buckets." It is a `.module.css`/`.module.scss` basename **guard before the switch** (`src/snippets/_react.ts:52-54` → `import ${1:styles}`), then a 3-group `switch` (default-import `_react.ts:57-74`, media + text-track `_react.ts:75-83`, side-effect `_react.ts:84-90`), then a `null` `default:` (`_react.ts:91-92`). The CSS-module guard is pre-switch; within the `switch` the order is default-import, then media + text-track (the **2nd** of the three switch groups, the 3rd distinct shape overall), then side-effect (the **3rd** switch group). The media + text-track group's full design lives in [media-files.md](media-files.md). The same `buildAssetImportStatement` serves all three React-family destinations; `src/snippets/languages/{jsx,tsx}.ts` are thin wrappers that call `buildReactImport` with the appropriate script-source primary/fallback.
+> **Structure note.** `buildAssetImportStatement` is **not** peer buckets. It is a `.module.css`/`.module.scss` basename **guard before the switch** (→ `import ${1:styles}`), then the `switch` groups (default-import, media + text-track, side-effect), then a `null` `default:`. The CSS-module guard is pre-switch; within the `switch` the order is default-import, then media + text-track, then side-effect. The media + text-track group's full design lives in [media-files.md](media-files.md). The same `buildAssetImportStatement` serves all three React-family destinations; `src/snippets/languages/{jsx,tsx}.ts` are thin wrappers that call `buildReactImport` with the appropriate script-source primary/fallback.
 
 This surface has **no `package.json` enum** — its three-site sync is `types/file-extension.ts` ↔ `constants/extensions.ts` ↔ `_react.ts` (per `src/constants/CLAUDE.md`'s "Runtime mirror" invariant). Drift produces a silent `default:` → `null` → empty snippet → `'not-supported'` toast rather than the enum-mismatch failure mode that hits the other languages. CSS Modules detection is a basename test (`.endsWith('.module.css')` / `.endsWith('.module.scss')`) and short-circuits **before** the extension-only `switch` — otherwise `.module.scss` would fall into the side-effect group via the `.scss` case.
 
-The `.svg`, `.avif`, and `.pdf` additions span two type-union categories: **images** (`.svg`, `.avif` → `types/file-extension.ts:ImageFileExtension` + `constants/extensions.ts:IMAGE_FILE_EXTENSIONS`; auto-flows into the `*_SUPPORTED_EXTENSIONS` tables via spread, so HTML/CSS/SCSS/MD destinations accept them for free) and **documents** (`.pdf` → a `DocumentFileExtension = '.pdf'` singleton union joined into `FileExtension`, **JSX/TSX/MDX-only by design** — no `*_SUPPORTED_EXTENSIONS` change). All three get a case in the `_react.ts:buildAssetImportStatement` non-script switch and its `variants.ts` mirror, joining the default-import group.
+The `.svg`, `.avif`, and `.pdf` additions span two type-union categories: **images** (`.svg`, `.avif` → `types/file-extension.ts:ImageFileExtension` + `constants/extensions.ts:IMAGE_FILE_EXTENSIONS`; auto-flows into the `*_SUPPORTED_EXTENSIONS` tables via spread, so HTML/CSS/SCSS/MD destinations accept them for free) and **documents** (`.pdf` → a `DocumentFileExtension = '.pdf'` singleton union joined into `FileExtension`; it carries `TEX_GRAPHICS_FILE_EXTENSIONS` / `TEX_SUPPORTED_EXTENSIONS` gating entries and imports into both JSX/TSX/MDX (asset switch) and `.tex` (gated — see [latex.md](latex.md))). All of them get a case in the single `_react.ts:buildAssetImportStatement` non-script switch (called by `variants.ts:buildReactNonScriptVariant` and `framework-component.ts`), joining the default-import group.
 
 ### Media files (video / audio / text track)
 
@@ -199,7 +201,7 @@ Full design: [media-files.md](media-files.md). As shipped:
 |-------------------|-------|
 | `.mp4` / `.webm` / `.mov` / `.mp3` / `.ogg` / `.wav` / `.m4a` / `.vtt` | `import ${1:url} from '_relativePath_';` |
 
-**HTML video** — `markup.htmlVideoImportStyle` (4 entries):
+**HTML video** — `markup.htmlVideoImportStyle`:
 
 | # | Shape | Status |
 |---|-------|--------|
@@ -208,7 +210,7 @@ Full design: [media-files.md](media-files.md). As shipped:
 | 3 | `<video src="_relativePath_" controls poster=""></video>` | new — poster image placeholder |
 | 4 | `<video src="_relativePath_" controls preload="metadata"></video>` | new — avoids pre-buffering (Core Web Vitals) |
 
-**HTML audio** — `markup.htmlAudioImportStyle` (2 entries):
+**HTML audio** — `markup.htmlAudioImportStyle`:
 
 | # | Shape | Status |
 |---|-------|--------|
@@ -223,9 +225,9 @@ Full design: [media-files.md](media-files.md). As shipped:
 
 ### LaTeX (`.tex`)
 
-Full design: [latex.md](latex.md). The 13th destination, and the first non-script destination to ship its **own** multi-shape picker namespace (`latex.*`). Source classification is by raw extension — `determineImportType` returns `'image'` for `.tex`, `.bib`, and `.eps` alike, so `latex.ts:buildSnippet` branches on `sourceFileExt` directly.
+Full design: [latex.md](latex.md). A destination with its **own** multi-shape picker namespace (`latex.*`) for non-script sources. Source classification is by raw extension — `determineImportType` returns `'image'` for `.tex`, `.bib`, and `.eps` alike, so `latex.ts:buildSnippet` branches on `sourceFileExt` directly.
 
-**LaTeX graphics** — `latex.graphicsImportStyle` (`TEX_GRAPHICS_IMPORT_OPTIONS`, 3 entries). Accepted sources: `.pdf` / `.png` / `.jpg` / `.jpeg` / `.eps` (engine-renderable; `.svg` / `.gif` / `.webp` / `.avif` rejected — see [../decisions/latex.md](../decisions/latex.md)). `${path}` honours `latex.preserveGraphicsFileExtension` (default keep).
+**LaTeX graphics** — `latex.graphicsImportStyle` (`TEX_GRAPHICS_IMPORT_OPTIONS`). Accepted sources: `.pdf` / `.png` / `.jpg` / `.jpeg` / `.eps` (engine-renderable; `.svg` / `.gif` / `.webp` / `.avif` rejected — see [../decisions/latex.md](../decisions/latex.md)). `${path}` honours `latex.preserveGraphicsFileExtension` (default keep).
 
 | # | Shape | Status |
 |---|-------|--------|
@@ -233,14 +235,14 @@ Full design: [latex.md](latex.md). The 13th destination, and the first non-scrip
 | 2 | `\includegraphics[width=0.5\textwidth]{_relativePath_}` | new — sized, no float |
 | 3 | `\includegraphics{_relativePath_}` | new — bare, natural size |
 
-**LaTeX `\input`** — `latex.inputImportStyle` (`TEX_INPUT_IMPORT_OPTIONS`, 2 entries). The `.tex` extension is always dropped (`\include` requires it omitted).
+**LaTeX `\input`** — `latex.inputImportStyle` (`TEX_INPUT_IMPORT_OPTIONS`). The `.tex` extension is always dropped (`\include` requires it omitted).
 
 | # | Shape | Status |
 |---|-------|--------|
 | 1 | `\input{_relativePath_}` | ← **default** — inline, no page break |
 | 2 | `\include{_relativePath_}` | new — chapter-level (page break, `\includeonly`-able) |
 
-**LaTeX bibliography** — `latex.bibliographyImportStyle` (`TEX_BIBLIOGRAPHY_IMPORT_OPTIONS`, 2 entries).
+**LaTeX bibliography** — `latex.bibliographyImportStyle` (`TEX_BIBLIOGRAPHY_IMPORT_OPTIONS`).
 
 | # | Shape | Status |
 |---|-------|--------|
@@ -251,7 +253,7 @@ Full design: [latex.md](latex.md). The 13th destination, and the first non-scrip
 
 ## Snippet placeholder spec
 
-The locked-in `SnippetString` shapes for every shipped entry, grouped by language. Each table is the canonical implementation reference: rows are one-to-one with the shipped `package.json` enum + `src/snippets/_styles.ts:ImportStyle[]` + the per-language `switch` in `src/snippets/languages/*.ts` (the three sync sites — see `src/snippets/CLAUDE.md`). Removed entries appear in a footnote under each table; they fall through to the language's default via the [Removed-value fallback policy](#removed-value-fallback-policy).
+The locked-in `SnippetString` shapes for every shipped entry, grouped by language. Each table is the canonical implementation reference: rows are one-to-one with the shipped `package.json` enum + `src/snippets/_styles.ts:ImportStyle[]` + the per-language `switch` in `src/snippets/languages/*.ts` (the three sync sites — see `src/snippets/CLAUDE.md`). The `tag` field on each `ImportStyle` (the QuickPick subtitle, surfaced by `variants.ts:toStyledVariant`) is intentionally omitted from these tables — it carries no import-shape semantics and sits outside the byte-exact `description` sync. Removed entries appear in a footnote under each table; they fall through to the language's default via the [Removed-value fallback policy](#removed-value-fallback-policy).
 
 **Notation.** `${path}` denotes the relative-path expression (in code, the `relativePath` parameter / closure variable). `$1`, `$2`, `${1:default-text}` are VS Code `SnippetString` tab stops — written verbatim into the emitted snippet (the doc-source representation may need to escape `$` against JS template-literal interpolation — e.g. `` `\${1:text}` ``). Entries marked **kept** preserve their `switch`-case body byte-for-byte; **new** entries lock in the shape below; entries that are the new default also set the index-1 / `default:`-branch fallback shape.
 
@@ -273,7 +275,7 @@ The locked-in `SnippetString` shapes for every shipped entry, grouped by languag
 
 | # | Enum `description` | `SnippetString` shape | Status |
 |---|---|---|---|
-| 1 | `import { name } from '_relativePath_';` | `` `import { $1 } from '${path}';` `` — **Legacy-Angular auto-naming applies *only at this index*** (back-compat support for the pre-standalone Angular filename convention): when `${path}` matches a suffix in `LEGACY_ANGULAR_FILE_SUFFIXES` (`.component`, `.directive`, `.pipe`, `.service`, `.module`), `generateAngularLegacyImportName()` (`src/snippets/languages/typescript.ts`) fills the `$1` tab stop with a PascalCase identifier derived from the basename, emitted as an **editable** placeholder `${1:…}` (e.g. `app-root.component.ts` → `import { ${1:AppRootComponent} } from '…'` — pre-filled but editable, exactly like a detected class name), validated against `/^[A-Za-z_$][\w$]*$/` (falls back to a bare `$1` if the derived name is not a legal identifier). The basename derivation strips a trailing `.ts` / `.tsx` / `.js` / `.jsx` *first* — load-bearing for `preserveScriptFileExtension: true`, which would otherwise fold the extension into the identifier (`AppRootComponentTs`). | ← **default** |
+| 1 | `import { name } from '_relativePath_';` | `` `import { $1 } from '${path}';` `` — **Legacy-Angular auto-naming applies *only on this shape (position 1)*** (back-compat support for the pre-standalone Angular filename convention): when `${path}` matches a suffix in `LEGACY_ANGULAR_FILE_SUFFIXES` (`.component`, `.directive`, `.pipe`, `.service`, `.module`), `generateAngularLegacyImportName()` (`src/snippets/languages/typescript.ts`) fills the `$1` tab stop with a PascalCase identifier derived from the basename, emitted as an **editable** placeholder `${1:…}` (e.g. `app-root.component.ts` → `import { ${1:AppRootComponent} } from '…'` — pre-filled but editable, exactly like a detected class name), validated against `/^[A-Za-z_$][\w$]*$/` (falls back to a bare `$1` if the derived name is not a legal identifier). The basename derivation strips a trailing `.ts` / `.tsx` / `.js` / `.jsx` *first* — load-bearing for `preserveScriptFileExtension: true`, which would otherwise fold the extension into the identifier (`AppRootComponentTs`). | ← **default** |
 | 2 | `import name from '_relativePath_';` | `` `import $1 from '${path}';` `` | kept |
 | 3 | `import * as name from '_relativePath_';` | `` `import * as $1 from '${path}';` `` | kept |
 | 4 | `import '_relativePath_';` | `` `import '${path}';` `` | kept |
@@ -281,7 +283,7 @@ The locked-in `SnippetString` shapes for every shipped entry, grouped by languag
 | 6 | `import { name, type Type } from '_relativePath_';` | `` `import { $1, type $2 } from '${path}';` `` | new |
 | 7 | `const name = await import('_relativePath_');` | `` `const $1 = await import('${path}');` `` | new |
 
-**Removed entries (dropped from all three sync sites):** `import { default as name } from '_relativePath_';`. The index-1 default remains TS's legacy-Angular auto-naming anchor — preserving its position is load-bearing for the back-compat support; index 1 is not reordered.
+**Removed entries (dropped from all three sync sites):** `import { default as name } from '_relativePath_';`. The position-1 default remains TS's legacy-Angular auto-naming anchor — preserving its position is load-bearing for the back-compat support; position 1 is not reordered.
 
 ### SCSS (`buildScssImportSnippetByStyle`)
 
@@ -353,7 +355,7 @@ Same structural change as HTML script — previously hardcoded; this surface int
 | # | Enum `description` | `SnippetString` shape | Status |
 |---|---|---|---|
 | 1 | `![alt-text](_relativePath_)` | `` `![${1:alt-text}](${path})` `` | ← **default** (bare inline — most common form in the wild) |
-| 2 | `![alt-text](_relativePath_ "Hover text")` | `` `![alt-text](${path} "Hover text")` `` — preserved verbatim from the existing hardcode (no tab stops; was the previous default, now kept as opt-in for users who want the hover title). | kept |
+| 2 | `![alt-text](_relativePath_ "Hover text")` | `` `![${1:alt-text}](${path} "${2:Hover text}")` `` — two tab stops walk alt-text → hover title; was the previous default, now kept as opt-in for users who want the hover title. | kept |
 | 3 | `<img src="_relativePath_" alt="" width="" height="">` | `` `<img src="${path}" alt="$1" width="$2" height="$3">` `` — three tab stops; same shape as the HTML image picker's CLS variant. | new — HTML embed for sizing; Core Web Vitals CLS prevention |
 
 **Removed entries (dropped from all three sync sites):** `![alt-text][image] / [image]: _relativePath_ "Hover text"`. The literal `/` separator is not valid Markdown — genuine reference-style is two lines, which doesn't fit the snippet model.
@@ -364,11 +366,11 @@ A CSS-module basename guard before the switch, then three switch groups in decla
 
 | # | Source extensions | `SnippetString` shape | Status |
 |---|---|---|---|
-| guard | `.module.css` / `.module.scss` (**basename match — dispatched before the switch** at `_react.ts:52-54`, otherwise `.module.scss` would fall into the side-effect group via the `.scss` case) | `` `import ${1:styles} from '${path}';` `` — `styles` is the universal CSS-Modules naming convention. | CSS Modules default import (fixes the bug where `Foo.module.css` emitted the side-effect shape) |
-| group 1 (default-import, `_react.ts:57-74`) | `.gif` / `.jpeg` / `.jpg` / `.png` / `.svg` / `.avif` / `.webp` / `.json` / `.html` / `.yml` / `.yaml` / `.md` / `.mdx` / `.pdf` / `.vue` / `.svelte` / `.astro` | `` `import ${1:name} from '${path}';` `` | `.svg`, `.avif`, `.pdf` added to the existing default-import group (`.vue`/`.svelte`/`.astro` joined later — see [framework-components.md](framework-components.md)) |
-| group 2 (media + text-track, `_react.ts:75-83`) | `.mp4` / `.webm` / `.mov` / `.mp3` / `.ogg` / `.wav` / `.m4a` / `.vtt` | `` `import ${1:url} from '${path}';` `` — `url` signals URL-ness; consistent across video/audio/text-track. | media + text-track URL-import group (see [media-files.md](media-files.md)) |
-| group 3 (side-effect, `_react.ts:84-90`) | `.woff` / `.woff2` / `.ttf` / `.eot` / `.css` / `.scss` | `` `import '${path}';` `` — side-effect import; global stylesheets only. | narrowed — `.module.*` peeled out via the guard |
-| `default:` (`_react.ts:91-92`) | anything else | `null` → `buildReactImport` wraps as an empty `SnippetString` | unchanged |
+| guard | `.module.css` / `.module.scss` (**basename match — dispatched before the switch**, otherwise `.module.scss` would fall into the side-effect group via the `.scss` case) | `` `import ${1:styles} from '${path}';` `` — `styles` is the universal CSS-Modules naming convention. | CSS Modules default import (fixes the bug where `Foo.module.css` emitted the side-effect shape) |
+| group 1 (default-import) | `.gif` / `.jpeg` / `.jpg` / `.png` / `.svg` / `.avif` / `.webp` / `.json` / `.html` / `.yml` / `.yaml` / `.md` / `.mdx` / `.pdf` / `.vue` / `.svelte` / `.astro` | `` `import ${1:name} from '${path}';` `` | `.svg`, `.avif`, `.pdf` added to the existing default-import group (`.vue`/`.svelte`/`.astro` route here too — see [framework-components.md](framework-components.md)) |
+| group 2 (media + text-track) | `.mp4` / `.webm` / `.mov` / `.mp3` / `.ogg` / `.wav` / `.m4a` / `.vtt` | `` `import ${1:url} from '${path}';` `` — `url` signals URL-ness; consistent across video/audio/text-track. | media + text-track URL-import group (see [media-files.md](media-files.md)) |
+| group 3 (side-effect) | `.woff` / `.woff2` / `.ttf` / `.eot` / `.css` / `.scss` | `` `import '${path}';` `` — side-effect import; global stylesheets only. | narrowed — `.module.*` peeled out via the guard |
+| `default:` | anything else | `null` → `buildReactImport` wraps as an empty `SnippetString` | unchanged |
 
 JSX/TSX/MDX *script* sources delegate to JS/TS via `_react.ts:buildReactImport`'s `primarySnippet` / `fallbackSnippet` parameters — every JS/TS shape from the tables above flows through automatically; no JSX/TSX/MDX-specific script work.
 
@@ -428,13 +430,13 @@ Each `…ByStyle` switch ends in a `default:` returning style 1 (figure / `\inpu
 
 When a user's persisted `settings.json` value matches an enum entry that was removed, the system **automatically falls back to the language's default shape**:
 
-1. `resolveStyleIndex(table, configValue)` (`src/snippets/_styles.ts:7`) returns `undefined` because the removed `description` no longer matches any entry in the table.
+1. `resolveStyleIndex(table, configValue)` (`src/snippets/_styles.ts`) returns `undefined` because the removed `description` no longer matches any entry in the table.
 2. The per-language `buildXImportSnippetByStyle` `switch` enters its `default:` branch.
 3. That `default:` branch emits the default shape.
 
 Removed-value users transparently get the new default with zero broken pastes. This is also the byte-exact `description` ↔ `package.json` enum contract: drift = a silent `undefined`.
 
-**Invariant:** each `default:` branch emits the **shipped default**, not the old one. The three default changes required three matching `default:` branch states:
+**Invariant:** each `default:` branch emits the **shipped default**, not the old one. The default changes required matching `default:` branch states:
 
 - `scss.ts:buildScssImportSnippetByStyle` — `default:` returns `@use '${relativePath}';` (was `@import '${relativePath}';`).
 - `markdown.ts:buildMarkdownImageImportSnippetByStyle` — `default:` returns bare inline `![alt-text](${relativePath})` (was inline-with-title).
@@ -444,11 +446,11 @@ Removed-value users transparently get the new default with zero broken pastes. T
 
 ## Code map
 
-- `src/snippets/_styles.ts` — the `*_IMPORT_OPTIONS` tables (canonical target for the "Final list" tables above), `ImportStyle[]`, and `resolveStyleIndex` at `_styles.ts:7` (undefined-on-no-match routes to the per-language `default:` branch).
+- `src/snippets/_styles.ts` — the `*_IMPORT_OPTIONS` tables (canonical target for the "Final list" tables above), `ImportStyle[]`, and `resolveStyleIndex` (undefined-on-no-match routes to the per-language `default:` branch).
 - `src/snippets/languages/*.ts` — per-language `buildXImportSnippetByStyle` switches (`typescript.ts` also holds `generateAngularLegacyImportName` + `LEGACY_ANGULAR_FILE_SUFFIXES`; `css.ts` holds `buildCssImageImportSnippet`).
 - `src/snippets/languages/latex.ts` — the LaTeX builder (graphics / `\input` / bibliography `byStyle` switches + the `isTexGraphicsSource` / `resolveGraphicsPath` helpers; the figure is the only multi-line snippet). The `latex` config namespace lives in `src/config/settings.ts`; the `TEX_*_IMPORT_OPTIONS` tables in `src/snippets/_styles.ts`.
-- `src/snippets/_react.ts` — `buildReactImport` (`_react.ts:17`) and the JSX/TSX/MDX non-script `buildAssetImportStatement` switch (`_react.ts:48-94`: guard `52-54`, default-import `57-74`, media+text-track `75-83`, side-effect `84-90`, `default: null` `91-92`).
-- `src/snippets/variants.ts` — the `buildReactNonScriptVariant` mirror of the asset switch.
+- `src/snippets/_react.ts` — `buildReactImport` and the JSX/TSX/MDX non-script `buildAssetImportStatement` switch (guard, default-import, media+text-track, side-effect, `default: null`).
+- `src/snippets/variants.ts` — `buildReactNonScriptVariant`, a caller of the shared `_react.ts:buildAssetImportStatement` switch (not a copy).
 - `src/snippets/dispatch.ts` — destination-extension routing.
 - `src/types/file-extension.ts` — the extension type unions (`ImageFileExtension`, `DocumentFileExtension`, media unions).
 - `src/constants/extensions.ts` — the runtime gating tables (`IMAGE_FILE_EXTENSIONS`, `MEDIA_FILE_EXTENSIONS`, `TEXT_TRACK_FILE_EXTENSIONS`, the `*_SUPPORTED_EXTENSIONS` lists).
@@ -460,4 +462,5 @@ Removed-value users transparently get the new default with zero broken pastes. T
 - [../CRITERIA.md](../CRITERIA.md) — the rubric these picker shapes apply.
 - [framework-components.md](framework-components.md) — the `.vue`/`.svelte`/`.astro` default-import-as-component destinations.
 - [media-files.md](media-files.md) — the media + text-track design.
+- [latex.md](latex.md) — the LaTeX (`.tex`) destination — graphics / `\input` / bibliography.
 - [`src/snippets/CLAUDE.md`](../../../src/snippets/CLAUDE.md) — the three-site sync rules (`package.json` ↔ `_styles.ts` ↔ per-language `switch`).

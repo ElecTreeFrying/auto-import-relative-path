@@ -1,14 +1,14 @@
 # import-statements/CLAUDE.md
 
-This is the finalized **specification** for the import-statement picker. It records the design **as shipped** into `/src`, organised into three layers — *what v1 does* (`spec/`), *why those shapes were chosen* (`decisions/` + the top-level rubric), and *what was designed but is not yet built* (`future/`). This tree is the canonical reference going forward.
+This is the **specification** for the import-statement picker. It records the design **as shipped** into `/src`, organised into layers — *what v1 does* (`spec/`), *why those shapes were chosen* (`decisions/` + the top-level rubric), and *what was designed but is not yet built* (`future/`). This tree is the canonical reference.
 
 ## Layers
 
-The tree is split into three layers plus the top-level rubric:
+The tree is split into its layers plus the top-level rubric:
 
 - **[CRITERIA.md](CRITERIA.md)** — the rubric. Inclusion/rejection criteria, tiebreakers (incl. Tiebreaker-1 fragility tags), the picker-bloat ceiling, and the named patterns (Promote-to-dispatch, re-applied-per-destination). Long-lived; every admission/rejection decision applies it.
-- **[spec/](spec/CLAUDE.md)** — *what v1 does*, declarative. Shipped behavior only: the per-language picker shapes + defaults + snippet placeholder specs (`spec/statements.md`), framework SFC destinations (`spec/framework-components.md`), and media support (`spec/media-files.md`). Plus the cross-cutting behavior model — dispatch, gating, placement, naming, extension preservation — in `spec/CLAUDE.md`.
-- **[decisions/](decisions/CLAUDE.md)** — *why* (for v1). The criteria applications, locked-in decisions, and rejection ledgers behind each spec area. One file per area (`statements.md`, `framework-components.md`, `media-files.md`), each a LIVING gate that stays open for new rows.
+- **[spec/](spec/CLAUDE.md)** — *what v1 does*, declarative. Shipped behavior only: the per-language picker shapes + defaults + snippet placeholder specs (`spec/statements.md`), framework SFC destinations (`spec/framework-components.md`), media support (`spec/media-files.md`), and LaTeX (`.tex`) destinations (`spec/latex.md`). Plus the cross-cutting behavior model — dispatch, gating, placement, naming, extension preservation — in `spec/CLAUDE.md`.
+- **[decisions/](decisions/CLAUDE.md)** — *why* (for v1). The criteria applications, locked-in decisions, and rejection ledgers behind each spec area. One file per area (`statements.md`, `framework-components.md`, `media-files.md`, `latex.md`), each a LIVING gate that stays open for new rows.
 - **[future/](future/CLAUDE.md)** — *designed but NOT implemented*. The auto-detect tri-state design (`future/auto-detect-extensions.md`) and the framework sub-roadmap (`future/framework-roadmap.md`), each carrying its own revisit trigger. Nothing here exists in `/src`.
 
 ## Reading order
@@ -20,7 +20,7 @@ Rubric → spec → decisions (for why) → future (for backlog):
 - **Understanding *why* a shape is in or out, or what was rejected** — read the matching `decisions/` file alongside the spec doc.
 - **Checking what is designed but unbuilt (the backlog)** — read [future/CLAUDE.md](future/CLAUDE.md) and the deferred design it indexes.
 
-> `prompts/` is intentionally **not** carried over into this tree — it held user-only copy-paste prompt scripts that are off-limits and have no place in the finalized layer.
+> `prompts/` is intentionally **not** carried over into this tree — it held user-only copy-paste prompt scripts that are off-limits and have no place in this tree.
 
 ## Status legend
 
@@ -35,6 +35,7 @@ Every file in this tree, with its layer:
 
 | File | Layer | Role | Status |
 |------|-------|------|--------|
+| [CLAUDE.md](CLAUDE.md) | index | This file — the tree's index, layer split, status legend, and the canonical sync rule. | **LIVING** |
 | [CRITERIA.md](CRITERIA.md) | rubric | Inclusion/rejection criteria, tiebreakers, picker-bloat ceiling, named patterns. | **LIVING** |
 | [spec/CLAUDE.md](spec/CLAUDE.md) | spec | Spec index + cross-cutting behavior model (dispatch, gating, placement, naming, extension preservation). | **SEALED / Shipped** |
 | [spec/statements.md](spec/statements.md) | spec | Per-language picker shapes + defaults + snippet placeholder spec (canonical source for `src/snippets/_styles.ts`). | **SEALED / Shipped** |
@@ -42,7 +43,7 @@ Every file in this tree, with its layer:
 | [spec/media-files.md](spec/media-files.md) | spec | Video/audio/text-track support for JSX/TSX/MDX/HTML/Vue/Svelte/Astro. | **SEALED / Shipped** |
 | [spec/latex.md](spec/latex.md) | spec | LaTeX (`.tex`) destination — graphics→`figure`, `.tex`→`\input`, `.bib`→`\addbibresource`, via `latex.ts` + the `latex.*` settings. | **SEALED / Shipped** |
 | [decisions/CLAUDE.md](decisions/CLAUDE.md) | decisions | Required-sections contract + criterion-tagging convention for the ledgers. | **LIVING gate** |
-| [decisions/statements.md](decisions/statements.md) | decisions | Why each picker shape is in/out, the 5-flagged defaults, "Things considered and rejected" appendix. | **LIVING gate** |
+| [decisions/statements.md](decisions/statements.md) | decisions | Why each picker shape is in/out, the flagged defaults, "Things considered and rejected" appendix. | **LIVING gate** |
 | [decisions/framework-components.md](decisions/framework-components.md) | decisions | Locked-in v1 framework decisions + framework rejection ledger. | **LIVING gate** |
 | [decisions/media-files.md](decisions/media-files.md) | decisions | Media criteria application, cross-cutting design choices, media rejection ledger. | **LIVING gate** |
 | [decisions/latex.md](decisions/latex.md) | decisions | LaTeX criteria application (engine-renderable graphics gate, keep-extension default), locked-in decisions, rejection ledger. | **LIVING gate** |
@@ -85,4 +86,4 @@ Every doc in this tree is interconnected. When updating any file, check and sync
 ## See also
 
 - `../../src/snippets/CLAUDE.md` — the shipped dispatch + snippet-builder rules (the canonical code-side anchor: `buildReactImport` and the single `buildAssetImportStatement` asset switch live in `src/snippets/_react.ts`).
-- `../../src/gating.ts` — `isPairSupported`, the ten-clause source/destination pair check.
+- `../../src/gating.ts` — `isPairSupported`, the source/destination pair check.

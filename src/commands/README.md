@@ -1,6 +1,6 @@
 # src/commands/
 
-The eight commands registered with VS Code. The clipboard is the data channel between copy and paste — except the three settings commands (`set-import-placement`, `toggle-preserve-script-extension`, `reset-import-styles`), which read/write configuration only and have no source/destination pair.
+The commands registered with VS Code. The clipboard is the data channel between copy and paste — except the settings commands (`set-import-placement`, `toggle-preserve-script-extension`, `reset-import-styles`), which read/write configuration only and have no source/destination pair.
 
 ## Files
 
@@ -13,12 +13,12 @@ The eight commands registered with VS Code. The clipboard is the data channel be
 | `set-default-import-style.ts` | `executeSetDefaultImportStyle` | Same picker as `paste-import-with-style.ts`; persists the chosen style as the user's default instead of inserting a one-shot snippet. |
 | `set-import-placement.ts` | `executeSetImportPlacement` | Settings command — no source/destination pair, no gating. QuickPick of `Top` / `Bottom` / `Cursor` for where imports are inserted; marks the current value with a checkmark, persists the pick, shows a toast. |
 | `toggle-preserve-script-extension.ts` | `executeTogglePreserveScriptExtension` | Settings command — no gating. Flips the preserve-script-file-extension boolean and shows the new state (`On`/`Off`) in a toast. |
-| `reset-import-styles.ts` | `executeResetImportStyles` | Settings command — no gating. Clears every customized import-style Global override (the twelve configurable styles) back to its `package.json` default; shows an info toast if none are customized, otherwise a toast with an **Undo** action. |
-| `index.ts` | (barrel) | Re-exports the eight above. The only barrel in the project. |
+| `reset-import-styles.ts` | `executeResetImportStyles` | Settings command — no gating. Clears every customized import-style Global override (every configurable style in `RESETTABLE_STYLES`) back to its `package.json` default; shows an info toast if none are customized, otherwise a toast with an **Undo** action. |
+| `index.ts` | (barrel) | Re-exports the commands above; the project's deliberate lone barrel. |
 
 ## Command registration
 
-All eight are registered in `src/extension.ts:activate` with their VS Code IDs:
+All are registered in `src/extension.ts:activate` with their VS Code IDs:
 
 | Function | VS Code command ID | Default keybinding |
 |----------|--------------------|---------------------|

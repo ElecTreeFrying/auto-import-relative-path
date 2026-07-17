@@ -5,7 +5,7 @@ Drag-and-drop import provider registered via the VS Code `DocumentDropEditProvid
 ## Files
 
 - `provider.ts` — `AutoImportOnDropProvider` class implementing `DocumentDropEditProvider`.
-- `selector.ts` — `DROP_LANGUAGE_SELECTORS` constant: `DocumentSelector` covering all 13 supported destination languages (`scheme: 'file'` only).
+- `selector.ts` — `DROP_LANGUAGE_SELECTORS` constant: `DocumentSelector` covering every supported destination language (`scheme: 'file'` only).
 
 ## `provider.ts` — `AutoImportOnDropProvider`
 
@@ -45,12 +45,12 @@ Drag-and-drop import provider registered via the VS Code `DocumentDropEditProvid
 
 ## `selector.ts` — `DROP_LANGUAGE_SELECTORS`
 
-Thirteen entries covering every supported destination language: eleven matched by VS Code language ID (`javascript`, `javascriptreact`, `typescript`, `typescriptreact`, `css`, `scss`, `html`, `markdown`, `vue`, `svelte`, `astro`), plus `.mdx` and `.tex` matched by **file pattern** (`**/*.mdx`, `**/*.tex`) — neither has a guaranteed VS Code language ID (VS Code ships no LaTeX language; a `.tex` file opens as plaintext without a LaTeX extension). All entries use `scheme: 'file'`.
+Entries covering every supported destination language: matched by VS Code language ID (`javascript`, `javascriptreact`, `typescript`, `typescriptreact`, `css`, `scss`, `html`, `markdown`, `vue`, `svelte`, `astro`), plus `.mdx` and `.tex` matched by **file pattern** (`**/*.mdx`, `**/*.tex`) — neither has a guaranteed VS Code language ID (VS Code ships no LaTeX language; a `.tex` file opens as plaintext without a LaTeX extension). All entries use `scheme: 'file'`.
 
 These are VS Code language IDs, whereas the four-site sync and `dispatch.ts` are keyed on file extension — so the two move independently:
 
 - **New language ID for an existing file extension** → add a `{ language, scheme: 'file' }` entry here only. The extension already flows through the four-site sync, so it needs no change.
-- **New file extension** (e.g. `.rs`) → run the four-site sync described in [`src/types/CLAUDE.md`](../types/CLAUDE.md), and add a `{ language, scheme: 'file' }` entry here too unless its language ID is already listed above.
+- **New file extension** → run the four-site sync described in [`src/types/CLAUDE.md`](../types/CLAUDE.md), then register it here too: add `{ language, scheme: 'file' }` if the extension has a guaranteed VS Code language ID (skip if already listed above), otherwise add `{ pattern: '**/*.ext', scheme: 'file' }` as done for `.mdx`/`.tex`.
 
 ## Architectural position
 

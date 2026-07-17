@@ -1,7 +1,7 @@
 # PROFILE.md — destination profile table (the IR)
 
-> **Status: frozen.** Populated in Session 2 (`populate-profile`) by reading the extension
-> source; every value below is source-derived (file:line provenance in the section notes). This
+> **Status: frozen.** Populated by reading the extension
+> source; every value below is source-derived (provenance in the section notes). This
 > file is now the single per-destination input — alongside `RECIPE.md` — that each per-language
 > generation reads. A destination's behavior changes only by editing its row here and
 > regenerating, **never** by hand-editing a generated checklist.
@@ -14,10 +14,10 @@ source code  →  PROFILE.md (IR)  →  ../checklists/{lang}.md (output)
               human-reviewed, frozen
 ```
 
-One row per destination — **13 destinations**: `.ts` `.js` `.jsx` `.tsx` `.mdx`
+One row per destination: `.ts` `.js` `.jsx` `.tsx` `.mdx`
 `.css` `.scss` `.html` `.md` `.vue` `.svelte` `.astro` `.tex`. (`.tsx` and `.mdx` are
-separate rows even though `.mdx` is byte-identical to `.tsx`; `.tex` was added when
-the extension gained the LaTeX destination.) Each row carries **six fields**. Everything a generator needs must be derivable from these fields: if
+separate rows even though `.mdx` is byte-identical to `.tsx`.) Each row carries the
+fields indexed below. Everything a generator needs must be derivable from these fields: if
 a checklist behavior has no home in a field below, the field is incomplete.
 
 ## Field index
@@ -33,7 +33,7 @@ a checklist behavior has no home in a field below, the field is incomplete.
 
 ## Populated by reading the extension source code
 
-Session 2 filled each field from these source-of-truth files:
+Each field is filled from these source-of-truth files:
 
 | Field | Source files |
 |-------|--------------|
@@ -54,14 +54,14 @@ mental model) and the generated checklists are tested against the *running* exte
 code is authoritative here. Recorded for the frozen-review step; reconciling §4.4 of the
 design spec is a separate follow-up.
 
-> The former Delta #1 (`styles` · `.vue`/`.svelte`/`.astro`) was **resolved** by `a85af78`:
-> framework non-script sources now route through the shared `buildAssetImportStatement`, so the
+> The former Delta #1 (`styles` · `.vue`/`.svelte`/`.astro`) was **resolved** —
+> framework non-script sources route through the shared `buildAssetImportStatement`, so the
 > code matches the spec §4.3 prose (non-script → fixed asset shapes). Only the smartId deviation
 > below remains.
 
 | # | Row | Spec §4 prose | Code (authoritative) | Provenance |
 |---|-----|---------------|----------------------|------------|
-| 2 | `smartId` · `.tsx`/`.mdx` | none | **Angular-PascalCase on style 0** for `.ts`/`.tsx` sources (exported-class half correctly absent) | `tsx.ts:8-15` → `_react.ts:24-25` → `typescript.ts:38-44,64-78` |
+| 2 | `smartId` · `.tsx`/`.mdx` | none | **Angular-PascalCase on style 0** for `.ts`/`.tsx` sources (exported-class half correctly absent) | `tsx.ts` → `_react.ts:buildReactImport` → `typescript.ts:buildTypeScriptImportSnippetByStyle` |
 
 ---
 
@@ -90,8 +90,7 @@ complement `SOURCE_UNIVERSE − accept-list`.
 
 > `MEDIA_FILE_EXTENSIONS` is video+audio only; `.vtt` lives in `TEXT_TRACK_FILE_EXTENSIONS`. Both
 > are spread together into the HTML/Vue/Svelte/Astro accept-lists.
-> `.tex`/`.bib`/`.eps` were added with the LaTeX destination; `.pdf` (formerly document-only,
-> JSX/TSX/MDX-reachable) is also a LaTeX **graphics** source. `TEX_GRAPHICS_FILE_EXTENSIONS` =
+> `.pdf` is both a document source (JSX/TSX/MDX-reachable) and a LaTeX **graphics** source. `TEX_GRAPHICS_FILE_EXTENSIONS` =
 > `.pdf` `.png` `.jpg` `.jpeg` `.eps` — the `pdflatex`-renderable set, deliberately **not** the web
 > `IMAGE_FILE_EXTENSIONS` (no `.svg`/`.gif`/`.webp`/`.avif`).
 
@@ -108,7 +107,7 @@ set is `SOURCE_UNIVERSE − accept`.
 | `.css` | allow-list | `CSS_SUPPORTED_EXTENSIONS` = `.css` + image |
 | `.scss` | allow-list | `SCSS_SUPPORTED_EXTENSIONS` = `.scss` `.css` + image **(one-way: SCSS imports CSS; CSS rejects `.scss`)** |
 | `.md` | allow-list | `MARKDOWN_SUPPORTED_EXTENSIONS` = `.md` + image **(no media, no `.vtt`)** |
-| `.html` | allow-list | `HTML_SUPPORTED_EXTENSIONS` = `.js` `.css` + image + media + `.vtt`. **`.html`→`.html` rejected** (table omits `.html`; explicit clause `gating.ts:20-22`) — §1 carries a `.html`→`.html` *rejection* row. |
+| `.html` | allow-list | `HTML_SUPPORTED_EXTENSIONS` = `.js` `.css` + image + media + `.vtt`. **`.html`→`.html` rejected** (table omits `.html`; explicit clause in `gating.ts`) — §1 carries a `.html`→`.html` *rejection* row. |
 | `.vue` | allow-list | `VUE_SUPPORTED_EXTENSIONS` = `.vue` `.ts` `.js` `.jsx` `.tsx` `.json` `.yml` `.yaml` + image + media + `.vtt` |
 | `.svelte` | allow-list | `SVELTE_SUPPORTED_EXTENSIONS` = `.svelte` `.ts` `.js` `.jsx` `.tsx` `.json` `.yml` `.yaml` + image + media + `.vtt` |
 | `.astro` | allow-list | `ASTRO_SUPPORTED_EXTENSIONS` = `.astro` `.ts` `.js` `.jsx` `.tsx` `.vue` `.svelte` `.json` `.yml` `.yaml` `.md` `.mdx` + image + media + `.vtt` |
@@ -193,9 +192,9 @@ The derived name — like a detected exported-class name — is emitted as a **p
 `.ts`/`.tsx`/`.js`/`.jsx` is stripped **before** deriving the name, so the identifier is
 **stable** across `preserveScriptFileExtension` on/off (never `…ComponentTs`) — only the path
 string changes. The derived PascalCase name is then validated against `/^[A-Za-z_$][\w$]*$/`
-(`typescript.ts:75`); an illegal result — a basename with a space or a leading digit, e.g.
+(the identifier validation in `typescript.ts`); an illegal result — a basename with a space or a leading digit, e.g.
 `2fa.service` → `2faService` (fails the leading-char class) — falls back to bare `$1` **even
-when a suffix matched** (added in `b0a2505`; applies to every Angular-routed dest).
+when a suffix matched** (applies to every Angular-routed dest).
 
 ## `placement` per destination
 

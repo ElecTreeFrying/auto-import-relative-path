@@ -19,22 +19,22 @@ This is the spec layer's index and its **cross-cutting behavior model** — the 
 Import generation is a two-stage dispatch keyed on the **destination** file's extension, then on the **source** file's extension.
 
 - **Destination-extension switch (`src/snippets/dispatch.ts`).** The destination's extension routes to one per-language builder. `.vue`/`.svelte`/`.astro` route to `languages/framework-component.ts`; `.mdx` routes to `languages/tsx.ts`; the remaining languages route to their own leaf builder.
-- **Asset switch (`src/snippets/_react.ts:buildAssetImportStatement`, `_react.ts:48-94`).** Inside the JSX/TSX/MDX and framework-component path, the source-extension routing is a single canonical switch — `buildAssetImportStatement` is the one place that decides an asset's import shape. Its callers are `buildReactImport` (`_react.ts:17`), `languages/framework-component.ts`, and `variants.ts:buildReactNonScriptVariant`. Its structure:
-  - A `.module.css`/`.module.scss` **guard before the switch** (`_react.ts:52-54`) → emits `import ${1:styles}`.
-  - **Switch group 1 — default-import** (`_react.ts:57-74`) → `import ${1:name}`.
-  - **Switch group 2 — media + text-track** (`_react.ts:75-83`) → `import ${1:url}`. This is the 2nd of the three switch groups, and the 3rd distinct snippet shape overall (after the styles guard and the default-import group).
-  - **Switch group 3 — side-effect** (`_react.ts:84-90`) → `import '…'`.
-  - `default: null` (`_react.ts:91-92`) — an unhandled source emits nothing.
+- **Asset switch (`src/snippets/_react.ts:buildAssetImportStatement`).** Inside the JSX/TSX/MDX and framework-component path, the source-extension routing is a single canonical switch — `buildAssetImportStatement` is the one place that decides an asset's import shape. Its callers are `buildReactImport`, `languages/framework-component.ts`, and `variants.ts:buildReactNonScriptVariant`. Its structure:
+  - A `.module.css`/`.module.scss` **guard before the switch** → emits `import ${1:styles}`.
+  - **Switch group — default-import** → `import ${1:name}`.
+  - **Switch group — media + text-track** → `import ${1:url}`.
+  - **Switch group — side-effect** → `import '…'`.
+  - `default: null` — an unhandled source emits nothing.
 
   There is no `_shared.ts`; `buildAssetImportStatement` is the shared asset switch.
 
 ## Gating
 
-A source→destination pair is admitted by `gating.ts:isPairSupported`, a **ten-clause** check:
+A source→destination pair is admitted by `gating.ts:isPairSupported`, a sequential reject-clause check:
 
 1. One `CROSS_IMPORT_DESTINATIONS` guard (the cross-language allow-gate).
 2. An `.html`↔`.html` block (HTML may not import HTML).
-3. Through 10 — eight per-destination allow-lists, one per destination family, including the `.vue`/`.svelte`/`.astro` framework destinations (`gating.ts:35`, `gating.ts:38`, `gating.ts:41`) and the `.tex` LaTeX destination (`gating.ts:44`).
+3. Per-destination allow-lists, one per destination family, including the `.vue`/`.svelte`/`.astro` framework destinations and the `.tex` LaTeX destination.
 
 A pair that no clause admits is not supported and produces no snippet.
 
@@ -43,7 +43,7 @@ A pair that no clause admits is not supported and produces no snippet.
 The snippet's insertion point is governed by the default placement setting and per-destination overrides:
 
 - **Default placement** is one of Bottom / Top / Cursor.
-- **HTML and Markdown destinations force Cursor placement** regardless of the default.
+- **HTML, Markdown, and LaTeX (`.tex`) destinations force Cursor placement** regardless of the default. For `.tex`, this keeps a figure / `\input` in the document body (line 0 is the preamble) — see [latex.md](latex.md).
 - **Vue/Svelte SFC-script override** — into a `.vue`/`.svelte` destination, the snippet is placed inside the SFC `<script>` block. Bounds and placement are computed by `findSfcScriptBounds` / `computeSfcPlacement` (`src/editor/placement.ts`) and inserted by `insertSnippetAtSfcScript` (`src/editor/insert-snippet.ts`).
 - **Astro frontmatter override** — into a `.astro` destination, the snippet is placed inside the `---` frontmatter fence, honoring Top/Bottom/Cursor *within* the fence. Bounds and placement are computed by `findAstroFrontmatterBounds` / `computeAstroPlacement` (`src/editor/placement.ts`) and inserted by `insertSnippetAtAstroFrontmatter` (`src/editor/insert-snippet.ts`).
 
@@ -55,14 +55,15 @@ The default-import placeholder name for TS-family destinations comes from `detec
 
 ## Extension preservation
 
-Two shipped **booleans** (both default `false`) govern whether script and stylesheet imports keep their file extension:
+The shipped preserve **booleans** govern whether imports keep their file extension — script and stylesheet default `false`, LaTeX graphics defaults `true`:
 
-- `script.preserveScriptFileExtension` — read at four call sites (`src/snippets/languages/javascript.ts`, `src/snippets/languages/typescript.ts`, `src/snippets/variants.ts`, and `src/snippets/_react.ts:buildAssetImportStatement`'s script bucket via its callers). It gates **script-to-script** imports only (JS/TS/JSX/TSX/MDX → JS/TS).
+- `script.preserveScriptFileExtension` — read at the import-gating call sites (`src/snippets/languages/javascript.ts`, `src/snippets/languages/typescript.ts`, `src/snippets/languages/framework-component.ts`, `src/snippets/variants.ts`, and `src/snippets/_react.ts:buildReactImport`). It gates **script-source** imports only (`.ts`/`.tsx`/`.js`/`.jsx` sources) into script and SFC destinations (`.js`/`.ts`/`.jsx`/`.tsx`/`.mdx` and `.vue`/`.svelte`/`.astro`).
 - `styleSheet.preserveStylesheetFileExtension` — read at one call site (`src/snippets/languages/scss.ts:determineScssExtension`). It gates **SCSS-to-SCSS** imports.
+- `latex.preserveGraphicsFileExtension` — read at one call site (`src/snippets/languages/latex.ts:resolveGraphicsPath`). It gates **LaTeX graphics** imports (`figure` / `\includegraphics`) only, and **defaults `true` (keep)** — inverted from the other two (keeping `fig.png` is unambiguous; the LaTeX omit-and-resolve convention is opt-in). See [latex.md](latex.md).
 
 **SCSS always preserves `.css` on `.css` sources**, as a hardcoded exception independent of the flag (Sass requires the `.css` extension to recognize a foreign-language import).
 
-Six import-statement categories append the extension **unconditionally**, never consulting either setting — so flipping a flag to `true` changes only the script-to-script (and SCSS-to-SCSS) call sites, and no other shape regresses with the default `false`:
+The import-statement categories below append the extension **unconditionally**, never consulting any preserve setting — so the preserve flags affect only their own call sites (script-to-script, SCSS-to-SCSS, and LaTeX graphics) — though LaTeX's non-graphics shapes carry their own fixed, preserve-independent extension rules (`\addbibresource` appends `.bib`; `\input`/`\bibliography` drop the extension), documented in [latex.md](latex.md) rather than this table:
 
 | Category | Where forced | Reason |
 |----------|--------------|--------|
@@ -77,7 +78,7 @@ The tri-state auto-detect enum that would replace `preserveScriptFileExtension` 
 
 ## See also
 
-- [statements.md](statements.md) · [framework-components.md](framework-components.md) · [media-files.md](media-files.md) — the per-area specs.
+- [statements.md](statements.md) · [framework-components.md](framework-components.md) · [media-files.md](media-files.md) · [latex.md](latex.md) — the per-area specs.
 - [../CRITERIA.md](../CRITERIA.md) — the rubric admitting each shape; [../decisions/](../decisions/CLAUDE.md) — why each shape is in or out; [../future/](../future/CLAUDE.md) — designed but unbuilt work.
 - `../../../src/snippets/CLAUDE.md` — the shipped dispatch + snippet-builder rules (`buildReactImport` and the single `buildAssetImportStatement` asset switch live in `src/snippets/_react.ts`).
-- `../../../src/gating.ts` — `isPairSupported`, the ten-clause source/destination pair check.
+- `../../../src/gating.ts` — `isPairSupported`, the source/destination pair check.

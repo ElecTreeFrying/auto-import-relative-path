@@ -8,11 +8,13 @@
 >
 > **Rubric:** every decision below applies the criteria in [../CRITERIA.md](../CRITERIA.md). When in doubt about *why* a shape is in or out, that's the long-lived rubric; this file is one application of it.
 >
-> **Provenance:** the audit was executed as 14 stepped commits (each leaving `npm run compile && npm test` green); that per-step execution history — read-first blocks, before/after diffs, risk table, doc-update sweep — lives in git, not here.
+> **Provenance:** the audit was executed as stepped commits (each leaving `npm run compile && npm test` green); that per-step execution history — read-first blocks, before/after diffs, risk table, doc-update sweep — lives in git, not here.
 
 ## Criteria application — the recommended-defaults rationale
 
-Every `package.json` setting needs a `default`. Most stay; **3 changed + 2 new = 5 flagged rows**. Anything in **bold** is a change from the pre-audit `package.json`. The default *values* are specified in [statements.md](../spec/statements.md); the Change?/Rationale columns below are why each default is what it is.
+Every `package.json` setting needs a `default`. Most stay; **the changed and new rows are flagged in bold** — anything in **bold** is a change from the pre-audit `package.json`. The default *values* are specified in [statements.md](../spec/statements.md); the Change?/Rationale columns below are why each default is what it is.
+
+> **Key namespaces.** Rows read `<group>.<name>`. Every group nests under `auto-import.importStatement.` **except** `preferences`, the top-level `auto-import.preferences` namespace — so placement's full key is `auto-import.preferences.importStatementPlacement`, **not** `auto-import.importStatement.preferences.…`.
 
 | Setting | Recommended default | Change? | Rationale |
 |---------|---------------------|---------|-----------|
@@ -33,15 +35,15 @@ Every `package.json` setting needs a `default`. Most stay; **3 changed + 2 new =
 | `markup.htmlVideoImportStyle` | `"<video src=\"_relativePath_\" controls></video>"` | **New** | Accessibility-by-default (`controls` ensures keyboard access). Design: [../spec/media-files.md](../spec/media-files.md) · [media-files.md](media-files.md). |
 | `markup.htmlAudioImportStyle` | `"<audio src=\"_relativePath_\" controls></audio>"` | **New** | Same accessibility rationale. Design: [../spec/media-files.md](../spec/media-files.md) · [media-files.md](media-files.md). |
 
-**5 flagged rows — 3 changed + 2 new:**
+**The flagged rows:**
 
-*3 changed (all back-compat-affecting):*
+*Changed (all back-compat-affecting):*
 
 1. **SCSS** `@import '…';` → `@use '…';` (Sass deprecation fix)
 2. **HTML script** drop redundant `type="text/javascript"` (modernization, no behavior change)
 3. **Markdown image** drop `"Hover text"` title (matches common usage)
 
-*2 new (settings that did not exist pre-audit):*
+*New (settings that did not exist pre-audit):*
 
 4. **HTML video** `<video src="…" controls></video>` (new `htmlVideoImportStyle` setting)
 5. **HTML audio** `<audio src="…" controls></audio>` (new `htmlAudioImportStyle` setting)
@@ -118,7 +120,7 @@ Missing them is the most significant gap in the entire registry. Every modern TS
 
 **Optional (skip unless asked):** `import type * as Namespace from '…';`. Real but rare.
 
-The TS default at index 1 (`import { name }`) is a Tiebreaker-1 back-compat anchor: legacy-Angular auto-naming (`generateAngularLegacyImportName`) fires **only at this index** — for paths matching a suffix in `LEGACY_ANGULAR_FILE_SUFFIXES` (`.component` / `.directive` / `.pipe` / `.service` / `.module`), validated against `/^[A-Za-z_$][\w$]*$/`, else `$1`. Indices 2–7 use `$1`. A *named* import is the TS default precisely because of this anchor; do not reorder index 1.
+The TS default at position 1 (`import { name }`, the code's first `switch` case) is a Tiebreaker-1 back-compat anchor: legacy-Angular auto-naming (`generateAngularLegacyImportName`) fires **only on this shape** — for paths matching a suffix in `LEGACY_ANGULAR_FILE_SUFFIXES` (`.component` / `.directive` / `.pipe` / `.service` / `.module`), validated against `/^[A-Za-z_$][\w$]*$/`, else `$1`. Every other shape uses `$1`. A *named* import is the TS default precisely because of this anchor; do not reorder position 1.
 
 ### JSX / TSX / MDX (`_react.ts:buildReactImport` source-extension dispatch)
 
@@ -149,14 +151,14 @@ JSX/TSX/MDX have no `package.json` enum of their own. Script sources delegate to
 | `.module.css` / `.module.scss` → `import ${1:styles} from '_relativePath_';` (basename guard — must dispatch *before* the `switch` because `.module.scss` matches the `.scss` last-segment) | Dominant modern React pattern (Vite, Next.js, CRA, Remix). Pre-audit behavior emitted the wrong shape. |
 | `.svg` → `import ${1:name} from '_relativePath_';` (default-import group) | Universal default-import-as-URL shape — works in CRA, Vite, Next, Webpack asset modules. Component-import is framework-specific (see rejected list). |
 | `.avif` → `import ${1:name} from '_relativePath_';` (default-import group) | Modern image format — fully supported in all evergreen browsers since Safari 16.4 (March 2023). Naturally belongs alongside `.webp` in `IMAGE_FILE_EXTENSIONS`. Same default-import-as-URL shape and same plumbing as `.svg`. |
-| `.pdf` → `import ${1:name} from '_relativePath_';` (default-import group) | Modern download/viewer pattern: `import pdfUrl from './manual.pdf';` then `<a href={pdfUrl} download>` or `react-pdf <Document file={pdfUrl}>`. Framework-portable (Vite, Next, CRA, webpack asset-modules). **JSX/TSX/MDX-only** — HTML conventionally uses `public/` for PDF downloads, not paste-import. New singleton `DocumentFileExtension = '.pdf'` union (no existing category fits documents). |
+| `.pdf` → `import ${1:name} from '_relativePath_';` (default-import group) | Modern download/viewer pattern: `import pdfUrl from './manual.pdf';` then `<a href={pdfUrl} download>` or `react-pdf <Document file={pdfUrl}>`. Framework-portable (Vite, Next, CRA, webpack asset-modules). **JSX/TSX/MDX-scoped in this audit** — HTML conventionally uses `public/` for PDF downloads, not paste-import. New singleton `DocumentFileExtension = '.pdf'` union (no existing category fits documents). *(The LaTeX `.tex` destination separately admits `.pdf` as a graphics source — see [latex.md](latex.md) / [../spec/latex.md](../spec/latex.md).)* |
 
 **Net change:** 2 buckets → a basename guard + a default-import group + a side-effect group. The CSS-Modules basename guard was added before the switch; three extensions added to the default-import group (`.svg`, `.avif`, `.pdf`); the side-effect group narrowed (now excludes `.module.*`).
 
 **Type-union footprint of the additions.** The audit added file extensions across two type-union categories:
 
 - **Images:** `.svg`, `.avif` → expand `types/file-extension.ts:ImageFileExtension` and `constants/extensions.ts:IMAGE_FILE_EXTENSIONS`. Auto-flows into the `*_SUPPORTED_EXTENSIONS` tables via spread (HTML/CSS/SCSS/MD destinations accept them for free).
-- **Documents:** `.pdf` → a `DocumentFileExtension = '.pdf'` singleton union in `types/file-extension.ts`, joined into `FileExtension`. **JSX/TSX/MDX-only by design** — no `*_SUPPORTED_EXTENSIONS` change (HTML uses `public/` for PDF downloads by convention; CSS/SCSS/MD have no natural PDF embed shape).
+- **Documents:** `.pdf` → a `DocumentFileExtension = '.pdf'` singleton union in `types/file-extension.ts`, joined into `FileExtension`. **JSX/TSX/MDX-scoped in this audit** — no `*_SUPPORTED_EXTENSIONS` change here (HTML uses `public/` for PDF downloads by convention; CSS/SCSS/MD have no natural PDF embed shape). *(The LaTeX `.tex` destination separately carries `.pdf` as an engine-renderable graphics source — `TEX_GRAPHICS_FILE_EXTENSIONS` / `TEX_SUPPORTED_EXTENSIONS`; see [latex.md](latex.md).)*
 
 CSS Modules detection is a basename test (`.endsWith('.module.css')` / `.endsWith('.module.scss')`) and short-circuits **before** the extension-only `switch` — otherwise `.module.scss` would fall into the side-effect group via the `.scss` case.
 
@@ -203,7 +205,7 @@ This is the section that needed the most work.
 
 ### HTML (three settings: script / image / stylesheet)
 
-The "currently unused" framing — single-entry tables that exist for `package.json` UI parity — is exactly the wrong shape for HTML. There *are* legitimate modern alternatives users would want; the maintainer just hadn't added them. This audit was the trigger to expand them.
+The "parity-only" framing — single-entry tables that exist for `package.json` UI parity — is exactly the wrong shape for HTML. There *are* legitimate modern alternatives users would want; the maintainer just hadn't added them. This audit was the trigger to expand them.
 
 **Pre-audit (1 + 1 + 1 styles):**
 
@@ -255,7 +257,7 @@ Pasting the old snippet gave the user garbage they had to manually split. Refere
 
 ### Media files (video / audio / text track)
 
-Full design: [../spec/media-files.md](../spec/media-files.md). Criteria application and rejection ledger: [media-files.md](media-files.md). The audit-level decision was to bring `.mp4` / `.webm` / `.mov` (video), `.mp3` / `.ogg` / `.wav` / `.m4a` (audio), and `.vtt` (text track / WebVTT captions) in scope — each ecosystem's standard format ships a default-import-as-URL shape for JSX/TSX/MDX and `controls`-by-default `<video>`/`<audio>` for HTML, with `<track>` hardcoded. CSS / SCSS / Markdown do **not** gain media — no functional shape exists (CSS can't play video; Markdown has no native media syntax). The video setting ships 4 entries, audio 2 — both well under the ~7 ceiling. See [media-files.md](media-files.md) for the per-shape criteria evaluation.
+Full design: [../spec/media-files.md](../spec/media-files.md). Criteria application and rejection ledger: [media-files.md](media-files.md). The audit-level decision was to bring `.mp4` / `.webm` / `.mov` (video), `.mp3` / `.ogg` / `.wav` / `.m4a` (audio), and `.vtt` (text track / WebVTT captions) in scope — each ecosystem's standard format ships a default-import-as-URL shape for JSX/TSX/MDX and `controls`-by-default `<video>`/`<audio>` for HTML, with `<track>` hardcoded. CSS / SCSS / Markdown do **not** gain media — no functional shape exists (CSS can't play video; Markdown has no native media syntax). The video and audio settings are both well under the ~7 ceiling. See [media-files.md](media-files.md) for the per-shape criteria evaluation.
 
 ### Framework component files (`.vue` / `.svelte` / `.astro`)
 
@@ -313,5 +315,5 @@ Each bullet is tagged with the rejection criterion (A–F) or inclusion criterio
 
 - [statements.md](../spec/statements.md) — the shipped picker shapes, defaults, and snippet placeholders (what this file explains the *why* for)
 - [../CRITERIA.md](../CRITERIA.md) — the rubric every decision above applies
-- [media-files.md](media-files.md) · [framework-components.md](framework-components.md) — sibling decision ledgers for the media and framework expansions
+- [media-files.md](media-files.md) · [framework-components.md](framework-components.md) · [latex.md](latex.md) — sibling decision ledgers for the media, framework, and LaTeX expansions
 - [../future/auto-detect-extensions.md](../future/auto-detect-extensions.md) — the deferred tri-state extension-preservation design

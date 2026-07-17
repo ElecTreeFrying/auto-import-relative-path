@@ -1,6 +1,6 @@
 # src/test/fixtures
 
-Self-contained fixture tree for the extension's **Mocha test suite**. The 15 fixture-driven test files under `src/test/` resolve their `FIXTURE_ROOT` here and open these files as paste sources / destinations through the VS Code API. Origin: copied from the former `qa/workspace/` when the suite was decoupled from the top-level QA tree, so the tests own their fixtures outright.
+Self-contained fixture tree for the extension's **Mocha test suite**. The fixture-driven test files under `src/test/` resolve their `FIXTURE_ROOT` here and open these files as paste sources / destinations through the VS Code API. The tests own their fixtures outright; the tree is deliberately independent of the top-level `qa/` tree.
 
 > **Data, not modules.** These files are *opened as documents* by the tests — never compiled or `import`ed. They're deliberately excluded from `tsc` and ESLint (see [`CLAUDE.md`](CLAUDE.md); many are intentionally invalid) and are never emitted to `out/`, so the runner glob (`out/test/**/*.test.js`) can't pick them up.
 
@@ -77,8 +77,8 @@ workspace/
 │   ├── feature-flags.json, translations.yaml, package-meta.json   realistic data
 │   └── document.pdf                     PDF source for JSX/TSX/MDX
 ├── unsupported/
-│   ├── Main.java                       arbitrary unsupported language (clause-1 fixture)
-│   ├── styles.less                     close-to-supported but rejected (clause-6 fixture)
+│   ├── Main.java                       arbitrary unsupported language (cross-import-gate fixture)
+│   ├── styles.less                     close-to-supported but rejected (allow-list reject fixture)
 │   ├── texture.bmp                     image-like but unsupported (JSX/TSX/MDX `default:` fixture)
 │   ├── render.avi                      media-like but unsupported (binary unsupported)
 │   └── archive.zip                     binary unsupported
@@ -95,27 +95,27 @@ workspace/
 
 ## Coverage matrix
 
-Every cell of the source-extension × destination-extension matrix is reachable from this fixture. Each gating clause in `src/gating.ts:isPairSupported` has at least one positive and one negative fixture — **except** the tenth (`.tex` / LaTeX) clause, covered by hand-built `FilePathInfo` in `gating.test.ts` and `snippets/languages/latex.test.ts` (the LaTeX builder reads no files, so it needs no fixture).
+Every cell of the source-extension × destination-extension matrix is reachable from this fixture. Each gating clause in `src/gating.ts:isPairSupported` has at least one positive and one negative fixture — **except** the `.tex` / LaTeX clause, covered by hand-built `FilePathInfo` in `gating.test.ts` and `snippets/languages/latex.test.ts` (the LaTeX builder reads no files, so it needs no fixture).
 
 | Capability | Where to look |
 |------------|---------------|
-| 12 of the 13 destination snippet builders (`.ts/.tsx/.js/.jsx/.mdx/.css/.scss/.html/.md/.vue/.svelte/.astro`) | `src/` has destinations for these 12: `.ts/.js/.jsx/.tsx` (baseline), `.vue/.svelte/.astro` (`App.*`), `.mdx` (`docs/example.mdx`); `styles/` for `.css/.scss`; `pages/` for `.html`; `docs/` for `.md`. The 13th destination's snippet builder, **LaTeX (`.tex`)**, is exercised **fixture-free** in `snippets/languages/latex.test.ts` (hand-built `FilePathInfo` — the LaTeX builder reads no files); the `paper/main.tex` fixture exists only for the **placement** tests (`editor/placement-parity.test.ts`, `editor/insert-snippet.test.ts`), which need a real `.tex` document open. |
+| Every destination snippet builder except LaTeX (`.ts/.tsx/.js/.jsx/.mdx/.css/.scss/.html/.md/.vue/.svelte/.astro`) | `src/` has destinations for these: `.ts/.js/.jsx/.tsx` (baseline), `.vue/.svelte/.astro` (`App.*`), `.mdx` (`docs/example.mdx`); `styles/` for `.css/.scss`; `pages/` for `.html`; `docs/` for `.md`. The remaining destination's snippet builder, **LaTeX (`.tex`)**, is exercised **fixture-free** in `snippets/languages/latex.test.ts` (hand-built `FilePathInfo` — the LaTeX builder reads no files); the `paper/main.tex` fixture exists only for the **placement** tests (`editor/placement-parity.test.ts`, `editor/insert-snippet.test.ts`), which need a real `.tex` document open. |
 | Style-picker variants for `pasteImportWithStyle` + `setDefaultImportStyle` (every applicable shape per source/destination pair) | same fixtures as the row above — both pickers reuse the destination switch in `snippets/variants.ts:buildImportSnippetVariants` |
-| All 5 Angular auto-naming suffixes (`.component`, `.module`, `.directive`, `.pipe`, `.service`) | `src/components/` |
+| Every Angular auto-naming suffix (`.component`, `.module`, `.directive`, `.pipe`, `.service`) | `src/components/` |
 | Non-Angular TS file (negative auto-name case) | `src/helpers.ts`, `src/utils/*.ts`, `src/lib/` |
 | ES modules vs CommonJS (`module.exports`, `exports.x`, `var require`, `const require`) | `src/legacy/*.js`, `with-requires.js`, `src/sibling.js`, `src/other.js` |
 | `_partial.scss` filename normalization | `styles/_partial.scss`, `styles/_variables.scss`, `styles/components/_*.scss` |
 | Nested-partial path (`_partials/` directory keeps underscore) | `styles/_partials/_nested.scss` |
-| All 7 image extensions (`.gif/.jpeg/.jpg/.png/.svg/.avif/.webp`) | `assets/` (baseline), `assets/images/`, `assets/icons/` |
-| All 7 media extensions (`.mp4/.webm/.mov/.mp3/.ogg/.wav/.m4a`) | `assets/media/` |
+| Every image extension (`.gif/.jpeg/.jpg/.png/.svg/.avif/.webp`) | `assets/` (baseline), `assets/images/`, `assets/icons/` |
+| Every media extension (`.mp4/.webm/.mov/.mp3/.ogg/.wav/.m4a`) | `assets/media/` |
 | Text-track (`.vtt`) | `assets/media/captions.vtt` |
-| All 4 font extensions (`.woff/.woff2/.ttf/.eot`) | `assets/fonts/` |
+| Every font extension (`.woff/.woff2/.ttf/.eot`) | `assets/fonts/` |
 | `.json/.yaml/.yml` data sources for JSX/TSX/MDX | `data/` |
 | `.pdf` data source for JSX/TSX/MDX | `data/document.pdf` |
-| Bottom-placement landing across all 9 `IMPORT_INDICATORS` | `with-imports.ts`, `with-requires.js`, `styles/with-imports.css`, `styles/with-uses.scss`, `pages/with-resources.html` |
+| Bottom-placement landing across every `IMPORT_INDICATORS` marker | `with-imports.ts`, `with-requires.js`, `styles/with-imports.css`, `styles/with-uses.scss`, `pages/with-resources.html` |
 | Empty / whitespace / single-char / comments-only edge cases | root-level files |
 | Path with space, Unicode path, deep traversal | `my files/`, `unicode-paths/`, `deeply/...`, `very-deep/level-01/.../level-09/` |
-| Unsupported-extension rejection (clause 1, clause 3–6, JSX/TSX/MDX `default:`) | `unsupported/{Main.java, styles.less, texture.bmp, render.avi, archive.zip}` |
+| Unsupported-extension rejection (the cross-import gate, the per-destination allow-lists, JSX/TSX/MDX `default:`) | `unsupported/{Main.java, styles.less, texture.bmp, render.avi, archive.zip}` |
 | TypeScript export shapes — `const`, `function`, `interface`, `type`, `enum`, `const enum`, `class`, `abstract class`, `namespace`, `default class`, `default function`, barrel re-export | `src/types/`, `src/lib/`, `src/server/`, `src/models/`, `src/utils/` |
 | JavaScript export shapes — `module.exports = {}`, `exports.x =`, `module.exports.x =`, ES-module `export class` / `export default`, IIFE, `var function` decl | `src/sibling.js`, `src/other.js`, `src/legacy/{analytics,feature-flags,tracker,iife,utils-old}.js`, `src/lib/{event-bus-modern,calculator}.js` |
 | JSX component shapes — function component, class component, HOC, forwardRef, `export default function` | `src/components/{Layout,NavBar,Footer,PageHeader,ClassComponent,withLogging,ForwardedInput,DefaultPage}.jsx` |

@@ -6,10 +6,10 @@ Source root for the Auto Import Relative Path VS Code extension.
 
 | Path | Purpose |
 |------|---------|
-| `extension.ts` | Entry point. `activate` registers the eight commands and the document drop edit provider; `deactivate` is a no-op. |
-| `gating.ts` | Shared `isPairSupported()` — ten-clause source/destination extension-pair check. |
+| `extension.ts` | Entry point. `activate` registers the commands and the document drop edit provider; `deactivate` is a no-op. |
+| `gating.ts` | Shared `isPairSupported()` — source/destination extension-pair check. |
 | `commands/` | Public command surface — one file per command (copy / paste / auto / paste-with-style / set-default-style / set-placement / toggle-preserve-ext / reset-styles). |
-| `drop/` | Drag-and-drop import provider — `DocumentDropEditProvider` for all 13 supported destination languages. |
+| `drop/` | Drag-and-drop import provider — `DocumentDropEditProvider` for every supported destination language. |
 | `editor/` | VS Code-API helpers (clipboard, snippet insertion, notifications, placement). |
 | `snippets/` | Per-language snippet builders + dispatch. |
 | `path/` | Pure path math. No `vscode` import — Node-testable. |
@@ -23,7 +23,7 @@ Source root for the Auto Import Relative Path VS Code extension.
 | What | Where |
 |------|-------|
 | New command | `commands/` (new file + register in `extension.ts` + `package.json`) |
-| New destination language | 8-site change — follow the [checklist in `snippets/CLAUDE.md`](snippets/CLAUDE.md#adding-a-new-destination-language) (file in `languages/`, `dispatch.ts`, `variants.ts`, `types/file-extension.ts`, `constants/extensions.ts`, `_styles.ts` + `package.json`, `gating.ts` *(only if the destination restricts its sources; script-like all-accepting destinations need only the `CROSS_IMPORT_DESTINATIONS` entry)*, `drop/selector.ts`) |
+| New destination language | multi-site change — follow the [checklist in `snippets/CLAUDE.md`](snippets/CLAUDE.md#adding-a-new-destination-language) (file in `languages/`, `dispatch.ts`, `variants.ts`, `types/file-extension.ts`, `constants/extensions.ts`, `_styles.ts` + `package.json`, `gating.ts` *(only if the destination restricts its sources; script-like all-accepting destinations need only the `CROSS_IMPORT_DESTINATIONS` entry)*, `drop/selector.ts`) |
 | New pure helper | `path/` |
 | New `vscode` API helper | `editor/` |
 | New cross-cutting type | `types/` |
