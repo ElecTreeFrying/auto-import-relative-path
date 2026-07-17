@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.0.0 (2026-06-28)
+## v1.0.0 (2026-07-01)
 
 ### Breaking Changes
 - **Minimum VS Code version is `^1.97.0`.** The drag-and-drop import provider needs the drop-edit APIs (`DocumentDropOrPasteEditKind`, 3-argument `DocumentDropEdit`) finalized in VS Code 1.97 (February 2025), so the extension requires VS Code 1.97 or newer and won't load on builds older than 1.97. (This is the empirical floor for those APIs — and a slight *widening* versus the 0.6.x line, which required `^1.98.0`.) Recent Cursor, VSCodium, and Code Server builds that track the VS Code API at 1.97+ remain supported.
@@ -33,13 +33,13 @@
 - **Class-name detection for TypeScript.** The named-import shape (`import { Name } from '…'`) now auto-fills the identifier from the source file's `export class Name` declaration when available. Falls back to Angular-convention PascalCase derivation (`.component`, `.directive`, `.pipe`, `.service`, `.module` suffixes), then to a `$1` tab-stop placeholder.
 - **New import styles per language.** TypeScript: `import type { }`, mixed value + type, dynamic `await import()`. JavaScript: mixed default + named, `await import()`. SCSS: `@use '…' as name`, `@forward '…'`. HTML script: `defer`, `type="module"`, `async`. HTML image: lazy-loading with `loading="lazy"`, CLS-safe dimensions with `width`/`height` attributes. HTML `<video>` (new): controls, background autoplay, poster, and metadata-preload variants. HTML `<audio>` (new): controls and metadata-preload variants.
 - **Comprehensive test coverage.** 15+ automated test suites covering path math, import-type classification, extension gating tables, style-table integrity, class-name detection, and per-language snippet builders for every supported destination (JavaScript, TypeScript, CSS, SCSS, HTML, Markdown, JSX, TSX, framework components, LaTeX). Eight-command registration guard test. Integration demo workspace with fixture files for every supported pair.
-- **Toolchain modernization.** Webpack replaced by esbuild (~8 KB gzipped production bundle). Unified `typescript-eslint` package replaces the separate parser and plugin. `npm-run-all` powers parallel `watch:tsc` + `watch:esbuild` scripts. Build pipeline: `compile` runs `check-types && lint && esbuild`; `watch` runs both watchers concurrently.
+- **Toolchain modernization.** Webpack replaced by esbuild (~10 KB gzipped production bundle). Unified `typescript-eslint` package replaces the separate parser and plugin. `npm-run-all` powers parallel `watch:tsc` + `watch:esbuild` scripts. Build pipeline: `compile` runs `check-types && lint && esbuild`; `watch` runs both watchers concurrently.
 
 ### Changed
 - **Command palette titles renamed for clarity.** `Auto Import: Paste` → *Paste as Import*. `Auto Import: Copy` → *Copy File Path*. `Auto Import: Auto` → *Insert Import from Selected File*.
 - **Copy toast wording.** `Copied <basename>` → `Copied path — <basename>` to clarify that the *path* was copied, not the file contents.
 - **Settings panel rewritten.** Every setting has a precise top-level description plus per-choice `enumDescriptions`. TypeScript documents the Angular auto-fill behavior; SCSS labels `@use` as "modern (recommended)" and `@import` as "legacy".
-- **Marketplace metadata overhauled.** Description, keywords, and categories updated for the full **13-destination, 38-extension, 8-command** scope (45 import styles, 20 settings).
+- **Marketplace metadata overhauled.** Description, keywords, and categories updated for the full **13-destination, 38-extension, 8-command** scope (45 import styles, 20 settings). A new `qna` field routes the Marketplace listing's Q&A tab to the project's GitHub issue tracker.
 - **Source layout restructured.** Eight single-responsibility directories (`commands/`, `drop/`, `editor/`, `snippets/`, `path/`, `config/`, `constants/`, `types/`) with strict layered dependency direction.
 - **Snippet pipeline parameterized.** All per-language `buildSnippet()` functions, `buildImportSnippet()`, `buildImportSnippetVariants()`, and `insertImportSnippet()` now receive `FilePathInfo` as a parameter. Clipboard-reading is isolated to the command layer — reduces clipboard reads from N per operation to exactly 1.
 - **Gating logic extracted.** The ten-clause extension-pair check is now a shared `isPairSupported()` function in `src/gating.ts`, reused by both commands and the drop provider.

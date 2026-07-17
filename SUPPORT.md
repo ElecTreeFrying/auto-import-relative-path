@@ -43,7 +43,7 @@ Where to get help, how to diagnose common issues, and how to contribute. For fea
 
 ### Does this extension send my data anywhere?
 
-**No.** It is 100% local — no telemetry, no network calls, no AI. The whole bundle is ~8 KB gzipped, and you can read every line of the [source on GitHub][source].
+**No.** It is 100% local — no telemetry, no network calls, no AI. The whole bundle is ~10 KB gzipped, and you can read every line of the [source on GitHub][source].
 
 [source]: https://github.com/ElecTreeFrying/auto-import-relative-path/tree/main/src
 
@@ -282,16 +282,16 @@ To accept a new source extension for an existing destination (e.g. `.yaml` for `
 
 ### Adding a new file extension
 
-To add a new file extension entirely (e.g. accepting `.bmp` everywhere `.png` is accepted), five sites must stay in sync:
+To add a new file extension entirely (e.g. accepting `.bmp` everywhere `.png` is accepted), **four sites** must stay in sync:
 
 1. **`src/types/file-extension.ts`** — add to the relevant category sub-type (`ImageFileExtension`, `ScriptFileExtension`, `StyleSheetFileExtension`, etc).
 2. **`src/constants/extensions.ts`** — add to the matching runtime gating table (`IMAGE_FILE_EXTENSIONS` mirrors `ImageFileExtension`).
 3. **`src/snippets/dispatch.ts`** (if it's a new destination) or the relevant `src/snippets/languages/*.ts` / `src/snippets/_react.ts` (if it's a new source for JSX/TSX/MDX).
 4. **`src/snippets/variants.ts`** — add a matching `case` so the picker commands (`pasteImportWithStyle`, `setDefaultImportStyle`) work for the new extension.
 
-5. **`src/drop/selector.ts`** — add the new destination language to `DROP_LANGUAGE_SELECTORS` so the drop provider activates for the new file type.
+**Additionally — and only when the new extension is itself a new _destination_ language** — register it in **`src/drop/selector.ts`** (`DROP_LANGUAGE_SELECTORS`): add `{ language, scheme: 'file' }` if it has a guaranteed VS Code language ID, otherwise a `{ pattern: '**/*.ext', scheme: 'file' }` entry (as done for `.mdx`/`.tex`). A new _source_ extension for existing destinations — the `.bmp`-like-`.png` case above — needs no selector change, because selectors are keyed on destination language IDs, not source extensions.
 
-Drift between these sites is **silent** — a missing gating entry produces a fall-through to a `default:` branch rather than a type error. The runtime cast `as FileExtension` at boundaries is erased.
+Drift between the four sites is **silent** — a missing gating entry produces a fall-through to a `default:` branch rather than a type error. The runtime cast `as FileExtension` at boundaries is erased.
 
 ### Tests
 
