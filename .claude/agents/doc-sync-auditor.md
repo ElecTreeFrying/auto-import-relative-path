@@ -48,8 +48,8 @@ For each changed path under `src/`:
 - Walk up its directory chain; take the nearest ancestor (itself or above) containing BOTH
   `CLAUDE.md` and `README.md`. That is its owning doc-dir.
 - Files directly in `src/` (e.g. `extension.ts`, `gating.ts`) map to `src/`.
-- Files under `src/snippets/languages/` have no local pair → map up to `src/snippets/`.
-- SKIP everything under `src/test/**` (no doc pairs) and skip the doc files themselves.
+- `src/snippets/languages/` now ships its OWN `CLAUDE.md`+`README.md` pair, so the nearest-pair rule above maps its files to `src/snippets/languages/` itself — it is no longer an exception that routes up to `src/snippets/`.
+- SKIP everything under `src/test/**` (its `CLAUDE.md`/`README.md` pairs are intentionally outside this incremental audit's scope) and skip the doc files themselves.
 - A **renamed/moved** file (status `R`, or a delete+add pair) contributes BOTH its old and new owning dir
   to AFFECTED DIRS — the old dir for the Orphan it leaves behind, the new dir for the Gap it creates.
 Dedupe into a set of AFFECTED DIRS. If empty: report "no code changes under src/ since BASE — nothing

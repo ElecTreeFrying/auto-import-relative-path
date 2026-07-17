@@ -1,8 +1,8 @@
 # Doc-Sync Full Audit Workflow — Spec
 
 > **This Markdown is the source of truth.** The implementation lives in `doc-sync-full.js`. To change
-> behaviour, edit *this file first*, then regenerate the script from it. Both are under `.claude/` →
-> local-only (gitignored).
+> behaviour, edit *this file first*, then regenerate the script from it. Both are **tracked** via the
+> `!.claude/workflows/` exception in root `.gitignore`.
 
 ## Purpose
 

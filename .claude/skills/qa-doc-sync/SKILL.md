@@ -200,7 +200,7 @@ After any change to this skill, re-verify against the live tree (read-only — n
 ## Future use
 
 Invoke via Claude Code (`/qa-doc-sync` or "sync the qa docs") after editing checklists/fixtures or before
-a release. Project-local; lives in `.claude/skills/` and is gitignored. Run it in plan-mode when you want
+a release. Project-local; lives in `.claude/skills/` and is tracked with the repo. Run it in plan-mode when you want
 to review the whole proposed cascade before any edit lands.
 
 ## Changelog

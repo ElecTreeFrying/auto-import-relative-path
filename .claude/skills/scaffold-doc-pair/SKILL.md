@@ -74,8 +74,8 @@ git status --porcelain
 
 - **Clean** → continue.
 - **Dirty** → pause and ask: **stop** (default — let the user commit/stash first, so the scaffold
-  doesn't get mixed into unrelated staged work) vs **proceed anyway**. This mirrors the sibling
-  `upgrade-vscode-extension` skill and avoids the mixed-staging trap.
+  doesn't get mixed into unrelated staged work) vs **proceed anyway**. This mirrors the sibling `qa-doc-sync`
+  skill and avoids the mixed-staging trap.
 
 ### 3. Discover files + exports
 
@@ -200,7 +200,7 @@ This skill is authored under `writing-skills` (TDD-for-skills). After any change
 ## Future use
 
 Invoke via Claude Code (`/scaffold-doc-pair` or "scaffold docs for src/<dir>") whenever a new `src/`
-directory needs its pair. Project-local; lives in `.claude/skills/` and is gitignored. To use on
+directory needs its pair. Project-local; lives in `.claude/skills/` and is tracked with the repo. To use on
 another VS Code extension with the same convention, copy the folder.
 
 ## Changelog

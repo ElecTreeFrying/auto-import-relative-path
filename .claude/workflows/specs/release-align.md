@@ -2,7 +2,7 @@
 
 > **This Markdown is the source of truth.** The implementation lives in `release-align.js`
 > (generated from this doc). To change the workflow's behaviour, edit *this file first*, then
-> regenerate the script from it. Both files are under `.claude/` → local-only (gitignored).
+> regenerate the script from it. Both files are **tracked** via the `!.claude/workflows/` exception in root `.gitignore`.
 
 ## Purpose
 

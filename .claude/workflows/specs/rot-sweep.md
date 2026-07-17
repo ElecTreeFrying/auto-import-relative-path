@@ -2,7 +2,7 @@
 
 > **This Markdown is the source of truth.** The implementation lives in `rot-sweep.js`
 > (generated from this doc). To change the workflow's behaviour, edit *this file first*, then
-> regenerate the script from it. Both files are under `.claude/` → local-only (gitignored).
+> regenerate the script from it. Both files are **tracked** via the `!.claude/workflows/` exception in root `.gitignore`.
 
 ## Purpose
 
@@ -74,7 +74,7 @@ changes implicate `SPEC`, `README`, and `docs/import-statements/`.)
 | untracked files (e.g. `README.draft.md`) | direct | Orphan — is anything referencing it? |
 
 **On the qa/ volume worry:** diff-scoping is what keeps qa/ manageable. The sweep never reads the whole
-12-language qa/ tree — only the checklist(s) your change actually touches, plus the bounded cascade those
+13-language qa/ tree — only the checklist(s) your change actually touches, plus the bounded cascade those
 edits propagate to. If your pile touches no qa-relevant behaviour, qa/ is skipped entirely.
 
 **Out of scope (explicit exclusions, by path):**
@@ -96,7 +96,7 @@ Every finding is exactly one of (definitions match the typed `/_rot` taxonomy an
 - **Gap** — the code has something the docs don't cover (a new command, setting, behaviour).
 - **Orphan** — a doc / table / link references a file / symbol / path that was renamed or deleted (or a new
   file that nothing references).
-- **Broken invariant** — a documented invariant, count, or sync-contract is now violated (e.g. the "seven
+- **Broken invariant** — a documented invariant, count, or sync-contract is now violated (e.g. the "eight
   commands" count, the dependency-direction rule, the "only barrel is `commands/index.ts`" rule).
 
 ## Cross-site contracts (checked only when implicated)

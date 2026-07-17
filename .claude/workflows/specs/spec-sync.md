@@ -2,7 +2,7 @@
 
 > **This Markdown is the source of truth.** The implementation lives in `spec-sync.js`
 > (generated from this doc). To change the workflow's behaviour, edit *this file first*, then
-> regenerate the script from it. Both files are under `.claude/` → local-only (gitignored).
+> regenerate the script from it. Both files are **tracked** via the `!.claude/workflows/` exception in root `.gitignore`.
 
 ## Purpose
 
@@ -65,9 +65,9 @@ caller writes a throwaway `SPEC.audit.md` from the findings; `SPEC.md` is untouc
 - **Tests excluded from ground truth.** The spec describes *shipped* behavior; tests verify it, they
   don't add it — so extraction and verify read `src/` (non-test) + `package.json` only. (The verify
   stage could consult a test as a tiebreaker via a one-line toggle, off by default.)
-- **Opus across all agents.** ~36 files + the manifest; cost acceptable, model-tier doubt removed.
+- **Opus across all agents.** ~39 files + the manifest; cost acceptable, model-tier doubt removed.
   Levers: `sonnet` (or drop) the per-file verify; 3-lens the finding-verify for extra rigour.
-- **Extract, Audit & Verify all run in small sequential batches (`EXTRACT_BATCH` / `AUDIT_BATCH` / `VERIFY_BATCH`, default 6), not wide `parallel()` / `pipeline()` fan-outs.** By the time Audit runs (~80 prior agents, >1M tokens), firing all ~42 audit
+- **Extract, Audit & Verify all run in small sequential batches (`EXTRACT_BATCH` / `AUDIT_BATCH` / `VERIFY_BATCH`, default 6), not wide `parallel()` / `pipeline()` fan-outs.** By the time Audit runs (~80 prior agents, >1M tokens), firing all ~46 audit
   + all verify *schema* agents as one barrier throttles the API and agents return prose instead of calling
   `StructuredOutput` — observed 2026-05-31: 25/43 audit agents (incl. **all 6 contract audits**) mass-failed.
   Small waves keep the instantaneous rate under the throttle — **PROVEN 2026-05-31**: a batched re-run
@@ -83,4 +83,4 @@ caller writes a throwaway `SPEC.audit.md` from the findings; `SPEC.md` is untouc
 
 Edit this doc → regenerate `spec-sync.js`; on drift, the doc wins. No cheap agent counterpart yet
 (standalone heavy audit); complements `release-align` (broad release sweep). If a daily "is `SPEC.md`
-accurate" driver is added later, record it in `.claude/workflows/CLAUDE.md`'s pairing table.
+accurate" driver is added later, record it in `.claude/workflows/specs/CLAUDE.md`'s pairing table.

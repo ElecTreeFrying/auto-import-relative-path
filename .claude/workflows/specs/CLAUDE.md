@@ -47,7 +47,9 @@ that's the daily driver — and the workflow often *uses* the agent.
 
 Run the agent around commits; run the workflow before a release / periodically. They share state where
 relevant (e.g. the doc-sync watermark at `.claude/agents/state/doc-sync-watermark.txt`). Deleting a cheap
-agent removes the daily path **and** breaks the workflow that reuses it.
+agent removes the daily path — and breaks any workflow that **dispatches** it (e.g. `release-align` →
+`changelog-drafter`). The doc-sync pair instead shares only the watermark, so `doc-sync-full` keeps working
+even if `doc-sync-auditor` is deleted.
 
 **Standalone exception — `rot-sweep`.** A third workflow (`../rot-sweep.js`, spec `rot-sweep.md`) sits
 *outside* this cheap/heavy pairing: a diff-scoped, **report-only** `/_rot` sweep of the **uncommitted
@@ -55,6 +57,13 @@ working tree** across the whole repo surface (run before committing a pile). It 
 self-contained** — it dispatches no agent and no workflow (owner directive, for hermeticity), so it has
 **no cheap counterpart and no table row**. That makes it a documented exception to "Reuse, don't
 reimplement" above — **do not refactor it to reuse the others**; see `rot-sweep.md`.
+
+**Standalone heavy audit — `spec-sync`.** A fourth workflow (`../spec-sync.js`, spec `spec-sync.md`) is the
+deep, **SPEC.md-only** counterpart to `release-align`'s broad sweep — it audits `SPEC.md` against `src/` +
+`package.json`. It has **no cheap agent counterpart yet** (so no table row; see its Maintenance note), and it
+**deliberately deviates** from the `Explore`-for-read-only rule above: its extract/audit/verify agents are
+full-read (not `Explore`), with write-safety coming from the report-mode default plus a single fix-mode
+writer that touches only `SPEC.md`. See `spec-sync.md`.
 
 ## Adding a new workflow
 

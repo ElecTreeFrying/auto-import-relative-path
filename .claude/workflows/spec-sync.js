@@ -1,3 +1,4 @@
+// Generated from specs/spec-sync.md — the spec is the source of truth. If they drift, the doc wins.
 export const meta = {
   name: 'spec-sync',
   description: 'Audit the existing SPEC.md against the code and report (or, in fix mode, apply) gaps and corrections. Full-read opus agent per source file (extract -> verify) + package.json, cross-file contract agents, then per-file/per-contract audit of SPEC.md, adversarial finding-verify. Report-only by default; fix mode edits ONLY SPEC.md.',
@@ -121,7 +122,7 @@ phase('Contracts')
 const CONTRACTS = [
   { key: 'four-site-extension', desc: 'Four-site extension sync: types/file-extension.ts (type union) -> constants/extensions.ts (runtime list) -> snippets/dispatch.ts -> snippets/variants.ts.' },
   { key: 'three-site-config', desc: 'Three-site config-enum sync: package.json contributes.configuration enums -> snippets/_styles.ts -> each per-language switch in snippets/languages/. (package.json is outside src/.)' },
-  { key: 'two-site-button', desc: 'Two-site button-label sync: toast button labels in editor/notification.ts vs the switch cases in commands/copy-file-path.ts, character-for-character.' },
+  { key: 'two-site-button', desc: 'Two-site button-label sync: toast button labels in editor/notification.ts vs the switch cases in commands/copy-file-path.ts (copy-success buttons) and commands/reset-import-styles.ts (styles-reset Undo), character-for-character.' },
   { key: 'runtime-type-mirror', desc: 'Runtime-type mirror: IMAGE_FILE_EXTENSIONS mirrors ImageFileExtension; TEXT_TRACK_FILE_EXTENSIONS mirrors TextTrackFileExtension; MEDIA_FILE_EXTENSIONS = video+audio only (.vtt lives in TEXT_TRACK); both spread into destination lists.' },
   { key: 'gating-clauses', desc: 'The full source->destination pair gating in gating.ts (isPairSupported): enumerate every clause that accepts or rejects a pair.' },
   { key: 'layering', desc: 'Dependency-direction / layering rules from src/CLAUDE.md + src/README.md: which layers may import which; the _-prefixed internal modules in snippets/.' },
@@ -202,7 +203,7 @@ if (MODE === 'fix' && confirmed.length) {
   applied = await agent(
     `You are the SINGLE writer for SPEC.md. Apply these confirmed findings by editing ONLY \`SPEC.md\`: add missing behaviors in the right section, correct stale/drifted claims, keep edits minimal and match SPEC.md's existing voice, structure, and table style. Re-read the code to confirm each item before applying; drop any that no longer holds.\n` +
     `HARD RULES: touch ONLY SPEC.md — never code, tests, package.json, other docs, anything under .claude/, or process/.\n\nFindings:\n${items}`,
-    { label: 'apply:SPEC.md', phase: 'Apply', schema: { type: 'object', additionalProperties: false, required: ['edited','summary'], properties: { edited: { type: 'boolean' }, summary: { type: 'string' }, sectionsTouched: { type: 'array', items: { type: 'string' } } } } }
+    { label: 'apply:SPEC.md', phase: 'Apply', model: 'opus', schema: { type: 'object', additionalProperties: false, required: ['edited','summary'], properties: { edited: { type: 'boolean' }, summary: { type: 'string' }, sectionsTouched: { type: 'array', items: { type: 'string' } } } } }
   )
 }
 

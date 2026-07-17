@@ -1,3 +1,4 @@
+// Generated from specs/rot-sweep.md — the spec is the source of truth. If they drift, the doc wins.
 export const meta = {
   name: 'rot-sweep',
   description: 'Diff-scoped /_rot audit of the UNCOMMITTED working tree across the product surface (src/, docs/, qa/, root product docs, package.json — .claude/ tooling, process/, build configs excluded by path). Reads only the in-scope files in git status (+ the witnesses they implicate), checks them against the code for the five /_rot categories (Stale, Drift, Gap, Orphan, Broken invariant), and REPORTS — never edits. Self-contained (reuses no local agent/workflow), report-only, all-Opus Explore agents, fan-out batched to dodge the StructuredOutput throttle.',
@@ -61,7 +62,7 @@ const MANIFEST_SCHEMA = {
   required: [ 'read', 'checked', 'skipped' ],
 }
 
-const ROT = 'Categories: Stale (a doc statement no longer true), Drift (doc and code diverged — especially byte-exact cross-site contracts), Gap (code has something the docs do not cover), Orphan (a doc/table/link references a renamed/deleted file/symbol/path, or a new file nothing references), Broken invariant (a documented invariant/count/sync-contract is violated, e.g. the "seven commands" count or the dependency-direction rule).'
+const ROT = 'Categories: Stale (a doc statement no longer true), Drift (doc and code diverged — especially byte-exact cross-site contracts), Gap (code has something the docs do not cover), Orphan (a doc/table/link references a renamed/deleted file/symbol/path, or a new file nothing references), Broken invariant (a documented invariant/count/sync-contract is violated, e.g. the "eight commands" count or the dependency-direction rule).'
 const READONLY = 'READ-ONLY. Do NOT edit, create, or delete any file. Use git for reads only (never a mutating git command).'
 
 // The four cross-site contracts (encoded — this is rot-sweep's knowledge of the CODE's architecture,
@@ -104,11 +105,8 @@ function contractImplicated(c, paths) {
   return false
 }
 
-// ---------- args: REPORT-ONLY by design (no fix path; the args-mishap footgun cannot exist here) ----------
-let parsedArgs = args
-if (typeof parsedArgs === 'string') { try { parsedArgs = JSON.parse(parsedArgs) } catch (e) { parsedArgs = {} } }
-parsedArgs = parsedArgs || {}
-const MODE = 'report'
+// ---------- args: REPORT-ONLY by design — there is no fix path, so args are never read
+// (the "args mishap silently flips to fix and edits files" footgun cannot exist here). ----------
 log('rot-sweep starting — REPORT ONLY, diff-scoped to the uncommitted working tree (writes nothing).')
 
 const FULL_PASS_POINTER = 'Diff-scoped — NOT a completeness guarantee. For that, run the full-tree /_rot (or doc-sync-full / release-align) before publishing.'
@@ -228,7 +226,7 @@ for (const f of qaFiles) {
 }
 if (hasBehaviouralCodeChange) {
   taskList.push(F('qa:relevant',
-    `qa/ checklist relevance check for a diff-scoped rot sweep. ${READONLY}\nA behavioural code change is in your pile (changed: ${srcCodeFiles.join(', ')}). If it affects a per-language builder or shared behaviour, find ONLY the relevant qa/checklists/ checklist(s) (the affected language(s) + general.md) and check whether they cover the change and whether the qa-doc cascade (inventories, counts, 1:1 fixture pairing) is consistent. NEVER read the whole 12-language tree. If no checklisted behaviour is affected, return empty. ${ROT}\n${fields}`))
+    `qa/ checklist relevance check for a diff-scoped rot sweep. ${READONLY}\nA behavioural code change is in your pile (changed: ${srcCodeFiles.join(', ')}). If it affects a per-language builder or shared behaviour, find ONLY the relevant qa/checklists/ checklist(s) (the affected language(s) + general.md) and check whether they cover the change and whether the qa-doc cascade (inventories, counts, 1:1 fixture pairing) is consistent. NEVER read the whole 13-language tree. If no checklisted behaviour is affected, return empty. ${ROT}\n${fields}`))
 }
 // cross-site contracts (only the implicated ones; reads all member sites incl. unchanged witnesses)
 for (const c of implicated) {
@@ -238,7 +236,7 @@ for (const c of implicated) {
 // package.json self-check
 if (packageJsonChanged) {
   taskList.push(F('package.json',
-    `package.json self-check for a diff-scoped rot sweep. ${READONLY}\npackage.json is in your diff. Read it and the src/ that backs it (extension.ts, commands/index.ts, config access). Check contributes (commands, keybindings, configuration) vs what is actually registered/read in src/: anything DECLARED but dead in code, or in code but UNDECLARED; and command/setting/keybinding COUNTS vs the docs' stated numbers (e.g. the "seven commands" invariant). ${ROT}\n${fields}`))
+    `package.json self-check for a diff-scoped rot sweep. ${READONLY}\npackage.json is in your diff. Read it and the src/ that backs it (extension.ts, commands/index.ts, config access). Check contributes (commands, keybindings, configuration) vs what is actually registered/read in src/: anything DECLARED but dead in code, or in code but UNDECLARED; and command/setting/keybinding COUNTS vs the docs' stated numbers (e.g. the "eight commands" invariant). ${ROT}\n${fields}`))
 }
 // CHANGELOG accuracy (propose-only)
 if (hasUserFacingChange) {

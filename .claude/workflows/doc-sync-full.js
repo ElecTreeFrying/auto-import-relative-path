@@ -1,3 +1,4 @@
+// Generated from specs/doc-sync-full.md — the spec is the source of truth. If they drift, the doc wins.
 export const meta = {
   name: 'doc-sync-full',
   description: 'Exhaustive pre-publish doc-sync audit of all of src/: enumerate every non-test source file, detect doc drift file-by-file + per-dir + across the four cross-directory sync contracts + an interconnection pass (registration tables & cross-doc links, so adds/removes/relocations don\'t break the doc web), adversarially verify, apply doc-only fixes (one writer per dir; out-of-src findings report-only), run a completeness critic, then advance the doc-sync watermark to HEAD.',
