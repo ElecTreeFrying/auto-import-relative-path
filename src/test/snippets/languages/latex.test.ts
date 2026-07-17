@@ -121,6 +121,15 @@ describe('latex', () => {
       await setAutoImportSetting('latex', 'preserve', false);
       assert.strictEqual(resolveGraphicsPath('./figures/plot', '.png' as FileExtension), './figures/plot');
     });
+
+    // The graphics preserve default is INVERTED from every other preserve toggle (true, not false): with
+    // no override, getAutoImportSetting surfaces the package.json default (true) and the extension stays.
+    // Sibling check: scss.test.ts pins the stylesheet toggle's opposite default (false strips). Guards the
+    // inversion so a future package.json default flip is caught here, not just in the QA matrix.
+    it('keeps the extension by default — no override resolves to the package.json default (true)', async () => {
+      await setAutoImportSetting('latex', 'preserve', undefined);
+      assert.strictEqual(resolveGraphicsPath('./figures/plot', '.png' as FileExtension), './figures/plot.png');
+    });
   });
 
   // buildSnippet's source dispatch picks WHICH LaTeX command to emit from the raw source extension. The

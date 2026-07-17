@@ -113,6 +113,19 @@ describe('react source-switch parity (_react.ts ↔ variants.ts)', () => {
           assert.strictEqual(variant, expected, `variant ${name} into ${destExt}`);
         }
       });
+
+      // LaTeX sources (.tex/.bib/.eps) pass the accept-all gate into JSX/TSX/MDX but have no branch in
+      // buildAssetImportStatement → default:null → empty snippet on BOTH flows (buildReactNonScriptVariant
+      // returns null, so variants is []). This is the documented LaTeX-into-React quirk whose gating-reject
+      // fix is deferred (docs/import-statements). Pin it so that deferred fix can't change it silently.
+      it('LaTeX sources (.tex/.bib/.eps) produce an empty snippet on both flows (no _react asset branch)', async () => {
+        await openDest(fixture);
+        for (const ext of [ '.tex', '.bib', '.eps' ]) {
+          const { dispatch, variant } = await buildBoth(fixture, `asset${ext}`);
+          assert.strictEqual(dispatch, '', `dispatch ${ext} into ${destExt} should be empty`);
+          assert.strictEqual(variant, '', `variant ${ext} into ${destExt} should be empty`);
+        }
+      });
     });
   }
 });

@@ -126,6 +126,22 @@ describe('buildImportSnippet', () => {
     assert.strictEqual(result.value, "import { $1 } from './bar';");
   });
 
+  // The 13th destination. latex.buildSnippet is exhaustively unit-tested in
+  // snippets/languages/latex.test.ts; this pins the dispatch.ts wire (case '.tex') that routes to it —
+  // the parity guard in dispatch-variants-parity.test.ts only checks the case label exists, not that it
+  // reaches the right builder. \includegraphics is unique to the LaTeX graphics arm and present in all
+  // three graphics styles, so the assertion survives any ambient style/preserve config a sibling left.
+  it('.tex destination produces LaTeX builder output', async () => {
+    await openFixture('paper/main.tex');
+    await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'assets/logo.png'));
+    const info = await getFilePathInfo();
+    const result = await buildImportSnippet(info);
+    assert.ok(
+      result.value.includes('\\includegraphics'),
+      `expected LaTeX graphics output through dispatch, got: "${result.value}"`,
+    );
+  });
+
   it('unsupported destination extension produces empty SnippetString', async () => {
     await openFixture('unsupported/Main.java');
     await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'src/bar.ts'));
