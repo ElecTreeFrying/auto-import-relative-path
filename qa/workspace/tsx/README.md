@@ -2,13 +2,14 @@
 
 Fixtures for the TSX destination checklist ([`checklists/tsx.md`](../../checklists/tsx.md)).
 
-`.tsx` is the **second React-family** destination (after [`jsx/`](../jsx/)) and the first to
-exercise `_react.ts`'s **primary + fallback** dispatch: a `.ts`/`.tsx` source renders via the TS
+`.tsx` is a **React-family** destination that exercises
+`_react.ts`'s **primary + fallback** dispatch: a `.ts`/`.tsx` source renders via the TS
 `primarySnippet`, a `.js`/`.jsx` source via the JS `fallbackSnippet`, and a non-script source via a
-fixed asset shape. Because of that fallback, **every gated-in source renders a non-empty import** —
-there is **no empty-snippet case** and **no raw-text-fallback drop** (the central `.tsx` ≠ `.jsx`
-difference). `.tsx ∈ CROSS_IMPORT_DESTINATIONS` → **accept-all**, so — like jsx — non-script sources
-live in **`assets/`** (each *accepted* with a fixed shape) and there is **no `rejected/` dir**.
+fixed asset shape. Because of that fallback, **every gated-in source renders a non-empty import except
+`.tex`/`.bib`/`.eps`** (no primary/fallback/asset case → `default: null` → empty snippet, like `.jsx`'s
+`.ts`/`.tsx`). The `.tsx` ≠ `.jsx` contrast: `.tsx` renders every *script* source non-empty,
+but both empty on `.tex`/`.bib`/`.eps`. `.tsx ∈ CROSS_IMPORT_DESTINATIONS` → **accept-all**, so — like jsx — non-script sources
+live in **`assets/`** (most accepted with a fixed shape; `.tex`/`.bib`/`.eps` accepted but empty-snippet) and there is **no `rejected/` dir**.
 
 Unlike jsx, `.tsx` has **Angular-only** smart identifiers (style 0; `generateAngularLegacyImportName`
 fires, but `readExportedClassName` is never called → **no exported-class fill**). That adds two
@@ -39,7 +40,7 @@ tsx/
 │   │   └── widget.component.js     Angular suffix on a .js source → JS fallback, NO PascalCase (§5.8)
 │   └── classes/
 │       └── event-bus.ts          `export class EventBus` — the no-exported-class-fill counter-case (§5.7)
-├── assets/                       Non-script sources — every one ACCEPTED with a fixed shape (accept-all)
+├── assets/                       Non-script sources — gating-accepted; most get a fixed shape, but .tex/.bib/.eps empty-snippet (no asset-switch case)
 │   ├── logo.png                  image      (empty placeholder) → import ${1:name}
 │   ├── manual.pdf                document   (empty placeholder) → import ${1:name}
 │   ├── Hero.vue                  framework            → import ${1:name}
@@ -53,7 +54,10 @@ tsx/
 │   ├── font.woff2                font       (empty placeholder) → side-effect import (no tab stop)
 │   ├── clip.mp4                  video      (empty placeholder) → import ${1:url}
 │   ├── theme.mp3                 audio      (empty placeholder) → import ${1:url}
-│   └── subs.vtt                  text-track           → import ${1:url}
+│   ├── subs.vtt                  text-track           → import ${1:url}
+│   ├── sample.tex                latex source         → empty snippet (not-supported)
+│   ├── refs.bib                  bibliography         → empty snippet (not-supported)
+│   └── diagram.eps               eps graphics         → empty snippet (not-supported)
 └── destinations/                 Pre-filled .tsx files for placement tests (undo after each paste)
     ├── empty.tsx                 0 bytes
     ├── with-imports.tsx          Two import lines + code
@@ -101,6 +105,9 @@ tsx/
 | `assets/data.json` | 1.10 | Data — `${1:name}` |
 | `assets/config.yaml` | 1.11 | Data — `${1:name}` |
 | `assets/manual.pdf` | 1.12 | Document — `${1:name}` (empty placeholder) |
+| `assets/sample.tex` | 1.19 | LaTeX source → empty snippet (not-supported) |
+| `assets/refs.bib` | 1.20 | Bibliography → empty snippet (not-supported) |
+| `assets/diagram.eps` | 1.21 | EPS graphics → empty snippet (not-supported) |
 | `destinations/empty.tsx` | 6.1.1, 6.2.2 | Empty file — Bottom/Top fall back to line 1 |
 | `destinations/with-imports.tsx` | 6.1.2, 6.2.1, 6.3.1, 6.3.2, 6.3.5, 9.4, 9.5 | Two imports + code — placement tests |
 | `destinations/with-require.tsx` | 6.1.3 | `require()` — Bottom detects as import marker |
@@ -113,12 +120,3 @@ tsx/
 | `destinations/leading-star.mdx` | 10.1 | Byte-identical to `leading-star.tsx` — the `.mdx` ≠ `.tsx` proof |
 | `destinations/string-with-import.tsx` | 10.2 | `import` inside string literal — NOT a Bottom marker (line-leading only) |
 | `destinations/mixed-imports.tsx` | 10.3 | `import` + `require` mixed — Bottom finds last |
-
-## File count
-
-| Directory | Files | Purpose |
-|-----------|-------|---------|
-| `src/` | 14 | Script sources (TS-primary + JS-fallback) + nested source + `angular/` (7) + `classes/` (1) + primary destination |
-| `assets/` | 14 | One non-script source per category — all accepted, fixed shapes |
-| `destinations/` | 12 | Pre-filled placement-test destinations (incl. `leading-star.mdx` for the `.mdx` ≠ `.tsx` proof) |
-| **Total** | **40** |

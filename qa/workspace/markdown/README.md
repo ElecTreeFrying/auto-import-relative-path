@@ -2,10 +2,10 @@
 
 Fixtures for the Markdown destination checklist ([`checklists/markdown.md`](../../checklists/markdown.md)).
 
-`.md` is a **markup** destination with the simplest styles model after the stylesheets — a
-**2-way source-type dispatch**. A source's extension picks the branch: markdown (`.md`) → a
+`.md` is a **markup** destination with a
+**source-type dispatch**. A source's extension picks the branch: markdown (`.md`) → a
 **fixed** `[${1:text}](path)` link (hardcoded, reads no setting), image → `![alt-text](path)`
-with **3** configurable `markdownImageImportStyle` styles. It has **no** smart-identifier
+with configurable `markdownImageImportStyle` styles. It has **no** smart-identifier
 behavior (`smartId: none`) — unlike [`typescript/`](../typescript/), there is no `src/classes/`
 or `src/angular/` subtree. Its placement is **`forced-cursor`** (the `importStatementPlacement`
 setting is ignored; the link lands at the cursor line and the **column follows the cursor**),
@@ -30,15 +30,16 @@ markdown/
 ├── notes.md                      Primary target — §2 paste, §3 Alt+D, §4 styles, §7 picker, §8 set-default, §9a drop
 ├── src/                          Import sources — one per source-type branch
 │   ├── docs/intro.md             markdown (.md)   → fixed [${1:text}](./src/docs/intro.md) link
-│   └── images/logo.png           image (.png)     → ![${1:alt-text}](…)  (3 styles)   (empty placeholder)
+│   └── images/logo.png           image (.png)     → ![${1:alt-text}](…)   (empty placeholder)
 ├── destinations/                 Pre-filled placement targets (undo after each paste; paths resolve as ../src/…)
 │   ├── blank.md                  Empty line 2 — placement setting-ignored test (§6, §9c-i)
 │   ├── indented.md               Line 2 = exactly six spaces — column-follows-cursor test at col 6 (§6, §9c-ii)
 │   ├── with-comments.md          markdown `*` bullet vs `//` / `/*` runs (§6, §9c-iii, §10)
 │   └── with-comments.tsx         §10 contrast — byte-identical to with-comments.md, `.tsx` ext
-└── rejected/                     One source per rejected category (10 stubs; no `.md` — own ext accepted)
+└── rejected/                     One source per rejected category (no `.md` — own ext accepted)
     ├── widget.ts   App.vue    theme.css   page.html   captions.vtt
-    └── data.json   intro.mp4  theme.mp3   font.woff2  doc.pdf
+    ├── data.json   intro.mp4  theme.mp3   font.woff2  doc.pdf
+    └── sample.tex  refs.bib   diagram.eps
 ```
 
 ## Fixture-to-checklist mapping
@@ -47,7 +48,7 @@ markdown/
 |---------|-----------|---------|
 | `notes.md` | §2–§4, §7, §8, §9a | Primary paste/drop/picker/set-default target (root → `./src/…` paths) |
 | `src/docs/intro.md` | §1, §2, §4, §7, §8 | Markdown source (`.md`) → fixed `[text](…)` link; single-variant picker; `.md → .md` fixed-style set-default |
-| `src/images/logo.png` | §1, §2, §3, §4, §6, §7, §8, §9, §10 | Image source → `![alt-text](…)` (3 styles); also the placement + edge + drop source; empty placeholder |
+| `src/images/logo.png` | §1, §2, §3, §4, §6, §7, §8, §9, §10 | Image source → `![alt-text](…)` styles; also the placement + edge + drop source; empty placeholder |
 | `destinations/blank.md` | §6, §9c-i | Empty line 2 — `forced-cursor` setting-ignored (Top/Bottom/Cursor all → cursor line) |
 | `destinations/indented.md` | §6, §9c-ii | Line 2 = six spaces — column follows the cursor/drop (col 6, NOT 0) |
 | `destinations/with-comments.md` | §6, §9c-iii, §10 | markdown `*` bullet lands at it (content, not a comment); `//` / `/*` runs push above |
@@ -62,14 +63,6 @@ markdown/
 | `rejected/theme.mp3` | §1 | `.mp3` reject (audio; `.ogg`/`.wav`/`.m4a` reject identically); empty placeholder |
 | `rejected/font.woff2` | §1 | `.woff2` reject (`.woff`/`.ttf`/`.eot` reject identically); empty placeholder |
 | `rejected/doc.pdf` | §1 | `.pdf` reject (document); empty placeholder |
-
-## File count
-
-| Location | Files | Purpose |
-|----------|-------|---------|
-| root | 1 | `notes.md` — primary target |
-| `src/docs/` | 1 | Markdown source (`.md`) |
-| `src/images/` | 1 | Image source (`.png`, empty) |
-| `destinations/` | 4 | Placement + edge targets (incl. the byte-identical `.tsx` contrast) |
-| `rejected/` | 10 | Non-importable sources for gating |
-| **Total** | **17** |
+| `rejected/sample.tex` | §1 | `.tex` reject (latex source) |
+| `rejected/refs.bib` | §1 | `.bib` reject (bibliography source) |
+| `rejected/diagram.eps` | §1 | `.eps` reject (LaTeX vector graphics) |

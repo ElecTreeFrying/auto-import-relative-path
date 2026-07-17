@@ -1,13 +1,13 @@
 # JSX (`.jsx` destination) — QA Checklist
 
-JSX-specific manual QA: accept-all gating, the two-arm style model (7 script styles **or** a fixed asset shape), placement, style pickers, and drag-and-drop. `.jsx` is the first **React-family** destination: it dispatches on the **source extension** (`src/snippets/_react.ts`), so a `.js`/`.jsx` source gets a configurable JS import while a non-script asset gets a fixed shape — and a `.ts`/`.tsx` source inserts **nothing** (empty snippet). `.jsx` has **no** smart-identifier behavior, so script imports are always a bare `$1` (see §5).
+JSX-specific manual QA: accept-all gating, the two-arm style model (7 script styles **or** a fixed asset shape), placement, style pickers, and drag-and-drop. `.jsx` is a **React-family** destination: it dispatches on the **source extension** (`src/snippets/_react.ts`), so a `.js`/`.jsx` source gets a configurable JS import while a non-script asset gets a fixed shape — and a `.ts`/`.tsx` source inserts **nothing** (empty snippet). `.jsx` has **no** smart-identifier behavior, so script imports are always a bare `$1` (see §5).
 
 > **Prerequisite:** Run the [General checklist](general.md) first. It covers shared infrastructure (copy command, clipboard validation, same-file rejection, notifications, path computation, edge cases) that this checklist assumes has already passed.
 
 **Sources under test:**
 
 - `src/snippets/languages/jsx.ts` — `buildSnippet`: delegates to `buildReactImport` with `primaryExtensions: ['.js', '.jsx']`, `primarySnippet: buildJavaScriptImportSnippet`, **no fallback**
-- `src/snippets/_react.ts` — `buildReactImport`: script-primary path (honors `preserveScriptFileExtension`), then delegates non-script sources to the shared exported `buildAssetImportStatement(sourceFileExt, importPath)` (same file) — the `.module.css`/`.module.scss` check (FIRST), the non-script asset `switch` (4 groups, full extension via `fullPath`), `default: null`; `buildReactImport` wraps a `null` result as an empty `SnippetString` (the empty snippet for `.ts`/`.tsx`)
+- `src/snippets/_react.ts` — `buildReactImport`: script-primary path (honors `preserveScriptFileExtension`), then delegates non-script sources to the shared exported `buildAssetImportStatement(sourceFileExt, importPath)` (same file) — the `.module.css`/`.module.scss` check (FIRST), the non-script asset `switch` (full extension via `fullPath`), `default: null`; `buildReactImport` wraps a `null` result as an empty `SnippetString` (the empty snippet for `.ts`/`.tsx`)
 - `src/snippets/_styles.ts` — `JAVASCRIPT_IMPORT_OPTIONS` (7 entries) — descriptions + tags + tab-stop layout per style
 - `src/snippets/variants.ts` — `buildJsxVariants` / `buildReactNonScriptVariant`: `.js`/`.jsx` → 7 styled variants backed by `('script', 'javascript')`; non-script → a single hardcoded variant (no `setting`); `.ts`/`.tsx` → `[]`
 - `src/gating.ts` — `isPairSupported`: `.jsx ∈ CROSS_IMPORT_DESTINATIONS` → accepts every source (the empty `.ts`/`.tsx` case is caught downstream by the empty-snippet guard, not here)
@@ -81,6 +81,9 @@ Instead, this matrix lists one **accepted** row per source category, showing the
 | 1.15 | `jsx/assets/clip.mp4` | video | `import ${1:url} from '../assets/clip.mp4';` |
 | 1.16 | `jsx/assets/theme.mp3` | audio | `import ${1:url} from '../assets/theme.mp3';` |
 | 1.17 | `jsx/assets/subs.vtt` | text-track | `import ${1:url} from '../assets/subs.vtt';` |
+| 1.18 | `jsx/assets/sample.tex` | latex | *(nothing inserted — empty snippet + `not-supported` toast; no asset-switch case, like `.ts`/`.tsx`)* |
+| 1.19 | `jsx/assets/refs.bib` | bibliography | *(nothing inserted — empty snippet + `not-supported` toast)* |
+| 1.20 | `jsx/assets/diagram.eps` | eps | *(nothing inserted — empty snippet + `not-supported` toast)* |
 
 - [ ] 1.1–1.2 (script `.js`/`.jsx`) insert the JS default-import shape `import $1 from '<path>';`
 - [ ] 1.3–1.4 (script `.ts`/`.tsx`) insert **nothing** and show `Auto Import: Cannot import .ts into .jsx files.` / `Auto Import: Cannot import .tsx into .jsx files.` — these are **gating-accepted** (they pass `isPairSupported`) but produce an empty snippet, so the toast fires via the **empty-snippet guard**, not via gating (detailed in §4 / §10)
@@ -88,8 +91,9 @@ Instead, this matrix lists one **accepted** row per source category, showing the
 - [ ] 1.12 (`.module.css`) inserts the `${1:styles}` shape — the CSS-module check beats the side-effect shape (proof in §4)
 - [ ] 1.13–1.14 (plain stylesheet / font) insert the side-effect `import '<full-path>';` with no tab stop
 - [ ] 1.15–1.17 (av / text-track) insert `import ${1:url} from '<full-path>';`
+- [ ] 1.18–1.20 (latex / bibliography / eps) insert **nothing** and show `Auto Import: Cannot import .tex into .jsx files.` (etc.) — gating-accepted but no asset-switch case → the empty-snippet guard fires, exactly like `.ts`/`.tsx` (§4C)
 
-> Every `SOURCE_UNIVERSE` category is represented (script, framework, html, markdown, image, data, document, CSS-module, stylesheet, font, video, audio, text-track). The four fixed asset shapes — `${1:styles}` / `${1:name}` / `${1:url}` / side-effect — are enumerated in full in §4 (arm 2).
+> Every `SOURCE_UNIVERSE` category is represented (script, framework, html, markdown, image, data, document, CSS-module, stylesheet, font, video, audio, text-track, latex). The four fixed asset shapes — `${1:styles}` / `${1:name}` / `${1:url}` / side-effect — are enumerated in full in §4 (arm 2).
 
 ---
 
@@ -198,7 +202,7 @@ The `.module.css` / `.module.scss` check runs **before** the extension switch, s
 
 ### 4C — Empty-snippet case (`.ts` / `.tsx` source → `.jsx`)
 
-A `.ts`/`.tsx` source is gating-accepted but misses `_react.ts`'s primary `['.js', '.jsx']` set (no fallback), so it falls through the asset switch to `default: ''` — an empty snippet.
+A `.ts`/`.tsx` source is gating-accepted but misses `_react.ts`'s primary `['.js', '.jsx']` set (no fallback), so it falls through the asset switch to `default: null`, which `buildReactImport` wraps as an empty `SnippetString` — an empty snippet. The `.tex`/`.bib`/`.eps` sources hit the **same** `default: null` path (no asset-switch case either), so they empty-snippet identically — see §1.18–1.20.
 
 - [ ] Copy `jsx/src/model.ts`, open `jsx/src/Panel.jsx`, press `Cmd+I`
 - [ ] **Nothing is inserted** (empty snippet)
@@ -219,7 +223,7 @@ A hand-typed / drifted `javascriptImportStyle` value (matching no enum descripti
 
 ## 5 — Smart identifier behavior
 
-§5 (Smart identifier) — **N/A for `.jsx`**: no exported-class detection, no Angular PascalCase. `.js`/`.jsx` sources route through the JS builder (no smart-ID, always bare `$1`); `.ts`/`.tsx` sources insert nothing. (The section numbering skips from §4 to §6 by design — `.jsx` has `smartId: none`.) No exported-class or Angular case appears anywhere in this checklist.
+§5 (Smart identifier) — **N/A for `.jsx`**: no exported-class detection, no Angular PascalCase. `.js`/`.jsx` sources route through the JS builder (no smart-ID, always bare `$1`); `.ts`/`.tsx` sources insert nothing. (`.jsx` has `smartId: none`, so this section is an N/A placeholder.) No exported-class or Angular case appears anywhere in this checklist.
 
 ---
 
@@ -509,7 +513,7 @@ This is `.jsx`'s **only** suppressed drop — every other source is accepted, bu
 - [ ] Drag `jsx/assets/logo.png` → path is still `'../assets/logo.png'` (asset extensions are kept regardless — the toggle is script-namespace)
 - [ ] Uncheck **Preserve script file extension in imports** to restore the default
 
-> **Universal drop precondition** (untitled / unsaved buffer is a no-op): cross-cutting across all 13 destinations and verified once in [typescript.md §9.10](typescript.md#910--universal-drop-precondition-cross-cutting--verified-once-here) — **not** re-tested here.
+> **Universal drop precondition** (untitled / unsaved buffer is a no-op): cross-cutting across every destination and verified once in [typescript.md §9.10](typescript.md#910--universal-drop-precondition-cross-cutting--verified-once-here) — **not** re-tested here.
 
 ---
 
@@ -547,12 +551,12 @@ This is `.jsx`'s **only** suppressed drop — every other source is accepted, bu
 
 ## 11 — Sign-off
 
-- [ ] Cross-import gating — accept-all matrix, one row per source category (17 rows; 0 source-extension rejections, same-file owned by general.md)
+- [ ] Cross-import gating — accept-all matrix, one row per source category (20 rows; 0 source-extension rejections, same-file owned by general.md)
 - [ ] Paste as Import — happy path (2 cases: script + asset)
 - [ ] Insert Import from Selected File (1 case)
 - [ ] Style model — arm A: all 7 JavaScript styles (7 cases)
 - [ ] Style model — arm B: 4 fixed asset shapes + `.module.css`-beats-side-effect proof + asset-keeps-extension note (6 cases)
-- [ ] Style model — empty-snippet case (`.ts`/`.tsx` → nothing + toast) (1 case)
+- [ ] Style model — empty-snippet case (`.ts`/`.tsx` + `.tex`/`.bib`/`.eps` → nothing + toast) (1 case)
 - [ ] Style-name drift safety net (1 case)
 - [ ] Smart identifier — N/A for `.jsx` (§5 omitted; no cases)
 - [ ] Placement — Bottom (6 cases)
@@ -563,4 +567,4 @@ This is `.jsx`'s **only** suppressed drop — every other source is accepted, bu
 - [ ] Drag-and-drop — happy script / happy asset / `.ts`-raw-text / placement / preserve (10 cases)
 - [ ] Edge cases — empty-snippet recap, string-literal + `require(` false-positives, leading-`*` contrast (4 cases)
 
-**Total: ~70 test cases**
+**Total: ~73 test cases**

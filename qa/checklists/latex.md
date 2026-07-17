@@ -402,7 +402,7 @@ placement cases below).
       and `graphicsImportStyle` = bare (style 2), drop `plot.png` onto `main.tex` →
       `\includegraphics{./src/figures/plot}` (extension dropped on drop, same as §4). Restore both. *(No class-detect / Angular applies — `.tex` has no smart identifier.)*
 
-> The DnD untitled/unsaved-buffer no-op precondition is tested **once for all 13
+> The DnD untitled/unsaved-buffer no-op precondition is tested **once for all
 > destinations** in `typescript.md §9.10` — not repeated here.
 
 ---

@@ -2,8 +2,8 @@
 
 Fixtures for the LaTeX destination checklist ([`checklists/latex.md`](../../checklists/latex.md)).
 
-`.tex` is the **13th destination** and the first non-script destination with its **own** picker
-namespace (`latex.*`). A source's extension picks the branch — graphics
+`.tex` is a destination with its **own** picker
+namespace (`latex.*`) for non-script sources. A source's extension picks the branch — graphics
 (`.pdf`/`.png`/`.jpg`/`.jpeg`/`.eps`) → a `figure` float, `.tex` → `\input`/`\include`, `.bib` →
 `\addbibresource`/`\bibliography`. The accepted graphics set is **engine-renderable only**: web
 images `.svg`/`.gif`/`.webp`/`.avif` are gate-rejected (`pdflatex` can't render them) — the four
@@ -35,7 +35,7 @@ latex/
 │   ├── blank.tex                 Empty body line — placement setting-ignored test (§6, §9c-i)
 │   ├── indented.tex              Line 4 = exactly six spaces — column-follows-cursor test at col 6 (§6, §9c-ii)
 │   └── with-comments.tex         LaTeX % comment is not recognized by isCommentLine (§10, §9c-iii)
-└── rejected/                     One source per rejected category (13 stubs)
+└── rejected/                     One source per rejected category
     ├── icon.svg   anim.gif       web images (reject — not pdflatex-renderable; the LaTeX-distinctive gate)
     ├── photo.webp banner.avif    web images (reject)
     ├── widget.ts  App.vue        script / framework (reject)
@@ -70,15 +70,3 @@ latex/
 | `rejected/font.woff2` | §1 | `.woff2` reject (`.woff`/`.ttf`/`.eot` reject identically); empty placeholder |
 | `rejected/clip.mp4` | §1 | `.mp4` reject (all video/audio reject identically); empty placeholder |
 | `rejected/captions.vtt` | §1 | `.vtt` reject (text-track) |
-
-## File count
-
-| Location | Files | Purpose |
-|----------|-------|---------|
-| root | 1 | `main.tex` — primary target |
-| `src/figures/` | 3 | Graphics sources (`.png`/`.pdf`/`.eps`, empty placeholders) |
-| `src/chapters/` | 1 | File-include source (`.tex`) |
-| `src/` (`refs.bib`) | 1 | Bibliography source (`.bib`) |
-| `destinations/` | 3 | Placement-test targets |
-| `rejected/` | 13 | Non-importable sources for gating (incl. the 4 web-image rejects) |
-| **Total** | **22** |

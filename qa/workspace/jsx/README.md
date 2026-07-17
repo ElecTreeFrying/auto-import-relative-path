@@ -2,7 +2,7 @@
 
 Fixtures for the JSX destination checklist ([`checklists/jsx.md`](../../checklists/jsx.md)).
 
-`.jsx` is the first **cross-import** destination (`.jsx ∈ CROSS_IMPORT_DESTINATIONS` → **accept-all**):
+`.jsx` is a **React-family** (accept-all) destination (`.jsx ∈ CROSS_IMPORT_DESTINATIONS` → **accept-all**):
 every source is accepted, so — unlike [`javascript/`](../javascript/), whose non-`.js` sources sit in a
 `rejected/` dir — jsx's non-script sources live in **`assets/`** and are each *accepted* with a fixed
 shape. There is therefore **no `rejected/` dir**. `.jsx` also has **no** smart-identifier behavior
@@ -22,7 +22,7 @@ jsx/
 │   │   └── Card.jsx              Nested source — §7.2 basename-vs-full-path
 │   ├── model.ts                  .ts source → empty snippet (not-supported)
 │   └── Widget.tsx                .tsx source → empty snippet (not-supported)
-├── assets/                       Non-script sources — every one ACCEPTED with a fixed shape (accept-all)
+├── assets/                       Non-script sources — gating-accepted; most get a fixed shape, but .tex/.bib/.eps empty-snippet (no asset-switch case)
 │   ├── logo.png                  image      (empty placeholder) → import ${1:name}
 │   ├── manual.pdf                document   (empty placeholder) → import ${1:name}
 │   ├── Hero.vue                  framework            → import ${1:name}
@@ -35,7 +35,10 @@ jsx/
 │   ├── font.woff2                font       (empty placeholder) → side-effect import (no tab stop)
 │   ├── clip.mp4                  video      (empty placeholder) → import ${1:url}
 │   ├── theme.mp3                 audio      (empty placeholder) → import ${1:url}
-│   └── subs.vtt                  text-track           → import ${1:url}
+│   ├── subs.vtt                  text-track           → import ${1:url}
+│   ├── sample.tex                latex source         → empty snippet (not-supported)
+│   ├── refs.bib                  bibliography         → empty snippet (not-supported)
+│   └── diagram.eps               eps graphics         → empty snippet (not-supported)
 └── destinations/                 Pre-filled .jsx files for placement tests (undo after each paste)
     ├── empty.jsx                 0 bytes
     ├── with-imports.jsx          Two import lines + code
@@ -54,7 +57,7 @@ jsx/
 
 | Fixture | Section(s) | Purpose |
 |---------|-----------|---------|
-| `src/App.jsx` | 1.1, 2.1, 3, 4A, 4D, 6, 7.1, 8.1, 9.1, 9.4–9.8 | Primary `.jsx` script source — happy path, all 7 styles + drift, `Alt+D`, placement, Pick/Set Default, DnD, preserve-ext |
+| `src/App.jsx` | 1.1, 2.1, 3, 4A, 4D, 6, 7.1, 8.1, 9.1, 9.4–9.8 | Primary `.jsx` script source — happy path, every style + drift, `Alt+D`, placement, Pick/Set Default, DnD, preserve-ext |
 | `src/Panel.jsx` | 1–10 | Primary paste/drop **destination** (the open editor) |
 | `src/helper.js` | 1.2 | Script `.js` source — default-import shape |
 | `src/components/Card.jsx` | 7.2 | Nested source — picker label = basename, inserted = full path |
@@ -73,6 +76,9 @@ jsx/
 | `assets/data.json` | 1.9 | Data — `${1:name}` |
 | `assets/config.yaml` | 1.10 | Data — `${1:name}` |
 | `assets/manual.pdf` | 1.11 | Document — `${1:name}` (empty placeholder) |
+| `assets/sample.tex` | 1.18 | LaTeX source → empty snippet (not-supported) |
+| `assets/refs.bib` | 1.19 | Bibliography → empty snippet (not-supported) |
+| `assets/diagram.eps` | 1.20 | EPS graphics → empty snippet (not-supported) |
 | `destinations/empty.jsx` | 6.1.1, 6.2.2 | Empty file — Bottom/Top fall back to line 1 |
 | `destinations/with-imports.jsx` | 6.1.2, 6.2.1, 6.3.1, 6.3.2, 6.3.5, 9.4, 9.5 | Two imports + code — placement tests |
 | `destinations/with-require.jsx` | 6.1.3 | `require()` — Bottom detects as import marker |
@@ -84,12 +90,3 @@ jsx/
 | `destinations/leading-star.jsx` | 6.3.8, 10.4 | Leading-`*` line is a **comment** (NOT Markdown) — counter-case to `.md`/`.mdx` |
 | `destinations/string-with-import.jsx` | 10.2 | `import` inside string literal — NOT a Bottom marker (line-leading only) |
 | `destinations/mixed-imports.jsx` | 10.3 | `import` + `require` mixed — Bottom finds last |
-
-## File count
-
-| Directory | Files | Purpose |
-|-----------|-------|---------|
-| `src/` | 6 | Script sources + nested source + `.ts`/`.tsx` empty-snippet sources + primary destination |
-| `assets/` | 13 | One non-script source per category — all accepted, fixed shapes |
-| `destinations/` | 11 | Pre-filled placement-test destinations |
-| **Total** | **30** |

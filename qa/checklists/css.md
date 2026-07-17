@@ -127,10 +127,10 @@ body { margin: 0; }
 .card { padding: 1rem; }
 ```
 
-**`css/rejects/*`** — one zero-content source per rejected category (content is irrelevant;
+**`css/rejects/*`** — one near-empty stub source per rejected category (content is irrelevant;
 gating keys on the extension): `styles.scss`, `util.ts`, `widget.vue`, `page.html`,
 `notes.md`, `data.json`, `config.yaml`, `clip.mp4`, `chime.mp3`, `captions.vtt`,
-`body.woff2`, `manual.pdf`.
+`body.woff2`, `manual.pdf`, `sample.tex`, `refs.bib`, `diagram.eps`.
 
 ---
 
@@ -167,6 +167,9 @@ rejects everything else. Each reject shows a warning toast and inserts nothing.
   | `css/rejects/captions.vtt` | text-track | `Auto Import: Cannot import .vtt into .css files.` |
   | `css/rejects/body.woff2` | font | `Auto Import: Cannot import .woff2 into .css files.` |
   | `css/rejects/manual.pdf` | document | `Auto Import: Cannot import .pdf into .css files.` |
+  | `css/rejects/sample.tex` | latex source | `Auto Import: Cannot import .tex into .css files.` |
+  | `css/rejects/refs.bib` | bibliography | `Auto Import: Cannot import .bib into .css files.` |
+  | `css/rejects/diagram.eps` | eps graphics | `Auto Import: Cannot import .eps into .css files.` |
 
 - [ ] **§1.3 — One-way `.scss` ↔ `.css` asymmetry.** The `css/rejects/styles.scss` row above
   is **mandatory**: a `.scss` source is rejected by a `.css` destination, even though the
@@ -388,9 +391,9 @@ into the editor at a position. Universal drag-and-drop mechanics are **`general.
   re-test on drop.
 
 - [ ] **§9.6 — untitled-buffer no-op (pointer, not retested here).** The drop gesture is
-  registered only for **saved** (`scheme: 'file'`) files across the 12 drop languages; a
+  registered only for **saved** (`scheme: 'file'`) files across the drop languages; a
   drop into an untitled/unsaved buffer is a no-op. This cross-cutting precondition is
-  verified **once for all 13 destinations** in `typescript.md §9.10` — not duplicated here.
+  verified **once for all destinations** in `typescript.md §9.10` — not duplicated here.
 
 ---
 
@@ -416,7 +419,7 @@ into the editor at a position. Universal drag-and-drop mechanics are **`general.
 
 | Section | Cases | Covered |
 |---------|:-----:|---------|
-| §1 Gating matrix | 3 | accept (`.css` + image) · 12-category reject matrix · mandatory `.scss → .css` one-way |
+| §1 Gating matrix | 3 | accept (`.css` + image) · 15-category reject matrix · mandatory `.scss → .css` one-way |
 | §2 Happy path | 2 | `@import './theme.css';` · inline `url('./logo.png')` |
 | §3 Insert from Selected File | 1 | `Alt+D` → `@import './theme.css';` |
 | §4 All styles + image arm + drift | 5 | style 0 · style 1 · image fixed arm · always-keep-extension · style-name drift → style 0 |

@@ -55,7 +55,7 @@ The settings used in this checklist:
 
 ## 1 — Cross-import gating matrix
 
-`.scss` is in `CROSS_IMPORT_DESTINATIONS`, so it accepts a curated source set: `SCSS_SUPPORTED_EXTENSIONS` = `.scss` + `.css` + the seven image types (defined in `src/constants/extensions.ts:45-49`; gated in `src/gating.ts:32-34`). Every other source is rejected with `Auto Import: Cannot import .X into .scss files.`
+`.scss` is in `CROSS_IMPORT_DESTINATIONS`, so it accepts a curated source set: `SCSS_SUPPORTED_EXTENSIONS` = `.scss` + `.css` + the seven image types (defined in `src/constants/extensions.ts`; gated by the `.scss` clause in `src/gating.ts`). Every other source is rejected with `Auto Import: Cannot import .X into .scss files.`
 
 For each row: copy the source file from the listed workspace path, paste into `scss/src/main.scss`.
 
@@ -82,9 +82,12 @@ For each row: copy the source file from the listed workspace path, paste into `s
 | 1.19 | `scss/rejected/config.yaml` | `Auto Import: Cannot import .yaml into .scss files.` |
 | 1.20 | `scss/rejected/font.woff2` | `Auto Import: Cannot import .woff2 into .scss files.` |
 | 1.21 | `scss/rejected/doc.pdf` | `Auto Import: Cannot import .pdf into .scss files.` |
+| 1.22 | `scss/rejected/sample.tex` | `Auto Import: Cannot import .tex into .scss files.` |
+| 1.23 | `scss/rejected/refs.bib` | `Auto Import: Cannot import .bib into .scss files.` |
+| 1.24 | `scss/rejected/diagram.eps` | `Auto Import: Cannot import .eps into .scss files.` |
 
 - [ ] 1.1 through 1.4 pass (import generated; image rows insert an inline `url()`)
-- [ ] 1.5 through 1.21 all show the exact warning toast with both extensions in the message
+- [ ] 1.5 through 1.24 all show the exact warning toast with both extensions in the message
 - [ ] Each rejected toast has a **View Supported Files** button that opens the GitHub README section
 
 > **One-way `.css ↔ .scss`.** SCSS *accepts* a `.css` source (row 1.2 → `@use './reset.css';`), because `SCSS_SUPPORTED_EXTENSIONS` includes `.css`. The reverse — a `.scss` source into a `.css` destination — is **rejected**. That asymmetry belongs to the `.css` destination (`css.md` §1) and is not re-tested here.
@@ -194,7 +197,7 @@ This is the **stylesheet** preserve key (`auto-import.importStatement.styleSheet
 - [ ] **Check** **Preserve stylesheet file extension in imports**, repeat → STILL `@use './reset.css';` (unchanged by the toggle)
 - [ ] Restore: **uncheck** **Preserve stylesheet file extension in imports**
 
-> Rationale (`package.json`): ".css extensions are always preserved inside .scss imports — Sass requires the extension to recognise a foreign-language import, and this setting has no effect there." This short-circuit (`scss.ts:48-50`) runs *before* the preserve setting is read, so it is independent of §4.B.
+> Rationale (`package.json`): ".css extensions are always preserved inside .scss imports — Sass requires the extension to recognise a foreign-language import, and this setting has no effect there." This `.css` short-circuit in `determineScssExtension` (`scss.ts`) runs *before* the preserve setting is read, so it is independent of §4.B.
 
 ### 4-drift — Style-name drift (config-drift safety net)
 
@@ -459,9 +462,9 @@ Drag a file from the Explorer sidebar into an open `.scss` editor. A drop reuses
 - [ ] Drag `scss/src/abstracts/_variables.scss` into `scss/src/main.scss` → `@use './abstracts/variables.scss';`
 - [ ] Restore: **uncheck** **Preserve stylesheet file extension in imports**
 
-### 9.9 — Universal drop precondition (cross-cutting — verified once for all 13 destinations)
+### 9.9 — Universal drop precondition (cross-cutting — verified once for all destinations)
 
-- [ ] The "drop into an untitled/unsaved buffer is a no-op" precondition is tested once for all 13 destinations in [typescript.md §9.10](typescript.md#910--universal-drop-precondition-cross-cutting--verified-once-here) — not re-tested here
+- [ ] The "drop into an untitled/unsaved buffer is a no-op" precondition is tested once for all destinations in [typescript.md §9.10](typescript.md#910--universal-drop-precondition-cross-cutting--verified-once-here) — not re-tested here
 
 ---
 
@@ -498,7 +501,7 @@ $danger: #cc0000;
 
 ## 11 — Sign-off
 
-- [ ] Cross-import gating (21 cases: 4 accept + 17 reject)
+- [ ] Cross-import gating (24 cases: 4 accept + 20 reject)
 - [ ] Paste as Import — happy path: stylesheet + image (2 cases)
 - [ ] Insert Import from Selected File (1 case)
 - [ ] All 5 SCSS styles (5 cases)
@@ -517,4 +520,4 @@ $danger: #cc0000;
 - [ ] Drag-and-drop (10 cases, incl. the once-for-all untitled-buffer pointer)
 - [ ] Edge cases (3 cases)
 
-**Total: ~65 test cases** (excluding the general.md baseline this checklist assumes has passed).
+**Total: ~68 test cases** (excluding the general.md baseline this checklist assumes has passed).

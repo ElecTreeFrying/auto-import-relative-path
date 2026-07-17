@@ -12,7 +12,7 @@ Fixtures for `checklists/jsx.md` — the `.jsx` destination checklist.
 | Directory | Purpose |
 |-----------|---------|
 | `src/` | Script sources to copy/drag FROM (`App.jsx`, `helper.js`, nested `components/Card.jsx`) plus the primary paste/drop destination (`Panel.jsx`), plus the two `.ts`/`.tsx` sources (`model.ts`, `Widget.tsx`) that exercise the empty-snippet case. `.jsx` has no smart-identifier detection, so — unlike `typescript/` — there are no `classes/` or `angular/` subtrees. |
-| `assets/` | One non-script source per `SOURCE_UNIVERSE` category (image, document, framework, html, markdown, data, CSS-module, stylesheet, font, video, audio, text-track). **`.jsx` is accept-all**, so every one is *accepted* with a fixed shape — there is **no `rejected/` dir** (the structural difference from `javascript/`). |
+| `assets/` | One non-script source per `SOURCE_UNIVERSE` category (image, document, framework, html, markdown, data, CSS-module, stylesheet, font, video, audio, text-track, **latex**). **`.jsx` is accept-all** (gating accepts every source), so each is gating-accepted — most get a fixed shape, but `.tex`/`.bib`/`.eps` have no asset-switch case → empty snippet (the same path as `src/`'s `.ts`/`.tsx`). There is **no `rejected/` dir** (the structural difference from `javascript/`). |
 | `destinations/` | Pre-filled `.jsx` files for placement tests. Each has specific content (imports, comments, code) that the checklist expects, with exact insertion line numbers. **Undo after each paste** so the file returns to its expected state. |
 
 ## Fixture content expectations

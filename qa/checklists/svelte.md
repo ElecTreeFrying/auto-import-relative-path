@@ -1,6 +1,6 @@
 # Svelte (`.svelte` destination) — QA Checklist
 
-Svelte-specific manual QA: **allow-list** gating, the **two-arm** style model (7 TypeScript styles for **all four** script sources `.ts`/`.tsx`/`.js`/`.jsx`, or a fixed asset shape for non-script sources), Angular-only smart identifiers, **SFC `<script>`-block** placement, style pickers, and drag-and-drop. `.svelte` is the **second framework-trio destination** — `.vue`, `.svelte`, and `.astro` all share one builder, `src/snippets/languages/framework-component.ts`.
+Svelte-specific manual QA: **allow-list** gating, the **two-arm** style model (7 TypeScript styles for **all four** script sources `.ts`/`.tsx`/`.js`/`.jsx`, or a fixed asset shape for non-script sources), Angular-only smart identifiers, **SFC `<script>`-block** placement, style pickers, and drag-and-drop. `.svelte` is a **framework-trio destination** — `.vue`, `.svelte`, and `.astro` all share one builder, `src/snippets/languages/framework-component.ts`.
 
 Every `.svelte` behavior flows from a single routing fact in that builder: it branches on its **own local** `SCRIPT_SOURCE_EXTENSIONS = [ '.ts', '.tsx', '.js', '.jsx' ]` and routes **all four** to `buildTypeScriptImportSnippet` (the TypeScript builder, called **one-arg** — no `detectedImportName`); **everything else** gated-in goes to `buildAssetImportStatement`. It **never** calls `determineImportType`. Two consequences cascade from that one `if`:
 
@@ -63,7 +63,7 @@ The settings used in this checklist:
 | `svelte/src/` | The `.svelte` destination `App.svelte` (has an empty `<script>` block) + the four script sources: `model.ts`, `Widget.tsx` (`.ts`/`.tsx` → TS arm), `helper.js`, `Card.jsx` (`.js`/`.jsx` → **also** TS arm); `components/Widget.tsx` (nested source for §7) |
 | `svelte/src/angular/` | Angular-convention sources WITHOUT `export class`: `user.component.ts`, `highlight.directive.ts`, `trim.pipe.ts`, `user.service.ts`, `auth.module.ts`; `widget.component.js` (Angular suffix on a **`.js`** source — fills here, unlike `.tsx`/`.mdx`); `2fa.service.ts` (illegal-identifier guard) |
 | `svelte/src/classes/` | `event-bus.ts` — a `.ts` source WITH `export class EventBus` (the no-exported-class-fill counter-case) |
-| `svelte/assets/` | One fixture per non-script source category: `logo.png`, `data.json`, `config.yaml`, `config.yml`, `clip.mp4`, `theme.mp3`, `subs.vtt`, `Card.svelte` (the `.svelte`→`.svelte` self-import quirk). Plus **reject fixtures** (gated out): `page.mdx`, `Demo.vue`, `Layout.astro`, `global.css`, `theme.scss`, `page.html`, `notes.md`, `font.woff2`, `manual.pdf` |
+| `svelte/assets/` | One fixture per non-script source category: `logo.png`, `data.json`, `config.yaml`, `config.yml`, `clip.mp4`, `theme.mp3`, `subs.vtt`, `Card.svelte` (the `.svelte`→`.svelte` self-import quirk). Plus **reject fixtures** (gated out): `page.mdx`, `Demo.vue`, `Layout.astro`, `global.css`, `theme.scss`, `page.html`, `notes.md`, `font.woff2`, `manual.pdf`, `sample.tex`, `refs.bib`, `diagram.eps` |
 | `svelte/destinations/` | Pre-filled `.svelte` files for placement tests (undo after each): `module-and-instance.svelte`, `instance-only.svelte`, `module-only.svelte`, `with-imports.svelte`, `indented-imports.svelte`, `template-only.svelte` (no `<script>`), `with-require.svelte`, `string-literal.svelte`, `comment-cursor.svelte` |
 
 `svelte/src/App.svelte` (the primary paste destination) is:
@@ -120,8 +120,11 @@ Now the **reject** rows. Copy each source and paste into `svelte/src/App.svelte`
 | 1.19 | `svelte/assets/notes.md` | markdown | `Auto Import: Cannot import .md into .svelte files.` |
 | 1.20 | `svelte/assets/font.woff2` | font | `Auto Import: Cannot import .woff2 into .svelte files.` |
 | 1.21 | `svelte/assets/manual.pdf` | document | `Auto Import: Cannot import .pdf into .svelte files.` |
+| 1.22 | `svelte/assets/sample.tex` | latex source | `Auto Import: Cannot import .tex into .svelte files.` |
+| 1.23 | `svelte/assets/refs.bib` | bibliography source | `Auto Import: Cannot import .bib into .svelte files.` |
+| 1.24 | `svelte/assets/diagram.eps` | eps (LaTeX vector graphics) source | `Auto Import: Cannot import .eps into .svelte files.` |
 
-- [ ] 1.13–1.21 each show `Auto Import: Cannot import .{src} into .svelte files.` and insert **nothing**
+- [ ] 1.13–1.24 each show `Auto Import: Cannot import .{src} into .svelte files.` and insert **nothing**
 - [ ] **`.mdx` is the instructive reject** (1.13): `.svelte` accepts `.ts`/`.tsx`/`.js`/`.jsx` but **not** `.mdx` — a script-*category* extension that is still rejected
 - [ ] **`.vue` is rejected** (1.14): the framework-trio destinations do **not** cross-import each other — `.svelte` accepts only its **own** `.svelte`, not `.vue` or `.astro`
 - [ ] The toast **wording** is owned by [general.md](general.md) (the `not-supported` notification) — these rows assert only the `.svelte` interpolation, not the message format
@@ -312,7 +315,7 @@ This is the signature `.svelte` ≠ `.ts` case. A `.ts` source containing `expor
 ### 5.10 — Angular suffix, illegal derived identifier (guard)
 
 - [ ] Copy `svelte/src/angular/2fa.service.ts` (no `export class`) → paste into `svelte/src/App.svelte`
-- [ ] Output: `import { $1 } from './angular/2fa.service';` — `2fa.service` derives `2faService`, not a legal identifier (leading digit), so the name falls back to a bare `$1` tab stop, NOT `2faService` (`typescript.ts:75` guard), **even though a suffix matched**
+- [ ] Output: `import { $1 } from './angular/2fa.service';` — `2fa.service` derives `2faService`, not a legal identifier (leading digit), so the name falls back to a bare `$1` tab stop, NOT `2faService` (the `typescript.ts` identifier-validation guard), **even though a suffix matched**
 
 ---
 
@@ -626,7 +629,7 @@ Because `.svelte` is **allow-list**, a gated-out source has no snippet to offer.
 - [ ] Undo, then drag `svelte/assets/logo.png` → the wrapper is created with the **single-variant asset** shape inside: `import ${1:name} from '../assets/logo.png';`
 - [ ] Undo (`Cmd+Z`) to restore the file
 
-> **Universal drop precondition** (untitled / unsaved buffer is a no-op): cross-cutting across all 13 destinations and verified once in [typescript.md §9.10](typescript.md#910--universal-drop-precondition-cross-cutting--verified-once-here) — **not** re-tested here.
+> **Universal drop precondition** (untitled / unsaved buffer is a no-op): cross-cutting across every destination and verified once in [typescript.md §9.10](typescript.md#910--universal-drop-precondition-cross-cutting--verified-once-here) — **not** re-tested here.
 
 ---
 
@@ -664,7 +667,7 @@ A `.svelte` source dropped into a `.svelte` destination is **asset-routed**, not
 
 ## 11 — Sign-off
 
-- [ ] Cross-import gating — allow-list matrix: 12 accept rows (script ×4 → TS named, `.svelte`-self + data ×3 + image → named-asset, video/audio/text-track → url-asset) + 9 reject rows (`.mdx`/`.vue`/`.astro`/`.css`/`.scss`/`.html`/`.md`/`.woff2`/`.pdf` → `not-supported`); same-file owned by general.md (21 cases)
+- [ ] Cross-import gating — allow-list matrix: 12 accept rows (script ×4 → TS named, `.svelte`-self + data ×3 + image → named-asset, video/audio/text-track → url-asset) + 12 reject rows (`.mdx`/`.vue`/`.astro`/`.css`/`.scss`/`.html`/`.md`/`.woff2`/`.pdf`/`.tex`/`.bib`/`.eps` → `not-supported`); same-file owned by general.md (24 cases)
 - [ ] Paste as Import — happy path (3 cases: script / named-asset / url-asset)
 - [ ] Insert Import from Selected File (1 case)
 - [ ] Style model — arm 1: all 7 TypeScript styles (one table for all four script exts) + `.js`-uses-TS-table note (7 cases)
@@ -677,4 +680,4 @@ A `.svelte` source dropped into a `.svelte` destination is **asset-routed**, not
 - [ ] Drag-and-drop — happy script / happy asset (named + url) / **unsupported-pair drop suppression** / placement (Bottom/Top/Cursor in-block) / column 0 / Angular-on-drop / preserve / **wrapper-create-on-drop** + asset-in-wrapper (11 cases)
 - [ ] Edge cases — in-block `require(` + string-literal false positives / `.svelte`→`.svelte` named-asset-import quirk (3 cases)
 
-**Total: ~80 test cases**
+**Total: ~83 test cases**

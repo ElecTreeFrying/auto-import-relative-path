@@ -2,7 +2,7 @@
 
 Fixtures for the CSS destination checklist ([`checklists/css.md`](../../checklists/css.md)).
 
-`.css` is the first **stylesheet** destination and the first **source-type-dispatched**
+`.css` is a **stylesheet** destination and a **source-type-dispatched**
 destination: a stylesheet source (`.css`) yields an `@import` statement, while an image
 source yields an inline `url('…')`. It has **no** smart-identifier behavior
 (`smartId: none`) — unlike [`typescript/`](../typescript/), there is no `src/classes/` or
@@ -25,7 +25,7 @@ css/
 │   ├── with-comment-block.css    /* */ block (Cursor pushes import above it)
 │   ├── widget.css                Stylesheet source for placement tests
 │   └── with-use.css              @use line (shared stylesheet marker, §10.2)
-└── rejects/                      One source per rejected category (12 empty stubs)
+└── rejects/                      One source per rejected category (.tex/.bib/.eps carry a one-line header, the rest empty)
     ├── styles.scss               stylesheet one-way reject (.scss → .css)
     ├── util.ts
     ├── widget.vue
@@ -37,7 +37,10 @@ css/
     ├── chime.mp3
     ├── captions.vtt
     ├── body.woff2
-    └── manual.pdf
+    ├── manual.pdf
+    ├── sample.tex               latex source reject
+    ├── refs.bib                 bibliography reject
+    └── diagram.eps              eps graphics reject
 ```
 
 ## Fixture-to-checklist mapping
@@ -53,14 +56,4 @@ css/
 | `placement/widget.css` | §6.1–6.4, §9.4 | Stylesheet source for the placement tests |
 | `placement/with-use.css` | §10.2 | `@use` line — shared stylesheet anchor (Bottom anchors after it) |
 | `rejects/styles.scss` | §1.2, §1.3, §9.2 | Mandatory one-way `.scss → .css` reject (paste + drop) |
-| `rejects/*` (12 files) | §1.2 | Every rejected category — warning toast, inserts nothing |
-
-## File count
-
-| Location | Files | Purpose |
-|----------|-------|---------|
-| (root) | 3 | `app.css` target + `theme.css` / `logo.png` sources |
-| `vendor/` | 1 | Nested stylesheet source |
-| `placement/` | 4 | Placement-test targets + source |
-| `rejects/` | 12 | Non-importable sources for gating |
-| **Total** | **20** |
+| `rejects/*` | §1.2 | Every rejected category — warning toast, inserts nothing |

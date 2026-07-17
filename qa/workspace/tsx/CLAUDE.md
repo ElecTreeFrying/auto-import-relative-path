@@ -12,7 +12,7 @@ Fixtures for `checklists/tsx.md` — the `.tsx` destination checklist.
 | Directory | Purpose |
 |-----------|---------|
 | `src/` | Script sources to copy/drag FROM + the primary paste/drop destination (`Panel.tsx`). `Widget.tsx`/`model.ts` are `.ts`/`.tsx` sources → the TS **primary** arm; `helper.js`/`Card.jsx` are `.js`/`.jsx` sources → the JS **fallback** arm; `components/Card.tsx` is the nested §7.3 source. Unlike `jsx/`, `.tsx` has Angular-only smart-id, so `src/angular/` (suffix → PascalCase) and `src/classes/` (the no-fill counter-case) **do** exist here. |
-| `assets/` | One non-script source per `SOURCE_UNIVERSE` category (image, document, framework, html, `.mdx`, markdown, data, CSS-module, stylesheet, font, video, audio, text-track). **`.tsx` is accept-all**, so every one is *accepted* with a fixed shape — there is **no `rejected/` dir**. |
+| `assets/` | One non-script source per `SOURCE_UNIVERSE` category (image, document, framework, html, `.mdx`, markdown, data, CSS-module, stylesheet, font, video, audio, text-track, **latex**). **`.tsx` is accept-all** (gating accepts every source), so each is gating-accepted — most get a fixed shape, but `.tex`/`.bib`/`.eps` have no asset-switch case → empty snippet (the same empty-snippet path as `.jsx`'s `.ts`/`.tsx`). There is **no `rejected/` dir**. |
 | `destinations/` | Pre-filled `.tsx` (+ one `.mdx`) files for placement tests. Each has specific content (imports, comments, code) that the checklist expects, with exact insertion line numbers. **Undo after each paste** so the file returns to its expected state. |
 
 ## Fixture content expectations

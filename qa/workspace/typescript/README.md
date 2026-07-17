@@ -67,7 +67,10 @@ typescript/
 │   ├── page.mdx
 │   ├── App.vue
 │   ├── App.svelte
-│   └── App.astro
+│   ├── App.astro
+│   ├── sample.tex
+│   ├── refs.bib
+│   └── diagram.eps
 └── Makefile                    No file extension (copy/Alt+D rejection test)
 ```
 
@@ -75,7 +78,7 @@ typescript/
 
 | Fixture | Section(s) | Purpose |
 |---------|-----------|---------|
-| `src/foo.ts` | 1.1, 2, 4, 9.1, 9.3–9.6, 9.9, 9.10 | Plain `.ts` source (happy-path paste, all 7 styles + drift, DnD, drop precondition) |
+| `src/foo.ts` | 1.1, 2, 4, 9.1, 9.3–9.6, 9.9, 9.10 | Plain `.ts` source (happy-path paste, every style + drift, DnD, drop precondition) |
 | `src/bar.ts` | 2, 4, 5, 6, 9 | Primary paste/drop destination |
 | `src/helpers.ts` | 5.B.7 | Non-Angular basename — verify no auto-fill |
 | `src/angular/app-root.component.ts` | 5.B.1, 5.B.8, 5.B.9 | Angular `.component` WITHOUT export class |
@@ -108,15 +111,5 @@ typescript/
 | `destinations/string-with-import.ts` | 10.4 | `import` inside string literal — NOT a Bottom marker (line-leading only) |
 | `destinations/mixed-imports.ts` | 10.5 | `import` + `require` mixed — Bottom finds last |
 | `destinations/large-file.ts` | 10.3 | 520 lines — Bottom still finds imports at top |
-| `rejected/*` (20 files) | 1.2–1.21, 9.2 | Every non-`.ts` extension for gating rejection |
+| `rejected/*` | 1.2–1.24, 9.2 | Every non-`.ts` extension for gating rejection |
 | `Makefile` | — | No file extension (tested via general.md) |
-
-## File count
-
-| Directory | Files | Purpose |
-|-----------|-------|---------|
-| `src/` | 21 | Sources + primary destinations |
-| `destinations/` | 12 | Pre-filled placement-test destinations |
-| `rejected/` | 20 | Non-`.ts` sources for gating tests |
-| Root | 1 | `Makefile` (no extension) |
-| **Total** | **54** |

@@ -69,7 +69,10 @@ markdown/
     ├── captions.vtt                # text-track       (reject)
     ├── data.json                   # data             (reject)
     ├── font.woff2                  # font             (reject)
-    └── doc.pdf                     # document         (reject)
+    ├── doc.pdf                     # document         (reject)
+    ├── sample.tex                  # latex source     (reject)
+    ├── refs.bib                    # bibliography     (reject)
+    └── diagram.eps                 # eps graphics     (reject)
 ```
 
 **Source files** (imported *into* the destinations):
@@ -158,6 +161,9 @@ captions.vtt  →  WEBVTT
 data.json     →  { "ok": true }
 font.woff2    →  binary placeholder
 doc.pdf       →  binary placeholder
+sample.tex    →  % latex comment stub (one line)
+refs.bib      →  % bibtex comment stub (one line)
+diagram.eps   →  binary placeholder (EPS)
 ```
 
 ---
@@ -197,6 +203,9 @@ For each row: in the Explorer select the source, focus `markdown/notes.md`, and
 - [ ] `markdown/rejected/font.woff2` (`.woff2`, **font**) → `Auto Import: Cannot import .woff2 into .md files.`
       *(`.woff` / `.ttf` / `.eot` reject identically)*
 - [ ] `markdown/rejected/doc.pdf` (`.pdf`, **document**) → `Auto Import: Cannot import .pdf into .md files.`
+- [ ] `markdown/rejected/sample.tex` (`.tex`, **latex source**) → `Auto Import: Cannot import .tex into .md files.`
+- [ ] `markdown/rejected/refs.bib` (`.bib`, **bibliography**) → `Auto Import: Cannot import .bib into .md files.`
+- [ ] `markdown/rejected/diagram.eps` (`.eps`, **eps graphics**) → `Auto Import: Cannot import .eps into .md files.`
 
 > There is deliberately **no `.md`→`.md` rejection row** — `.md` is the counter-case to
 > `.html`. `gating.ts` carries an explicit `.html`→`.html` reject clause but **none**
@@ -406,7 +415,7 @@ placement cases below).
 - [ ] **(d)** class-detect / Angular / preserve-extension on drop — **none apply** to `.md`
       (no smart identifier; extension always preserved).
 
-> The DnD untitled/unsaved-buffer no-op precondition is tested **once for all 12
+> The DnD untitled/unsaved-buffer no-op precondition is tested **once for all
 > destinations** in `typescript.md §9.10` — not repeated here.
 
 ---
@@ -447,7 +456,7 @@ Tester: ____________________  ·  Date: ____________  ·  Extension version: ___
 
 | § | Section | Cases |
 |---|---------|------:|
-| 1 | Gating matrix (2 accept + 10 reject) | 12 |
+| 1 | Gating matrix (2 accept + 13 reject) | 15 |
 | 2 | Happy path (one per source branch) | 2 |
 | 3 | Insert from Selected File (`Alt+D`) | 1 |
 | 4 | All styles (1 markdown + 3 image + 2 name-drift) | 6 |
@@ -457,6 +466,6 @@ Tester: ____________________  ·  Date: ____________  ·  Extension version: ___
 | 8 | Set Default (2 image configurable + 1 fixed) | 3 |
 | 9 | Drag-and-drop (a/b/c-i…iii/d) | 6 |
 | 10 | Edge cases (markdown-star vs `.tsx`) | 2 |
-| | **Total** | **44** |
+| | **Total** | **47** |
 
 - [ ] All cases above pass on the target build.

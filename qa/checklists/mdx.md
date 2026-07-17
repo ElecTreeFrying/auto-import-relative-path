@@ -1,6 +1,6 @@
 # MDX (`.mdx` destination) — QA Checklist
 
-MDX-specific manual QA: accept-all gating, the **two-script-arm + asset** style model (7 TypeScript styles for `.ts`/`.tsx` sources, 7 JavaScript styles for `.js`/`.jsx` sources **via fallback**, or a fixed asset shape), Angular-only smart identifiers, placement, style pickers, and drag-and-drop. `.mdx` shares the **exact same builder** as `.tsx`: `dispatch.ts` routes both `.tsx` and `.mdx` to `tsx.ts:buildSnippet`, which hands `buildReactImport` a TS `primarySnippet` for `.ts`/`.tsx` sources **and** a JS `fallbackSnippet` for `.js`/`.jsx` sources. Because of that fallback, **every gated-in source renders a non-empty import** — there is **no empty-snippet case** and **no raw-text-fallback drop**.
+MDX-specific manual QA: accept-all gating, the **two-script-arm + asset** style model (7 TypeScript styles for `.ts`/`.tsx` sources, 7 JavaScript styles for `.js`/`.jsx` sources **via fallback**, or a fixed asset shape), Angular-only smart identifiers, placement, style pickers, and drag-and-drop. `.mdx` shares the **exact same builder** as `.tsx`: `dispatch.ts` routes both `.tsx` and `.mdx` to `tsx.ts:buildSnippet`, which hands `buildReactImport` a TS `primarySnippet` for `.ts`/`.tsx` sources **and** a JS `fallbackSnippet` for `.js`/`.jsx` sources. Because of that fallback, **every gated-in source renders a non-empty import except `.tex`/`.bib`/`.eps`** (no primary/fallback/asset case → `default: null` → empty snippet, like `.jsx`'s `.ts`/`.tsx`). The `.tsx`/`.jsx` empty-snippet contrast carries over: `.mdx` renders every **script** source non-empty, but both `.jsx` and `.mdx` empty on `.tex`/`.bib`/`.eps`.
 
 `.mdx` is **byte-identical to `.tsx` in every import shape** — they differ in exactly **one** behavior: the **markdown-star Cursor quirk**. `isMarkdownDestination('.mdx')` is `true` (it is `false` for `.tsx`), so when a **Cursor** insertion lands on a line whose first non-whitespace character is `*`, the import lands **AT** that line in `.mdx` (the `*` is treated as Markdown content — a bullet / `*italic*` / `**bold**`) but is pushed **ABOVE** it in the byte-identical `.tsx` buffer. This is the only `.mdx` ≠ `.tsx` divergence and the focus of §6.3.8 and §10.1.
 
@@ -12,12 +12,12 @@ MDX-specific manual QA: accept-all gating, the **two-script-arm + asset** style 
 
 - `src/snippets/dispatch.ts` — `buildImportSnippet`: the `case '.tsx': case '.mdx':` arm routes **both** destinations to `tsx.buildSnippet` (identical import semantics)
 - `src/snippets/languages/tsx.ts` — `buildSnippet` (the `.mdx` builder per `dispatch.ts`): delegates to `buildReactImport` with `primaryExtensions: ['.ts', '.tsx']`, `primarySnippet: buildTypeScriptImportSnippet`, `fallbackExtensions: ['.js', '.jsx']`, `fallbackSnippet: buildJavaScriptImportSnippet`
-- `src/snippets/_react.ts` — `buildReactImport`: TS-primary path + JS-fallback path (both honor `preserveScriptFileExtension`), the `.module.css`/`.module.scss` check (FIRST), and `buildAssetImportStatement` (4 asset groups, full extension via `fullPath`). `default: null` is **never reached** for a gated-in source — primary/fallback/asset cover every `SOURCE_UNIVERSE` member, which is why `.mdx` has **no** empty-snippet case
+- `src/snippets/_react.ts` — `buildReactImport`: TS-primary path + JS-fallback path (both honor `preserveScriptFileExtension`), the `.module.css`/`.module.scss` check (FIRST), and `buildAssetImportStatement` (the asset groups, full extension via `fullPath`). `default: null` is reached **only** by `.tex`/`.bib`/`.eps` (no primary/fallback/asset case); every other gated-in `SOURCE_UNIVERSE` member is covered by primary/fallback/asset, so those three are the **only** empty-snippet sources
 - `src/snippets/languages/typescript.ts` — `buildTypeScriptImportSnippetByStyle` (7-case switch; style-0 Angular `generateAngularLegacyImportName`, called **without** `detectedImportName` for `.mdx` → no exported-class fill); `default:` arm emits the style-0 shape (bare `$1` for `.mdx`)
 - `src/snippets/languages/javascript.ts` — `buildJavaScriptImportSnippetByStyle` (7-case switch); `default:` arm emits the style-0 default-import shape
 - `src/snippets/_styles.ts` — **both** `TYPESCRIPT_IMPORT_OPTIONS` (7) **and** `JAVASCRIPT_IMPORT_OPTIONS` (7) — descriptions + tags + tab-stop layout per style
 - `src/snippets/variants.ts` — `buildTsxVariants` / `buildReactNonScriptVariant` (shared by the `.tsx`/`.mdx` case): `.ts`/`.tsx` → 7 styled variants backed by `('script', 'typescript')`; `.js`/`.jsx` → 7 styled variants backed by `('script', 'javascript')`; non-script → a single hardcoded variant (no `setting`). Called **without** `detectedImportName`, so style-0 is Angular-only (no exported-class fill)
-- `src/gating.ts` — `isPairSupported`: `.mdx ∈ CROSS_IMPORT_DESTINATIONS` → accepts every source; like `.tsx`, every source also renders a non-empty snippet
+- `src/gating.ts` — `isPairSupported`: `.mdx ∈ CROSS_IMPORT_DESTINATIONS` → accepts every source; like `.tsx` (and unlike `.jsx`, which empties on `.ts`/`.tsx`), every source renders a non-empty snippet **except `.tex`/`.bib`/`.eps`**
 - `src/commands/paste-import.ts` — Paste as Import (insertion path)
 - `src/commands/copy-paste.ts` — Insert Import from Selected File (sequential copy + paste)
 - `src/commands/paste-import-with-style.ts` — Paste as Import (Pick Style) command
@@ -70,7 +70,7 @@ The four settings used in this checklist:
 
 `.mdx ∈ CROSS_IMPORT_DESTINATIONS`, so `isPairSupported` returns `true` for **every** source extension (`src/gating.ts`: the first clause short-circuits because the destination is a cross-import destination, and no per-destination clause matches `.mdx`). There are therefore **no source-extension rejection rows** — the only rejection that applies to `.mdx` is the universal **same-file** rejection, owned by [general.md](general.md) (cross-reference, never re-tested here).
 
-Like `.tsx`, **every accepted source also renders a non-empty snippet** (`.ts`/`.tsx` → TS primary, `.js`/`.jsx` → JS fallback, everything else → a fixed asset shape) — there are **zero empty rows**. This matrix lists one **accepted** row per source category, showing the default inserted shape. It doubles as a coverage map into §2 (happy path) and §4 (all styles / asset shapes). For each row: copy the listed source (`Cmd+Shift+A`), paste into `mdx/src/Page.mdx` (`Cmd+I`).
+Like `.tsx`, **every accepted source renders a non-empty snippet except `.tex`/`.bib`/`.eps`** (`.ts`/`.tsx` → TS primary, `.js`/`.jsx` → JS fallback, every other asset → a fixed shape; `.tex`/`.bib`/`.eps` have no case → empty snippet). The **only empty rows** are those three LaTeX sources (§1.19–1.21). This matrix lists one row per source category, showing the default inserted shape. It doubles as a coverage map into §2 (happy path) and §4 (all styles / asset shapes). For each row: copy the listed source (`Cmd+Shift+A`), paste into `mdx/src/Page.mdx` (`Cmd+I`).
 
 | # | Source (workspace path) | Category | Expected (default style) |
 |---|------------------------|----------|--------------------------|
@@ -92,6 +92,9 @@ Like `.tsx`, **every accepted source also renders a non-empty snippet** (`.ts`/`
 | 1.16 | `mdx/assets/clip.mp4` | video | `import ${1:url} from '../assets/clip.mp4';` |
 | 1.17 | `mdx/assets/theme.mp3` | audio | `import ${1:url} from '../assets/theme.mp3';` |
 | 1.18 | `mdx/assets/subs.vtt` | text-track | `import ${1:url} from '../assets/subs.vtt';` |
+| 1.19 | `mdx/assets/sample.tex` | latex → **empty** | *(nothing inserted — empty snippet + `not-supported` toast; no primary/fallback/asset case → `default: null`)* |
+| 1.20 | `mdx/assets/refs.bib` | bibliography → **empty** | *(nothing inserted — empty snippet + `not-supported` toast)* |
+| 1.21 | `mdx/assets/diagram.eps` | eps → **empty** | *(nothing inserted — empty snippet + `not-supported` toast)* |
 
 - [ ] 1.1–1.2 (`.ts`/`.tsx` sources) insert the **TS named** shape `import { $1 } from '<path>';` (the TS primary path)
 - [ ] 1.3–1.4 (`.js`/`.jsx` sources) insert the **JS default** shape `import $1 from '<path>';` (the JS **fallback** path — NOT the TS named shape)
@@ -100,8 +103,9 @@ Like `.tsx`, **every accepted source also renders a non-empty snippet** (`.ts`/`
 - [ ] 1.13 (`.module.css`) inserts the `${1:styles}` shape — the CSS-module check beats the side-effect shape (proof in §4)
 - [ ] 1.14–1.15 (plain stylesheet / font) insert the side-effect `import '<full-path>';` with no tab stop
 - [ ] 1.16–1.18 (video / audio / text-track) insert `import ${1:url} from '<full-path>';`
+- [ ] 1.19–1.21 (latex / bibliography / eps) insert **nothing** and show `Auto Import: Cannot import .tex into .mdx files.` (etc.) — gating-accepted but no primary/fallback/asset case → `default: null` → empty snippet (the **only** empty rows; the `.jsx`-style empty-snippet case `.mdx` was previously claimed not to have)
 
-> Every `SOURCE_UNIVERSE` category is represented, with **no empty rows**. The four fixed asset shapes — `${1:styles}` / `${1:name}` / `${1:url}` / side-effect — are enumerated in full in §4 (arm 2). The import shapes here are **byte-identical to `.tsx`** (same `tsx.ts` builder).
+> Every `SOURCE_UNIVERSE` category is represented; the **only empty rows** are the LaTeX sources `.tex`/`.bib`/`.eps` (1.19–1.21 — no asset-switch case). The four fixed asset shapes — `${1:styles}` / `${1:name}` / `${1:url}` / side-effect — are enumerated in full in §4 (arm 2). The import shapes here are **byte-identical to `.tsx`** (same `tsx.ts` builder).
 
 ---
 
@@ -147,7 +151,7 @@ One case per source branch in the model: a `.ts`/`.tsx` script source (TS primar
 - **Arm 1B** — a `.js`/`.jsx` source picks from the **7 JavaScript styles** (`javascriptImportStyle`, via fallback).
 - **Arm 2** — a non-script asset source gets **one fixed shape** (no style dropdown applies).
 
-There is **no empty-snippet case** — every gated-in source renders something.
+The only empty-snippet sources are the LaTeX `.tex`/`.bib`/`.eps` (no asset-switch case → `default: null`); every other gated-in source renders something.
 
 ### 4A — `.ts`/`.tsx` source: all 7 TypeScript import styles
 
@@ -343,7 +347,7 @@ This is the signature `.mdx` ≠ `.ts` case. A `.ts`/`.tsx` source containing `e
 ### 5.10 — Angular suffix, illegal derived identifier (guard)
 
 - [ ] Copy `mdx/src/angular/2fa.component.ts` (no `export class`) → paste into `mdx/src/Page.mdx`
-- [ ] Output: `import { $1 } from './angular/2fa.component';` — `2fa.component` derives `2faComponent`, not a legal identifier (leading digit), so the name falls back to a bare `$1` tab stop, NOT `2faComponent` (`typescript.ts:75` guard)
+- [ ] Output: `import { $1 } from './angular/2fa.component';` — `2fa.component` derives `2faComponent`, not a legal identifier (leading digit), so the name falls back to a bare `$1` tab stop, NOT `2faComponent` (the `typescript.ts` identifier-validation guard)
 
 ---
 
@@ -567,7 +571,7 @@ A non-script asset has exactly **one** variant (the fixed shape), so the single-
 - [ ] No style list appears (one variant only) → `import ${1:name} from '../assets/logo.png';` is inserted directly
 - [ ] (Were the picker shown, the single item's label would be the basename preview `import name from 'logo.png';` with an empty description — hardcoded variants carry no tag)
 
-> **No 0-variant case.** **Every** `.mdx` source produces at least one variant — `.ts`/`.tsx` → 7 TS, `.js`/`.jsx` → 7 JS, non-script → 1 fixed. There is no empty picker (the contrast to `jsx.md`, where a `.ts`/`.tsx` source produces zero variants).
+> **0-variant case (LaTeX only).** **Every `.mdx` source produces at least one variant except the LaTeX `.tex`/`.bib`/`.eps`** — `.ts`/`.tsx` → 7 TS, `.js`/`.jsx` → 7 JS, non-script asset → 1 fixed, `.tex`/`.bib`/`.eps` → 0 (empty picker). (Unlike `jsx.md`, a `.ts`/`.tsx` source here produces 7 TS variants, not zero.)
 
 ---
 
@@ -626,7 +630,7 @@ Drag a file from the Explorer sidebar into an open `.mdx` editor. A drop reuses 
 
 - [ ] Drag `mdx/assets/logo.png` into `mdx/src/Page.mdx` → `import ${1:name} from '../assets/logo.png';` (the fixed asset shape, byte-identical to §2.3)
 
-> **No suppressed-drop case.** `.mdx` accepts every source **and** renders a non-empty snippet for all of them, so no drop is ever empty/unsupported — there is no suppressed-drop case. This is the contrast to [jsx.md §9.3](jsx.md#93--unsupported-pair-ts--tsx--jsx-drop-suppression), where a `.ts`/`.tsx` source builds an empty snippet and the provider suppresses the drop (nothing inserted). `.mdx` has no such case.
+> **Suppressed-drop case (LaTeX only).** `.mdx` renders a non-empty snippet for every source **except `.tex`/`.bib`/`.eps`** (no asset-switch case → empty snippet → the provider suppresses the drop, nothing inserted). A `.ts`/`.tsx` source — the suppressed case in [jsx.md §9.3](jsx.md#93--unsupported-pair-ts--tsx--jsx-drop-suppression) — is rendered non-empty here; `.mdx`'s suppressed-drop sources are instead the three LaTeX extensions.
 
 ### 9.4 — Placement with Bottom mode
 
@@ -674,7 +678,7 @@ Drag a file from the Explorer sidebar into an open `.mdx` editor. A drop reuses 
 - [ ] Drag `mdx/assets/logo.png` → path is still `'../assets/logo.png'` (asset extensions are kept regardless — the toggle is script-namespace)
 - [ ] Uncheck **Preserve script file extension in imports** to restore the default
 
-> **Universal drop precondition** (untitled / unsaved buffer is a no-op): cross-cutting across all 13 destinations and verified once in [typescript.md §9.10](typescript.md#910--universal-drop-precondition-cross-cutting--verified-once-here) — **not** re-tested here.
+> **Universal drop precondition** (untitled / unsaved buffer is a no-op): cross-cutting across every destination and verified once in [typescript.md §9.10](typescript.md#910--universal-drop-precondition-cross-cutting--verified-once-here) — **not** re-tested here.
 
 ---
 
@@ -717,7 +721,7 @@ Drag a file from the Explorer sidebar into an open `.mdx` editor. A drop reuses 
 
 ## 11 — Sign-off
 
-- [ ] Cross-import gating — accept-all matrix, one row per source category (18 rows; 0 source-extension rejections, same-file owned by general.md; 0 empty rows)
+- [ ] Cross-import gating — accept-all matrix, one row per source category (21 rows; 0 source-extension rejections, same-file owned by general.md; 3 empty rows — `.tex`/`.bib`/`.eps`)
 - [ ] Paste as Import — happy path (3 cases: TS-script / JS-script-fallback / asset)
 - [ ] Insert Import from Selected File (1 case)
 - [ ] Style model — arm 1A: all 7 TypeScript styles (7 cases)
@@ -733,4 +737,4 @@ Drag a file from the Explorer sidebar into an open `.mdx` editor. A drop reuses 
 - [ ] Drag-and-drop — happy TS / happy JS-fallback / happy asset / placement (incl. markdown-star on drop) / Angular-on-drop / preserve (no raw-text-fallback) (11 cases)
 - [ ] Edge cases — markdown-star `.mdx` ≠ `.tsx` proof, string-literal + `require(` false-positives, JS-fallback recap (4 cases)
 
-**Total: ~90 test cases**
+**Total: ~93 test cases**

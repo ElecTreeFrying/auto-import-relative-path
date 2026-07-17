@@ -13,7 +13,7 @@ Fixtures for `checklists/javascript.md` — the `.js` destination checklist.
 |-----------|---------|
 | `src/` | Plain `.js` source files to copy/drag FROM (`foo.js`) plus the primary paste/drop destination (`bar.js`). `.js` has no smart-identifier detection, so — unlike `typescript/` — there are no `classes/` or `angular/` subtrees. |
 | `destinations/` | Pre-filled `.js` files for placement tests. Each has specific content (imports, comments, code) that the checklist expects, with exact insertion line numbers. **Undo after each paste** so the file returns to its expected state. |
-| `rejected/` | Non-`.js` files (20 extensions) for gating rejection tests. Content is irrelevant — only the file extension matters. Most are empty placeholders. |
+| `rejected/` | Non-`.js` files (one per rejected extension) for gating rejection tests. Content is irrelevant — only the file extension matters. Most are empty placeholders. |
 
 ## Fixture content expectations
 

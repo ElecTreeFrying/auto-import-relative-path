@@ -33,12 +33,3 @@ general/
 | `components/child.ts` | 6.2, 7.2–7.3 | Child-directory and parent-directory path computation, paste target |
 | `edge-cases/komponent-日本語.ts` | 6.2–6.3 | Unicode in filename |
 | `edge-cases/my folder/spaced.ts` | 6.4 | Spaces in path |
-
-## File count
-
-| Directory | Files |
-|-----------|-------|
-| Root | 6 |
-| `components/` | 1 |
-| `edge-cases/` | 2 |
-| **Total** | **9** |

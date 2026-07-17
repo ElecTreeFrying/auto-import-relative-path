@@ -51,7 +51,7 @@ The three settings used in this checklist:
 | `typescript/src/classes/` | `.ts` files WITH `export class` declarations (+ `tsx-dest.tsx`, a `.tsx` destination for §5.A.9) |
 | `typescript/src/components/`, `typescript/src/utils/` | Nested directories for path-computation tests |
 | `typescript/destinations/` | Pre-filled `.ts` files for placement tests (undo after each test) |
-| `typescript/rejected/` | 20 non-`.ts` files for gating rejection tests |
+| `typescript/rejected/` | 23 non-`.ts` files for gating rejection tests |
 | `typescript/Makefile` | No-extension file for copy/Alt+D rejection |
 
 ---
@@ -85,9 +85,12 @@ For each row: copy the source file from the listed workspace path, paste into `t
 | 1.19 | `typescript/rejected/App.vue` | `Auto Import: Cannot import .vue into .ts files.` |
 | 1.20 | `typescript/rejected/App.svelte` | `Auto Import: Cannot import .svelte into .ts files.` |
 | 1.21 | `typescript/rejected/App.astro` | `Auto Import: Cannot import .astro into .ts files.` |
+| 1.22 | `typescript/rejected/sample.tex` | `Auto Import: Cannot import .tex into .ts files.` |
+| 1.23 | `typescript/rejected/refs.bib` | `Auto Import: Cannot import .bib into .ts files.` |
+| 1.24 | `typescript/rejected/diagram.eps` | `Auto Import: Cannot import .eps into .ts files.` |
 
 - [ ] 1.1 passes (import generated)
-- [ ] 1.2 through 1.21 all show the exact warning toast with both extensions in the message
+- [ ] 1.2 through 1.24 all show the exact warning toast with both extensions in the message
 - [ ] Each rejected toast has a **View Supported Files** button that opens the GitHub README section
 
 ---
@@ -292,7 +295,7 @@ Style must be set to index 0. Source files must NOT contain `export class` (othe
 #### 5.B.11 — Angular suffix, illegal derived identifier (guard)
 
 - [ ] Copy `typescript/src/angular/2fa.service.ts` (no `export class`) → paste into `typescript/src/bar.ts`
-- [ ] Output: `import { $1 } from './angular/2fa.service';` — `2fa.service` derives `2faService`, which is not a legal identifier (leading digit), so the name falls back to a bare `$1` tab stop, NOT `2faService` (`typescript.ts:75` guard)
+- [ ] Output: `import { $1 } from './angular/2fa.service';` — `2fa.service` derives `2faService`, which is not a legal identifier (leading digit), so the name falls back to a bare `$1` tab stop, NOT `2faService` (the `typescript.ts` identifier-validation guard)
 
 ---
 
@@ -568,7 +571,7 @@ Drag a file from the Explorer sidebar into an open `.ts` editor. Universal DnD b
 
 ### 9.10 — Universal drop precondition (cross-cutting — verified once here)
 
-The drop provider is registered only for the 13 `DROP_LANGUAGE_SELECTORS` entries (11 language IDs + the `.mdx`/`.tex` file-pattern selectors) and only for `scheme:'file'`. A drop into an untitled/unsaved buffer is a no-op — this applies to all 13 destinations and is tested once.
+The drop provider is registered only for the `DROP_LANGUAGE_SELECTORS` entries (language IDs + the `.mdx`/`.tex` file-pattern selectors) and only for `scheme:'file'`. A drop into an untitled/unsaved buffer is a no-op — this applies to every destination and is tested once.
 
 - [ ] Open a new untitled buffer (`Cmd+N`) and leave it unsaved (its scheme is `untitled:`, not `file:`)
 - [ ] Drag `typescript/src/foo.ts` from the Explorer into the untitled buffer
@@ -614,7 +617,7 @@ The drop provider is registered only for the 13 `DROP_LANGUAGE_SELECTORS` entrie
 
 ## 11 — Sign-off
 
-- [ ] Cross-import gating (21 cases)
+- [ ] Cross-import gating (24 cases)
 - [ ] Paste as Import — happy path (1 case)
 - [ ] Insert Import from Selected File (1 case)
 - [ ] All 7 import styles (7 cases)
@@ -630,4 +633,4 @@ The drop provider is registered only for the 13 `DROP_LANGUAGE_SELECTORS` entrie
 - [ ] Drag-and-drop — universal precondition (1 case)
 - [ ] Edge cases (5 cases)
 
-**Total: ~89 test cases**
+**Total: ~92 test cases**

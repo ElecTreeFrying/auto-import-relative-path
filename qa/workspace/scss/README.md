@@ -41,18 +41,18 @@ scss/
 │   ├── single-comment.scss       Lone // line (Cursor inserts at it)
 │   ├── comment-group.scss        // run (Cursor walks above the whole group)
 │   └── commented-only.scss       Commented @use does not anchor Bottom
-└── rejected/                     One source per rejected category (17 empty stubs)
+└── rejected/                     One source per rejected category (.tex/.bib/.eps carry a one-line header, the rest empty)
     ├── widget.ts   sibling.js    badge.jsx   panel.tsx   page.mdx
     ├── App.vue     App.svelte    App.astro   index.html  notes.md
     ├── clip.mp4    track.mp3     subs.vtt    data.json   config.yaml
-    └── font.woff2  doc.pdf
+    └── font.woff2  doc.pdf      sample.tex  refs.bib    diagram.eps
 ```
 
 ## Fixture-to-checklist mapping
 
 | Fixture | Section(s) | Purpose |
 |---------|-----------|---------|
-| `src/main.scss` | §1–4, §7, §9, §10 | Primary paste/drop/command target (content not pinned by the checklist) |
+| `src/main.scss` | §1–4, §7–10 | Primary paste/drop/command target (content not pinned by the checklist) |
 | `src/theme.scss` | §1.1, §2.1, §3, §4, §6, §9.1/9.3/9.4/9.5, §10.3 | Stylesheet source → `@use './theme';` (extension stripped) |
 | `src/reset.css` | §1.2, §4.C | `.css` source → `@use './reset.css';` (extension always kept) |
 | `src/abstracts/_variables.scss` | §4.A, §4.B, §7.2, §9.7, §9.8 | Partial — leading `_` stripped, `abstracts/` segment kept |
@@ -68,16 +68,4 @@ scss/
 | `destinations/single-comment.scss` | §6.3.2, §9.5.1 | Lone `//` — Cursor inserts at the line |
 | `destinations/comment-group.scss` | §6.3.3 | `//` run — Cursor walks above the whole group |
 | `destinations/commented-only.scss` | §10.3 | Commented `@use` does not anchor Bottom |
-| `rejected/*` (17 files) | §1.5–§1.21, §9.2 | Every rejected category — warning toast, inserts nothing (`App.vue` also drives DnD §9.2) |
-
-## File count
-
-| Location | Files | Purpose |
-|----------|-------|---------|
-| `src/` (root) | 3 | `main.scss` target + `theme.scss` / `reset.css` sources |
-| `src/abstracts/` | 1 | Partial — leading-`_` normalization |
-| `src/_partials/` | 1 | Partial under a `_`-prefixed directory |
-| `src/images/` | 3 | Image sources (inline `url()`) |
-| `destinations/` | 8 | Placement-test targets |
-| `rejected/` | 17 | Non-importable sources for gating |
-| **Total** | **33** |
+| `rejected/*` | §1.5–§1.24, §9.2 | Every rejected category — warning toast, inserts nothing (`App.vue` also drives DnD §9.2) |

@@ -5,8 +5,8 @@ Fixtures for the MDX destination checklist ([`checklists/mdx.md`](../../checklis
 `.mdx` shares the **exact same builder** as [`tsx/`](../tsx/) — `dispatch.ts` routes both `.tsx` and `.mdx` to
 `tsx.ts:buildSnippet` — so every **import shape** is byte-identical to `.tsx`: a `.ts`/`.tsx` source renders via the
 TS `primarySnippet`, a `.js`/`.jsx` source via the JS `fallbackSnippet`, and a non-script source via a fixed asset
-shape. Because of that fallback, **every gated-in source renders a non-empty import** — there is **no
-empty-snippet case** and **no raw-text-fallback drop**. `.mdx ∈ CROSS_IMPORT_DESTINATIONS` → **accept-all**, so
+shape. Because of that fallback, **every gated-in source renders a non-empty import except
+`.tex`/`.bib`/`.eps`** (no primary/fallback/asset case → empty snippet, like `.jsx`'s `.ts`/`.tsx`). `.mdx ∈ CROSS_IMPORT_DESTINATIONS` → **accept-all**, so
 non-script sources live in **`assets/`** (each *accepted* with a fixed shape) and there is **no `rejected/` dir**.
 
 The **one** `.mdx` ≠ `.tsx` divergence is the **markdown-star Cursor quirk**: `isMarkdownDestination('.mdx')` is
@@ -42,7 +42,7 @@ mdx/
 │   │   └── widget.component.js     Angular suffix on a .js source → JS fallback, NO PascalCase (§5.8)
 │   └── classes/
 │       └── event-bus.ts          `export class EventBus` — the no-exported-class-fill counter-case (§5.7)
-├── assets/                       Non-script sources — every one ACCEPTED with a fixed shape (accept-all)
+├── assets/                       Non-script sources — gating-accepted; most get a fixed shape, but .tex/.bib/.eps empty-snippet (no asset-switch case)
 │   ├── logo.png                  image      (empty placeholder) → import ${1:name}
 │   ├── manual.pdf                document   (empty placeholder) → import ${1:name}
 │   ├── Hero.vue                  framework            → import ${1:name}
@@ -56,7 +56,10 @@ mdx/
 │   ├── font.woff2                font       (empty placeholder) → side-effect import (no tab stop)
 │   ├── clip.mp4                  video      (empty placeholder) → import ${1:url}
 │   ├── theme.mp3                 audio      (empty placeholder) → import ${1:url}
-│   └── subs.vtt                  text-track           → import ${1:url}
+│   ├── subs.vtt                  text-track           → import ${1:url}
+│   ├── sample.tex                latex source         → empty snippet (not-supported)
+│   ├── refs.bib                  bibliography         → empty snippet (not-supported)
+│   └── diagram.eps               eps graphics         → empty snippet (not-supported)
 └── destinations/                 Pre-filled .mdx files for placement tests (undo after each paste)
     ├── empty.mdx                 0 bytes
     ├── with-imports.mdx          Two import lines + `# Page` (Markdown body)
@@ -104,6 +107,9 @@ mdx/
 | `assets/data.json` | 1.10 | Data — `${1:name}` |
 | `assets/config.yaml` | 1.11 | Data — `${1:name}` |
 | `assets/manual.pdf` | 1.12 | Document — `${1:name}` (empty placeholder) |
+| `assets/sample.tex` | 1.19 | LaTeX source → empty snippet (not-supported) |
+| `assets/refs.bib` | 1.20 | Bibliography → empty snippet (not-supported) |
+| `assets/diagram.eps` | 1.21 | EPS graphics → empty snippet (not-supported) |
 | `destinations/empty.mdx` | 6.1.1, 6.2.2 | Empty file — Bottom/Top fall back to line 1 |
 | `destinations/with-imports.mdx` | 6.1.2, 6.2.1, 6.3.1, 6.3.2, 6.3.5, 9.4, 9.5 | Two imports + `# Page` — placement tests |
 | `destinations/with-require.mdx` | 6.1.3 | `require()` — Bottom detects as import marker |
@@ -116,12 +122,3 @@ mdx/
 | `destinations/leading-star.tsx` | 10.1 | Byte-identical to `leading-star.mdx` — the `.mdx` ≠ `.tsx` proof (in `.tsx` the `*` is a comment → adjusts above) |
 | `destinations/string-with-import.mdx` | 10.2 | `import` inside string literal — NOT a Bottom marker (line-leading only) |
 | `destinations/mixed-imports.mdx` | 10.3 | `import` + `require` mixed — Bottom finds last |
-
-## File count
-
-| Directory | Files | Purpose |
-|-----------|-------|---------|
-| `src/` | 14 | Script sources (TS-primary + JS-fallback) + nested source + `angular/` (7) + `classes/` (1) + primary destination |
-| `assets/` | 14 | One non-script source per category — all accepted, fixed shapes |
-| `destinations/` | 12 | Pre-filled placement-test destinations (incl. `leading-star.tsx` for the `.mdx` ≠ `.tsx` proof) |
-| **Total** | **40** |

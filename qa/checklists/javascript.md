@@ -47,7 +47,7 @@ The three settings used in this checklist:
 |-----------|---------------|
 | `javascript/src/` | Primary `.js` sources and destinations (`foo.js`, `bar.js`) |
 | `javascript/destinations/` | Pre-filled `.js` files for placement tests (undo after each test) |
-| `javascript/rejected/` | 20 non-`.js` files for gating rejection tests |
+| `javascript/rejected/` | 23 non-`.js` files for gating rejection tests |
 
 ---
 
@@ -80,12 +80,15 @@ For each row: copy the source file from the listed workspace path, paste into `j
 | 1.19 | `javascript/rejected/App.vue` | `Auto Import: Cannot import .vue into .js files.` |
 | 1.20 | `javascript/rejected/App.svelte` | `Auto Import: Cannot import .svelte into .js files.` |
 | 1.21 | `javascript/rejected/App.astro` | `Auto Import: Cannot import .astro into .js files.` |
+| 1.22 | `javascript/rejected/sample.tex` | `Auto Import: Cannot import .tex into .js files.` |
+| 1.23 | `javascript/rejected/refs.bib` | `Auto Import: Cannot import .bib into .js files.` |
+| 1.24 | `javascript/rejected/diagram.eps` | `Auto Import: Cannot import .eps into .js files.` |
 
 - [ ] 1.1 passes (import generated)
-- [ ] 1.2 through 1.21 all show the exact warning toast with both extensions in the message
+- [ ] 1.2 through 1.24 all show the exact warning toast with both extensions in the message
 - [ ] Each rejected toast has a **View Supported Files** button that opens the GitHub README section
 
-> Categories sampled (the reject set is the mechanical complement `SOURCE_UNIVERSE − {.js}`): script (`.ts` `.tsx` `.jsx` `.mdx`), stylesheet (`.css` `.scss`), html, markdown, image (`.png` `.svg`), data (`.json` `.yaml`), font (`.woff2`), video (`.mp4`), audio (`.mp3`), text-track (`.vtt`), document (`.pdf`), framework (`.vue` `.svelte` `.astro`).
+> Categories sampled (the reject set is the mechanical complement `SOURCE_UNIVERSE − {.js}`): script (`.ts` `.tsx` `.jsx` `.mdx`), stylesheet (`.css` `.scss`), html, markdown, image (`.png` `.svg`), data (`.json` `.yaml`), font (`.woff2`), video (`.mp4`), audio (`.mp3`), text-track (`.vtt`), document (`.pdf`), framework (`.vue` `.svelte` `.astro`), latex (`.tex` `.bib` `.eps`).
 
 ---
 
@@ -166,7 +169,7 @@ A hand-typed / drifted `javascriptImportStyle` value (matching no enum descripti
 
 ## 5 — Smart identifier behavior
 
-§5 (Smart identifier) — N/A for `.js`: no exported-class detection, no Angular PascalCase. Style 0 emits a bare `$1` like every other style. (The section numbering skips from §4 to §6 by design — `.js` has `smartId: none`.)
+§5 (Smart identifier) — N/A for `.js`: no exported-class detection, no Angular PascalCase. Style 0 emits a bare `$1` like every other style. (`.js` has `smartId: none`, so this section is an N/A placeholder — no smart-identifier cases appear below.)
 
 ---
 
@@ -429,7 +432,7 @@ Drag a file from the Explorer sidebar into an open `.js` editor. A drop reuses t
 - [ ] Drag `javascript/src/foo.js` into `javascript/src/bar.js` → path is `'./foo.js'`
 - [ ] In the extension settings, uncheck the **Preserve script file extension in imports** checkbox to restore the default
 
-> **Universal drop precondition** (untitled / unsaved buffer is a no-op): cross-cutting across all 13 destinations and verified once in [typescript.md §9.10](typescript.md#910--universal-drop-precondition-cross-cutting--verified-once-here) — **not** re-tested here.
+> **Universal drop precondition** (untitled / unsaved buffer is a no-op): cross-cutting across every destination and verified once in [typescript.md §9.10](typescript.md#910--universal-drop-precondition-cross-cutting--verified-once-here) — **not** re-tested here.
 
 ---
 
@@ -471,7 +474,7 @@ Drag a file from the Explorer sidebar into an open `.js` editor. A drop reuses t
 
 ## 11 — Sign-off
 
-- [ ] Cross-import gating (21 cases)
+- [ ] Cross-import gating (24 cases)
 - [ ] Paste as Import — happy path (1 case)
 - [ ] Insert Import from Selected File (1 case)
 - [ ] All 7 import styles (7 cases)
@@ -485,4 +488,4 @@ Drag a file from the Explorer sidebar into an open `.js` editor. A drop reuses t
 - [ ] Drag-and-drop (9 cases)
 - [ ] Edge cases (5 cases)
 
-**Total: ~65 test cases**
+**Total: ~68 test cases**

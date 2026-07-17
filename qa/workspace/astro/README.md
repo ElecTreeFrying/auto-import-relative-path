@@ -2,7 +2,7 @@
 
 Fixtures for the Astro destination checklist ([`checklists/astro.md`](../../checklists/astro.md)).
 
-`.astro` is the pipeline's **third and final framework-trio destination** — `.vue`/`.svelte`/`.astro` all
+`.astro` is a **framework-trio destination** — `.vue`/`.svelte`/`.astro` all
 share one builder, `src/snippets/languages/framework-component.ts`. That builder branches on its own local
 `SCRIPT_SOURCE_EXTENSIONS = [ '.ts', '.tsx', '.js', '.jsx' ]` and routes **all four** to the **TypeScript**
 builder (one-arg, no detection); **everything else** gated-in goes to `buildAssetImportStatement`. Two
@@ -10,7 +10,7 @@ consequences shape this fixture set:
 
 - **One script table, not two.** A `.js`/`.jsx` source renders the **TS named** shape `import { $1 }`,
   **not** a JS default — so there is **no JS-fallback arm and no empty-snippet case** (the headline
-  divergence from `tsx/` and `mdx/`). All four script sources share the 7 `typescriptImportStyle` styles;
+  divergence from `tsx/` and `mdx/`). All script sources share the `typescriptImportStyle` styles;
   `.astro` has **no** `astroImportStyle`.
 - **Angular-only smart identifiers, for all four script exts.** Style-0 runs
   `generateAngularLegacyImportName`, but the builder is called **without** a `detectedImportName`, so
@@ -23,14 +23,14 @@ the other allow-list workspaces (`javascript/`, `css/`, …) there is **no `reje
 co-locates the gated-out fixtures inside **`assets/`** alongside the accepted non-script sources. Every
 fixture below is referenced by `astro.md`, so the directory is checklist↔workspace 1:1 with no orphans.
 
-**Two deltas from `vue/`/`svelte/`** (same builder, wider choices): (1) `.astro` has the **widest accept-list**
+**Deltas from `vue/`/`svelte/`** (same builder, wider choices): (1) `.astro` has the **widest accept-list**
 of the trio — it additionally **accepts** the other framework components (`.vue`/`.svelte`), Markdown (`.md`),
-and `.mdx`, the four sources `.vue`/`.svelte` *reject*. All four route to the **named-asset** arm, so `assets/`
-splits **12 accept / 5 reject** (vs vue's & svelte's 8/9); the self-asset is `Card.astro` (the `.astro`→`.astro`
+and `.mdx`, the sources `.vue`/`.svelte` *reject*. All of them route to the **named-asset** arm, so `assets/`
+leans accept-heavy (vue's & svelte's lean reject-heavy); the self-asset is `Card.astro` (the `.astro`→`.astro`
 quirk). (2) `.astro` has **no** `<script setup>` (Vue) or `<script context="module">` (Svelte) — placement is
 confined to a flat `---` frontmatter fence pair (`computeAstroPlacement`), with **no** instance-vs-module tier
 and **no** block-selection-preference sub-case. The block-tier destination fixtures collapse; in their place is
-`empty-frontmatter.astro` (§6.1.2) — **7 destinations vs svelte's 9, vue's 8**. The primary `App.astro` has an
+`empty-frontmatter.astro` (§6.1.2) — fewer destination fixtures than vue/svelte. The primary `App.astro` has an
 empty `---` frontmatter (two bare fences), not a `<script>` block.
 
 ## Layout
@@ -55,7 +55,7 @@ astro/
 │   │   └── 2fa.service.ts           Illegal derived id (leading digit) → bare $1 (§5.10)
 │   └── classes/
 │       └── event-bus.ts           `export class EventBus` — the no-exported-class-fill counter-case (§5.7)
-├── assets/                        Non-script sources — 12 ACCEPTED (fixed shape) + 5 REJECTED (gated out)
+├── assets/                        Non-script sources — ACCEPTED (fixed shape) + REJECTED (gated out)
 │   ├── logo.png                   image      (0-byte)  → import ${1:name}
 │   ├── data.json                  data                 → import ${1:name}
 │   ├── config.yaml                data                 → import ${1:name}
@@ -72,7 +72,10 @@ astro/
 │   ├── theme.scss                 REJECTED — stylesheet (§1.18)
 │   ├── page.html                  REJECTED — html (§1.19)
 │   ├── font.woff2                 REJECTED — font (0-byte) (§1.20)
-│   └── manual.pdf                 REJECTED — document (0-byte) (§1.21)
+│   ├── manual.pdf                 REJECTED — document (0-byte) (§1.21)
+│   ├── sample.tex                 REJECTED — latex source (§1.22)
+│   ├── refs.bib                   REJECTED — bibliography source (§1.23)
+│   └── diagram.eps                REJECTED — eps / LaTeX vector graphics (§1.24)
 └── destinations/                  Pre-filled .astro files for placement tests (undo after each paste)
     ├── with-imports.astro         --- frontmatter with two imports — Bottom/Top/Cursor (§6.1.1, 6.2.1, 6.3.1)
     ├── empty-frontmatter.astro    --- frontmatter, no imports — Bottom→just-after-opening-fence (§6.1.2)
@@ -118,6 +121,9 @@ astro/
 | `assets/page.html` | 1.19, 9.3 | **Reject** — html |
 | `assets/font.woff2` | 1.20 | **Reject** — font (empty placeholder) |
 | `assets/manual.pdf` | 1.21, 9.3 | **Reject** — document (empty placeholder) |
+| `assets/sample.tex` | 1.22 | **Reject** — latex source |
+| `assets/refs.bib` | 1.23 | **Reject** — bibliography source |
+| `assets/diagram.eps` | 1.24 | **Reject** — eps / LaTeX vector graphics |
 | `destinations/with-imports.astro` | 6.1.1, 6.2.1, 6.3.1, 6.3.2, 9.4, 9.5 | Two imports — Bottom/Top/Cursor placement tests |
 | `destinations/empty-frontmatter.astro` | 6.1.2 | `---` frontmatter, no imports — Bottom falls back to just-after-opening-fence |
 | `destinations/with-require.astro` | 6.1.3, 10.1 | `require()` — Bottom detects as import marker, scoped to the fences |
@@ -125,12 +131,3 @@ astro/
 | `destinations/template-only.astro` | 6.4, 9.10 | No `---` frontmatter — create-if-missing wrapper at line 1 |
 | `destinations/indented-imports.astro` | 6.5 | 2-space-indented import — adopts detected frontmatter indentation |
 | `destinations/string-literal.astro` | 10.2 | `import` substring inside a string literal (NOT a Bottom marker — line-leading only) |
-
-## File count
-
-| Directory | Files | Purpose |
-|-----------|-------|---------|
-| `src/` | 14 | Script sources (all four exts → TS arm) + nested source + `angular/` (7) + `classes/` (1) + primary destination `App.astro` |
-| `assets/` | 17 | Non-script sources — **12 accepted** (fixed shapes) + **5 rejected** (gated out, co-located; no `rejected/` dir) |
-| `destinations/` | 7 | Pre-filled `---`-frontmatter placement-test destinations (no block tiers; `empty-frontmatter.astro` replaces the `<script>`-block fixtures) |
-| **Total** | **38** |

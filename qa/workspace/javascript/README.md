@@ -48,14 +48,17 @@ javascript/
     ├── doc.pdf                 (empty placeholder)
     ├── App.vue
     ├── App.svelte
-    └── App.astro
+    ├── App.astro
+    ├── sample.tex
+    ├── refs.bib
+    └── diagram.eps
 ```
 
 ## Fixture-to-checklist mapping
 
 | Fixture | Section(s) | Purpose |
 |---------|-----------|---------|
-| `src/foo.js` | 1.1, 2, 3, 4, 7, 8, 9.1, 9.3–9.7 | Plain `.js` source — happy-path paste, all 7 styles + drift, `Alt+D`, Pick/Set Default, DnD, preserve-ext |
+| `src/foo.js` | 1.1, 2, 3, 4, 7, 8, 9.1, 9.3–9.7 | Plain `.js` source — happy-path paste, every style + drift, `Alt+D`, Pick/Set Default, DnD, preserve-ext |
 | `src/bar.js` | 2, 3, 4, 7, 8, 9 | Primary paste/drop destination |
 | `destinations/empty.js` | 6.1.1, 6.2.2, 10.1 | Empty file — Bottom/Top fall back to line 1 |
 | `destinations/whitespace-only.js` | 10.2 | Blank lines only — no markers found |
@@ -69,13 +72,4 @@ javascript/
 | `destinations/string-with-import.js` | 10.4 | `import` inside string literal — NOT a Bottom marker (line-leading only) |
 | `destinations/mixed-imports.js` | 10.5 | `import` + `require` mixed — Bottom finds last |
 | `destinations/large-file.js` | 10.3 | 520 lines — Bottom still finds imports at top |
-| `rejected/*` (20 files) | 1.2–1.21, 9.2 | Every non-`.js` extension for gating rejection (`helper.ts` also covers the §9.2 `.ts`→`.js` drop reject) |
-
-## File count
-
-| Directory | Files | Purpose |
-|-----------|-------|---------|
-| `src/` | 2 | Sources + primary destination |
-| `destinations/` | 12 | Pre-filled placement-test destinations |
-| `rejected/` | 20 | Non-`.js` sources for gating tests |
-| **Total** | **34** |
+| `rejected/*` | 1.2–1.24, 9.2 | Every non-`.js` extension for gating rejection (`helper.ts` also covers the §9.2 `.ts`→`.js` drop reject) |

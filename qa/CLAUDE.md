@@ -20,10 +20,10 @@ checklists/typescript.md   ↔  workspace/typescript/
 
 When any file in `checklists/` is added, removed, or updated, check these for staleness and update them:
 
-1. **`checklists/README.md`** and **`checklists/CLAUDE.md`** — inventory tables, case counts, scope descriptions.
+1. **`checklists/README.md`** and **`checklists/CLAUDE.md`** — inventory tables, scope descriptions.
 2. **`README.md`** and **`CLAUDE.md`** (this directory) — language inventory table, mapping list, execution order.
-3. **`workspace/README.md`** — languages table, file counts.
-4. **`workspace/{language}/`** — add/update/remove fixture files so every path the checklist references exists. Update `workspace/{language}/README.md` (file tree, fixture mapping, file counts) and `workspace/{language}/CLAUDE.md` if the change affects edit rules.
+3. **`workspace/README.md`** — languages table.
+4. **`workspace/{language}/`** — add/update/remove fixture files so every path the checklist references exists. Update `workspace/{language}/README.md` (file tree, fixture mapping) and `workspace/{language}/CLAUDE.md` if the change affects edit rules.
 
 The reverse does NOT apply: workspace-only changes (adding convenience files, tweaking fixture content) do not propagate back to checklists or their docs.
 
@@ -37,7 +37,7 @@ Do not duplicate `general.md` items in per-destination checklists.
 
 1. Create `checklists/{language}.md` with destination-specific test cases.
 2. Create `workspace/{language}/` with every fixture the checklist references.
-3. Add the language to the tables in `checklists/README.md` and `workspace/README.md`.
+3. Add the language to the inventory tables in `checklists/README.md`, `checklists/CLAUDE.md`, `README.md` (this directory), and `workspace/README.md` — the complete set of sites is the "Propagation rule" above.
 
 ## demo-workspace (standalone)
 
@@ -51,5 +51,5 @@ not apply.
   `tsconfig.json`'s `src/**` include; `eslint.config.mjs` ignores
   `qa/demo-workspace/**`. Fixtures intentionally import uninstalled packages
   and use undeclared globals — don't "fix" them.
-- **`node_modules` is regenerable.** Only the ~16 source files are tracked; run
+- **`node_modules` is regenerable.** Only the source files are tracked; run
   `npm install` inside `demo-workspace/` to restore the framework packages.

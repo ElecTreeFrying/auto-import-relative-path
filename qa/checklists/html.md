@@ -72,6 +72,9 @@ html/
     ├── data.json                  # data             (reject)
     ├── font.woff2                 # font             (reject)
     ├── doc.pdf                    # document         (reject)
+    ├── sample.tex                 # latex source     (reject)
+    ├── refs.bib                   # bibliography     (reject)
+    ├── diagram.eps                # eps graphics     (reject)
     └── page.html                  # .html → .html    (reject)
 ```
 
@@ -161,6 +164,9 @@ data.json     →  { "ok": true }
 font.woff2    →  binary placeholder
 doc.pdf       →  binary placeholder
 page.html     →  <!DOCTYPE html><html></html>
+sample.tex    →  % latex comment stub (one line)
+refs.bib      →  % bibtex comment stub (one line)
+diagram.eps   →  binary placeholder (EPS)
 ```
 
 ---
@@ -198,6 +204,9 @@ and **`Alt+D`** (or copy the source then `Cmd+I`).
 - [ ] `html/rejected/font.woff2` (`.woff2`) → `Auto Import: Cannot import .woff2 into .html files.`
       *(`.woff` / `.ttf` / `.eot` reject identically)*
 - [ ] `html/rejected/doc.pdf` (`.pdf`) → `Auto Import: Cannot import .pdf into .html files.`
+- [ ] `html/rejected/sample.tex` (`.tex`) → `Auto Import: Cannot import .tex into .html files.`
+- [ ] `html/rejected/refs.bib` (`.bib`) → `Auto Import: Cannot import .bib into .html files.`
+- [ ] `html/rejected/diagram.eps` (`.eps`) → `Auto Import: Cannot import .eps into .html files.`
 - [ ] **`.html` → `.html`** — copy `html/rejected/page.html`, focus `html/index.html`, `Cmd+I`
       → `Auto Import: Cannot import .html into .html files.` *(a `.html` cannot import another `.html`)*
 
@@ -433,7 +442,7 @@ placement cases below).
 - [ ] **(d)** class-detect / Angular / preserve-extension on drop — **none apply** to
       `.html` (no smart identifier; extension always preserved).
 
-> The DnD untitled/unsaved-buffer no-op precondition is tested **once for all 12
+> The DnD untitled/unsaved-buffer no-op precondition is tested **once for all
 > destinations** in `typescript.md §9.10` — not repeated here.
 
 ---
@@ -463,7 +472,7 @@ Tester: ____________________  ·  Date: ____________  ·  Extension version: ___
 
 | § | Section | Cases |
 |---|---------|------:|
-| 1 | Gating matrix (6 accept + 8 reject) | 14 |
+| 1 | Gating matrix (6 accept + 11 reject) | 17 |
 | 2 | Happy path (one per source branch) | 6 |
 | 3 | Insert from Selected File (`Alt+D`) | 1 |
 | 4 | All styles (5+3+4+2 + 2 fixed + name-drift) | 17 |
@@ -473,6 +482,6 @@ Tester: ____________________  ·  Date: ____________  ·  Extension version: ___
 | 8 | Set Default (4 configurable + 2 fixed) | 6 |
 | 9 | Drag-and-drop (a/b/b′/c-i…iv/d) | 8 |
 | 10 | Edge cases (comment-marker mismatch) | 2 |
-| | **Total** | **75** |
+| | **Total** | **78** |
 
 - [ ] All cases above pass on the target build.

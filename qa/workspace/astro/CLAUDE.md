@@ -1,8 +1,8 @@
 # qa/workspace/astro/CLAUDE.md
 
-Fixtures for `checklists/astro.md` — the `.astro` destination checklist. `.astro` is the **third and final
-framework-trio destination** (`.vue`/`.svelte`/`.astro` share `src/snippets/languages/framework-component.ts`);
-the structural template is the already-built `workspace/vue/` + `workspace/svelte/`.
+Fixtures for `checklists/astro.md` — the `.astro` destination checklist. `.astro` is a
+**framework-trio destination** (`.vue`/`.svelte`/`.astro` share `src/snippets/languages/framework-component.ts`);
+the structural template is `workspace/vue/` + `workspace/svelte/`.
 
 ## Sync rule
 
@@ -15,8 +15,8 @@ the structural template is the already-built `workspace/vue/` + `workspace/svelt
 | Directory | Purpose |
 |-----------|---------|
 | `src/` | Script sources to copy/drag FROM + the primary paste/drop destination (`App.astro`, empty `---` frontmatter). **All four** script exts route to the TypeScript arm: `model.ts`/`Widget.tsx` (`.ts`/`.tsx`) **and** `helper.js`/`Card.jsx` (`.js`/`.jsx`) all render the TS named shape — there is **no** JS arm for `.astro`. `components/Widget.tsx` is the nested §7.2 source. `.astro` has Angular-only smart-id, so `src/angular/` (suffix → PascalCase, fires for all four exts) and `src/classes/` (the no-fill counter-case) exist. |
-| `assets/` | Non-script sources. **`.astro` is allow-list**, so this dir holds **both** the 12 *accepted* non-script sources (each a fixed shape) **and** the 5 *gated-out reject* fixtures (`global.css`, `theme.scss`, `page.html`, `font.woff2`, `manual.pdf`). `astro.md` co-locates the rejects here, so there is **no `rejected/` dir** (the divergence from `javascript/`/`css/`/`scss/`/`html/`/`markdown/`). Note the **widest accept-list** of the trio: `.astro` **accepts** the other framework components (`Demo.vue`, `Widget.svelte`), Markdown (`notes.md`), and `.mdx` (`post.mdx`) — the four sources `.vue`/`.svelte` *reject* — plus its own `Card.astro`. So the split is **12 accept / 5 reject** (vs vue's & svelte's 8/9). |
-| `destinations/` | Pre-filled `.astro` files for `---`-frontmatter placement tests. Each has specific content (frontmatter fences, imports, comments) that the checklist expects, with exact insertion line numbers. **Undo after each paste** so the file returns to its expected state. `.astro` has **no** `<script setup>` (Vue) / `<script context="module">` (Svelte) — placement is confined to a flat `---` fence pair, with no instance-vs-module tier and no block-selection-preference sub-case. The block-tier fixtures collapse into a single `empty-frontmatter.astro` (§6.1.2) → **7** destinations vs svelte's 9, vue's 8. |
+| `assets/` | Non-script sources. **`.astro` is allow-list**, so this dir holds **both** the *accepted* non-script sources (each a fixed shape) **and** the *gated-out reject* fixtures (`global.css`, `theme.scss`, `page.html`, `font.woff2`, `manual.pdf`, `sample.tex`, `refs.bib`, `diagram.eps`). `astro.md` co-locates the rejects here, so there is **no `rejected/` dir** (the divergence from `javascript/`/`css/`/`scss/`/`html/`/`markdown/`). Note the **widest accept-list** of the trio: `.astro` **accepts** the other framework components (`Demo.vue`, `Widget.svelte`), Markdown (`notes.md`), and `.mdx` (`post.mdx`) — the sources `.vue`/`.svelte` *reject* — plus its own `Card.astro`. |
+| `destinations/` | Pre-filled `.astro` files for `---`-frontmatter placement tests. Each has specific content (frontmatter fences, imports, comments) that the checklist expects, with exact insertion line numbers. **Undo after each paste** so the file returns to its expected state. `.astro` has **no** `<script setup>` (Vue) / `<script context="module">` (Svelte) — placement is confined to a flat `---` fence pair, with no instance-vs-module tier and no block-selection-preference sub-case. The block-tier fixtures collapse into a single `empty-frontmatter.astro` (§6.1.2). |
 
 ## Fixture content expectations
 

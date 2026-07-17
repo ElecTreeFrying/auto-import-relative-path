@@ -1,13 +1,13 @@
 # Astro (`.astro` destination) — QA Checklist
 
-Astro-specific manual QA: **allow-list** gating (the **widest** framework accept-list), the **two-arm** style model (7 TypeScript styles for **all four** script sources `.ts`/`.tsx`/`.js`/`.jsx`, or a fixed asset shape for non-script sources), Angular-only smart identifiers, **frontmatter (`---` fence)** placement, style pickers, and drag-and-drop. `.astro` is the **third and final framework-trio destination** — `.vue`, `.svelte`, and `.astro` all share one builder, `src/snippets/languages/framework-component.ts`.
+Astro-specific manual QA: **allow-list** gating (the **widest** framework accept-list), the **two-arm** style model (7 TypeScript styles for **all four** script sources `.ts`/`.tsx`/`.js`/`.jsx`, or a fixed asset shape for non-script sources), Angular-only smart identifiers, **frontmatter (`---` fence)** placement, style pickers, and drag-and-drop. `.astro` is a **framework-trio destination** — `.vue`, `.svelte`, and `.astro` all share one builder, `src/snippets/languages/framework-component.ts`.
 
 Every `.astro` behavior flows from a single routing fact in that builder: it branches on its **own local** `SCRIPT_SOURCE_EXTENSIONS = [ '.ts', '.tsx', '.js', '.jsx' ]` and routes **all four** to `buildTypeScriptImportSnippet` (the TypeScript builder, called **one-arg** — no `detectedImportName`); **everything else** gated-in goes to `buildAssetImportStatement`. It **never** calls `determineImportType`. Two consequences cascade from that one `if`:
 
 1. A `.js`/`.jsx` source renders a **TypeScript** `import { $1 }` shape — **not** a JS default import. This is the headline divergence from `.tsx`/`.mdx` (where `.js`/`.jsx` sources fall through to the JS builder). There is **one** script style table for `.astro`, not two.
 2. Because the builder is called without a `detectedImportName`, `readExportedClassName` is **never** invoked → there is **no exported-class pre-fill**. Smart identifiers are **Angular-PascalCase only** — but they fire for **all four** script extensions (so even a `.js` Angular file pre-fills, unlike `.tsx`/`.mdx`).
 
-> **`.astro` accepts the WIDEST source set of any framework destination.** Unlike `.vue`/`.svelte`, `ASTRO_SUPPORTED_EXTENSIONS` additionally accepts the other framework components **`.vue` and `.svelte`**, plus **`.md` and `.mdx`** (and its own `.astro`). Those four are *rejected* by `.vue`/`.svelte` but are **accept** rows here — each routes to the **named-asset** arm. The reject set therefore shrinks to just **five**: `.css` `.scss` (stylesheets), `.html`, fonts, and `.pdf`. There are **no** image/media/`.vtt`/data reject rows (all accepted).
+> **`.astro` accepts the WIDEST source set of any framework destination.** Unlike `.vue`/`.svelte`, `ASTRO_SUPPORTED_EXTENSIONS` additionally accepts the other framework components **`.vue` and `.svelte`**, plus **`.md` and `.mdx`** (and its own `.astro`). Those four are *rejected* by `.vue`/`.svelte` but are **accept** rows here — each routes to the **named-asset** arm. The reject set therefore shrinks to just **eight**: `.css` `.scss` (stylesheets), `.html`, fonts, `.pdf`, and the three LaTeX sources `.tex`/`.bib`/`.eps`. There are **no** image/media/`.vtt`/data reject rows (all accepted).
 
 > **`.astro` has NO dedicated `astroImportStyle` setting.** The script arm reuses **`typescriptImportStyle`** (the **same** setting `.ts`/`.tsx`/`.mdx`/`.vue`/`.svelte` use). `package.json`'s *"TypeScript / TSX import style"* description names it explicitly: *"…and for all script sources imported into .vue, .svelte, or .astro files."* Changing that default while QA-ing `.astro` also moves `.ts`/`.tsx`/`.mdx`/`.vue`/`.svelte` — see §8.
 
@@ -65,7 +65,7 @@ The settings used in this checklist:
 | `astro/src/` | The `.astro` destination `App.astro` (empty `---` frontmatter) + the four script sources: `model.ts`, `Widget.tsx` (`.ts`/`.tsx` → TS arm), `helper.js`, `Card.jsx` (`.js`/`.jsx` → **also** TS arm); `components/Widget.tsx` (nested source for §7) |
 | `astro/src/angular/` | Angular-convention sources WITHOUT `export class`: `user.component.ts`, `highlight.directive.ts`, `trim.pipe.ts`, `user.service.ts`, `auth.module.ts`; `widget.component.js` (Angular suffix on a **`.js`** source — fills here, unlike `.tsx`/`.mdx`); `2fa.service.ts` (illegal-identifier guard) |
 | `astro/src/classes/` | `event-bus.ts` — a `.ts` source WITH `export class EventBus` (the no-exported-class-fill counter-case) |
-| `astro/assets/` | One fixture per non-script source category: `logo.png`, `data.json`, `config.yaml`, `config.yml`, `clip.mp4`, `theme.mp3`, `subs.vtt`. Plus the **named-asset family** (all accepted, all asset-routed): `Card.astro` (`.astro`→`.astro` self), `Demo.vue`, `Widget.svelte`, `notes.md`, `post.mdx`. Plus **reject fixtures** (gated out): `global.css`, `theme.scss`, `page.html`, `font.woff2`, `manual.pdf` |
+| `astro/assets/` | One fixture per non-script source category: `logo.png`, `data.json`, `config.yaml`, `config.yml`, `clip.mp4`, `theme.mp3`, `subs.vtt`. Plus the **named-asset family** (all accepted, all asset-routed): `Card.astro` (`.astro`→`.astro` self), `Demo.vue`, `Widget.svelte`, `notes.md`, `post.mdx`. Plus **reject fixtures** (gated out): `global.css`, `theme.scss`, `page.html`, `font.woff2`, `manual.pdf`, `sample.tex`, `refs.bib`, `diagram.eps` |
 | `astro/destinations/` | Pre-filled `.astro` files for placement tests (undo after each): `with-imports.astro`, `empty-frontmatter.astro`, `template-only.astro` (no `---` frontmatter), `with-require.astro`, `string-literal.astro`, `comment-cursor.astro`, `indented-imports.astro` |
 
 `astro/src/App.astro` (the primary paste destination) is:
@@ -85,7 +85,7 @@ The settings used in this checklist:
 
 `.astro` is an **allow-list** destination: `.astro ∈ CROSS_IMPORT_DESTINATIONS` (so the first `gating.ts` clause short-circuits), then `destinationFileExt === '.astro' && !ASTRO_SUPPORTED_EXTENSIONS.includes(sourceFileExt)` **rejects** every source not in the list. So §1 is an **ACCEPT-vs-REJECT** matrix.
 
-**`ASTRO_SUPPORTED_EXTENSIONS`** (literal accept-list — the **widest** of the three frameworks): `.astro` · `.ts` `.js` `.jsx` `.tsx` · **`.vue` `.svelte`** · `.json` `.yml` `.yaml` · **`.md` `.mdx`** · image (`.gif .jpeg .jpg .png .svg .avif .webp`) · media (`.mp4 .webm .mov .mp3 .ogg .wav .m4a`) · `.vtt`. The reject set is the mechanical complement `SOURCE_UNIVERSE − accept`, which leaves only `.css`/`.scss`/`.html`/fonts/`.pdf`. (`.vue`/`.svelte`/`.astro` are the **only** destinations that accept data — `.json`/`.yml`/`.yaml` are **accept** rows here.)
+**`ASTRO_SUPPORTED_EXTENSIONS`** (literal accept-list — the **widest** of the three frameworks): `.astro` · `.ts` `.js` `.jsx` `.tsx` · **`.vue` `.svelte`** · `.json` `.yml` `.yaml` · **`.md` `.mdx`** · image (`.gif .jpeg .jpg .png .svg .avif .webp`) · media (`.mp4 .webm .mov .mp3 .ogg .wav .m4a`) · `.vtt`. The reject set is the mechanical complement `SOURCE_UNIVERSE − accept`, which leaves `.css`/`.scss`/`.html`/fonts/`.pdf` plus the three LaTeX sources `.tex`/`.bib`/`.eps`. (`.vue`/`.svelte`/`.astro` are the **only** destinations that accept data — `.json`/`.yml`/`.yaml` are **accept** rows here.)
 
 For each **accept** row: copy the listed source (`Cmd+Shift+A`), paste into `astro/src/App.astro` (`Cmd+I`). This matrix doubles as a coverage map into §2 (happy path) and §4 (all styles / asset shapes).
 
@@ -122,9 +122,12 @@ Now the **reject** rows. Copy each source and paste into `astro/src/App.astro` �
 | 1.19 | `astro/assets/page.html` | html | `Auto Import: Cannot import .html into .astro files.` |
 | 1.20 | `astro/assets/font.woff2` | font | `Auto Import: Cannot import .woff2 into .astro files.` |
 | 1.21 | `astro/assets/manual.pdf` | document | `Auto Import: Cannot import .pdf into .astro files.` |
+| 1.22 | `astro/assets/sample.tex` | latex source | `Auto Import: Cannot import .tex into .astro files.` |
+| 1.23 | `astro/assets/refs.bib` | bibliography source | `Auto Import: Cannot import .bib into .astro files.` |
+| 1.24 | `astro/assets/diagram.eps` | eps (LaTeX vector graphics) source | `Auto Import: Cannot import .eps into .astro files.` |
 
-- [ ] 1.17–1.21 each show `Auto Import: Cannot import .{src} into .astro files.` and insert **nothing**
-- [ ] **The reject set is only these five** (stylesheet ×2, html, font, document). There is **no** reject row for image / media / `.vtt` / data / `.vue` / `.svelte` / `.md` / `.mdx` — every one of those is an **accept** row above. This is the explicit contrast to `.svelte`/`.vue`, where `.vue`/`.svelte`/`.md`/`.mdx` are *rejects*
+- [ ] 1.17–1.24 each show `Auto Import: Cannot import .{src} into .astro files.` and insert **nothing**
+- [ ] **The reject set is these eight** (stylesheet ×2, html, font, document, + the three LaTeX sources `.tex`/`.bib`/`.eps`). There is **no** reject row for image / media / `.vtt` / data / `.vue` / `.svelte` / `.md` / `.mdx` — every one of those is an **accept** row above. This is the explicit contrast to `.svelte`/`.vue`, where `.vue`/`.svelte`/`.md`/`.mdx` are *rejects*
 - [ ] The toast **wording** is owned by [general.md](general.md) (the `not-supported` notification) — these rows assert only the `.astro` interpolation, not the message format
 
 > The universal **same-file** rejection (`.astro` → the same `.astro`) is owned by [general.md §3](general.md#3--same-file-rejection) — cross-referenced, never re-tested here. (Note: a **different** `.astro` source IS accepted — see row 1.5 and §10.3.)
@@ -313,7 +316,7 @@ This is the signature `.astro` ≠ `.ts` case. A `.ts` source containing `export
 ### 5.10 — Angular suffix, illegal derived identifier (guard)
 
 - [ ] Copy `astro/src/angular/2fa.service.ts` (no `export class`) → paste into `astro/src/App.astro`
-- [ ] Output: `import { $1 } from './angular/2fa.service';` — `2fa.service` derives `2faService`, not a legal identifier (leading digit), so the name falls back to a bare `$1` tab stop, NOT `2faService` (`typescript.ts:75` guard), **even though a suffix matched**
+- [ ] Output: `import { $1 } from './angular/2fa.service';` — `2fa.service` derives `2faService`, not a legal identifier (leading digit), so the name falls back to a bare `$1` tab stop, NOT `2faService` (the `typescript.ts` identifier-validation guard), **even though a suffix matched**
 
 ---
 
@@ -547,7 +550,7 @@ Because `.astro` is **allow-list**, a gated-out source has no snippet to offer. 
 
 - [ ] Drag `astro/assets/global.css` (a `.css` — gated out) into `astro/src/App.astro`
 - [ ] Warning toast: `Auto Import: Cannot import .css into .astro files.` **AND** no import is inserted — the provider suppresses the drop, so nothing lands (no stray path text)
-- [ ] Repeat with `astro/assets/page.html` and `astro/assets/manual.pdf` → same `not-supported` toast + suppressed drop. (Note: `.vue`/`.svelte`/`.md`/`.mdx` are **accepted** by `.astro`, so they do **not** trigger this path — pick from the five reject categories only)
+- [ ] Repeat with `astro/assets/page.html` and `astro/assets/manual.pdf` → same `not-supported` toast + suppressed drop. (Note: `.vue`/`.svelte`/`.md`/`.mdx` are **accepted** by `.astro`, so they do **not** trigger this path — pick from the eight reject sources only)
 - [ ] No text was inserted, so there is nothing to undo
 
 ### 9.4 — Placement with Bottom mode
@@ -598,7 +601,7 @@ Because `.astro` is **allow-list**, a gated-out source has no snippet to offer. 
 - [ ] Undo, then drag `astro/assets/logo.png` → the wrapper is created with the **single-variant asset** shape inside: `import ${1:name} from '../assets/logo.png';`
 - [ ] Undo (`Cmd+Z`) to restore the file
 
-> **Universal drop precondition** (untitled / unsaved buffer is a no-op): cross-cutting across all 13 destinations and verified once in [typescript.md §9.10](typescript.md#910--universal-drop-precondition-cross-cutting--verified-once-here) — **not** re-tested here.
+> **Universal drop precondition** (untitled / unsaved buffer is a no-op): cross-cutting across every destination and verified once in [typescript.md §9.10](typescript.md#910--universal-drop-precondition-cross-cutting--verified-once-here) — **not** re-tested here.
 
 ---
 
@@ -643,7 +646,7 @@ Bottom placement scans for import lines (`isImportLine`), but for `.astro` the s
 
 ## 11 — Sign-off
 
-- [ ] Cross-import gating — allow-list matrix: 16 accept rows (script ×4 → TS named; named-asset family `.astro`-self/`.vue`/`.svelte`/`.md`/`.mdx` + data ×3 + image → named-asset; video/audio/text-track → url-asset) + 5 reject rows (`.css`/`.scss`/`.html`/`.woff2`/`.pdf` → `not-supported`); same-file owned by general.md (21 cases)
+- [ ] Cross-import gating — allow-list matrix: 16 accept rows (script ×4 → TS named; named-asset family `.astro`-self/`.vue`/`.svelte`/`.md`/`.mdx` + data ×3 + image → named-asset; video/audio/text-track → url-asset) + 8 reject rows (`.css`/`.scss`/`.html`/`.woff2`/`.pdf`/`.tex`/`.bib`/`.eps` → `not-supported`); same-file owned by general.md (24 cases)
 - [ ] Paste as Import — happy path (3 cases: script / named-asset / url-asset)
 - [ ] Insert Import from Selected File (1 case)
 - [ ] Style model — arm 1: all 7 TypeScript styles (one table for all four script exts) + `.js`-uses-TS-table note (7 cases)
@@ -656,4 +659,4 @@ Bottom placement scans for import lines (`isImportLine`), but for `.astro` the s
 - [ ] Drag-and-drop — happy script / happy asset (named + url) / **unsupported-pair drop suppression** / placement (Bottom/Top/Cursor in-fence) / column 0 / Angular-on-drop / preserve / **wrapper-create-on-drop** + asset-in-wrapper (11 cases)
 - [ ] Edge cases — in-fence `require(` + string-literal false positives / **named-asset import family** (`.astro`/`.vue`/`.svelte`/`.md`/`.mdx`→`.astro`, 5 members) (7 cases)
 
-**Total: ~84 test cases**
+**Total: ~87 test cases**

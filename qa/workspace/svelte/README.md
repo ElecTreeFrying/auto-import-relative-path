@@ -2,7 +2,7 @@
 
 Fixtures for the Svelte destination checklist ([`checklists/svelte.md`](../../checklists/svelte.md)).
 
-`.svelte` is the pipeline's **second framework-trio destination** — `.vue`/`.svelte`/`.astro` all share one
+`.svelte` is a **framework-trio destination** — `.vue`/`.svelte`/`.astro` all share one
 builder, `src/snippets/languages/framework-component.ts`. That builder branches on its own local
 `SCRIPT_SOURCE_EXTENSIONS = [ '.ts', '.tsx', '.js', '.jsx' ]` and routes **all four** to the **TypeScript**
 builder (one-arg, no detection); **everything else** gated-in goes to `buildAssetImportStatement`. Two
@@ -10,7 +10,7 @@ consequences shape this fixture set:
 
 - **One script table, not two.** A `.js`/`.jsx` source renders the **TS named** shape `import { $1 }`,
   **not** a JS default — so there is **no JS-fallback arm and no empty-snippet case** (the headline
-  divergence from `tsx/` and `mdx/`). All four script sources share the 7 `typescriptImportStyle` styles;
+  divergence from `tsx/` and `mdx/`). All script sources share the `typescriptImportStyle` styles;
   `.svelte` has **no** `svelteImportStyle`.
 - **Angular-only smart identifiers, for all four script exts.** Style-0 runs
   `generateAngularLegacyImportName`, but the builder is called **without** a `detectedImportName`, so
@@ -20,14 +20,14 @@ consequences shape this fixture set:
 
 `.svelte` is **allow-list** (`SVELTE_SUPPORTED_EXTENSIONS`), so non-member sources are gate-rejected. Unlike
 the other allow-list workspaces (`javascript/`, `css/`, …) there is **no `rejected/` dir** — `svelte.md`
-co-locates the 9 gated-out fixtures inside **`assets/`** alongside the 8 accepted non-script sources.
+co-locates the gated-out fixtures inside **`assets/`** alongside the accepted non-script sources.
 Every fixture below is referenced by `svelte.md`, so the directory is checklist↔workspace 1:1 with no orphans.
 
-**Two deltas from `vue/`** (same builder, mirrored choices): (1) svelte **accepts** its own `.svelte`
+**Deltas from `vue/`** (same builder, mirrored choices): (1) svelte **accepts** its own `.svelte`
 (self → `assets/Card.svelte`) and **rejects** `.vue` (`assets/Demo.vue`) — vue did the mirror. (2) Svelte has
 **no `<script setup>`** (a Vue construct), so the block-preference fixture is `module-and-instance.svelte`
 (`<script context="module">` + a plain instance `<script>`) and there is an **extra**
-`module-only.svelte` (tier-3 fallback) — **9 destinations vs vue's 8**. The primary `App.svelte` has a plain
+`module-only.svelte` (tier-3 fallback) that `vue/` does not need. The primary `App.svelte` has a plain
 empty `<script>`, not `<script setup>`.
 
 ## Layout
@@ -52,7 +52,7 @@ svelte/
 │   │   └── 2fa.service.ts           Illegal derived id (leading digit) → bare $1 (§5.10)
 │   └── classes/
 │       └── event-bus.ts           `export class EventBus` — the no-exported-class-fill counter-case (§5.7)
-├── assets/                        Non-script sources — 8 ACCEPTED (fixed shape) + 9 REJECTED (gated out)
+├── assets/                        Non-script sources — ACCEPTED (fixed shape) + REJECTED (gated out)
 │   ├── logo.png                   image      (0-byte)  → import ${1:name}
 │   ├── data.json                  data                 → import ${1:name}
 │   ├── config.yaml                data                 → import ${1:name}
@@ -69,7 +69,10 @@ svelte/
 │   ├── page.html                  REJECTED — html (§1.18)
 │   ├── notes.md                   REJECTED — markdown (§1.19)
 │   ├── font.woff2                 REJECTED — font (0-byte) (§1.20)
-│   └── manual.pdf                 REJECTED — document (0-byte) (§1.21)
+│   ├── manual.pdf                 REJECTED — document (0-byte) (§1.21)
+│   ├── sample.tex                 REJECTED — latex source (§1.22)
+│   ├── refs.bib                   REJECTED — bibliography source (§1.23)
+│   └── diagram.eps                REJECTED — eps / LaTeX vector graphics (§1.24)
 └── destinations/                  Pre-filled .svelte files for placement tests (undo after each paste)
     ├── module-and-instance.svelte <script context="module"> + instance <script> — block-selection preference (§6.1)
     ├── instance-only.svelte       instance <script> only — empty-block fallback (§6.2.2)
@@ -117,6 +120,9 @@ svelte/
 | `assets/notes.md` | 1.19 | **Reject** — markdown |
 | `assets/font.woff2` | 1.20 | **Reject** — font (empty placeholder) |
 | `assets/manual.pdf` | 1.21 | **Reject** — document (empty placeholder) |
+| `assets/sample.tex` | 1.22 | **Reject** — latex source |
+| `assets/refs.bib` | 1.23 | **Reject** — bibliography source |
+| `assets/diagram.eps` | 1.24 | **Reject** — eps / LaTeX vector graphics |
 | `destinations/module-and-instance.svelte` | 6.1 | Instance `<script>` wins over `<script context="module">` (block-selection preference) |
 | `destinations/instance-only.svelte` | 6.2.2 | Instance `<script>` only — empty-block fallback |
 | `destinations/module-only.svelte` | 6.2.3 | `<script context="module">` only — tier-3 fallback (no instance `<script>`) |
@@ -126,12 +132,3 @@ svelte/
 | `destinations/template-only.svelte` | 6.5, 9.10 | No `<script>` — create-if-missing wrapper at line 1 |
 | `destinations/indented-imports.svelte` | 6.6 | 2-space-indented import — adopts detected block indentation |
 | `destinations/string-literal.svelte` | 10.2 | `import` substring inside a string literal (NOT a Bottom marker — line-leading only) |
-
-## File count
-
-| Directory | Files | Purpose |
-|-----------|-------|---------|
-| `src/` | 14 | Script sources (all four exts → TS arm) + nested source + `angular/` (7) + `classes/` (1) + primary destination `App.svelte` |
-| `assets/` | 17 | Non-script sources — **8 accepted** (fixed shapes) + **9 rejected** (gated out, co-located; no `rejected/` dir) |
-| `destinations/` | 9 | Pre-filled SFC `<script>`-block placement-test destinations (incl. `module-only.svelte`, the tier-3 fallback vue did not need) |
-| **Total** | **40** |
