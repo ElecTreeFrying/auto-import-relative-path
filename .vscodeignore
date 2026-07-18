@@ -20,7 +20,6 @@ ROADMAP.md
 package-lock.json
 process/**
 .claude/**
-.codex/**
 docs/**
 assets/*.gif
 assets/*.mov
