@@ -1,3 +1,0 @@
-# Intro
-
-Sample Markdown source.

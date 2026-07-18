@@ -1,1 +1,0 @@
-const Badge = () => <span />;

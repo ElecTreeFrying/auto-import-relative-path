@@ -1,3 +1,0 @@
-# Blank doc
-
-Body text.

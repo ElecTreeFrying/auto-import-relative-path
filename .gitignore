@@ -31,3 +31,7 @@ process
 
 # Large local media (screen-recording tests — not shipped)
 assets/*.mov
+
+# Design library & QA corpus — kept locally, not tracked in the repo
+docs/
+qa/
