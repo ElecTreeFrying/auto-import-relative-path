@@ -7,6 +7,28 @@ Fixtures for `checklists/html.md` — the `.html` destination checklist.
 - **Checklist is the source of truth.** If `html.md` references a fixture path, that file must exist here. After editing the checklist, verify this directory has every referenced path.
 - **Workspace changes don't update the checklist.** Extra files can exist here without appearing in `html.md`.
 
+## Layout
+
+```
+html/
+├── index.html                   Primary target — §2 paste, §3 Alt+D, §4 styles, §7 picker, §8 set-default, §9a drop
+├── src/                         Import sources — one per source-type branch
+│   ├── scripts/app.js           script (.js)       → <script src="./src/scripts/app.js"></script>
+│   ├── styles/theme.css         stylesheet (.css)  → fixed <link href="…" rel="stylesheet">
+│   ├── images/logo.png          image (.png)       → <img src="…" alt="sample">   (empty placeholder)
+│   ├── media/intro.mp4          video (.mp4)       → <video src="…" controls></video>  (empty placeholder)
+│   ├── media/theme.mp3          audio (.mp3)       → <audio src="…" controls></audio>  (empty placeholder)
+│   └── media/captions.vtt       text-track (.vtt)  → fixed <track … srclang="${1:en}" label="${2:English}">
+├── destinations/                Pre-filled placement targets (undo after each paste; paths resolve as ../src/…)
+│   ├── blank.html               Empty body line — placement setting-ignored test (§6, §9c-i)
+│   ├── indented.html            Line 2 = exactly six spaces — column-follows-cursor test at col 6 (§6, §9c-ii)
+│   └── with-comments.html       HTML <!-- --> vs embedded-JS // run — comment-marker mismatch (§10, §9c-iii/iv)
+└── rejected/                    One source per rejected category
+    ├── widget.ts   App.vue      theme.scss   notes.md
+    ├── data.json   page.html    font.woff2   doc.pdf
+    └── sample.tex  refs.bib     diagram.eps
+```
+
 ## Subdirectories
 
 | Location | Purpose |

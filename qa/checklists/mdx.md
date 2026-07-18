@@ -52,7 +52,7 @@ The four settings used in this checklist:
 
 > **`.mdx` has NO dedicated `mdxImportStyle` setting** — it reuses **BOTH** existing script settings, keyed on the **source** extension: a `.ts`/`.tsx` source uses **TypeScript / TSX import style** (`typescriptImportStyle`); a `.js`/`.jsx` source uses **JavaScript / JSX import style** (`javascriptImportStyle`). Both settings' `package.json` descriptions name `.mdx` explicitly (the TS description: *".ts / .tsx sources imported into .tsx or .mdx files"*; the JS description: *".js / .jsx sources imported into .jsx, .tsx, or .mdx files"*), and both govern other destinations too (see §8).
 
-**Workspace layout** — see [`workspace/README.md`](../workspace/README.md) for the full fixture map. Key directories:
+**Workspace layout** — see [`workspace/mdx/CLAUDE.md`](../workspace/mdx/CLAUDE.md) for the full fixture map. Key directories:
 
 | Directory | What's inside |
 |-----------|---------------|

@@ -12,22 +12,22 @@ VS Code extension that generates relative-path import statements for JS/TS/JSX/T
 
 ## Subdirectory guides
 
-Each directory under `src/` has its own pair of nested guides. Read the directory's `CLAUDE.md` first when editing files inside it; read its `README.md` when navigating or onboarding.
+Each directory under `src/` has its own nested `CLAUDE.md` guide. Read it before editing files inside that directory.
 
 | Directory | Scope | Guides |
 |-----------|-------|--------|
-| `src/` | Source-tree overview, dependency layering, naming conventions | [`src/README.md`](src/README.md), [`src/CLAUDE.md`](src/CLAUDE.md) |
-| `src/commands/` | The command surface (paste/copy + settings commands); clipboard data channel; the paste/copy gating disjunction (shared `isPairSupported()` clauses plus the inline empty-snippet checks) | [`src/commands/README.md`](src/commands/README.md), [`src/commands/CLAUDE.md`](src/commands/CLAUDE.md) |
-| `src/drop/` | DocumentDropEditProvider; drag-from-Explorer import generation | [`src/drop/README.md`](src/drop/README.md), [`src/drop/CLAUDE.md`](src/drop/CLAUDE.md) |
-| `src/editor/` | VS Code-API helpers (clipboard, snippet insertion, notifications) | [`src/editor/README.md`](src/editor/README.md), [`src/editor/CLAUDE.md`](src/editor/CLAUDE.md) |
-| `src/snippets/` | Per-language snippet builders + dispatch; style sync rules; JSX/TSX/MDX shared algorithm | [`src/snippets/README.md`](src/snippets/README.md), [`src/snippets/CLAUDE.md`](src/snippets/CLAUDE.md) |
-| `src/snippets/languages/` | The per-language leaf builders; config/pure split, intra-directory delegation, source-classification routing | [`src/snippets/languages/README.md`](src/snippets/languages/README.md), [`src/snippets/languages/CLAUDE.md`](src/snippets/languages/CLAUDE.md) |
-| `src/path/` | Pure path math (no `vscode` import); `./` prefix rule | [`src/path/README.md`](src/path/README.md), [`src/path/CLAUDE.md`](src/path/CLAUDE.md) |
-| `src/config/` | Workspace-config access; three-site sync rule | [`src/config/README.md`](src/config/README.md), [`src/config/CLAUDE.md`](src/config/CLAUDE.md) |
-| `src/constants/` | Runtime gating tables; runtime mirror of `types/file-extension.ts` | [`src/constants/README.md`](src/constants/README.md), [`src/constants/CLAUDE.md`](src/constants/CLAUDE.md) |
-| `src/types/` | Cross-cutting type unions (no enums) | [`src/types/README.md`](src/types/README.md), [`src/types/CLAUDE.md`](src/types/CLAUDE.md) |
-| `src/test/` | Mocha BDD tests; runs from `out/`, not `dist/` | [`src/test/README.md`](src/test/README.md), [`src/test/CLAUDE.md`](src/test/CLAUDE.md) |
-| `qa/` | Per-language manual-QA checklists + matching by-language fixture workspaces, the `_authoring/` checklist-codegen pipeline (RECIPE + frozen-IR PROFILE), and a standalone framework demo-workspace | [`qa/README.md`](qa/README.md), [`qa/CLAUDE.md`](qa/CLAUDE.md), [`qa/_authoring/README.md`](qa/_authoring/README.md), [`qa/checklists/README.md`](qa/checklists/README.md), [`qa/checklists/CLAUDE.md`](qa/checklists/CLAUDE.md), [`qa/workspace/README.md`](qa/workspace/README.md), [`qa/workspace/CLAUDE.md`](qa/workspace/CLAUDE.md) |
+| `src/` | Source-tree overview, dependency layering, naming conventions | [`src/CLAUDE.md`](src/CLAUDE.md) |
+| `src/commands/` | The command surface (paste/copy + settings commands); clipboard data channel; the paste/copy gating disjunction (shared `isPairSupported()` clauses plus the inline empty-snippet checks) | [`src/commands/CLAUDE.md`](src/commands/CLAUDE.md) |
+| `src/drop/` | DocumentDropEditProvider; drag-from-Explorer import generation | [`src/drop/CLAUDE.md`](src/drop/CLAUDE.md) |
+| `src/editor/` | VS Code-API helpers (clipboard, snippet insertion, notifications) | [`src/editor/CLAUDE.md`](src/editor/CLAUDE.md) |
+| `src/snippets/` | Per-language snippet builders + dispatch; style sync rules; JSX/TSX/MDX shared algorithm | [`src/snippets/CLAUDE.md`](src/snippets/CLAUDE.md) |
+| `src/snippets/languages/` | The per-language leaf builders; config/pure split, intra-directory delegation, source-classification routing | [`src/snippets/languages/CLAUDE.md`](src/snippets/languages/CLAUDE.md) |
+| `src/path/` | Pure path math (no `vscode` import); `./` prefix rule | [`src/path/CLAUDE.md`](src/path/CLAUDE.md) |
+| `src/config/` | Workspace-config access; three-site sync rule | [`src/config/CLAUDE.md`](src/config/CLAUDE.md) |
+| `src/constants/` | Runtime gating tables; runtime mirror of `types/file-extension.ts` | [`src/constants/CLAUDE.md`](src/constants/CLAUDE.md) |
+| `src/types/` | Cross-cutting type unions (no enums) | [`src/types/CLAUDE.md`](src/types/CLAUDE.md) |
+| `src/test/` | Mocha BDD tests; runs from `out/`, not `dist/` | [`src/test/CLAUDE.md`](src/test/CLAUDE.md) |
+| `qa/` | Per-language manual-QA checklists + matching by-language fixture workspaces, the `_authoring/` checklist-codegen pipeline (RECIPE + frozen-IR PROFILE), and a standalone framework demo-workspace | [`qa/CLAUDE.md`](qa/CLAUDE.md), [`qa/_authoring/CLAUDE.md`](qa/_authoring/CLAUDE.md), [`qa/checklists/CLAUDE.md`](qa/checklists/CLAUDE.md), [`qa/workspace/CLAUDE.md`](qa/workspace/CLAUDE.md) |
 | `docs/` | Design library (the *why*): the import-statements design tree (criteria, decisions, rejection ledgers) + a reader-facing QA checklist-codegen overview. The product spec `SPEC.md` stays in root, paired with `README.md`. | [`docs/CLAUDE.md`](docs/CLAUDE.md), [`docs/import-statements/CLAUDE.md`](docs/import-statements/CLAUDE.md) |
 
 ## Commands
@@ -98,7 +98,7 @@ These multi-site contracts silently break on drift. The linked guides have the f
 
 Internal docs must not carry facts that silently rot when code changes.
 
-**Scope — the maintainer-facing docs:** every `CLAUDE.md` / `README.md` guide under `src/`, `qa/`, and `docs/`, plus the QA checklists and `ROADMAP.md`.
+**Scope — the maintainer-facing docs:** every `CLAUDE.md` guide under `src/`, `qa/`, and `docs/`, plus the QA checklists and `ROADMAP.md`.
 
 **Exempt — the reader-facing root docs:** `README.md`, `SPEC.md`, and `SUPPORT.md` keep their counts, totals, and bundle sizes. They orient users and carry the marketplace-facing selling points, so those numbers are deliberate copy — maintained by hand at release time, not avoided. Do not sweep them. `CHANGELOG.md` is likewise exempt: dates and versions are its content.
 

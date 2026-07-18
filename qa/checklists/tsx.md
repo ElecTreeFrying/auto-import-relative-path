@@ -47,7 +47,7 @@ The four settings used in this checklist:
 
 > **`.tsx` has NO dedicated `tsxImportStyle` setting** — it reuses **BOTH** existing script settings, keyed on the **source** extension: a `.ts`/`.tsx` source uses **TypeScript / TSX import style** (`typescriptImportStyle`); a `.js`/`.jsx` source uses **JavaScript / JSX import style** (`javascriptImportStyle`). Both settings' titles name `.tsx` explicitly, and both govern other destinations too (see §8).
 
-**Workspace layout** — see [`workspace/README.md`](../workspace/README.md) for the full fixture map. Key directories:
+**Workspace layout** — see [`workspace/tsx/CLAUDE.md`](../workspace/tsx/CLAUDE.md) for the full fixture map. Key directories:
 
 | Directory | What's inside |
 |-----------|---------------|

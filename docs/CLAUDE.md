@@ -14,12 +14,12 @@ The **design library** — the home for *why the extension is built the way it i
 ## Residents
 
 - **[import-statements/](import-statements/CLAUDE.md)** — the design tree for the import-statement picker: the inclusion/rejection **rubric** (`CRITERIA.md`), the **shipped** per-language picker shapes (`spec/`), the **rationale + rejection ledgers** behind them (`decisions/`), and the **designed-but-unbuilt** backlog (`future/`). Answers *why each import shape is in or out*. Self-indexed — start at its own `CLAUDE.md`.
-- **[qa-pipeline.md](qa-pipeline.md)** — a reader-facing design doc for the spec-driven pipeline that generates the per-language manual-QA checklists. Answers *how and why the QA checklists are generated* (the compiler mental model, the frozen-IR/recipe concept, the guarantees). The runnable machinery lives in [`../qa/_authoring/`](../qa/_authoring/README.md).
+- **[qa-pipeline.md](qa-pipeline.md)** — a reader-facing design doc for the spec-driven pipeline that generates the per-language manual-QA checklists. Answers *how and why the QA checklists are generated* (the compiler mental model, the frozen-IR/recipe concept, the guarantees). The runnable machinery lives in [`../qa/_authoring/`](../qa/_authoring/CLAUDE.md).
 
 ## Reading order
 
 - **Why a given import shape exists (or was rejected)** — open [import-statements/](import-statements/CLAUDE.md) and follow its own order (rubric → spec → decisions → future).
-- **How the QA checklists are generated** — read [qa-pipeline.md](qa-pipeline.md), then [`../qa/_authoring/README.md`](../qa/_authoring/README.md) for the operator's how-to-run.
+- **How the QA checklists are generated** — read [qa-pipeline.md](qa-pipeline.md), then [`../qa/_authoring/CLAUDE.md`](../qa/_authoring/CLAUDE.md) for the operator's how-to-run.
 - **What the extension does (not why)** — leave the library; read [`../SPEC.md`](../SPEC.md).
 
 ## Status legend

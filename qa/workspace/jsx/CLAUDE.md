@@ -7,6 +7,49 @@ Fixtures for `checklists/jsx.md` — the `.jsx` destination checklist.
 - **Checklist is the source of truth.** If `jsx.md` references a fixture path, that file must exist here. After editing the checklist, verify this directory has every referenced path.
 - **Workspace changes don't update the checklist.** Extra files can exist here without appearing in `jsx.md`.
 
+## Layout
+
+```
+jsx/
+├── src/                          Script sources + the .jsx paste/drop destination (copy/drag FROM these)
+│   ├── App.jsx                   Primary .jsx script source → `import $1 from './App';`
+│   ├── Panel.jsx                 Primary paste/drop DESTINATION (open this; paste/drop into it)
+│   ├── helper.js                 Script .js source (§1.2)
+│   ├── components/
+│   │   └── Card.jsx              Nested source — §7.2 basename-vs-full-path
+│   ├── model.ts                  .ts source → empty snippet (not-supported)
+│   └── Widget.tsx                .tsx source → empty snippet (not-supported)
+├── assets/                       Non-script sources — gating-accepted; most get a fixed shape, but .tex/.bib/.eps empty-snippet (no asset-switch case)
+│   ├── logo.png                  image      (empty placeholder) → import ${1:name}
+│   ├── manual.pdf                document   (empty placeholder) → import ${1:name}
+│   ├── Hero.vue                  framework            → import ${1:name}
+│   ├── page.html                 html                 → import ${1:name}
+│   ├── notes.md                  markdown             → import ${1:name}
+│   ├── data.json                 data                 → import ${1:name}
+│   ├── config.yaml               data                 → import ${1:name}
+│   ├── styles.module.css         CSS module           → import ${1:styles}  (checked FIRST)
+│   ├── global.css                stylesheet           → side-effect import (no tab stop)
+│   ├── font.woff2                font       (empty placeholder) → side-effect import (no tab stop)
+│   ├── clip.mp4                  video      (empty placeholder) → import ${1:url}
+│   ├── theme.mp3                 audio      (empty placeholder) → import ${1:url}
+│   ├── subs.vtt                  text-track           → import ${1:url}
+│   ├── sample.tex                latex source         → empty snippet (not-supported)
+│   ├── refs.bib                  bibliography         → empty snippet (not-supported)
+│   └── diagram.eps               eps graphics         → empty snippet (not-supported)
+└── destinations/                 Pre-filled .jsx files for placement tests (undo after each paste)
+    ├── empty.jsx                 0 bytes
+    ├── with-imports.jsx          Two import lines + code
+    ├── with-require.jsx          const fs = require('fs')
+    ├── commented-imports.jsx     Commented import + real import
+    ├── comments-only.jsx         Only comment lines
+    ├── multiline-comment.jsx     Import + /* block comment */ + code
+    ├── comment-group.jsx         Three consecutive // comment lines
+    ├── single-comment.jsx        Single isolated // comment line
+    ├── leading-star.jsx          JSDoc block whose 2nd body line begins `*` (NOT Markdown — §6.3.8 / §10.4)
+    ├── string-with-import.jsx    "import" inside a string literal
+    └── mixed-imports.jsx         import + require mixed
+```
+
 ## Subdirectories
 
 | Directory | Purpose |

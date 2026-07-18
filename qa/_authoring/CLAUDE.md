@@ -23,7 +23,7 @@ aspirational.
 
 | File | What it is | Lifecycle |
 |------|-----------|-----------|
-| `README.md` | This file — what the subtree is and how to use it | Stable |
+| `CLAUDE.md` | This file — what the subtree is and how to use it | Stable |
 | `RECIPE.md` | The codegen rule — the section recipe every checklist is rendered through (required/conditional sections, per-quirk slots, item detail, authoring rules) | Stable; rarely changes |
 | `PROFILE.md` | The IR — one frozen row per destination, six fields, populated by reading the extension source | Stable; a row is added if the extension gains a new destination, or an existing row **re-derived** if `src/` behavior for that destination changes after the freeze |
 | `LOOP-PROMPT.md` | The reusable loop-prompt text, pasted verbatim per session | Stable; reused verbatim across all runbooks |
@@ -32,7 +32,7 @@ aspirational.
 | `runbook-typescript-migration.md` | TS migration runbook — single-session exception (Phase 0 + A + A.5 parity + B-verify + C) | Archived — see `.claude/_archive/qa-pipeline/runbooks/` + git history |
 | `parity-ts.md` | TS parity inventory | Disposable; exists only during the TS migration session |
 
-> Only `README.md`, `RECIPE.md`, `PROFILE.md`, and `LOOP-PROMPT.md` live here.
+> Only `CLAUDE.md`, `RECIPE.md`, `PROFILE.md`, and `LOOP-PROMPT.md` live here.
 > The `runbook-*.md` files were per-session artifacts, written one per language
 > generation, and are archived (see the Files table above).
 

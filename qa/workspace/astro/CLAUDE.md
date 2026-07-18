@@ -10,6 +10,59 @@ the structural template is `workspace/vue/` + `workspace/svelte/`.
   After editing the checklist, verify this directory has every referenced path.
 - **Workspace changes don't update the checklist.** Extra files can exist here without appearing in `astro.md`.
 
+## Layout
+
+```
+astro/
+├── src/                           Script sources + the .astro paste/drop destination (copy/drag FROM these)
+│   ├── App.astro                  Primary paste/drop DESTINATION (open this; empty --- frontmatter)
+│   ├── Widget.tsx                 .tsx source, no Angular suffix → TS named `import { $1 } from './Widget';`
+│   ├── model.ts                   .ts source → TS named
+│   ├── helper.js                  .js source → TS named (NOT a JS default — the .astro divergence)
+│   ├── Card.jsx                   .jsx source → TS named
+│   ├── components/
+│   │   └── Widget.tsx             Nested source — §7.2 basename-vs-full-path
+│   ├── angular/                   Angular-suffix sources (NO `export class`) → style-0 PascalCase
+│   │   ├── user.component.ts       → UserComponent
+│   │   ├── highlight.directive.ts  → HighlightDirective
+│   │   ├── trim.pipe.ts            → TrimPipe
+│   │   ├── user.service.ts         → UserService
+│   │   ├── auth.module.ts          → AuthModule
+│   │   ├── widget.component.js      Angular suffix on a .js source → STILL PascalCase (§5.8)
+│   │   └── 2fa.service.ts           Illegal derived id (leading digit) → bare $1 (§5.10)
+│   └── classes/
+│       └── event-bus.ts           `export class EventBus` — the no-exported-class-fill counter-case (§5.7)
+├── assets/                        Non-script sources — ACCEPTED (fixed shape) + REJECTED (gated out)
+│   ├── logo.png                   image      (0-byte)  → import ${1:name}
+│   ├── data.json                  data                 → import ${1:name}
+│   ├── config.yaml                data                 → import ${1:name}
+│   ├── config.yml                 data                 → import ${1:name}
+│   ├── clip.mp4                   video      (0-byte)  → import ${1:url}
+│   ├── theme.mp3                  audio      (0-byte)  → import ${1:url}
+│   ├── subs.vtt                   text-track           → import ${1:url}
+│   ├── Card.astro                 framework (self)     → import ${1:name}  (asset-routed — §1.5 / §10.3)
+│   ├── Demo.vue                   framework (cross)    → import ${1:name}  (ACCEPTED — §1.6 / §10.3)
+│   ├── Widget.svelte              framework (cross)    → import ${1:name}  (ACCEPTED — §1.7 / §10.3)
+│   ├── notes.md                   markdown (doc)       → import ${1:name}  (ACCEPTED — §1.8 / §10.3)
+│   ├── post.mdx                   script-cat. doc      → import ${1:name}  (ACCEPTED — §1.9 / §10.3 — the signature case)
+│   ├── global.css                 REJECTED — stylesheet (§1.17)
+│   ├── theme.scss                 REJECTED — stylesheet (§1.18)
+│   ├── page.html                  REJECTED — html (§1.19)
+│   ├── font.woff2                 REJECTED — font (0-byte) (§1.20)
+│   ├── manual.pdf                 REJECTED — document (0-byte) (§1.21)
+│   ├── sample.tex                 REJECTED — latex source (§1.22)
+│   ├── refs.bib                   REJECTED — bibliography source (§1.23)
+│   └── diagram.eps                REJECTED — eps / LaTeX vector graphics (§1.24)
+└── destinations/                  Pre-filled .astro files for placement tests (undo after each paste)
+    ├── with-imports.astro         --- frontmatter with two imports — Bottom/Top/Cursor (§6.1.1, 6.2.1, 6.3.1)
+    ├── empty-frontmatter.astro    --- frontmatter, no imports — Bottom→just-after-opening-fence (§6.1.2)
+    ├── with-require.astro         require() inside the fences — IMPORT_INDICATORS marker (§6.1.3, 10.1)
+    ├── comment-cursor.astro       --- frontmatter + /* */ block — cursor comment adjust (§6.3.3, 9.6)
+    ├── template-only.astro        NO --- frontmatter — create-if-missing wrapper (§6.4, 9.10)
+    ├── indented-imports.astro     2-space-indented import — detected indentation (§6.5)
+    └── string-literal.astro       "import" inside a string literal (§10.2)
+```
+
 ## Subdirectories
 
 | Directory | Purpose |

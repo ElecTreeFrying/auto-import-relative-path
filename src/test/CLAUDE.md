@@ -8,6 +8,8 @@ Mocha BDD tests that run from `out/`, not `dist/`. The suite owns its fixtures i
 - **Node `assert`** only — no Chai, no Sinon.
 - **Tests compile via `tsc -p . --outDir out`** (`npm run compile-tests`), not the esbuild pipeline. The runner glob is `out/test/**/*.test.js`.
 - Test file names mirror the source path: `src/path/relative.ts` → `test/path/relative.test.ts`.
+- Not every command has a command-level test file: the settings-only `set-import-placement` and `toggle-preserve-script-extension` are covered by the activation/registration smoke checks in `extension.test.ts`.
+- Cross-module contracts are pinned by structural tests that read source: `editor/placement-parity.test.ts` (command flow ↔ drop flow placement) and `snippets/dispatch-variants-parity.test.ts` (the dispatch ↔ variants destination switch).
 
 ## Two independent compilation pipelines
 

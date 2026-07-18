@@ -40,7 +40,7 @@ The settings used in this checklist:
 | Preserve stylesheet file extension in imports | checkbox | unchecked (`false`) |
 | Import statement placement | dropdown | `Bottom` |
 
-**Workspace layout** — see [`workspace/README.md`](../workspace/README.md) for the full fixture map. Key directories:
+**Workspace layout** — see [`workspace/scss/CLAUDE.md`](../workspace/scss/CLAUDE.md) for the full fixture map. Key directories:
 
 | Directory | What's inside |
 |-----------|---------------|

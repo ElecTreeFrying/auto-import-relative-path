@@ -7,6 +7,38 @@ Fixtures for `checklists/scss.md` — the `.scss` destination checklist.
 - **Checklist is the source of truth.** If `scss.md` references a fixture path, that file must exist here. After editing the checklist, verify this directory has every referenced path.
 - **Workspace changes don't update the checklist.** Extra files can exist here without appearing in `scss.md`.
 
+## Layout
+
+```
+scss/
+├── src/                          Primary sources + the paste/drop target
+│   ├── main.scss                 Paste/drop/command target (tester types their own value position)
+│   ├── theme.scss                Stylesheet source  → @use './theme';
+│   ├── reset.css                 .css source        → @use './reset.css';  (one-way .css → .scss)
+│   ├── abstracts/
+│   │   └── _variables.scss       Partial — leading _ stripped → @use './abstracts/variables';
+│   ├── _partials/
+│   │   └── _colors.scss          Partial under a _-dir, last segment only → @use './_partials/colors';
+│   └── images/
+│       ├── logo.png              Image source → url('./images/logo.png')   (empty placeholder)
+│       ├── icon.svg              Image source → url('./images/icon.svg')   (empty placeholder)
+│       └── _icon.png             Image source → url('./images/_icon.png')  (leading _ NOT stripped; empty)
+├── destinations/                 Pre-filled .scss placement targets (undo after each paste)
+│   ├── empty.scss                Empty file (Bottom → line 1)
+│   ├── with-imports.scss         @use + @forward (Bottom anchor / Top / Cursor content line)
+│   ├── commented-imports.scss    Commented marker skipped; real @use anchors
+│   ├── comments-only.scss        Only comments → no anchor, line 1
+│   ├── multiline-comment.scss    /* */ block (Cursor adjusts above)
+│   ├── single-comment.scss       Lone // line (Cursor inserts at it)
+│   ├── comment-group.scss        // run (Cursor walks above the whole group)
+│   └── commented-only.scss       Commented @use does not anchor Bottom
+└── rejected/                     One source per rejected category (.tex/.bib/.eps carry a one-line header, the rest empty)
+    ├── widget.ts   sibling.js    badge.jsx   panel.tsx   page.mdx
+    ├── App.vue     App.svelte    App.astro   index.html  notes.md
+    ├── clip.mp4    track.mp3     subs.vtt    data.json   config.yaml
+    └── font.woff2  doc.pdf      sample.tex  refs.bib    diagram.eps
+```
+
 ## Subdirectories
 
 | Location | Purpose |

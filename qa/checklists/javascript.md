@@ -41,7 +41,7 @@ The three settings used in this checklist:
 | Preserve script file extension in imports | checkbox | unchecked (`false`) |
 | Import statement placement | dropdown | `Bottom` |
 
-**Workspace layout** — see [`workspace/README.md`](../workspace/README.md) for the full fixture map. Key directories:
+**Workspace layout** — see [`workspace/javascript/CLAUDE.md`](../workspace/javascript/CLAUDE.md) for the full fixture map. Key directories:
 
 | Directory | What's inside |
 |-----------|---------------|

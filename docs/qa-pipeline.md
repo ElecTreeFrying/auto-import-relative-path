@@ -1,10 +1,10 @@
 # QA checklist pipeline
 
-How the extension's per-language manual-QA checklists are generated — and why generation, not hand-authoring. This is the *design* of the pipeline (the what & why). The operator's how-to-run note and the live machinery are in `../qa/_authoring/` (see its [README](../qa/_authoring/README.md)).
+How the extension's per-language manual-QA checklists are generated — and why generation, not hand-authoring. This is the *design* of the pipeline (the what & why). The operator's how-to-run note and the live machinery are in `../qa/_authoring/` (see its [`CLAUDE.md`](../qa/_authoring/CLAUDE.md)).
 
 ## The problem
 
-The extension supports a set of destination languages (`.ts`, `.js`, `.jsx`, `.tsx`, `.mdx`, `.css`, `.scss`, `.html`, `.md`, `.vue`, `.svelte`, `.astro`, `.tex`), each with its own import-statement shapes, gating, placement, and smart-identifier rules. Manual QA needs one checklist per covered language, plus a shared `general.md`. (LaTeX joined outside the pipeline — its checklist and workspace were authored as a normal feature; see [`../qa/_authoring/README.md`](../qa/_authoring/README.md).)
+The extension supports a set of destination languages (`.ts`, `.js`, `.jsx`, `.tsx`, `.mdx`, `.css`, `.scss`, `.html`, `.md`, `.vue`, `.svelte`, `.astro`, `.tex`), each with its own import-statement shapes, gating, placement, and smart-identifier rules. Manual QA needs one checklist per covered language, plus a shared `general.md`. (LaTeX joined outside the pipeline — its checklist and workspace were authored as a normal feature; see [`../qa/_authoring/CLAUDE.md`](../qa/_authoring/CLAUDE.md).)
 
 Hand-writing those checklists invites two failures:
 
@@ -67,7 +67,7 @@ Three properties fall out of the construction:
 | **Determinism** | the IR is frozen and human-reviewed; no run re-derives it, so the same input yields the same checklist |
 | **Resumability** | generation state lives on disk as runbook `[ ]`/`[x]` checkboxes, so a session can die and resume at the first unchecked box |
 
-The full catalogue of guarantees — and the specific failure modes each one guards against — lives in the operator README ([`../qa/_authoring/README.md`](../qa/_authoring/README.md)). This section is the conceptual core, not the exhaustive list.
+The full catalogue of guarantees — and the specific failure modes each one guards against — lives in the operator guide ([`../qa/_authoring/CLAUDE.md`](../qa/_authoring/CLAUDE.md)). This section is the conceptual core, not the exhaustive list.
 
 ## The two-tier checkbox rule
 
@@ -86,7 +86,7 @@ This doc is the *why*. The runnable pipeline lives in `../qa/_authoring/`:
 
 | Artifact | Role |
 |----------|------|
-| [`_authoring/README.md`](../qa/_authoring/README.md) | the operator's note — how to run a generation session, stability rules, the full guarantees + failure-mode tables |
+| [`_authoring/CLAUDE.md`](../qa/_authoring/CLAUDE.md) | the operator's note — how to run a generation session, stability rules, the full guarantees + failure-mode tables |
 | [`_authoring/RECIPE.md`](../qa/_authoring/RECIPE.md) | the section rule (the back end) |
 | [`_authoring/PROFILE.md`](../qa/_authoring/PROFILE.md) | the frozen IR (one row per destination) |
 | [`../qa/checklists/`](../qa/checklists/) | the generated output — `general.md` + the per-language checklists |
@@ -95,4 +95,4 @@ For *why a given import shape exists* (the behavior the IR profiles), see the si
 
 ---
 
-*The operator README carries the provenance pointer and is the authoritative reference for running the pipeline.*
+*The operator guide (`../qa/_authoring/CLAUDE.md`) carries the provenance pointer and is the authoritative reference for running the pipeline.*

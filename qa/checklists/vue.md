@@ -56,7 +56,7 @@ The settings used in this checklist:
 
 > **There is no `vueImportStyle`.** A `.vue` destination uses **TypeScript / TSX import style** (`typescriptImportStyle`) for **all four** script sources — `.ts`, `.tsx`, **and** `.js`/`.jsx`. The **JavaScript / JSX import style** setting is **never** consulted for a `.vue` destination (the `.js`/`.jsx` → JS-builder fallback that `.tsx`/`.mdx` use does not exist here).
 
-**Workspace layout** — see [`workspace/README.md`](../workspace/README.md) for the full fixture map. Key directories:
+**Workspace layout** — see [`workspace/vue/CLAUDE.md`](../workspace/vue/CLAUDE.md) for the full fixture map. Key directories:
 
 | Directory | What's inside |
 |-----------|---------------|

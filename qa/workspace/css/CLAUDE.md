@@ -7,6 +7,38 @@ Fixtures for `checklists/css.md` — the `.css` destination checklist.
 - **Checklist is the source of truth.** If `css.md` references a fixture path, that file must exist here. After editing the checklist, verify this directory has every referenced path.
 - **Workspace changes don't update the checklist.** Extra files can exist here without appearing in `css.md`.
 
+## Layout
+
+```
+css/
+├── app.css                       Primary paste/drop target (background-image: slot = inline-url() spot)
+├── theme.css                     Stylesheet source  → @import './theme.css';
+├── logo.png                      Image source       → url('./logo.png')   (empty placeholder)
+├── vendor/
+│   └── normalize.css             Nested stylesheet source (basename-collapse demo)
+├── placement/
+│   ├── with-imports.css          @import + @import url() lines (Bottom anchor)
+│   ├── with-comment-block.css    /* */ block (Cursor pushes import above it)
+│   ├── widget.css                Stylesheet source for placement tests
+│   └── with-use.css              @use line (shared stylesheet marker, §10.2)
+└── rejects/                      One source per rejected category (.tex/.bib/.eps carry a one-line header, the rest empty)
+    ├── styles.scss               stylesheet one-way reject (.scss → .css)
+    ├── util.ts
+    ├── widget.vue
+    ├── page.html
+    ├── notes.md
+    ├── data.json
+    ├── config.yaml
+    ├── clip.mp4
+    ├── chime.mp3
+    ├── captions.vtt
+    ├── body.woff2
+    ├── manual.pdf
+    ├── sample.tex               latex source reject
+    ├── refs.bib                  bibliography reject
+    └── diagram.eps               eps graphics reject
+```
+
 ## Subdirectories
 
 | Location | Purpose |

@@ -29,5 +29,5 @@ workspace/vue/          ←  checklists/vue.md
 ## Conventions
 
 - Binary-type fixtures (`.png`, `.mp4`, `.woff2`, `.mp3`, `.pdf`, `.eps`) are empty (or near-empty stub) placeholder files. Only the file extension matters for gating tests — the bytes are never read. (Many `.eps`/`.tex`/`.bib` fixtures — the cross-language **reject** stubs and the accept-all jsx/tsx/mdx `assets/` empty-snippet stubs — carry a short self-documenting header naming the checklist case they exercise (`.tex`/`.bib` are a single line; each `.eps` adds a leading `%!PS-Adobe-3.0 EPSF-3.0` magic line, so it is two lines); the LaTeX-accepted graphics under `latex/src/figures/` are 0-byte placeholders like the rest.)
-- Destination files used in placement tests have specific content the checklist depends on. Their `README.md` documents the expected content.
-- Each language directory has its own `CLAUDE.md` (edit rules) and `README.md` (file tree + fixture mapping).
+- Destination files used in placement tests have specific content the checklist depends on. Each language directory's `CLAUDE.md` documents the expected content.
+- Each language directory has its own `CLAUDE.md` (layout tree, fixture purposes, edit rules).

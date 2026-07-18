@@ -7,6 +7,25 @@ Fixtures for `checklists/markdown.md` — the `.md` destination checklist.
 - **Checklist is the source of truth.** If `markdown.md` references a fixture path, that file must exist here. After editing the checklist, verify this directory has every referenced path.
 - **Workspace changes don't update the checklist.** Extra files can exist here without appearing in `markdown.md`.
 
+## Layout
+
+```
+markdown/
+├── notes.md                      Primary target — §2 paste, §3 Alt+D, §4 styles, §7 picker, §8 set-default, §9a drop
+├── src/                          Import sources — one per source-type branch
+│   ├── docs/intro.md             markdown (.md)   → fixed [${1:text}](./src/docs/intro.md) link
+│   └── images/logo.png           image (.png)     → ![${1:alt-text}](…)   (empty placeholder)
+├── destinations/                 Pre-filled placement targets (undo after each paste; paths resolve as ../src/…)
+│   ├── blank.md                  Empty line 2 — placement setting-ignored test (§6, §9c-i)
+│   ├── indented.md               Line 2 = exactly six spaces — column-follows-cursor test at col 6 (§6, §9c-ii)
+│   ├── with-comments.md          markdown `*` bullet vs `//` / `/*` runs (§6, §9c-iii, §10)
+│   └── with-comments.tsx         §10 contrast — byte-identical to with-comments.md, `.tsx` ext
+└── rejected/                     One source per rejected category (no `.md` — own ext accepted)
+    ├── widget.ts   App.vue    theme.css   page.html   captions.vtt
+    ├── data.json   intro.mp4  theme.mp3   font.woff2  doc.pdf
+    └── sample.tex  refs.bib   diagram.eps
+```
+
 ## Subdirectories
 
 | Location | Purpose |

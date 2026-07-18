@@ -44,7 +44,7 @@ The three settings used in this checklist:
 
 > **`.jsx` has no dedicated `jsxImportStyle` setting** — it reuses **JavaScript / JSX import style** (`javascriptImportStyle`). The same setting governs `.js` destinations and `.js`/`.jsx` sources imported into `.tsx`/`.mdx`. See §8.
 
-**Workspace layout** — see [`workspace/README.md`](../workspace/README.md) for the full fixture map. Key directories:
+**Workspace layout** — see [`workspace/jsx/CLAUDE.md`](../workspace/jsx/CLAUDE.md) for the full fixture map. Key directories:
 
 | Directory | What's inside |
 |-----------|---------------|

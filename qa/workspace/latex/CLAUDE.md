@@ -7,6 +7,30 @@ Fixtures for `checklists/latex.md` — the `.tex` destination checklist.
 - **Checklist is the source of truth.** If `latex.md` references a fixture path, that file must exist here. After editing the checklist, verify this directory has every referenced path.
 - **Workspace changes don't update the checklist.** Extra files can exist here without appearing in `latex.md`.
 
+## Layout
+
+```
+latex/
+├── main.tex                      Primary target — §2 paste, §3 Alt+D, §4 styles, §7 picker, §8 set-default, §9a drop, §10 figure
+├── src/                          Import sources — one per source-extension branch
+│   ├── figures/plot.png          graphics (.png)  → figure float / \includegraphics  (empty placeholder)
+│   ├── figures/plot.pdf          graphics (.pdf)  → figure float  (empty placeholder — proves .pdf is accepted here)
+│   ├── figures/diagram.eps       graphics (.eps)  → figure float  (empty placeholder)
+│   ├── chapters/intro.tex        file include (.tex) → \input{./src/chapters/intro}  (.tex dropped)
+│   └── refs.bib                  bibliography (.bib) → \addbibresource{./src/refs.bib}  (keeps .bib)
+├── destinations/                 Pre-filled placement targets (undo after each paste; paths resolve as ../src/…)
+│   ├── blank.tex                 Empty body line — placement setting-ignored test (§6, §9c-i)
+│   ├── indented.tex              Line 4 = exactly six spaces — column-follows-cursor test at col 6 (§6, §9c-ii)
+│   └── with-comments.tex         LaTeX % comment is not recognized by isCommentLine (§10, §9c-iii)
+└── rejected/                     One source per rejected category
+    ├── icon.svg   anim.gif       web images (reject — not pdflatex-renderable; the LaTeX-distinctive gate)
+    ├── photo.webp banner.avif    web images (reject)
+    ├── widget.ts  App.vue        script / framework (reject)
+    ├── theme.css  page.html      stylesheet / markup (reject)
+    ├── notes.md   data.json      markdown / data (reject)
+    └── font.woff2 clip.mp4 captions.vtt   font / media / text-track (reject)
+```
+
 ## Subdirectories
 
 | Location | Purpose |

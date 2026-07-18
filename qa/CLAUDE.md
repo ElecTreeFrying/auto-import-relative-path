@@ -20,12 +20,16 @@ checklists/typescript.md   ↔  workspace/typescript/
 
 When any file in `checklists/` is added, removed, or updated, check these for staleness and update them:
 
-1. **`checklists/README.md`** and **`checklists/CLAUDE.md`** — inventory tables, scope descriptions.
-2. **`README.md`** and **`CLAUDE.md`** (this directory) — language inventory table, mapping list, execution order.
-3. **`workspace/README.md`** — languages table.
-4. **`workspace/{language}/`** — add/update/remove fixture files so every path the checklist references exists. Update `workspace/{language}/README.md` (file tree, fixture mapping) and `workspace/{language}/CLAUDE.md` if the change affects edit rules.
+1. **`checklists/CLAUDE.md`** — inventory table, scope descriptions.
+2. **`CLAUDE.md`** (this directory) — mapping list, execution order.
+3. **`workspace/CLAUDE.md`** — directory mapping.
+4. **`workspace/{language}/`** — add/update/remove fixture files so every path the checklist references exists. Update `workspace/{language}/CLAUDE.md` (layout tree, fixture purposes, edit rules).
 
 The reverse does NOT apply: workspace-only changes (adding convenience files, tweaking fixture content) do not propagate back to checklists or their docs.
+
+## Running a QA pass
+
+Launch the Extension Development Host (F5 from the project root); in the EDH, **File > Open Folder** and select the `qa/workspace/` directory.
 
 ## Execution order
 
@@ -37,7 +41,7 @@ Do not duplicate `general.md` items in per-destination checklists.
 
 1. Create `checklists/{language}.md` with destination-specific test cases.
 2. Create `workspace/{language}/` with every fixture the checklist references.
-3. Add the language to the inventory tables in `checklists/README.md`, `checklists/CLAUDE.md`, `README.md` (this directory), and `workspace/README.md` — the complete set of sites is the "Propagation rule" above.
+3. Add the language to the inventory sites — `checklists/CLAUDE.md`, `CLAUDE.md` (this directory), and `workspace/CLAUDE.md` — per the "Propagation rule" above.
 
 ## demo-workspace (standalone)
 
