@@ -694,3 +694,17 @@ HTML image index 0 uses the literal word `sample` as alt text — this is static
 ## Activation
 
 The extension activates on any of the 13 supported destination languages (`onLanguage:javascript`, `onLanguage:typescriptreact`, `onLanguage:latex`, etc.) so the drop provider is registered before the user's first drag. Because MDX and LaTeX have no guaranteed VS Code language ID, two `workspaceContains` activation events (`workspaceContains:**/*.mdx`, `workspaceContains:**/*.tex`) also fire when such a file is present in the workspace. Invoking any of the eight contributed commands likewise triggers activation — each carries an implicit `onCommand` activation event — so the extension activates from a cold start even before one of the 13 languages is opened, e.g. running Copy File Path or Set Default Import Style.
+
+---
+
+## Host Capabilities
+
+The manifest declares how the extension loads across VS Code's workspace-trust, virtual, and remote hosts. Because it only reads file paths and inserts snippets — never executing workspace code and never requiring filesystem trust — it opts into every restricted context.
+
+| Declaration | Value | Effect |
+|---|---|---|
+| `capabilities.untrustedWorkspaces` | `{ "supported": true }` | Loads and runs in Restricted Mode; the extension needs no workspace-trust grant. |
+| `capabilities.virtualWorkspaces` | `true` | Loads in virtual workspaces (e.g. github.dev, vscode.dev). |
+| `extensionKind` | `["workspace"]` | Runs on the workspace host in remote setups (Remote-SSH, WSL, Dev Containers, Codespaces), so relative paths are computed next to the files they reference rather than on the local UI host. |
+
+The drop provider is registered with a `scheme: 'file'` selector (see Drag-and-Drop → Supported destination languages), so it activates only for on-disk, file-backed documents — independent of these host declarations.
