@@ -20,4 +20,4 @@ Planned work for upcoming releases of **Auto Import Relative Path**. Nothing her
 
 ---
 
-*Design notes for the planned items live in [`docs/import-statements/future/`](docs/import-statements/future/). Have a request, or want to help build one of these? Open an issue or a pull request.*
+*Have a request, or want to help build one of these? Open an issue or a pull request.*

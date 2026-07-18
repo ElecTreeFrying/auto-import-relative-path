@@ -83,7 +83,7 @@ Markdown emits `[text](path)` for Markdown-to-Markdown links (fixed), with confi
 - **Per-relationship extension policy.** Graphics honour `latex.preserveGraphicsFileExtension` (**default `true` — keep**, inverted from the script/stylesheet preserve toggles); `\input` / `\include` always drop `.tex`; `\addbibresource` keeps `.bib`, `\bibliography` drops it (so the bib renderer takes the extensionless path *plus* the extension and decides per case).
 - **Graphics format set ≠ web images.** `TEX_GRAPHICS_FILE_EXTENSIONS` (`.pdf`/`.png`/`.jpg`/`.jpeg`/`.eps`) is the engine-renderable set — `.svg`/`.gif`/`.webp`/`.avif` are deliberately excluded (`pdflatex` can't render them).
 
-Full design: [`docs/import-statements/spec/latex.md`](../../docs/import-statements/spec/latex.md) · rationale + rejection ledger: [`docs/import-statements/decisions/latex.md`](../../docs/import-statements/decisions/latex.md).
+Full design (local design library): `docs/import-statements/spec/latex.md` · rationale + rejection ledger: `docs/import-statements/decisions/latex.md`.
 
 ## Adding a new destination language
 

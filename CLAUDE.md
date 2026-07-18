@@ -27,8 +27,8 @@ Each directory under `src/` has its own nested `CLAUDE.md` guide. Read it before
 | `src/constants/` | Runtime gating tables; runtime mirror of `types/file-extension.ts` | [`src/constants/CLAUDE.md`](src/constants/CLAUDE.md) |
 | `src/types/` | Cross-cutting type unions (no enums) | [`src/types/CLAUDE.md`](src/types/CLAUDE.md) |
 | `src/test/` | Mocha BDD tests; runs from `out/`, not `dist/` | [`src/test/CLAUDE.md`](src/test/CLAUDE.md) |
-| `qa/` | Per-language manual-QA checklists + matching by-language fixture workspaces, the `_authoring/` checklist-codegen pipeline (RECIPE + frozen-IR PROFILE), and a standalone framework demo-workspace | [`qa/CLAUDE.md`](qa/CLAUDE.md), [`qa/_authoring/CLAUDE.md`](qa/_authoring/CLAUDE.md), [`qa/checklists/CLAUDE.md`](qa/checklists/CLAUDE.md), [`qa/workspace/CLAUDE.md`](qa/workspace/CLAUDE.md) |
-| `docs/` | Design library (the *why*): the import-statements design tree (criteria, decisions, rejection ledgers) + a reader-facing QA checklist-codegen overview. The product spec `SPEC.md` stays in root, paired with `README.md`. | [`docs/CLAUDE.md`](docs/CLAUDE.md), [`docs/import-statements/CLAUDE.md`](docs/import-statements/CLAUDE.md) |
+
+> **Local-only trees (gitignored).** `docs/` — the design library (import-statements criteria, decisions, rejection ledgers) — and `qa/` — the manual-QA checklists + fixture workspaces — are kept on disk for development, not tracked or shipped. Their guides live locally at `docs/CLAUDE.md` and `qa/CLAUDE.md`.
 
 ## Commands
 
@@ -86,7 +86,7 @@ These multi-site contracts silently break on drift. The linked guides have the f
 - `tsconfig.json` is `module: Node16`, `target: ES2022`, `strict: false`, `rootDir: src`, `sourceMap: true`, and `types: ["node", "mocha"]`. New source files belong under `src/`. (`sourceMap` is on so `test:coverage` maps `out/` back to `src/`.)
 - Mocha tests are written in BDD style (`describe`/`it`); the runner UI is set to `bdd` in `.vscode-test.mjs`. Tests use Node's built-in `assert` (no Chai/Sinon). The test runner glob is `out/test/**/*.test.js` — only files emitted by `compile-tests` get picked up.
 - **Coverage is opt-in:** `npm run test:coverage` runs the same suite with `vscode-test --coverage` (V8/c8). `.vscode-test.mjs` uses the `{ tests, coverage }` form — the `coverage` block (`includeAll`, `exclude` of `test`/`*.test.*`/`types`, `text`+`html` reporters) is silently ignored unless `--coverage` is passed. Report lands in the git-ignored `coverage/`.
-- `process/` is gitignored — private publishing notes + access tokens; never commit it. Under `.claude/`, the shared tooling (`agents/`, `skills/`, `workflows/`) is tracked; `agents/state/` and everything else under `.claude/` stays gitignored.
+- `process/` is gitignored — private publishing notes + access tokens; never commit it. `docs/` (the design library) and `qa/` (the manual-QA corpus) are gitignored too — kept locally for development, never tracked or shipped. Under `.claude/`, the shared tooling (`agents/`, `skills/`, `workflows/`) is tracked; `agents/state/` and everything else under `.claude/` stays gitignored.
 
 ## Naming conventions
 
