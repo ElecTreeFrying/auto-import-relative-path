@@ -1,18 +1,18 @@
 # Auto Import Relative Path
 
-[![version][version svg]][package]
-[![installs][installs svg]][package]
-[![downloads][downloads svg]][package]
-[![ratings][ratings svg]][package]
-[![license][license svg]][package]
-[![vscode][vscode svg]][package]
+[![version][version-badge]][package]
+[![installs][installs-badge]][package]
+[![downloads][downloads-badge]][package]
+[![rating][rating-badge]][package]
+[![license][license-badge]][repo]
+[![vscode][vscode-badge]][package]
 
-[version svg]: https://vsmarketplacebadges.dev/version-short/electreefrying.auto-import.png
-[installs svg]: https://vsmarketplacebadges.dev/installs/electreefrying.auto-import.png
-[downloads svg]: https://vsmarketplacebadges.dev/downloads/electreefrying.auto-import.png
-[ratings svg]: https://vsmarketplacebadges.dev/rating-short/ElecTreeFrying.auto-import.png
-[license svg]: https://img.shields.io/github/license/ElecTreeFrying/auto-import-relative-path
-[vscode svg]: https://img.shields.io/badge/vscode-%3E%3D1.97.0-blue
+[version-badge]: https://vsmarketplacebadges.dev/version-short/ElecTreeFrying.auto-import.png
+[installs-badge]: https://vsmarketplacebadges.dev/installs-short/ElecTreeFrying.auto-import.png
+[downloads-badge]: https://vsmarketplacebadges.dev/downloads-short/ElecTreeFrying.auto-import.png
+[rating-badge]: https://vsmarketplacebadges.dev/rating-short/ElecTreeFrying.auto-import.png
+[license-badge]: https://img.shields.io/github/license/ElecTreeFrying/auto-import-relative-path
+[vscode-badge]: https://img.shields.io/badge/vscode-%3E%3D1.97.0-blue
 [package]: https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import
 
 > **Never type an import path again.**
