@@ -160,6 +160,31 @@ describe('insertImportSnippet', () => {
     });
   });
 
+  // A JSX comment span has no per-line marker on its interior lines, so the prefix-based
+  // isCommentLine cannot see it. Without the span scan the paste lands INSIDE the block and the
+  // import is inserted commented-out — inert. This drives the real editor, not just the helper.
+  describe('JSX comment span (paste with Cursor placement)', () => {
+    it('.mdx paste inside a {/* */} span lands above the opener, not inside the comment', async () => {
+      await setAutoImportSetting('preferences', 'placement', 'Cursor');
+      try {
+        const editor = await openFixture('docs/notes.mdx');
+        const info = await setClipboard('src/bar.ts');
+        await setCursor(editor, 3); // '  draft outline' — interior span line, no comment marker
+        await insertAndWait(new vscode.SnippetString(SNIPPET_TEXT), info);
+        assert.ok(
+          editor.document.lineAt(2).text.includes("import { test } from './test';"),
+          `expected the import above the {/* opener at line 2, got: "${editor.document.lineAt(2).text}"`
+        );
+        assert.ok(
+          editor.document.lineAt(3).text.trim() === '{/*',
+          `expected the span opener pushed down to line 3, got: "${editor.document.lineAt(3).text}"`
+        );
+      } finally {
+        await setAutoImportSetting('preferences', 'placement', undefined);
+      }
+    });
+  });
+
   describe('Astro frontmatter', () => {
     it('Bottom inserts after opening --- fence', async () => {
       const editor = await openFixture('src/App.astro');

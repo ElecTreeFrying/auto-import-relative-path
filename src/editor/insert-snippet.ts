@@ -17,7 +17,6 @@ import {
   isFrameworkStyleDestination,
   isImportLine,
   isInlineSnippet,
-  isMarkdownDestination,
   shouldRepositionCursor,
 } from './placement';
 
@@ -35,7 +34,7 @@ export function insertImportSnippet(
   snippet = snippet.appendText('\n');
 
   if (shouldRepositionCursor(destinationFileExt)) {
-    return insertSnippetAtCursor(snippet, isMarkdownDestination(destinationFileExt));
+    return insertSnippetAtCursor(snippet, destinationFileExt);
   }
 
   const placement = getAutoImportSetting<string>('preferences', 'placement');
@@ -58,7 +57,7 @@ export function insertImportSnippet(
     case 'Bottom':
       return insertSnippetAtBottom(snippet);
     case 'Cursor':
-      return insertSnippetAtCursor(snippet, isMarkdownDestination(destinationFileExt));
+      return insertSnippetAtCursor(snippet, destinationFileExt);
     default:
       return insertSnippetAtBottom(snippet);
   }
@@ -74,10 +73,10 @@ function insertSnippetAtTop(snippet: vscode.SnippetString): void {
   insertSnippetAtPosition(snippet, 0);
 }
 
-function insertSnippetAtCursor(snippet: vscode.SnippetString, isMarkdown: boolean): void {
+function insertSnippetAtCursor(snippet: vscode.SnippetString, destinationFileExt: FileExtension): void {
   const editor = vscode.window.activeTextEditor;
   const lines = editor.document.getText().split('\n');
-  const currentLine = adjustForCommentBlock(lines, editor.selection.anchor.line, isMarkdown);
+  const currentLine = adjustForCommentBlock(lines, editor.selection.anchor.line, destinationFileExt);
   insertSnippetAtPosition(snippet, currentLine);
 }
 

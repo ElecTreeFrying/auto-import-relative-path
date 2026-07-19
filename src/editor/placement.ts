@@ -167,6 +167,11 @@ export function isMarkdownDestination(destinationFileExt: FileExtension): boolea
   return destinationFileExt === '.md' || destinationFileExt === '.mdx';
 }
 
+/** Returns `true` for the JSX-family destinations (`.jsx`, `.tsx`, `.mdx`) whose content can carry `{/*` comment spans. */
+export function isJsxFamilyDestination(destinationFileExt: FileExtension): boolean {
+  return destinationFileExt === '.jsx' || destinationFileExt === '.tsx' || destinationFileExt === '.mdx';
+}
+
 /** Returns `true` for the framework SFC destinations (`.vue`/`.svelte`/`.astro`) that carry `<style>` blocks. */
 export function isFrameworkStyleDestination(destinationFileExt: FileExtension): boolean {
   return destinationFileExt === '.vue' || destinationFileExt === '.svelte' || destinationFileExt === '.astro';
@@ -196,15 +201,70 @@ export function isStyleBlockContext(
 }
 
 /**
- * Scans upward from a line inside a comment block to find the first line above the block.
- * Returns the original line if it is not a comment. Pass `isMarkdown` so Markdown `*` lines
- * (bullets / emphasis) are not mistaken for comment continuations.
+ * Returns the line holding the `{/*` opener when `line` begins inside an unclosed JSX comment
+ * span, or `null` otherwise — the state-scanned complement to the prefix-based `isCommentLine`.
+ * A span's interior lines carry no comment marker of their own, so only opener/closer tracking
+ * can see them.
+ *
+ * Scans every line above `line`, toggling on the `{/*` opener and the star-slash closer (JSX
+ * comments do not nest, so one flag suffices). A span opened and closed above leaves no state, and
+ * a line that itself opens a span is not "inside" it — inserting at that line's column 0 already
+ * lands above the opener.
  */
-export function adjustForCommentBlock(lines: string[], line: number, isMarkdown = false): number {
-  if (line >= lines.length || !isCommentLine(lines[line], isMarkdown)) {
+export function findJsxCommentSpanStart(lines: string[], line: number): number | null {
+  let openLine: number | null = null;
+  const end = Math.min(line, lines.length);
+
+  for (let i = 0; i < end; i++) {
+    const text = lines[i];
+    let index = 0;
+    while (index < text.length) {
+      if (openLine === null) {
+        const open = text.indexOf('{/*', index);
+        if (open === -1) {
+          break;
+        }
+        openLine = i;
+        index = open + 3;
+      } else {
+        const close = text.indexOf('*/', index);
+        if (close === -1) {
+          break;
+        }
+        openLine = null;
+        index = close + 2;
+      }
+    }
+  }
+
+  return openLine;
+}
+
+/**
+ * Scans upward from a line inside a comment block to find the first line above the block.
+ * Returns the original line if it is not a comment. `destinationFileExt` selects the dialect:
+ * Markdown destinations keep a leading `*` as content (bullets / emphasis) rather than a block
+ * continuation, and the JSX-family destinations additionally hop out of a `{/*` comment span via
+ * `findJsxCommentSpanStart` — without which an import would be inserted inside the comment,
+ * commented-out and inert. Omit the extension for the block-scoped callers (`<style>`,
+ * frontmatter, SFC `<script>`), where neither dialect applies.
+ */
+export function adjustForCommentBlock(lines: string[], line: number, destinationFileExt?: FileExtension): number {
+  const isMarkdown = destinationFileExt !== undefined && isMarkdownDestination(destinationFileExt);
+
+  let target = line;
+  if (destinationFileExt !== undefined && isJsxFamilyDestination(destinationFileExt)) {
+    const spanStart = findJsxCommentSpanStart(lines, line);
+    if (spanStart !== null) {
+      target = spanStart;
+    }
+  }
+
+  if (target === line && (line >= lines.length || !isCommentLine(lines[line], isMarkdown))) {
     return line;
   }
-  let start = line;
+
+  let start = target;
   while (start > 0 && isCommentLine(lines[start - 1], isMarkdown)) {
     start--;
   }
@@ -246,7 +306,7 @@ export function computeImportPlacement(
   }
 
   if (shouldRepositionCursor(destinationFileExt)) {
-    const adjustedLine = adjustForCommentBlock(lines, dropLine, isMarkdownDestination(destinationFileExt));
+    const adjustedLine = adjustForCommentBlock(lines, dropLine, destinationFileExt);
     // A drop column is where the mouse button came up, not intent: the import takes its own line and
     // the snippet's trailing newline pushes the drop line down. The command flow deliberately differs
     // — insert-snippet.ts:determineInsertionColumn keeps the caret column for these destinations.
@@ -274,7 +334,7 @@ export function computeImportPlacement(
     case 'Top':
       return { line: 0, column: 0, indentation: '', isInline: false };
     case 'Cursor': {
-      const adjustedLine = adjustForCommentBlock(lines, dropLine, isMarkdownDestination(destinationFileExt));
+      const adjustedLine = adjustForCommentBlock(lines, dropLine, destinationFileExt);
       return { line: adjustedLine, column: 0, indentation: '', isInline: false };
     }
     case 'Bottom':

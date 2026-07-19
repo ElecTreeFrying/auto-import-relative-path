@@ -54,6 +54,10 @@ const SCENARIOS: Scenario[] = [
   { name: 'markdown forced cursor', fixture: 'docs/guide.md', source: 'docs/architecture.md', cursorLine: 3, cursorColumn: 0, flat: true },
   { name: 'latex forced cursor (line parity; drop forces column 0)', fixture: 'paper/main.tex', source: 'assets/logo.png', cursorLine: 6, cursorColumn: 2, flat: true, dropForcesColumnZero: true },
   { name: 'inline image into stylesheet', fixture: 'styles/reset.css', source: 'assets/logo.png', cursorLine: 3, cursorColumn: 16, flat: true },
+  // Cursor inside a JSX {/* … */} span: both flows must hop above the opener rather than insert
+  // the import commented-out. Interior span lines carry no comment prefix, so this exercises the
+  // state-scan complement to isCommentLine — in both the command and drop paths.
+  { name: 'mdx cursor inside a JSX comment span (hops above the opener)', fixture: 'docs/notes.mdx', source: 'src/bar.ts', cursorLine: 3, cursorColumn: 0, placement: 'Cursor', flat: true },
   { name: 'astro frontmatter Bottom', fixture: 'src/App.astro', source: 'src/bar.ts', cursorLine: 1, cursorColumn: 0, placement: 'Bottom', flat: false },
   { name: 'astro frontmatter Top', fixture: 'src/App.astro', source: 'src/bar.ts', cursorLine: 1, cursorColumn: 0, placement: 'Top', flat: false },
   { name: 'astro frontmatter Cursor', fixture: 'src/App.astro', source: 'src/bar.ts', cursorLine: 1, cursorColumn: 0, placement: 'Cursor', flat: false },

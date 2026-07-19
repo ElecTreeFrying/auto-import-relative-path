@@ -79,7 +79,8 @@ workspace/
 ├── docs/
 │   ├── README.md, guide.md, CHANGELOG.md, CONTRIBUTING.md, architecture.md, api-reference.md
 │   ├── tutorials/getting-started.md, advanced-usage.md
-│   └── example.mdx                     MDX destination fixture
+│   ├── example.mdx                     MDX destination fixture
+│   └── notes.mdx                       MDX destination carrying a multi-line JSX comment span (span walk-up)
 ├── paper/
 │   └── main.tex                        LaTeX (.tex) destination — forced-cursor placement
 ├── assets/
@@ -165,12 +166,13 @@ The `Coverage matrix` above answers "where do I find a fixture for X?"; this tab
 | `data/{config.json, config.yaml, locale.yml, *.json, *.yaml}` | JSON/YAML branches in `src/snippets/_react.ts:buildReactImport`'s hardcoded non-script `switch` |
 | `data/document.pdf` | `.pdf` branch in `src/snippets/_react.ts:buildReactImport` → `import ${1:name} from '<path>';` |
 | `docs/example.mdx` | `.mdx` destination in `src/snippets/dispatch.ts` → falls through to `tsx.buildSnippet()` (identical semantics) |
+| `docs/notes.mdx` | `src/editor/placement.ts:findJsxCommentSpanStart` / `adjustForCommentBlock` — its multi-line JSX comment span is the Cursor-placement hop case, driven from both flows (`editor/insert-snippet.test.ts`, `editor/placement-parity.test.ts`). Its interior span lines deliberately carry **no** comment prefix, which is what the prefix-based `isCommentLine` cannot see; keep the span multi-line. |
 
 When refactoring any of the code sites above, run the matching test(s) under `src/test/` (and, for manual confirmation, the corresponding checklist in the `qa/` tree) over the fixtures listed here before shipping.
 
 ## Baseline filenames are immutable
 
-The baseline filenames (`foo.ts`, `bar.ts`, `helpers.ts`, `sibling.js`, `other.js`, `widget.tsx`, `badge.jsx`, `app-root.component.ts`, `auth.module.ts`, `highlight.directive.ts`, `trim.pipe.ts`, `user.service.ts`, `_partial.scss`, `_variables.scss`, `main.scss`, `secondary.scss`, `global.css`, `reset.css`, `_partials/_nested.scss`, `index.html`, `about.html`, `README.md`, `guide.md`, `logo.png`, `icon.gif`, `photo.jpeg`, `photo.jpg`, `thumb.webp`, `icon.svg`, `banner.avif`, `font.woff2`, `regular.ttf`, `config.json`, `config.yaml`, `locale.yml`, `empty-file.ts`, `comments-only.ts`, `with-imports.ts`, `with-requires.js`, `my files/spaced.ts`, `App.vue`, `App.svelte`, `App.astro`, `styled.vue`, `styled.svelte`, `styled.astro`, `theme.css`, `base.scss`, `palette.module.css`, `clip.mp4`, `song.mp3`, `captions.vtt`, `texture.bmp`, `theme.module.css`, `main.tex`) are referenced directly by the fixture-driven test files under `src/test/`. Renaming a baseline produces a *silent* break: a test will try to open a fixture path that no longer exists, and nothing in the toolchain will warn until the suite runs.
+The baseline filenames (`foo.ts`, `bar.ts`, `helpers.ts`, `sibling.js`, `other.js`, `widget.tsx`, `badge.jsx`, `app-root.component.ts`, `auth.module.ts`, `highlight.directive.ts`, `trim.pipe.ts`, `user.service.ts`, `_partial.scss`, `_variables.scss`, `main.scss`, `secondary.scss`, `global.css`, `reset.css`, `_partials/_nested.scss`, `index.html`, `about.html`, `README.md`, `guide.md`, `logo.png`, `icon.gif`, `photo.jpeg`, `photo.jpg`, `thumb.webp`, `icon.svg`, `banner.avif`, `font.woff2`, `regular.ttf`, `config.json`, `config.yaml`, `locale.yml`, `empty-file.ts`, `comments-only.ts`, `with-imports.ts`, `with-requires.js`, `my files/spaced.ts`, `App.vue`, `App.svelte`, `App.astro`, `styled.vue`, `styled.svelte`, `styled.astro`, `theme.css`, `base.scss`, `palette.module.css`, `clip.mp4`, `song.mp3`, `captions.vtt`, `texture.bmp`, `theme.module.css`, `main.tex`, `notes.mdx`) are referenced directly by the fixture-driven test files under `src/test/`. Renaming a baseline produces a *silent* break: a test will try to open a fixture path that no longer exists, and nothing in the toolchain will warn until the suite runs.
 
 **Workflow when a baseline must change:**
 

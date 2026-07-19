@@ -10,12 +10,14 @@ import {
   findAstroFrontmatterBounds,
   findBottomLineInRange,
   findEnclosingStyleBounds,
+  findJsxCommentSpanStart,
   findSfcScriptBounds,
   getLineIndentation,
   isCommentLine,
   isFrameworkStyleDestination,
   isImportLine,
   isInlineSnippet,
+  isJsxFamilyDestination,
   isStyleBlockContext,
   shouldRepositionCursor,
 } from '../../editor/placement';
@@ -239,14 +241,105 @@ describe('editor/placement', () => {
       assert.strictEqual(adjustForCommentBlock(lines, 5), 5);
     });
 
-    it('does not walk up Markdown * bullets when isMarkdown is true (cursor stays put)', () => {
+    it('does not walk up Markdown * bullets for a Markdown destination (cursor stays put)', () => {
       const lines = [ '# Shopping list', '', '* milk', '* eggs', '* bread' ];
-      assert.strictEqual(adjustForCommentBlock(lines, 4, true), 4);
+      assert.strictEqual(adjustForCommentBlock(lines, 4, '.md' as FileExtension), 4);
     });
 
-    it('still walks up a JS * block-comment continuation (isMarkdown false)', () => {
+    it('still walks up a JS * block-comment continuation (non-Markdown destination)', () => {
       const lines = [ '/**', ' * doc', ' * more', 'export const x = 1;' ];
       assert.strictEqual(adjustForCommentBlock(lines, 2), 0);
+    });
+
+    it('hops above a JSX {/* */} span in an .mdx destination (interior line carries no marker)', () => {
+      const lines = [ 'import { Header } from "./h";', '', '{/*', '  draft outline', '*/}', '', '# Notes' ];
+      assert.strictEqual(adjustForCommentBlock(lines, 3, '.mdx' as FileExtension), 2);
+    });
+
+    it('hops above a JSX {/* */} span in a .tsx destination', () => {
+      const lines = [ 'import { Header } from "./h";', '', '{/*', '  draft outline', '*/}', '', 'export const P = () => null;' ];
+      assert.strictEqual(adjustForCommentBlock(lines, 3, '.tsx' as FileExtension), 2);
+    });
+
+    it('hops above the whole run when a // block precedes the {/* */} span opener', () => {
+      const lines = [ '// bootstrap', '// init', '{/*', '  notes', '*/}', 'export const P = () => null;' ];
+      assert.strictEqual(adjustForCommentBlock(lines, 3, '.jsx' as FileExtension), 0);
+    });
+
+    it('does NOT span-scan a Markdown destination ({/* is literal CommonMark text)', () => {
+      const lines = [ '# Doc', '', '{/*', 'still prose', '*/}', 'more' ];
+      assert.strictEqual(adjustForCommentBlock(lines, 3, '.md' as FileExtension), 3);
+    });
+
+    it('leaves a .mdx * bullet as content even with the span rule active', () => {
+      const lines = [ '# Shopping list', '', '* milk', '* eggs', '* bread' ];
+      assert.strictEqual(adjustForCommentBlock(lines, 4, '.mdx' as FileExtension), 4);
+    });
+  });
+
+  describe('findJsxCommentSpanStart', () => {
+    const SPAN = [ 'import x from "./x";', '', '{/*', '  draft outline', '  more notes', '*/}', '', '# Notes' ];
+
+    it('returns the opener line for a line inside the span', () => {
+      assert.strictEqual(findJsxCommentSpanStart(SPAN, 4), 2);
+    });
+
+    it('returns null for a line above the opener', () => {
+      assert.strictEqual(findJsxCommentSpanStart(SPAN, 1), null);
+    });
+
+    it('returns null for a line below the closer', () => {
+      assert.strictEqual(findJsxCommentSpanStart(SPAN, 7), null);
+    });
+
+    it('returns null ON the opener line itself (inserting there already lands above it)', () => {
+      assert.strictEqual(findJsxCommentSpanStart(SPAN, 2), null);
+    });
+
+    it('returns the opener ON the closing line (still inside until the marker is passed)', () => {
+      assert.strictEqual(findJsxCommentSpanStart(SPAN, 5), 2);
+    });
+
+    it('returns null when a single-line {/* … */} sits above (opened and closed, no state)', () => {
+      const lines = [ '{/* a note */}', 'export const P = () => null;' ];
+      assert.strictEqual(findJsxCommentSpanStart(lines, 1), null);
+    });
+
+    it('returns the opener for an unclosed span (no closer anywhere above)', () => {
+      const lines = [ '{/*', '  dangling', 'still inside' ];
+      assert.strictEqual(findJsxCommentSpanStart(lines, 2), 0);
+    });
+
+    it('tracks the SECOND opener when a closed span precedes it', () => {
+      const lines = [ '{/* first */}', 'code', '{/*', '  second', '*/}' ];
+      assert.strictEqual(findJsxCommentSpanStart(lines, 3), 2);
+    });
+
+    it('handles an open and close on the same line before the target (no lingering state)', () => {
+      const lines = [ 'code', '{/* inline */} const x = 1;', 'target' ];
+      assert.strictEqual(findJsxCommentSpanStart(lines, 2), null);
+    });
+
+    it('returns null for line 0 (nothing above it)', () => {
+      assert.strictEqual(findJsxCommentSpanStart(SPAN, 0), null);
+    });
+
+    it('clamps a line beyond the buffer to the available lines', () => {
+      assert.strictEqual(findJsxCommentSpanStart(SPAN, 99), null);
+    });
+  });
+
+  describe('isJsxFamilyDestination', () => {
+    it('.jsx / .tsx / .mdx return true', () => {
+      assert.strictEqual(isJsxFamilyDestination('.jsx' as FileExtension), true);
+      assert.strictEqual(isJsxFamilyDestination('.tsx' as FileExtension), true);
+      assert.strictEqual(isJsxFamilyDestination('.mdx' as FileExtension), true);
+    });
+
+    it('.md / .ts / .vue return false', () => {
+      assert.strictEqual(isJsxFamilyDestination('.md' as FileExtension), false);
+      assert.strictEqual(isJsxFamilyDestination('.ts' as FileExtension), false);
+      assert.strictEqual(isJsxFamilyDestination('.vue' as FileExtension), false);
     });
   });
 
@@ -435,6 +528,39 @@ describe('editor/placement', () => {
       );
       assert.strictEqual(result.isInline, false);
       assert.strictEqual(result.line, 4, `expected cursor line 4 ('* bread'), got ${result.line}`);
+    });
+
+    it('.mdx Cursor drop inside a {/* */} span hops above the opener (never inserts commented-out)', async () => {
+      await setAutoImportSetting('preferences', 'placement', 'Cursor');
+      try {
+        const text = 'import x from "./x";\n\n{/*\n  draft outline\n*/}\n\n# Notes';
+        const result = computeImportPlacement(
+          text,
+          '.mdx' as FileExtension,
+          '.ts' as FileExtension,
+          3, 0,
+        );
+        assert.strictEqual(result.line, 2, `expected the {/* opener line 2, got ${result.line}`);
+        assert.strictEqual(result.column, 0);
+      } finally {
+        await setAutoImportSetting('preferences', 'placement', undefined);
+      }
+    });
+
+    it('.tsx Cursor drop inside a {/* */} span hops above the opener', async () => {
+      await setAutoImportSetting('preferences', 'placement', 'Cursor');
+      try {
+        const text = 'import x from "./x";\n\n{/*\n  draft outline\n*/}\n\nexport const P = () => null;';
+        const result = computeImportPlacement(
+          text,
+          '.tsx' as FileExtension,
+          '.ts' as FileExtension,
+          3, 0,
+        );
+        assert.strictEqual(result.line, 2, `expected the {/* opener line 2, got ${result.line}`);
+      } finally {
+        await setAutoImportSetting('preferences', 'placement', undefined);
+      }
     });
 
     it('returns wrapperPrefix for Astro without frontmatter', () => {
