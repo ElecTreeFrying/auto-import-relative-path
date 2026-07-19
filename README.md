@@ -29,7 +29,7 @@ Drag a file or press a key — the right import lands in your editor. Path, synt
 
 1. **Install** the extension ([see below](#installation)).
 2. **Click** a file — or multi-select several — in the Explorer and press <kbd>Option</kbd>+<kbd>D</kbd> (<kbd>Alt</kbd>+<kbd>D</kbd> on Windows/Linux) to auto-import — or use the two-step <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> then <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>I</kbd> workflow.
-3. **Or drag** a file — or a whole multi-selection — from the Explorer directly into an open editor — the imports appear at the drop position, one per file.
+3. **Or drag** a file — or a whole multi-selection — from the Explorer directly into an open editor — the imports land on their own lines at the drop point, one per file.
 4. The import lands in your editor. Your cursor is on the identifier — name it and <kbd>Tab</kbd> out.
 
 > **Two-step workflow:** <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> to copy a file's path, then <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>I</kbd> in any editor to paste the import. The clipboard holds the path until you copy something else — paste into as many files as you like.
@@ -47,7 +47,7 @@ Drag a file or press a key — the right import lands in your editor. Path, synt
 ## Highlights
 
 - **Eight commands, three keystrokes** — Copy, Paste, and Auto on the keyboard; *Pick Style*, *Set Default Style*, *Set Import Placement*, *Toggle Preserve Script File Extension*, and *Reset All Import Styles* from the Command Palette
-- **Drag-and-drop from Explorer** — drag any supported file into an editor to insert the import at the drop position, no keyboard required
+- **Drag-and-drop from Explorer** — drag any supported file into an editor and the import lands on its own line at the drop point, no keyboard required
 - **Multi-file import in one gesture** — drag or copy several files at once; every file gets its own statement in one stacked block, placeholders kept independent
 - **Built for every major framework** — Angular, React, Vue, Svelte, Astro — plus vanilla JS/TS, CSS/SCSS, HTML, Markdown, and **LaTeX** (drag an image in → a `figure` float; drop a `.tex` → `\input`; a `.bib` → `\addbibresource`)
 - **38 source extensions** — scripts, stylesheets, images, fonts, video, audio, text tracks, data, documents, components, LaTeX graphics (plus extensionless files like `LICENSE` into Markdown)
@@ -79,12 +79,12 @@ See [SPEC — §Commands & Keybindings][SPEC-commands] for command IDs, context 
 
 ### Drag-and-Drop
 
-Drag a file from the Explorer into any supported editor. The import snippet is generated with the same styles and settings as the paste commands, and inserted at the drop position. No keybinding needed.
+Drag a file from the Explorer into any supported editor. The import snippet is generated with the same styles and settings as the paste commands, and inserted on its own line at the drop point — never spliced into the middle of the line it lands on. No keybinding needed.
 
 ![Drag-and-drop demo](https://raw.githubusercontent.com/ElecTreeFrying/auto-import-relative-path/main/assets/demo-drag.gif)
 
 - Uses the same gating, snippet styles, and configuration as paste commands.
-- Follows the same Top / Bottom / Cursor placement setting as paste commands — the drop position is used as the Cursor input.
+- Follows the same Top / Bottom / Cursor placement setting as paste commands — the drop line is used as the Cursor input, and the dropped import always takes its own line (paste keeps your caret column; a drop ignores the mouse column).
 - Drag several files at once — every supported file becomes one statement in a single stacked block; same-file and unsupported members are skipped (an all-image drop into CSS inserts the first `url()` only, since inline values can't stack).
 - Unsupported pairs show the same "Cannot import" warning as paste commands; the provider suppresses the drop, so nothing is inserted (no stray path text).
 - See [SPEC — §Drag-and-Drop Import][SPEC-drop] for full behavior and differences from paste.
@@ -613,7 +613,7 @@ See [SPEC — §Path Computation][SPEC-path] for the complete path logic includi
 - **Snippet placeholders.** After insertion, your cursor lands on the identifier — type the name and <kbd>Tab</kbd> to the next stop. No need to click or arrow around.
 - **CSS Modules are detected automatically.** Files named `*.module.css` or `*.module.scss` imported into JSX/TSX/MDX produce `import styles from '...'` instead of a side-effect `import '...'`.
 - **Same-directory imports always get `./`.** You'll never see a bare `Button` — it's always `./Button`, which ES modules and bundlers require.
-- **Drag from Explorer for zero-keystroke imports.** Drag a file from the sidebar directly into your editor — the import lands at the drop position with the same style as paste. Great for quickly pulling in components or assets without touching the keyboard.
+- **Drag from Explorer for zero-keystroke imports.** Drag a file from the sidebar directly into your editor — the import lands on its own line at the drop point with the same style as paste. Great for quickly pulling in components or assets without touching the keyboard.
 - **Mixing CSS into SCSS just works.** The `.css` extension is preserved even when `preserveStylesheetFileExtension` is off, because Sass needs it.
 - **HTML, Markdown, and LaTeX ignore your placement setting.** Insertion is always at the cursor for these languages (for LaTeX, in the document body — never the preamble). Leave `importStatementPlacement` set to `Bottom` for scripts — it won't affect your markup.
 - **Rebind anything.** `extension.copyFilePath`, `extension.pasteImport`, and `extension.copyPaste` are rebindable from VS Code's keyboard shortcuts editor. The five Command Palette–only commands can be given keybindings from the same editor.

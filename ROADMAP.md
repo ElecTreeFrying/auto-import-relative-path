@@ -4,7 +4,6 @@ Planned work for upcoming releases of **Auto Import Relative Path**. Nothing her
 
 ## To Do — v1.1.0
 
-- **Drag-and-drop always lands on its own line.** A dropped import is placed on a fresh line above the drop point, never spliced into the middle of the line it lands on.
 - **Auto-detect the script import extension.** A `never` / `always` / `auto` setting that reads the destination project's runtime (Deno, TypeScript NodeNext, Node ESM, browser ESM) and emits — and rewrites — the correct extension automatically.
 
 ---
