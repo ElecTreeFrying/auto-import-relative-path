@@ -169,6 +169,22 @@ describe('buildImportSnippetVariants', () => {
     assert.strictEqual(variants[0].snippetText, "import ${1:icon} from './icon.svg';");
   });
 
+  // Markdown/MDX into a framework destination is a single hardcoded name-import variant kept on the
+  // generic `name` binding (the PascalCase pathway is SFC-only) — mirrors the .md/.mdx React picker path.
+  it('.md into .vue: 1 hardcoded name-import variant (generic binding)', async () => {
+    const variants = await openAndQuery('src/App.vue', 'intro.md');
+    assert.strictEqual(variants.length, 1);
+    assert.strictEqual(variants[0].setting, undefined, 'asset variant is hardcoded (no setting)');
+    assert.strictEqual(variants[0].snippetText, "import ${1:name} from './intro.md';");
+  });
+
+  it('.mdx into .svelte: 1 hardcoded name-import variant (generic binding)', async () => {
+    const variants = await openAndQuery('src/App.svelte', 'post.mdx');
+    assert.strictEqual(variants.length, 1);
+    assert.strictEqual(variants[0].setting, undefined, 'asset variant is hardcoded (no setting)');
+    assert.strictEqual(variants[0].snippetText, "import ${1:name} from './post.mdx';");
+  });
+
   // A framework SFC source into a framework destination is a single hardcoded variant whose binding
   // is the PascalCase component name (deriveComponentName), through the same asset switch — this pins
   // the pick-style picker path for the SFC-naming feature (dispatch parity is covered in react.test.ts).

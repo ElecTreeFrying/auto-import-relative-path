@@ -124,12 +124,19 @@ describe('framework-component', () => {
   });
 
   // Markdown/MDX sources stay on the generic `name` even into a framework destination — the shipped
-  // PascalCase pathway is scoped to framework SFCs (docs/import-statements/future/framework-roadmap.md).
+  // PascalCase pathway is scoped to framework SFCs (docs/import-statements/decisions/framework-components.md, decision #14).
   it('.md source keeps the generic name binding (not an SFC)', async () => {
     await vscode.env.clipboard.writeText(source('intro.md'));
     const info = await getFilePathInfo();
     const result = buildSnippet(info);
     assert.strictEqual(result.value, "import ${1:name} from './intro.md';");
+  });
+
+  it('.mdx source keeps the generic name binding (script-category ext, asset-routed)', async () => {
+    await vscode.env.clipboard.writeText(source('post.mdx'));
+    const info = await getFilePathInfo();
+    const result = buildSnippet(info);
+    assert.strictEqual(result.value, "import ${1:name} from './post.mdx';");
   });
 
   it('Angular .component source gets PascalCase at index 0 (no class detection)', async () => {

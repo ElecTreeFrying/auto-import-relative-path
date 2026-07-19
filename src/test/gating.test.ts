@@ -146,8 +146,12 @@ describe('gating/isPairSupported', () => {
       assert.strictEqual(isPairSupported(info('.scss', '.vue')), true);
     });
 
-    it('.md → .vue rejected (Markdown needs a plugin — not accepted into Vue)', () => {
-      assert.strictEqual(isPairSupported(info('.md', '.vue')), false);
+    it('.md → .vue accepted (Markdown-as-component; Vue via unplugin-vue-markdown / vite-plugin-md)', () => {
+      assert.strictEqual(isPairSupported(info('.md', '.vue')), true);
+    });
+
+    it('.mdx → .vue accepted (MDX-as-component)', () => {
+      assert.strictEqual(isPairSupported(info('.mdx', '.vue')), true);
     });
   });
 
@@ -168,8 +172,12 @@ describe('gating/isPairSupported', () => {
       assert.strictEqual(isPairSupported(info('.css', '.svelte')), true);
     });
 
-    it('.md → .svelte rejected (Markdown needs a plugin — not accepted into Svelte)', () => {
-      assert.strictEqual(isPairSupported(info('.md', '.svelte')), false);
+    it('.md → .svelte accepted (Markdown-as-component; Svelte via mdsvex)', () => {
+      assert.strictEqual(isPairSupported(info('.md', '.svelte')), true);
+    });
+
+    it('.mdx → .svelte accepted (MDX-as-component)', () => {
+      assert.strictEqual(isPairSupported(info('.mdx', '.svelte')), true);
     });
   });
 
@@ -188,6 +196,10 @@ describe('gating/isPairSupported', () => {
 
     it('.md → .astro accepted', () => {
       assert.strictEqual(isPairSupported(info('.md', '.astro')), true);
+    });
+
+    it('.mdx → .astro accepted', () => {
+      assert.strictEqual(isPairSupported(info('.mdx', '.astro')), true);
     });
 
     it('.css → .astro accepted (stylesheet source — <style>-block import)', () => {
@@ -335,8 +347,8 @@ describe('gating/isPairSupported', () => {
       [ '.gif', '.md', true ], [ '.ts', '.md', false ],
       [ '.webp', '.css', true ], [ '.mp4', '.css', false ],
       [ '.jpg', '.scss', true ], [ '.html', '.scss', false ],
-      [ '.json', '.svelte', true ], [ '.md', '.vue', false ],
-      [ '.css', '.vue', true ], [ '.scss', '.svelte', true ],
+      [ '.json', '.svelte', true ], [ '.md', '.vue', true ], [ '.mdx', '.svelte', true ],
+      [ '.css', '.vue', true ], [ '.scss', '.svelte', true ], [ '.html', '.vue', false ],
       [ '.svelte', '.astro', true ], [ '.scss', '.astro', true ], [ '.html', '.astro', false ],
       [ '.pdf', '.tex', true ], [ '.svg', '.tex', false ],
       [ '.vue', '.ts', true ], [ '.png', '.ts', false ],
