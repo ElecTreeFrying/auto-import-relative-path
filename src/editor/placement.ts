@@ -1,5 +1,5 @@
 import { getAutoImportSetting } from '../config/settings';
-import { SCRIPT_FILE_EXTENSIONS, STYLESHEET_FILE_EXTENSIONS } from '../constants/extensions';
+import { STYLESHEET_FILE_EXTENSIONS } from '../constants/extensions';
 import { FileExtension } from '../types/file-extension';
 
 /** Markers used by Bottom placement to find the last import line. */
@@ -221,12 +221,6 @@ function computeBottomLine(lines: string[]): number {
   return insertionLine;
 }
 
-function determineInsertionColumn(destinationFileExt: FileExtension, dropColumn: number): number {
-  const isScriptOrStylesheet =
-    SCRIPT_FILE_EXTENSIONS.includes(destinationFileExt) || STYLESHEET_FILE_EXTENSIONS.includes(destinationFileExt);
-  return isScriptOrStylesheet ? 0 : dropColumn;
-}
-
 export interface ComputedPlacement {
   line: number;
   column: number;
@@ -253,8 +247,10 @@ export function computeImportPlacement(
 
   if (shouldRepositionCursor(destinationFileExt)) {
     const adjustedLine = adjustForCommentBlock(lines, dropLine, isMarkdownDestination(destinationFileExt));
-    const column = determineInsertionColumn(destinationFileExt, dropColumn);
-    return { line: adjustedLine, column, indentation: '', isInline: false };
+    // A drop column is where the mouse button came up, not intent: the import takes its own line and
+    // the snippet's trailing newline pushes the drop line down. The command flow deliberately differs
+    // — insert-snippet.ts:determineInsertionColumn keeps the caret column for these destinations.
+    return { line: adjustedLine, column: 0, indentation: '', isInline: false };
   }
 
   if (insideStyleBlock && isFrameworkStyleDestination(destinationFileExt)) {

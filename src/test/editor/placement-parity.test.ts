@@ -26,6 +26,11 @@ const MARKER = 'ZZPARITYZZ';
 // path. COLUMN is asserted only for flat (indentation-free) destinations — Astro/SFC bake the block
 // indentation into the inserted text (column 0 + a separate indentation field), so their column is
 // compared by the helper tests, not here.
+//
+// COLUMN also diverges by design on the forced-cursor destinations (.html/.md/.tex): a caret column
+// is typing intent, so paste keeps it, while a drop column is where the mouse button came up, so the
+// drop forces 0 and the import takes its own line. Those scenarios set `dropForcesColumnZero` and
+// assert each side's column separately — line parity still holds.
 
 interface Scenario {
   name: string;
@@ -35,6 +40,8 @@ interface Scenario {
   cursorColumn: number;
   placement?: 'Top' | 'Bottom' | 'Cursor';
   flat: boolean;
+  /** Forced-cursor markup destinations: paste keeps the caret column, drop forces column 0. */
+  dropForcesColumnZero?: boolean;
   insideStyleBlock?: boolean;
 }
 
@@ -43,9 +50,9 @@ const SCENARIOS: Scenario[] = [
   { name: 'script Bottom skips comment imports', fixture: 'comments-only.ts', source: 'src/bar.ts', cursorLine: 0, cursorColumn: 0, placement: 'Bottom', flat: true },
   { name: 'script Top', fixture: 'with-imports.ts', source: 'src/bar.ts', cursorLine: 1, cursorColumn: 0, placement: 'Top', flat: true },
   { name: 'script Cursor', fixture: 'with-imports.ts', source: 'src/bar.ts', cursorLine: 1, cursorColumn: 0, placement: 'Cursor', flat: true },
-  { name: 'html forced cursor (non-zero column preserved)', fixture: 'pages/index.html', source: 'pages/app.js', cursorLine: 8, cursorColumn: 2, flat: true },
+  { name: 'html forced cursor (line parity; drop forces column 0)', fixture: 'pages/index.html', source: 'pages/app.js', cursorLine: 8, cursorColumn: 2, flat: true, dropForcesColumnZero: true },
   { name: 'markdown forced cursor', fixture: 'docs/guide.md', source: 'docs/architecture.md', cursorLine: 3, cursorColumn: 0, flat: true },
-  { name: 'latex forced cursor (non-zero column preserved)', fixture: 'paper/main.tex', source: 'assets/logo.png', cursorLine: 6, cursorColumn: 2, flat: true },
+  { name: 'latex forced cursor (line parity; drop forces column 0)', fixture: 'paper/main.tex', source: 'assets/logo.png', cursorLine: 6, cursorColumn: 2, flat: true, dropForcesColumnZero: true },
   { name: 'inline image into stylesheet', fixture: 'styles/reset.css', source: 'assets/logo.png', cursorLine: 3, cursorColumn: 16, flat: true },
   { name: 'astro frontmatter Bottom', fixture: 'src/App.astro', source: 'src/bar.ts', cursorLine: 1, cursorColumn: 0, placement: 'Bottom', flat: false },
   { name: 'astro frontmatter Top', fixture: 'src/App.astro', source: 'src/bar.ts', cursorLine: 1, cursorColumn: 0, placement: 'Top', flat: false },
@@ -119,7 +126,10 @@ describe('placement parity: insertImportSnippet (command) ↔ computeImportPlace
       );
 
       assert.strictEqual(actual.line, expected.line, `${s.name}: insertion LINE must match between flows`);
-      if (s.flat) {
+      if (s.dropForcesColumnZero) {
+        assert.strictEqual(actual.column, s.cursorColumn, `${s.name}: paste must keep the caret column`);
+        assert.strictEqual(expected.column, 0, `${s.name}: drop must force column 0`);
+      } else if (s.flat) {
         assert.strictEqual(actual.column, expected.column, `${s.name}: insertion COLUMN must match between flows`);
       }
     });

@@ -386,40 +386,43 @@ describe('editor/placement', () => {
       assert.strictEqual(result.column, 10);
     });
 
-    it('repositions cursor for HTML destination', () => {
+    it('repositions cursor for HTML destination (drop column forced to 0)', () => {
       const text = '<html>\n<head>\n</head>\n<body>\n</body>\n</html>';
       const result = computeImportPlacement(
         text,
         '.html' as FileExtension,
         '.js' as FileExtension,
-        3, 0,
+        3, 4,
       );
       assert.strictEqual(result.isInline, false);
       assert.strictEqual(result.line, 3);
+      assert.strictEqual(result.column, 0);
     });
 
-    it('repositions cursor for Markdown destination', () => {
+    it('repositions cursor for Markdown destination (drop column forced to 0)', () => {
       const text = '# Title\n\nSome text\n\nMore text';
       const result = computeImportPlacement(
         text,
         '.md' as FileExtension,
         '.md' as FileExtension,
-        2, 0,
+        2, 5,
       );
       assert.strictEqual(result.isInline, false);
       assert.strictEqual(result.line, 2);
+      assert.strictEqual(result.column, 0);
     });
 
-    it('repositions cursor for LaTeX destination (body cursor line, not the preamble at line 0)', () => {
+    it('repositions cursor for LaTeX destination (body cursor line, not the preamble at line 0; drop column forced to 0)', () => {
       const text = '\\documentclass{article}\n\\begin{document}\nSome prose.\n\\end{document}';
       const result = computeImportPlacement(
         text,
         '.tex' as FileExtension,
         '.png' as FileExtension,
-        2, 0,
+        2, 9,
       );
       assert.strictEqual(result.isInline, false);
       assert.strictEqual(result.line, 2);
+      assert.strictEqual(result.column, 0);
     });
 
     it('Markdown cursor on a * bullet lands AT the cursor, not the top of the run', () => {
