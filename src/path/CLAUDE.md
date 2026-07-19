@@ -5,8 +5,9 @@ Pure path math. **No `vscode` import** — every file here is Node-testable. Don
 ## Files
 
 - `relative.ts` — `computeRelative(sourceFilePath, destinationFilePath)` returns the import-ready relative path.
-- `extension.ts` — `extractFileExtension` is a thin wrapper over `path.parse`; `removeFileExtension` strips the extension via string slicing.
+- `extension.ts` — `extractFileExtension` is a thin wrapper over `path.parse`; `removeFileExtension` strips the extension via string slicing (guarded for the extensionless case — see below).
 - `import-type.ts` — `determineImportType(filePath)` maps file extensions to the `ImportType` values (explicit cases plus the `default:` `'image'` catch-all), or `null` (`.html` and `.scss`).
+- `import-name.ts` — `deriveImportName(filePath)` derives a camelCase import identifier from the source basename, or `null` when no legal identifier forms. Pure string/path math; consumed by `snippets/` for default-import auto-naming (see the `## import-name.ts` section below).
 
 ## `computeRelative` — the `./` prefix rule
 
@@ -16,12 +17,22 @@ Returns a Unix-style path (`toUnixPath` replaces `\` with `/`) with the file ext
 
 **Regression test.** This rule is regression-tested in `src/test/path/relative.test.ts` (the `computeRelative` `./`-prefix cases for same-directory and child-directory imports). Don't simplify the prefix logic without re-running the test.
 
-## `extension.ts` — the empty-string-on-no-extension quirk
+## `extension.ts` — extensionless paths keep their whole name
 
 - `extractFileExtension(filePath)` returns the trailing extension (e.g. `'.ts'`) or `''` when there is none. Thin wrapper over `path.parse(filePath).ext`.
-- `removeFileExtension(filePath)` returns `filePath.slice(0, -ext.length)`. **When `ext` is `''`, this becomes `slice(0, 0)`, which returns an empty string** (a zero-width slice) — so the function returns an empty string for any path with no extension.
+- `removeFileExtension(filePath)` returns `ext ? filePath.slice(0, -ext.length) : filePath`. The `ext ? … : filePath` guard is **load-bearing**: without it, `slice(0, -0)` is `slice(0, 0)` === `''` (a zero-width slice), which would erase an extensionless path (`LICENSE` → `''`) and collapse its `computeRelative` result to `''` / `'./'`. The guard keeps extensionless sources whole (`../LICENSE`).
 
-This behaviour is intentional and regression-tested with extensionless paths (e.g. `Makefile` → `''`, in `test/path/extension.test.ts`). The test suite expects it — **don't add a guard** without re-running all path tests.
+This is regression-tested with extensionless paths (`Makefile` → `'Makefile'`, `/repo/LICENSE` → `/repo/LICENSE` in `test/path/extension.test.ts`; `./LICENSE` / `../LICENSE` via `computeRelative` in `test/path/relative.test.ts`). **Don't re-introduce the zero-slice** — extensionless-source support (the `gating.ts` first clause admitting an extensionless source into `.md` as a link) depends on the whole name surviving.
+
+## `import-name.ts` — basename → import identifier
+
+`deriveImportName(filePath)` derives a camelCase import identifier from the source basename, or `null`:
+
+- Strips the extension, splits the remainder on `-` / `_` / `.` / whitespace, camelCases the segments, and **preserves the first segment's original case** — a lowercase filename stays camelCase (`logo.svg` → `logo`, `my-logo.v2.svg` → `myLogoV2`), a PascalCase filename keeps its case (`App.jsx` → `App`, the React component convention) rather than being lowercased to `app`. It never *transforms* case (kebab → Pascal), so it stays clear of the deferred PascalCase-framework naming.
+- Validates the result against `/^[A-Za-z_$][\w$]*$/`; a leading-digit or non-ASCII basename (`404.png`, `café-menu.png`) yields `null`, so callers keep their generic placeholder.
+- Only the basename is used, so `deriveImportName('./a/b/logo.png')` === `deriveImportName('logo.png')` — the label-vs-payload double-render in `variants.ts` derives the same name from either.
+
+Consumers: the default-import positions of `snippets/languages/{javascript,typescript}.ts` and the plain-asset / media groups of `snippets/_react.ts:buildAssetImportStatement`. No `vscode` import — Node-testable, regression-tested in `test/path/import-name.test.ts`.
 
 ## `determineImportType` — `ImportType | null`, not just `ImportType`
 

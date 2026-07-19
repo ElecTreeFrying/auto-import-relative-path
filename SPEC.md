@@ -17,7 +17,7 @@ A VS Code extension that generates relative-path import statements for JS, TS, J
 | `extension.togglePreserveScriptExtension` | Auto Import: Toggle Preserve Script File Extension | — | — | Command Palette only |
 | `extension.resetImportStyles` | Auto Import: Reset All Import Styles to Defaults | — | — | Command Palette only |
 
-**Copy** puts the source file's absolute path on the clipboard and shows a "Copied path" toast with two action buttons: **Paste with Style** (runs Paste as Import (Pick Style)) and **Paste Now** (runs Paste as Import). The clipboard write is an explicit re-write after VS Code's built-in `copyFilePath` to guarantee the next paste sees the correct value. If the active item has no copyable absolute file path, Copy shows a "No file selected to copy." warning and stops. If the copied path has no file extension (e.g. `Makefile`, `Dockerfile`), Copy shows a "{basename} has no file extension." warning instead. For an Explorer **multi-selection**, the built-in newline-joins every selected path; Copy validates each line, drops non-absolute and extensionless members, re-writes the clipboard with exactly the surviving members (newline-joined, the built-in's own wire format), and announces them in one toast — `Copied 3 paths — logo.svg, app.ts, util.ts`, showing the leading three basenames and eliding the rest as `+K more`. A selection with no copyable member fails with the single-path warnings above.
+**Copy** puts the source file's absolute path on the clipboard and shows a "Copied path" toast with two action buttons: **Paste with Style** (runs Paste as Import (Pick Style)) and **Paste Now** (runs Paste as Import). The clipboard write is an explicit re-write after VS Code's built-in `copyFilePath` to guarantee the next paste sees the correct value. If the active item has no copyable absolute file path, Copy shows a "No file selected to copy." warning and stops. **Extensionless files copy fine** (`Makefile`, `Dockerfile`, `LICENSE`): copy is destination-agnostic, so a missing extension is no longer rejected here — the paste-time gate decides (an extensionless source imports only into a `.md` destination). For an Explorer **multi-selection**, the built-in newline-joins every selected path; Copy validates each line, drops non-absolute members, re-writes the clipboard with exactly the surviving members (newline-joined, the built-in's own wire format), and announces them in one toast — `Copied 3 paths — logo.svg, app.ts, util.ts`, showing the leading three basenames and eliding the rest as `+K more`. A selection with no absolute member fails with the "No file selected to copy." warning.
 
 **Paste** reads the clipboard as the source path, takes the active editor's file as the destination, computes the relative path, gates on the source-destination extension pair, and inserts the resulting import snippet. A multi-line clipboard fans out per member into one stacked block — see [§Multi-File Import](#multi-file-import).
 
@@ -57,7 +57,7 @@ Beyond the per-language `scheme: 'file'` filter, the provider is registered with
 | Source path origin | System clipboard | DataTransfer from Explorer drag |
 | Insertion position | Configurable (Top / Bottom / Cursor) | Computed by `computeImportPlacement()` (Top / Bottom / Cursor) — drop position used as Cursor input |
 | Astro / Vue / Svelte constraint | Frontmatter / script block | Same constraint (frontmatter / script block via `computeImportPlacement`) |
-| Clipboard validation | Checks for empty/non-absolute/no-extension | Not applicable (Explorer provides a valid file URI) |
+| Clipboard validation | Checks for empty/non-absolute; no-extension only into a non-`.md` destination | Not applicable (Explorer provides a valid file URI); the drop provider runs its own no-extension check for a non-`.md` destination |
 | Source file existence check | `vscode.workspace.fs.stat` before generating | Not performed (Explorer only offers existing files) |
 | Unsupported pair fallback | Warning toast, no insertion | Warning toast, no insertion (provider returns a suppressing empty edit) |
 | Multi-file selection | Clipboard fans out per line → one stacked block | `text/uri-list` fans out per URI → one stacked block |
@@ -74,7 +74,7 @@ Each selected file is validated, gated, and built independently. A member is **s
 
 - the destination file itself (case-insensitive match);
 - missing on disk (clipboard paths only — a dragged file exists by definition);
-- not an absolute path, or extensionless (`LICENSE`, `Makefile`) — clipboard paths only;
+- not an absolute path (clipboard paths only), or extensionless (`LICENSE`, `Makefile`) into a **non-`.md`** destination — into a `.md` destination an extensionless member imports as a link and is not skipped;
 - an unsupported source for the destination (the same pair gating as single-file), or a pair whose builder produces an empty snippet.
 
 When **every** member is skipped, nothing is inserted and a single warning reports the most informative failure, in this precedence: unsupported pair > source not found > same file > no extension > empty clipboard. (The drop provider's set is the applicable subset: unsupported pair > same file.)
@@ -125,7 +125,7 @@ Single-file behavior is unchanged on every gesture — one selected file walks t
 
 Which source extensions each destination accepts. A source-destination pair not listed here is rejected with a "Cannot import" warning.
 
-Exactly eleven destinations may import a source of a *different* extension (the cross-import set): `.html`, `.md`, `.css`, `.scss`, `.tsx`, `.mdx`, `.jsx`, `.vue`, `.svelte`, `.astro`, `.tex`. Every other destination accepts only its own extension (the same-extension default; see `.js`/`.ts` below). The per-destination tables that follow detail the accepted sources for each destination.
+Exactly eleven destinations may import a source of a *different* extension (the cross-import set): `.html`, `.md`, `.css`, `.scss`, `.tsx`, `.mdx`, `.jsx`, `.vue`, `.svelte`, `.astro`, `.tex`. Every other destination accepts only its own extension (the same-extension default; see `.js`/`.ts` below). Additionally, an **extensionless** source (`LICENSE`, `Dockerfile`, `Makefile`) may be imported into a `.md` destination as a link. The per-destination tables that follow detail the accepted sources for each destination.
 
 ### Same-extension destinations
 
@@ -177,8 +177,9 @@ Mechanically, `.jsx`/`.tsx`/`.mdx` carry NO per-destination source allow-list in
 | Audio | `.mp3`, `.ogg`, `.wav`, `.m4a` | Yes | — |
 | Text track | `.vtt` | Yes | — |
 | Markdown | `.md` | — | Yes |
+| Extensionless | `LICENSE`, `Dockerfile`, `Makefile` (no extension) | — | Yes — `[text](path)` link |
 
-`.html` to `.html` is always rejected — no relative-import syntax exists for HTML embedding itself.
+`.html` to `.html` is always rejected — no relative-import syntax exists for HTML embedding itself. `.md` is the **only** destination that accepts an extensionless source — no bundler resolves an extensionless import in a script, style, or markup destination, whereas a Markdown link needs no resolver.
 
 ### Framework component destinations
 
@@ -206,7 +207,7 @@ Mechanically, `.jsx`/`.tsx`/`.mdx` carry NO per-destination source allow-list in
 
 ### Rejection rules
 
-Pair gating is implemented by `isPairSupported(info)` in `src/gating.ts`, a single boolean that reads only the source/destination extension fields (no path data) and evaluates ten reject clauses in order: the universal cross-import gate, the explicit `.html → .html` reject, then eight per-destination allow-list guards (the eighth being the `.tex` LaTeX destination). The first matching clause rejects; a pair is accepted only by surviving all ten — there is no positive early-return. (The same-file and empty-snippet rules below are separate checks in the calling commands/drop provider, not part of this boolean.)
+Pair gating is implemented by `isPairSupported(info)` in `src/gating.ts`, a single boolean that reads only the source/destination extension fields (no path data). Its **first clause special-cases an extensionless source**: it returns `true` only for a `.md` destination (a link) and `false` otherwise — the one early-return in the function. Every other source runs the reject-clause chain: the universal cross-import gate, the explicit `.html → .html` reject, then eight per-destination allow-list guards (the eighth being the `.tex` LaTeX destination). The first matching clause rejects; a pair is accepted by surviving them all. (The same-file and empty-snippet rules below are separate checks in the calling commands/drop provider, not part of this boolean.)
 
 1. **Same file**: source path equals destination path (case-insensitive) — "A file cannot import itself."
 2. **Unsupported pair**: source extension not in the destination's accepted list — "Cannot import {ext} into {ext} files."
@@ -219,6 +220,8 @@ Pair gating is implemented by `isPairSupported(info)` in `src/gating.ts`, a sing
 **Configuration drift**: every styled builder resolves the persisted style by exact-matching the setting value against its enum description strings (`resolveStyleIndex`, byte-identical string equality). The stored value is the full option string (e.g. `import name from '_relativePath_';`), not an index. If the value matches none — a typo, a stray space, a value left over after an option string changed across an extension update, or one hand-edited into `settings.json` — resolution yields no index and the renderer silently falls back to that language's index-0 shape (e.g. JavaScript → `import name from './path';`) rather than erroring or inserting nothing. This is the snippet-insertion behavior on both the paste and drag-drop paths; no error, toast, or log is shown. It is distinct from the Set Default Style picker, which separately surfaces an unmatched value by showing no current-default checkmark (see Set Default Import Style). Hardcoded single-shape destinations are unaffected — they never consult the setting. Each style setting's enum strings are kept byte-identical at three sites — the `package.json` `enum`, the matching `ImportStyle[]` `description` strings in `snippets/_styles.ts` (matched by string equality), and each language's per-style `…ByStyle` switch (keyed by numeric index) — with every such switch ending in a `default:` arm emitting the index-0 shape, so drift at any site degrades to the default style rather than an error.
 
 In the style picker, each entry's label is the snippet shape with the source basename substituted (placeholders rendered as identifier text); its right-aligned description is a short tag. The "Description" column in the per-language tables below paraphrases that tag for every row — it is not a verbatim copy. The default (index 0) HTML image, video, and audio styles have no tag in code, so the picker shows their snippet shape as the description there.
+
+**Default-import auto-naming.** The identifier in a default-import shape — `import name from …`, `import name, { … }`, `import * as name`, `const name = require(…)` / `await import(…)`, and the asset `import name from …` / `import url from …` forms — is **pre-filled from the source file's basename** instead of left as an empty placeholder: `logo.svg` → `import logo from './logo.svg'`; `App.jsx` → `import App from './App'` (a PascalCase filename keeps its case; a kebab/snake name camelCases — `my-logo.v2.svg` → `myLogoV2`). The pre-filled name is an editable, pre-selected tab stop, so typing over it behaves exactly as an empty placeholder did. When the basename can't form a legal identifier (leading digit or non-ASCII, e.g. `404.png`), the shape falls back to a generic `name` / `url` placeholder. Named and type-only imports (`import { name }`, `import type { name }`) are **not** pre-filled — their binding must match an actual export; TypeScript's named default (index 0) instead uses exported-class / Angular-convention detection (below). Component-like sources (`.vue`/`.svelte`/`.astro`/`.md`/`.mdx`) also keep the generic `name` (their PascalCase naming is deferred).
 
 ### JavaScript
 
@@ -600,7 +603,7 @@ All commands clear existing notifications before executing. Any toast from a pre
 
 1. The user selects a source file and runs **Copy File Path** (`Cmd+Shift+A` / `Ctrl+Shift+A`).
 2. The extension delegates to VS Code's built-in `copyFilePath`, reads the clipboard back, and re-writes the same string to guarantee consistency.
-   - Copy validates the read-back path: if it is empty or not absolute, a "No file selected to copy." warning appears and the workflow stops; if it has no file extension, a "{basename} has no file extension." warning appears and the workflow stops.
+   - Copy validates the read-back path: if it is empty or not absolute, a "No file selected to copy." warning appears and the workflow stops. An extensionless path (`Makefile`, `LICENSE`) is **no longer** rejected here — copy is destination-agnostic, so it succeeds and the paste-time gate decides.
 3. An info toast appears: "Copied path — {basename}" with two buttons:
    - **Paste with Style** — runs Paste as Import (Pick Style)
    - **Paste Now** — runs Paste as Import
@@ -615,7 +618,7 @@ The user clicks a file in the explorer and runs **Insert Import from Selected Fi
 
 Same validation as Paste. Shows a QuickPick with all applicable styles for the current source-destination pair. The picker placeholder reads "Select an import style". The picker enables `matchOnDescription`, so typing also filters against each row's description column — the style's short tag when it declares one (true for 42 of the 45 styled entries), otherwise the full style-description string. If only one style applies, the import is inserted directly without showing the picker. Pressing Escape dismisses the picker silently.
 
-Each picker row's primary label is the rendered import shape itself, but (a) the path is shortened to the source file's basename — a source at `../../components/widget.tsx` shows as `widget`, keeping rows width-stable regardless of nesting depth — and (b) snippet placeholder syntax is converted to plain identifiers for display (`${1:styles}` → `styles`, `${1:name}`/`$1` → `name`, `${1:url}` → `url`, `@use '...' as ${1:*}` → `as *`). The full relative path is restored in the text actually inserted. The row's secondary text is the style's tag (or its full description when no tag is defined; empty for single-shape hardcoded destinations) — this is what "filter by description" matches against.
+Each picker row's primary label is the rendered import shape itself, but (a) the path is shortened to the source file's basename — a source at `../../components/widget.tsx` shows as `widget`, keeping rows width-stable regardless of nesting depth — and (b) snippet placeholder syntax is converted to plain identifiers for display (the `${1:X}` default text is shown verbatim — `${1:styles}` → `styles`, `${1:logo}` → `logo` for a basename-derived default import, `${1:url}` → `url`, `@use '...' as ${1:*}` → `as *`; a bare `$1` renders as the literal `name`). The full relative path is restored in the text actually inserted. The row's secondary text is the style's tag (or its full description when no tag is defined; empty for single-shape hardcoded destinations) — this is what "filter by description" matches against.
 
 The picker is a one-shot override: it neither reads nor writes any persisted `*ImportStyle` setting. Unlike Set Default Import Style, the styles appear in their natural order with no current-default checkmark, and the chosen style applies to this insertion only — it does not change the saved default.
 
@@ -628,12 +631,12 @@ Same validation as Pick Style. Shows a QuickPick with placeholder "Set default i
 Before generating an import, the extension validates the clipboard contents against four checks, in this order:
 
 - **Empty or not an absolute path**: clipboard text is blank after trimming, or is not an absolute file path (e.g., a relative path or arbitrary text). Triggers the "Clipboard does not contain a file path" warning.
-- **No file extension**: the path has no extension (e.g., `Makefile`, `Dockerfile`, a directory path). Triggers the "{basename} has no file extension" warning.
+- **No file extension**: the path has no extension (e.g., `Makefile`, `Dockerfile`, a directory path) **and the destination is not `.md`**. Triggers the "{basename} has no file extension — only Markdown links support extensionless files" warning. Into a `.md` destination an extensionless source is admitted and emits a `[text](path)` link, so this check does not fire.
 - **Same file as destination**: the clipboard path equals the active editor's path (case-insensitive). Triggers the "A file cannot import itself." warning (the same rejection documented under Cross-Import Compatibility → Rejection rules #1). This check runs *before* the existence check below, so a path that is both nonexistent and equal to the destination reports this same-file warning, not "Source file no longer exists: {basename}".
 
 After these checks pass, the extension checks that the source file still exists on disk. If it has been deleted or moved, the "Source file no longer exists: {basename}" warning appears.
 
-**Copy-side variant**: the Copy File Path command runs the same empty/non-absolute and no-extension checks on the path it reads back, but with a *different* message for the empty/non-absolute case — it shows "No file selected to copy." (the `no-file-to-copy` message) instead of the `empty-clipboard` message the paste commands use. The no-extension message ("{basename} has no file extension.") is shared by both Copy and the paste commands.
+**Copy-side variant**: the Copy File Path command runs the same empty/non-absolute check on the path it reads back, but with a *different* message — it shows "No file selected to copy." (the `no-file-to-copy` message) instead of the `empty-clipboard` message the paste commands use. Copy does **not** run a no-extension check (copy is destination-agnostic — an extensionless file copies fine); the no-extension warning is raised only at paste/drop time, for a non-`.md` destination.
 
 ### Notification reference
 
@@ -652,7 +655,7 @@ All messages are prefixed with "Auto Import:".
 | Unsupported pair | Warning | Cannot import {sourceExt} into {destinationExt} files. | **View Supported Files** |
 | No active editor | Warning | Open a file to paste an import. | — |
 | No file to copy | Warning | No file selected to copy. | — |
-| No file extension | Warning | {basename} has no file extension. | — |
+| No file extension | Warning | {basename} has no file extension — only Markdown links support extensionless files. | — |
 | Empty clipboard | Warning | Clipboard does not contain a file path. | — |
 | Source not found | Warning | Source file no longer exists: {basename}. | — |
 | No configurable style | Warning | {sourceExt} → {destinationExt} imports use a fixed style. | — |
@@ -661,7 +664,7 @@ Clicking **View Supported Files** on the Unsupported pair toast opens the projec
 
 `{settingValue}` is the persisted setting string written to `settings.json` — the byte-exact `package.json` enum value (the `_relativePath_` import shape), e.g. `import name from '_relativePath_';`, with the literal `_relativePath_` token shown unexpanded. It is **not** the human-readable phrase shown in the "Description" column of the style tables above (that phrase is the QuickPick row's description). A custom value hand-typed into `settings.json` would likewise be echoed verbatim.
 
-The two near-duplicate empty/non-absolute messages differ by originating command: **No file to copy** is emitted only by the Copy File Path command, while **Empty clipboard** is emitted by the three paste commands (Paste as Import, Paste as Import (Pick Style), Set Default Import Style). The **No file extension** row is shared by both Copy and the paste commands.
+The two near-duplicate empty/non-absolute messages differ by originating command: **No file to copy** is emitted only by the Copy File Path command, while **Empty clipboard** is emitted by the three paste commands (Paste as Import, Paste as Import (Pick Style), Set Default Import Style). The **No file extension** row is emitted by the three paste commands and the drop provider (for a non-`.md` destination) — **not** by Copy, which accepts an extensionless path.
 
 ---
 

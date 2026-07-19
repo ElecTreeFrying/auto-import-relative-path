@@ -50,10 +50,10 @@ Drag a file or press a key — the right import lands in your editor. Path, synt
 - **Drag-and-drop from Explorer** — drag any supported file into an editor to insert the import at the drop position, no keyboard required
 - **Multi-file import in one gesture** — drag or copy several files at once; every file gets its own statement in one stacked block, placeholders kept independent
 - **Built for every major framework** — Angular, React, Vue, Svelte, Astro — plus vanilla JS/TS, CSS/SCSS, HTML, Markdown, and **LaTeX** (drag an image in → a `figure` float; drop a `.tex` → `\input`; a `.bib` → `\addbibresource`)
-- **38 source extensions** — scripts, stylesheets, images, fonts, video, audio, text tracks, data, documents, components, LaTeX graphics
+- **38 source extensions** — scripts, stylesheets, images, fonts, video, audio, text tracks, data, documents, components, LaTeX graphics (plus extensionless files like `LICENSE` into Markdown)
 - **45 configurable import styles** — ES modules, CommonJS, dynamic `import()`, `@use`, `@forward`, `@import`, HTML tags, Markdown syntax, LaTeX `figure` / `\includegraphics` / `\input` / `\addbibresource`
 - **Framework-aware placement** — imports land inside Astro `---` frontmatter and Vue / Svelte `<script>` blocks automatically
-- **Smart identifiers** — exported class detection for TypeScript, Angular PascalCase auto-fill, CSS Modules `styles` binding
+- **Smart identifiers** — default imports auto-named from the filename (`logo.svg` → `import logo`), plus exported-class detection for TypeScript, Angular PascalCase auto-fill, and CSS Modules `styles` binding
 - **~10 KB gzipped, zero dependencies, no telemetry**
 
 ---
@@ -107,7 +107,7 @@ The extension is **destination-driven** — the file open in your editor decides
 | `.css` | `.css`, images | `@import` style (configurable) or inline `url()` for images |
 | `.scss` | `.scss`, `.css`, images | `@use` / `@forward` / `@import` (configurable) or inline `url()` for images |
 | `.html` | `.js`, `.css`, images, video, audio, `.vtt` | `<script>`, `<link>`, `<img>`, `<video>`, `<audio>`, `<track>` |
-| `.md` | `.md`, images | `[text](path)` or Markdown image syntax |
+| `.md` | `.md`, images, extensionless files (`LICENSE`, `Dockerfile`, `Makefile`) | `[text](path)` link · Markdown image syntax · `[text](path)` link for extensionless |
 | `.vue` | `.vue`, scripts, images, media, data | TS style for scripts; per-category default import (`import name`/`import url`) for assets |
 | `.svelte` | `.svelte`, scripts, images, media, data | TS style for scripts; per-category default import (`import name`/`import url`) for assets |
 | `.astro` | `.astro`, `.vue`, `.svelte`, scripts, images, media, data, `.md`, `.mdx` | TS style for scripts; per-category default import (`import name`/`import url`) for assets and components |
@@ -142,6 +142,7 @@ See [SPEC — §Supported File Extensions][SPEC-extensions] for the full 38-exte
 - **Same file** — a file cannot import itself (case-insensitive path comparison).
 - **Unsupported pair** — source extension not in the destination's accepted list.
 - **`.js` and `.ts` are strict same-extension** — no cross-language imports. Use `.jsx` or `.tsx` destinations for asset imports.
+- **Extensionless sources import only into `.md`** — `LICENSE`/`Dockerfile`/`Makefile` link into Markdown; every other destination rejects them.
 
 See SPEC: [Rejection Rules][SPEC-reject] · [Cross-Import Compatibility][SPEC-compat]
 
@@ -154,7 +155,7 @@ See SPEC: [Rejection Rules][SPEC-reject] · [Cross-Import Compatibility][SPEC-co
 
 Every import-style setting maps to a list of shapes. The default shape is index 0. Change it in VS Code Settings (<kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>,</kbd> → search `auto-import`) or run **Set Default Import Style** from the Command Palette.
 
-In the snippets below, `name` is an editable placeholder — your cursor lands there so you can type the identifier and <kbd>Tab</kbd> out. See [SPEC — §Import Statement Styles][SPEC-styles] for every shape with full context.
+In the snippets below, `name` is an editable placeholder — for default imports it arrives **pre-filled from the source file's basename** (`logo.svg` → `import logo from './logo.svg'`, `App.jsx` → `import App from './App'`), selected so you can type a different identifier or <kbd>Tab</kbd> to accept it. Named and type-only imports keep an empty placeholder — their binding must match a real export. See [SPEC — §Import Statement Styles][SPEC-styles] for every shape with full context.
 
 [SPEC-styles]: SPEC.md#import-statement-styles
 

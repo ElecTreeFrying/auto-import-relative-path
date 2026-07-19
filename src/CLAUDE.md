@@ -6,7 +6,7 @@ Source root for the extension. The codebase is layered by responsibility, with s
 
 ```
 extension.ts                 # entry: activate/deactivate
-gating.ts                    # shared isPairSupported() — pair check. Only the CROSS_IMPORT_DESTINATIONS (.html/.md/.css/.scss/.tsx/.mdx/.jsx/.vue/.svelte/.astro/.tex) accept a cross-extension source; every other destination (.js/.ts) accepts same-extension imports only. Of these, .jsx/.tsx/.mdx accept any source; .html/.md/.css/.scss/.vue/.svelte/.astro/.tex carry per-destination source allow-lists
+gating.ts                    # shared isPairSupported() — pair check. An extensionless source (LICENSE/Dockerfile/Makefile) imports only into .md (a link); otherwise only the CROSS_IMPORT_DESTINATIONS (.html/.md/.css/.scss/.tsx/.mdx/.jsx/.vue/.svelte/.astro/.tex) accept a cross-extension source; every other destination (.js/.ts) accepts same-extension imports only. Of these, .jsx/.tsx/.mdx accept any source; .html/.md/.css/.scss/.vue/.svelte/.astro/.tex carry per-destination source allow-lists
 ├── commands/                # public command surface
 ├── drop/                    # DocumentDropEditProvider (drag-from-Explorer imports)
 ├── editor/                  # vscode-API helpers (clipboard, snippets, notification, placement)
