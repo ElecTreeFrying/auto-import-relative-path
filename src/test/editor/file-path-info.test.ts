@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 
-import { getFilePathInfoFromPaths } from '../../editor/file-path-info';
+import { filterCopyablePaths, getFilePathInfoFromPaths, parseClipboardPaths } from '../../editor/file-path-info';
 
 // getFilePathInfoFromPaths is the sync, no-clipboard entry point used by the drop provider. It is a
 // pure composition of computeRelative + extractFileExtension (both tested under test/path/), so this
@@ -42,5 +42,56 @@ describe('editor/file-path-info', () => {
         assert.strictEqual(info.destinationFilePath, c.dest);
       });
     }
+  });
+
+  // The clipboard is the copy → paste data channel; VS Code's built-in `copyFilePath` newline-joins
+  // an Explorer multi-selection into it. parseClipboardPaths is the shared line parser (copy, paste,
+  // and the picker commands); filterCopyablePaths mirrors the single-path copy validation
+  // (absolute + extensioned) member by member for the multi-select copy.
+  describe('parseClipboardPaths (clipboard → path lines)', () => {
+    it('returns a single trimmed line for a single-path clipboard', () => {
+      assert.deepStrictEqual(parseClipboardPaths('/w/src/foo.ts'), [ '/w/src/foo.ts' ]);
+      assert.deepStrictEqual(parseClipboardPaths('  /w/src/foo.ts \n'), [ '/w/src/foo.ts' ]);
+    });
+
+    it('splits a multi-select clipboard on \\n and \\r\\n', () => {
+      assert.deepStrictEqual(
+        parseClipboardPaths('/w/a.ts\n/w/b.ts\r\n/w/c.ts'),
+        [ '/w/a.ts', '/w/b.ts', '/w/c.ts' ],
+      );
+    });
+
+    it('drops blank lines between and around paths', () => {
+      assert.deepStrictEqual(parseClipboardPaths('\n/w/a.ts\n\n/w/b.ts\n\n'), [ '/w/a.ts', '/w/b.ts' ]);
+    });
+
+    it('returns [] for an empty or whitespace-only clipboard', () => {
+      assert.deepStrictEqual(parseClipboardPaths(''), []);
+      assert.deepStrictEqual(parseClipboardPaths('  \n \r\n '), []);
+    });
+  });
+
+  describe('filterCopyablePaths (copy-side member validation)', () => {
+    it('keeps absolute paths that carry a file extension', () => {
+      assert.deepStrictEqual(
+        filterCopyablePaths([ '/w/a.ts', '/w/img/logo.svg' ]),
+        [ '/w/a.ts', '/w/img/logo.svg' ],
+      );
+    });
+
+    it('drops relative paths', () => {
+      assert.deepStrictEqual(filterCopyablePaths([ 'src/a.ts', './b.ts', '/w/c.ts' ]), [ '/w/c.ts' ]);
+    });
+
+    it('drops extensionless members (LICENSE, Makefile) while keeping the rest', () => {
+      assert.deepStrictEqual(
+        filterCopyablePaths([ '/w/LICENSE', '/w/a.ts', '/w/Makefile' ]),
+        [ '/w/a.ts' ],
+      );
+    });
+
+    it('returns [] when no member is copyable', () => {
+      assert.deepStrictEqual(filterCopyablePaths([ '/w/LICENSE', 'relative.ts' ]), []);
+    });
   });
 });

@@ -8,7 +8,7 @@ export function showNotification(type: 'same-file-path' | 'no-active-editor' | '
 export function showNotification(type: 'not-supported', payload: { sourceExt: string; destinationExt: string }): void;
 export function showNotification(type: 'no-extension', payload: { basename: string }): void;
 export function showNotification(type: 'source-not-found', payload: { basename: string }): void;
-export function showNotification(type: 'copy-success', payload: { basename: string }): Thenable<string | undefined>;
+export function showNotification(type: 'copy-success', payload: { basenames: string[] }): Thenable<string | undefined>;
 export function showNotification(type: 'no-configurable-style', payload: { sourceExt: string; destinationExt: string }): void;
 export function showNotification(type: 'default-style-saved', payload: { description: string }): void;
 export function showNotification(type: 'placement-saved', payload: { placement: string }): void;
@@ -16,7 +16,7 @@ export function showNotification(type: 'preserve-script-extension-toggled', payl
 export function showNotification(type: 'styles-reset', payload: { count: number }): Thenable<string | undefined>;
 export function showNotification(
   type: NotificationType,
-  payload?: { sourceExt?: string; destinationExt?: string; basename?: string; description?: string; placement?: string; enabled?: boolean; count?: number },
+  payload?: { sourceExt?: string; destinationExt?: string; basename?: string; basenames?: string[]; description?: string; placement?: string; enabled?: boolean; count?: number },
 ): Thenable<string | undefined> | void {
   switch (type) {
     case 'same-file-path':
@@ -47,12 +47,17 @@ export function showNotification(
     case 'source-not-found':
       vscode.window.showWarningMessage(`Auto Import: Source file no longer exists: ${payload!.basename}.`);
       break;
-    case 'copy-success':
+    case 'copy-success': {
+      const basenames = payload!.basenames!;
+      const message = basenames.length === 1
+        ? `Auto Import: Copied path — ${basenames[0]}`
+        : `Auto Import: Copied ${basenames.length} paths — ${formatBasenameList(basenames)}`;
       return vscode.window.showInformationMessage(
-        `Auto Import: Copied path — ${payload!.basename}`,
+        message,
         'Paste with Style',
         'Paste Now',
       );
+    }
     case 'no-configurable-style':
       vscode.window.showWarningMessage(`Auto Import: ${payload!.sourceExt} → ${payload!.destinationExt} imports use a fixed style.`);
       break;
@@ -78,6 +83,13 @@ export function showNotification(
       vscode.window.showInformationMessage('Auto Import: Import styles restored.');
       break;
   }
+}
+
+/** Renders up to three basenames for the plural copy toast, eliding the rest as `+N more`. */
+function formatBasenameList(basenames: string[]): string {
+  const shown = basenames.slice(0, 3).join(', ');
+  const hidden = basenames.length - 3;
+  return hidden > 0 ? `${shown}, +${hidden} more` : shown;
 }
 
 export function clearNotifications(): void {

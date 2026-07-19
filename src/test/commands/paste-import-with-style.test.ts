@@ -66,6 +66,39 @@ describe('executePasteImportWithStyle', () => {
     });
   });
 
+  // A multi-selection clipboard reduces to its first copyable non-destination member (the picker
+  // flows are single-pair by design). The successful insertions double as the regression pin for
+  // the old blob bug: pre-fork, a multi-line clipboard was stat'ed whole → source-not-found, no insert.
+  describe('multi-path clipboard reduces to the primary member', () => {
+    it('inserts the first member only (.md → .md single-variant link)', async () => {
+      const editor = await openFixture('docs/architecture.md');
+      const textBefore = editor.document.getText();
+      assert.ok(!textBefore.includes('./guide.md'), 'fixture precondition: destination must not already link guide.md');
+      await vscode.env.clipboard.writeText([
+        path.join(FIXTURE_ROOT, 'docs/guide.md'),
+        path.join(FIXTURE_ROOT, 'docs/api-reference.md'),
+      ].join('\n'));
+      const changed = await waitForDocumentChange(() => executePasteImportWithStyle(), 2000);
+      assert.strictEqual(changed, true, 'expected the primary member to insert');
+      const allText = editor.document.getText();
+      assert.ok(allText.includes('./guide.md'), 'primary member link expected');
+      assert.ok(!allText.includes('./api-reference.md'), 'secondary member must not insert');
+    });
+
+    it('skips the destination itself when selecting the primary member', async () => {
+      const editor = await openFixture('docs/architecture.md');
+      const textBefore = editor.document.getText();
+      assert.ok(!textBefore.includes('./guide.md'), 'fixture precondition: destination must not already link guide.md');
+      await vscode.env.clipboard.writeText([
+        path.join(FIXTURE_ROOT, 'docs/architecture.md'),
+        path.join(FIXTURE_ROOT, 'docs/guide.md'),
+      ].join('\n'));
+      const changed = await waitForDocumentChange(() => executePasteImportWithStyle(), 2000);
+      assert.strictEqual(changed, true, 'expected the non-destination member to insert');
+      assert.ok(editor.document.getText().includes('./guide.md'), 'non-destination member link expected');
+    });
+  });
+
   describe('no active editor', () => {
     it('returns without inserting and does not throw when no editor is open', async () => {
       await vscode.commands.executeCommand('workbench.action.closeAllEditors');

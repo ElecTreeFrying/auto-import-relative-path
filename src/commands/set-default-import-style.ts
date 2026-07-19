@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 
 import { getAutoImportSetting, setAutoImportSetting } from '../config/settings';
-import { getFilePathInfo } from '../editor/file-path-info';
+import { filterCopyablePaths, getFilePathInfo, getFilePathInfoFromPaths, parseClipboardPaths } from '../editor/file-path-info';
 import { clearNotifications, showNotification } from '../editor/notification';
 import { isPairSupported } from '../gating';
 import { buildImportSnippetVariants, ImportSnippetVariant } from '../snippets/variants';
@@ -19,7 +19,10 @@ export async function executeSetDefaultImportStyle(): Promise<void> {
     return showNotification('no-active-editor');
   }
 
-  const info = await getFilePathInfo();
+  const clipboardPaths = parseClipboardPaths(await vscode.env.clipboard.readText());
+  const info = clipboardPaths.length > 1
+    ? getFilePathInfoFromPaths(selectPrimaryClipboardPath(clipboardPaths, editor.document.uri.fsPath), editor.document.uri.fsPath)
+    : await getFilePathInfo();
   const { sourceFilePath, destinationFilePath, sourceFileExt, destinationFileExt } = info;
 
   const trimmedSource = sourceFilePath.trim();
@@ -95,4 +98,16 @@ function toQuickPickItems(
     items.unshift(current);
   }
   return items;
+}
+
+/**
+ * A multi-selection clipboard reduces to one member for the persist flow (single-pair by design):
+ * the first copyable member that isn't the destination itself, else the first copyable member,
+ * else the first line — so the single-path failure toasts stay specific to what was selected.
+ */
+function selectPrimaryClipboardPath(clipboardPaths: string[], destinationFilePath: string): string {
+  const copyable = filterCopyablePaths(clipboardPaths);
+  return copyable.find(candidate => candidate.toLowerCase() !== destinationFilePath.toLowerCase())
+    ?? copyable[0]
+    ?? clipboardPaths[0];
 }

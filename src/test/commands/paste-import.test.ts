@@ -195,4 +195,117 @@ describe('executePasteImport', () => {
       await assert.doesNotReject(executePasteImport());
     });
   });
+
+  // A multi-line clipboard (Explorer multi-selection) fans out per member and inserts one stacked
+  // block, mirroring the drop provider's skip semantics. Tab-stop renumbering itself is pinned in
+  // test/snippets/compose.test.ts — the editor renders placeholders as their default text, so these
+  // assert member selection, ordering, and single-insertion placement through the document text.
+  describe('multi-path clipboard (stacked imports)', () => {
+    it('two .ts sources into .ts insert one stacked block in clipboard order', async () => {
+      const editor = await openFixture('src/foo.ts');
+      await vscode.env.clipboard.writeText([
+        path.join(FIXTURE_ROOT, 'src/bar.ts'),
+        path.join(FIXTURE_ROOT, 'src/api-client.ts'),
+      ].join('\n'));
+      const changed = await waitForDocumentChange(() => executePasteImport(), 2000);
+      assert.strictEqual(changed, true, 'expected document change for multi .ts into .ts');
+      const allText = editor.document.getText();
+      assert.ok(allText.includes("from './bar'"), `expected first member's import, got: ${allText.slice(0, 200)}`);
+      assert.ok(allText.includes("from './api-client'"), `expected second member's import, got: ${allText.slice(0, 200)}`);
+      assert.ok(allText.indexOf('./bar') < allText.indexOf('./api-client'), 'stack must keep clipboard order');
+    });
+
+    it('skips a same-file member and inserts the rest', async () => {
+      const editor = await openFixture('src/foo.ts');
+      await vscode.env.clipboard.writeText([
+        path.join(FIXTURE_ROOT, 'src/foo.ts'),
+        path.join(FIXTURE_ROOT, 'src/bar.ts'),
+      ].join('\n'));
+      const changed = await waitForDocumentChange(() => executePasteImport(), 2000);
+      assert.strictEqual(changed, true, 'expected the non-same-file member to insert');
+      const allText = editor.document.getText();
+      assert.ok(allText.includes("from './bar'"), 'valid member must insert');
+      assert.ok(!allText.includes("from './foo'"), 'destination itself must not be imported');
+    });
+
+    it('skips a missing member and inserts the rest', async () => {
+      const editor = await openFixture('src/foo.ts');
+      await vscode.env.clipboard.writeText([
+        path.join(FIXTURE_ROOT, 'src/nonexistent-file.ts'),
+        path.join(FIXTURE_ROOT, 'src/bar.ts'),
+      ].join('\n'));
+      const changed = await waitForDocumentChange(() => executePasteImport(), 2000);
+      assert.strictEqual(changed, true, 'expected the existing member to insert');
+      const allText = editor.document.getText();
+      assert.ok(allText.includes("from './bar'"), 'existing member must insert');
+      assert.ok(!allText.includes('nonexistent-file'), 'missing member must be skipped');
+    });
+
+    it('skips an unsupported member and inserts the rest', async () => {
+      const editor = await openFixture('src/foo.ts');
+      await vscode.env.clipboard.writeText([
+        path.join(FIXTURE_ROOT, 'styles/main.scss'),
+        path.join(FIXTURE_ROOT, 'src/bar.ts'),
+      ].join('\n'));
+      const changed = await waitForDocumentChange(() => executePasteImport(), 2000);
+      assert.strictEqual(changed, true, 'expected the supported member to insert');
+      const allText = editor.document.getText();
+      assert.ok(allText.includes("from './bar'"), 'supported member must insert');
+      assert.ok(!allText.includes('main.scss'), 'unsupported member must be skipped');
+    });
+
+    it('all members unsupported → no document change (one aggregate toast)', async () => {
+      await openFixture('src/foo.ts');
+      await vscode.env.clipboard.writeText([
+        path.join(FIXTURE_ROOT, 'styles/main.scss'),
+        path.join(FIXTURE_ROOT, 'styles/global.css'),
+      ].join('\n'));
+      const changed = await waitForDocumentChange(() => executePasteImport());
+      assert.strictEqual(changed, false, 'expected no document change when every member is unsupported');
+    });
+
+    it('all-inline members (two images into .css) insert only the first url()', async () => {
+      const editor = await openFixture('styles/global.css');
+      await vscode.env.clipboard.writeText([
+        path.join(FIXTURE_ROOT, 'assets/images/favicon.png'),
+        path.join(FIXTURE_ROOT, 'assets/images/logo-dark.png'),
+      ].join('\n'));
+      const changed = await waitForDocumentChange(() => executePasteImport(), 2000);
+      assert.strictEqual(changed, true, 'expected the first inline member to insert');
+      const allText = editor.document.getText();
+      assert.ok(allText.includes('favicon.png'), 'first image url() expected');
+      assert.ok(!allText.includes('logo-dark.png'), 'second inline member must be dropped — url() values cannot stack');
+    });
+
+    // Mixed set: an inline url() member (image) alongside a statement member (.css) into .scss.
+    // Statements win the single insertion — they stack into the block; inline url() values can't
+    // join a statement block, so they are dropped. The image is listed FIRST to prove the statement
+    // later in the clipboard still drives the insertion (not an inline-first-only return).
+    it('mixed inline + statement (image + .css into .scss) stacks the statement and drops the inline url()', async () => {
+      const editor = await openFixture('styles/main.scss');
+      await vscode.env.clipboard.writeText([
+        path.join(FIXTURE_ROOT, 'assets/images/favicon.png'),
+        path.join(FIXTURE_ROOT, 'styles/global.css'),
+      ].join('\n'));
+      const changed = await waitForDocumentChange(() => executePasteImport(), 2000);
+      assert.strictEqual(changed, true, 'expected the statement member to insert');
+      const allText = editor.document.getText();
+      assert.ok(allText.includes('global.css'), 'the .css statement (@use … global.css) must stack into the block');
+      assert.ok(!allText.includes('favicon.png'), 'the inline url() member must be dropped — it cannot join a statement block');
+    });
+
+    it('stacks into the .vue script block as one insertion', async () => {
+      const editor = await openFixture('src/App.vue');
+      await vscode.env.clipboard.writeText([
+        path.join(FIXTURE_ROOT, 'src/bar.ts'),
+        path.join(FIXTURE_ROOT, 'src/api-client.ts'),
+      ].join('\n'));
+      const changed = await waitForDocumentChange(() => executePasteImport(), 2000);
+      assert.strictEqual(changed, true, 'expected document change for multi .ts into .vue');
+      const allText = editor.document.getText();
+      assert.ok(allText.includes("from './bar'"), 'first member must land in the script block');
+      assert.ok(allText.includes("from './api-client'"), 'second member must land in the script block');
+      assert.ok(allText.indexOf('./bar') < allText.indexOf('./api-client'), 'stack must keep clipboard order');
+    });
+  });
 });

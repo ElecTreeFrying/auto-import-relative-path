@@ -4,7 +4,7 @@ Helpers that touch the `vscode` API on behalf of `commands/` and `snippets/`. Th
 
 ## Files
 
-- `file-path-info.ts` — single source of truth for `{ relativePath, sourceFilePath, destinationFilePath, sourceFileExt, destinationFileExt }`.
+- `file-path-info.ts` — single source of truth for `{ relativePath, sourceFilePath, destinationFilePath, sourceFileExt, destinationFileExt }`; also home of the pure clipboard-line helpers `parseClipboardPaths` / `filterCopyablePaths`.
 - `placement.ts` — placement-rule helpers, consumed two distinct ways. **Low-level helpers** (`isInlineSnippet`, `shouldRepositionCursor`, `isCommentLine`, `getLineIndentation`, `detectBlockIndentation`, `isMarkdownDestination`, `adjustForCommentBlock`, `findAstroFrontmatterBounds`, `findSfcScriptBounds`, `findBottomLineInRange`, `isImportLine`) are imported by `insert-snippet.ts`, which composes them with its own editor-side insertion logic. **High-level `computeImportPlacement`** (plus the `ComputedPlacement` interface) is used only by `drop/provider.ts`, which delegates the whole placement decision to it. See the placement-rules section below.
 - `insert-snippet.ts` — snippet-insertion orchestrator. Delegates to `placement.ts` for placement decisions, then calls `editor.insertSnippet` at the computed position.
 - `notification.ts` — single switch on `NotificationType` plus a `clearNotifications()` helper.
@@ -14,7 +14,8 @@ Helpers that touch the `vscode` API on behalf of `commands/` and `snippets/`. Th
 - Reads source from clipboard, destination from `vscode.window.activeTextEditor.document.uri.fsPath`.
 - **Caller is responsible for the active-editor null check** — this function dereferences `editor.document.uri.fsPath` unconditionally and will raise a `TypeError` otherwise. Every command that starts the calling chain (`commands/paste-import.ts`, `commands/paste-import-with-style.ts`, `commands/set-default-import-style.ts`) does this check.
 - **Async variant re-reads the clipboard on every call.** `getFilePathInfoFromPaths` (sync) is called by `drop/provider.ts` with explicit paths — no clipboard read.
-- Called from: `commands/{paste-import,paste-import-with-style,set-default-import-style}.ts` (async variant `getFilePathInfo`) and `drop/provider.ts` (sync variant `getFilePathInfoFromPaths`, called directly — never the async variant). Language modules, `dispatch.ts`, `variants.ts`, and `insert-snippet.ts` all receive `FilePathInfo` as a parameter — they do not call this function themselves.
+- Called from: `commands/{paste-import,paste-import-with-style,set-default-import-style}.ts` (async variant `getFilePathInfo`, single-path flows) and `drop/provider.ts` + the multi-path command flows (sync variant `getFilePathInfoFromPaths`, explicit paths). Language modules, `dispatch.ts`, `variants.ts`, and `insert-snippet.ts` all receive `FilePathInfo` as a parameter — they do not call this function themselves.
+- **Clipboard-line helpers (pure, no `vscode` read).** `parseClipboardPaths(raw)` splits raw clipboard text into trimmed, non-empty lines — VS Code's built-in `copyFilePath` newline-joins an Explorer multi-selection, so each line is one copied file. `filterCopyablePaths(paths)` keeps the absolute + extensioned members: the single-path copy validation applied member by member. Consumers: `commands/copy-file-path.ts` (parse + filter), and the multi-path forks in `commands/paste-import.ts`, `commands/paste-import-with-style.ts`, `commands/set-default-import-style.ts` (parse).
 
 ## `placement.ts` and `insert-snippet.ts` — placement rules
 
@@ -55,7 +56,7 @@ Walks `document.getText().split('\n')` and inserts after the last line that sati
   - `'not-supported'` takes `{ sourceExt, destinationExt }` — emits `Auto Import: Cannot import .X into .Y files.`
   - `'no-extension'` takes `{ basename }` — emits `Auto Import: <basename> has no file extension.`
   - `'source-not-found'` takes `{ basename }` — emits `Auto Import: Source file no longer exists: <basename>.`
-  - `'copy-success'` takes `{ basename }` — emits `Auto Import: Copied path — <basename>` (info toast, not warning)
+  - `'copy-success'` takes `{ basenames }` (one entry per copied file) — emits `Auto Import: Copied path — <basename>` for a single entry, and `Auto Import: Copied <N> paths — <basenames>` for more (the list shows the leading three basenames and elides the rest as `+K more` via the module-private `formatBasenameList`) (info toast, not warning)
   - `'no-configurable-style'` takes `{ sourceExt, destinationExt }` — emits `Auto Import: .X → .Y imports use a fixed style.`
   - `'default-style-saved'` takes `{ description }` — emits `Auto Import: Default style saved — <description>` (info toast, not warning)
   - `'placement-saved'` takes `{ placement }` — emits `Auto Import: Import placement saved — <placement>` (info toast, not warning)

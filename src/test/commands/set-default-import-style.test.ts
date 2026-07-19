@@ -50,4 +50,12 @@ describe('executeSetDefaultImportStyle (branches up to the picker)', () => {
   earlyReturn('unsupported pair (.ts → .css)', 'styles/reset.css', 'src/bar.ts');
   // Single-shape destination: exactly one hardcoded variant → no-configurable-style branch, not the picker.
   earlyReturn('single-shape destination → no-configurable-style (.css → .html)', 'pages/index.html', 'styles/global.css');
+  // A multi-selection clipboard reduces to its first copyable non-destination member; the .md → .md
+  // primary lands in no-configurable-style — promptly, never the pre-fork blob-stat source-not-found
+  // and never the picker.
+  earlyReturn(
+    'multi-path clipboard reduces to the primary member (.md → .md → no-configurable-style)',
+    'docs/architecture.md',
+    [ path.join(FIXTURE_ROOT, 'docs/guide.md'), path.join(FIXTURE_ROOT, 'docs/api-reference.md') ].join('\n'),
+  );
 });
