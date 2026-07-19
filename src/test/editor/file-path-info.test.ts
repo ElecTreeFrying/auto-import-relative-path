@@ -46,8 +46,8 @@ describe('editor/file-path-info', () => {
 
   // The clipboard is the copy → paste data channel; VS Code's built-in `copyFilePath` newline-joins
   // an Explorer multi-selection into it. parseClipboardPaths is the shared line parser (copy, paste,
-  // and the picker commands); filterCopyablePaths mirrors the single-path copy validation
-  // (absolute + extensioned) member by member for the multi-select copy.
+  // and the picker commands); filterCopyablePaths keeps the absolute members (copy is
+  // destination-agnostic — extensionless files are valid Markdown-link sources).
   describe('parseClipboardPaths (clipboard → path lines)', () => {
     it('returns a single trimmed line for a single-path clipboard', () => {
       assert.deepStrictEqual(parseClipboardPaths('/w/src/foo.ts'), [ '/w/src/foo.ts' ]);
@@ -72,7 +72,7 @@ describe('editor/file-path-info', () => {
   });
 
   describe('filterCopyablePaths (copy-side member validation)', () => {
-    it('keeps absolute paths that carry a file extension', () => {
+    it('keeps absolute paths', () => {
       assert.deepStrictEqual(
         filterCopyablePaths([ '/w/a.ts', '/w/img/logo.svg' ]),
         [ '/w/a.ts', '/w/img/logo.svg' ],
@@ -83,15 +83,15 @@ describe('editor/file-path-info', () => {
       assert.deepStrictEqual(filterCopyablePaths([ 'src/a.ts', './b.ts', '/w/c.ts' ]), [ '/w/c.ts' ]);
     });
 
-    it('drops extensionless members (LICENSE, Makefile) while keeping the rest', () => {
+    it('keeps extensionless members (LICENSE, Makefile) — copy is destination-agnostic', () => {
       assert.deepStrictEqual(
         filterCopyablePaths([ '/w/LICENSE', '/w/a.ts', '/w/Makefile' ]),
-        [ '/w/a.ts' ],
+        [ '/w/LICENSE', '/w/a.ts', '/w/Makefile' ],
       );
     });
 
-    it('returns [] when no member is copyable', () => {
-      assert.deepStrictEqual(filterCopyablePaths([ '/w/LICENSE', 'relative.ts' ]), []);
+    it('returns [] when no member is absolute', () => {
+      assert.deepStrictEqual(filterCopyablePaths([ 'LICENSE', 'relative.ts' ]), []);
     });
   });
 });

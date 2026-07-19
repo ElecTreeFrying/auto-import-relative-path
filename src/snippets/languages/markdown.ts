@@ -8,7 +8,16 @@ import { MARKDOWN_IMAGE_IMPORT_OPTIONS, resolveStyleIndex } from '../_styles';
 
 export function buildSnippet(info: FilePathInfo): vscode.SnippetString {
   const { sourceFilePath, relativePath } = info;
-  const fullPath = relativePath + extractFileExtension(sourceFilePath);
+  const sourceFileExt = extractFileExtension(sourceFilePath);
+
+  // Extensionless sources (LICENSE, Dockerfile, Makefile) are linked like a .md source — the
+  // relativePath already carries the whole name (no extension to strip). Handled before
+  // determineImportType, whose default arm would misclassify them as 'image' and emit `![…]`.
+  if ((sourceFileExt as string) === '') {
+    return buildMarkdownImportSnippet(relativePath);
+  }
+
+  const fullPath = relativePath + sourceFileExt;
 
   switch (determineImportType(sourceFilePath)) {
     case 'markdown':

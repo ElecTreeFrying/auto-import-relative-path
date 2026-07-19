@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 
 import { FileExtension } from '../types/file-extension';
 import { extractFileExtension } from '../path/extension';
+import { deriveImportName } from '../path/import-name';
 import { FilePathInfo } from '../editor/file-path-info';
 import { getAutoImportSetting } from '../config/settings';
 
@@ -65,12 +66,17 @@ export function buildAssetImportStatement(
     case '.html':
     case '.yml':
     case '.yaml':
+    case '.pdf':
+      return `import ${defaultImportPlaceholder(importPath, 'name')} from '${importPath}';`;
     case '.md':
     case '.mdx':
-    case '.pdf':
     case '.vue':
     case '.svelte':
     case '.astro':
+      // Component-like sources keep the generic `name`: their conventional identifier is PascalCase,
+      // a separate default-import auto-naming pathway that is deliberately deferred (see
+      // docs/import-statements/future/framework-roadmap.md). camelCasing them here would ship the
+      // wrong convention.
       return `import \${1:name} from '${importPath}';`;
     case '.mp4':
     case '.webm':
@@ -80,7 +86,7 @@ export function buildAssetImportStatement(
     case '.wav':
     case '.m4a':
     case '.vtt':
-      return `import \${1:url} from '${importPath}';`;
+      return `import ${defaultImportPlaceholder(importPath, 'url')} from '${importPath}';`;
     case '.woff':
     case '.woff2':
     case '.ttf':
@@ -91,4 +97,15 @@ export function buildAssetImportStatement(
     default:
       return null;
   }
+}
+
+/**
+ * Builds the `${1:…}` default-import placeholder for an asset, pre-filling it with an identifier
+ * derived from the source basename (`deriveImportName`) when one can be formed, and falling back to
+ * the generic `fallback` label (`name` / `url`) otherwise. The pre-filled tab stop arrives selected,
+ * so type-over behaviour is identical to a bare placeholder — strictly a nicety.
+ */
+function defaultImportPlaceholder(importPath: string, fallback: string): string {
+  const derived = deriveImportName(importPath);
+  return `\${1:${derived ?? fallback}}`;
 }

@@ -86,6 +86,20 @@ describe('AutoImportOnDropProvider.provideDocumentDropEdits', () => {
       `expected an inline url() snippet referencing the image, got: "${inserted}"`,
     );
   });
+
+  it('drops an extensionless source into a .md destination as a Markdown link (placement edit)', async () => {
+    const doc = await destDocument('docs/guide.md');
+    const result = await drop(doc, 'LICENSE');
+    assert.ok(result, 'expected a DocumentDropEdit for extensionless → .md');
+    assert.strictEqual(result.title, 'Auto Import');
+    assert.ok(result.additionalEdit instanceof vscode.WorkspaceEdit, 'the Markdown link is delivered via a placement WorkspaceEdit');
+  });
+
+  it('suppresses an extensionless source dropped into a non-.md destination (.ts)', async () => {
+    const doc = await destDocument('src/foo.ts');
+    const result = await drop(doc, 'LICENSE');
+    assertSuppressed(result);
+  });
 });
 
 // resolveSourcePath prefers text/uri-list, falls back to an absolute text/plain, and otherwise

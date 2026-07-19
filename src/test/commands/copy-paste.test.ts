@@ -28,9 +28,11 @@ describe('executeCopyPaste', () => {
     assert.strictEqual(editor.document.getText(), before, 'self-import should not modify the document');
   });
 
-  // The `if (!ok) return` guard: an extensionless active file makes executeCopyFilePath return false,
-  // so the composed paste must be skipped and the document left untouched.
-  it('skips paste when copy fails (extensionless source returns false)', async () => {
+  // With the extensionless-source feature, an extensionless active file now COPIES successfully
+  // (copy is destination-agnostic — no longer rejected for a missing extension). The composed paste
+  // therefore runs, but Alt+D always targets the active file, so it is a same-file no-op — the
+  // document is left untouched for that reason, not because copy short-circuits it.
+  it('extensionless active file: copy succeeds, the composed self-import paste is a no-op', async () => {
     const uri = vscode.Uri.file(path.join(FIXTURE_ROOT, 'TempNoExtCopyPaste'));
     await vscode.workspace.fs.writeFile(uri, Buffer.from('plain text, no extension\n', 'utf-8'));
     try {
@@ -39,7 +41,7 @@ describe('executeCopyPaste', () => {
       const before = editor.document.getText();
       await vscode.env.clipboard.writeText('');
       await assert.doesNotReject(executeCopyPaste());
-      assert.strictEqual(editor.document.getText(), before, 'paste must be skipped when copy fails');
+      assert.strictEqual(editor.document.getText(), before, 'the self-import composite must leave the document unchanged');
     } finally {
       await vscode.commands.executeCommand('workbench.action.closeAllEditors');
       try { await vscode.workspace.fs.delete(uri); } catch { /* ignore */ }

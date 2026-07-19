@@ -47,11 +47,27 @@ describe('executePasteImport', () => {
       assert.strictEqual(changed, false, 'expected no document change for non-absolute path');
     });
 
-    it('path without extension triggers warning (no document change)', async () => {
+    it('path without extension into a non-.md destination triggers warning (no document change)', async () => {
       await openFixture('src/foo.ts');
       await vscode.env.clipboard.writeText('/usr/local/bin/Makefile');
       const changed = await waitForDocumentChange(() => executePasteImport());
-      assert.strictEqual(changed, false, 'expected no document change for extensionless path');
+      assert.strictEqual(changed, false, 'expected no document change for extensionless path into .ts');
+    });
+  });
+
+  describe('extensionless source → Markdown link', () => {
+    it('inserts a Markdown link when pasting an extensionless source into a .md destination', async () => {
+      await openFixture('docs/guide.md');
+      await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'LICENSE'));
+      const changed = await waitForDocumentChange(() => executePasteImport(), 2000);
+      assert.strictEqual(changed, true, 'expected the Markdown link to insert for extensionless → .md');
+    });
+
+    it('rejects an extensionless source into a non-.md destination (no document change)', async () => {
+      await openFixture('src/foo.ts');
+      await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'LICENSE'));
+      const changed = await waitForDocumentChange(() => executePasteImport());
+      assert.strictEqual(changed, false, 'expected no document change — extensionless imports only into .md');
     });
   });
 
@@ -242,26 +258,50 @@ describe('executePasteImport', () => {
     });
 
     it('skips an unsupported member and inserts the rest', async () => {
+      // Fonts are deliberately excluded from the .js/.ts asset set, so a .woff2 into .ts stays unsupported.
       const editor = await openFixture('src/foo.ts');
       await vscode.env.clipboard.writeText([
-        path.join(FIXTURE_ROOT, 'styles/main.scss'),
+        path.join(FIXTURE_ROOT, 'assets/font.woff2'),
         path.join(FIXTURE_ROOT, 'src/bar.ts'),
       ].join('\n'));
       const changed = await waitForDocumentChange(() => executePasteImport(), 2000);
       assert.strictEqual(changed, true, 'expected the supported member to insert');
       const allText = editor.document.getText();
       assert.ok(allText.includes("from './bar'"), 'supported member must insert');
-      assert.ok(!allText.includes('main.scss'), 'unsupported member must be skipped');
+      assert.ok(!allText.includes('font.woff2'), 'unsupported member must be skipped');
     });
 
     it('all members unsupported → no document change (one aggregate toast)', async () => {
       await openFixture('src/foo.ts');
       await vscode.env.clipboard.writeText([
-        path.join(FIXTURE_ROOT, 'styles/main.scss'),
-        path.join(FIXTURE_ROOT, 'styles/global.css'),
+        path.join(FIXTURE_ROOT, 'assets/font.woff2'),
+        path.join(FIXTURE_ROOT, 'assets/regular.ttf'),
       ].join('\n'));
       const changed = await waitForDocumentChange(() => executePasteImport());
       assert.strictEqual(changed, false, 'expected no document change when every member is unsupported');
+    });
+
+    it('all extensionless members into a non-.md destination → no document change (aggregate no-extension)', async () => {
+      await openFixture('src/foo.ts');
+      await vscode.env.clipboard.writeText([
+        path.join(FIXTURE_ROOT, 'LICENSE'),
+        path.join(FIXTURE_ROOT, 'Dockerfile'),
+      ].join('\n'));
+      const changed = await waitForDocumentChange(() => executePasteImport());
+      assert.strictEqual(changed, false, 'extensionless members are skipped into a non-.md destination');
+    });
+
+    it('stacks an extensionless member and a .md member as links into a .md destination', async () => {
+      const editor = await openFixture('docs/guide.md');
+      await vscode.env.clipboard.writeText([
+        path.join(FIXTURE_ROOT, 'LICENSE'),
+        path.join(FIXTURE_ROOT, 'docs/architecture.md'),
+      ].join('\n'));
+      const changed = await waitForDocumentChange(() => executePasteImport(), 2000);
+      assert.strictEqual(changed, true, 'expected the stacked Markdown links to insert');
+      const allText = editor.document.getText();
+      assert.ok(allText.includes('](../LICENSE)'), 'the extensionless member must link');
+      assert.ok(allText.includes('](./architecture.md)'), 'the .md member must link');
     });
 
     it('all-inline members (two images into .css) insert only the first url()', async () => {

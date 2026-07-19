@@ -63,4 +63,16 @@ describe('computeRelative', () => {
     const result = computeRelative(`${BASE}/src/Components/Button.tsx`, `${BASE}/src/components/Page.tsx`);
     assert.strictEqual(result, '../Components/Button');
   });
+
+  // Extensionless sources (LICENSE, Dockerfile, Makefile) keep their whole name — the removeFileExtension
+  // guard means the name no longer collapses to '' (the pre-fix slice(0,-0) bug).
+  it('keeps an extensionless same-directory source whole with the ./ prefix', () => {
+    const result = computeRelative(`${BASE}/LICENSE`, `${BASE}/README.md`);
+    assert.strictEqual(result, './LICENSE');
+  });
+
+  it('keeps an extensionless parent-directory source whole with ../', () => {
+    const result = computeRelative(`${BASE}/LICENSE`, `${BASE}/docs/guide.md`);
+    assert.strictEqual(result, '../LICENSE');
+  });
 });

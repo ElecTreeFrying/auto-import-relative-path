@@ -100,7 +100,7 @@ export async function buildImportSnippetVariants(info: FilePathInfo): Promise<Im
     case '.html':
       return buildHtmlVariants(sourceFilePath, fullPath, labelFullPath);
     case '.md':
-      return buildMarkdownVariants(sourceFilePath, fullPath, labelFullPath);
+      return buildMarkdownVariants(sourceFileExt, sourceFilePath, fullPath, labelFullPath);
     case '.tex':
       return buildTexVariants(sourceFileExt, relativePath);
     default:
@@ -279,7 +279,21 @@ function buildHtmlVariants(sourceFilePath: string, fullPath: string, labelFullPa
   }
 }
 
-function buildMarkdownVariants(sourceFilePath: string, fullPath: string, labelFullPath: string): ImportSnippetVariant[] {
+function buildMarkdownVariants(
+  sourceFileExt: FileExtension,
+  sourceFilePath: string,
+  fullPath: string,
+  labelFullPath: string,
+): ImportSnippetVariant[] {
+  // Extensionless sources (LICENSE, Dockerfile, Makefile) are a single link variant — the same shape
+  // as a .md source. `fullPath` already equals the whole relative path here (no extension appended).
+  if ((sourceFileExt as string) === '') {
+    return [toHardcodedVariant(
+      buildMarkdownImportSnippet(fullPath),
+      buildMarkdownImportSnippet(labelFullPath),
+    )];
+  }
+
   switch (determineImportType(sourceFilePath)) {
     case 'markdown':
       return [toHardcodedVariant(

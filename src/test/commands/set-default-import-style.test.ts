@@ -50,6 +50,9 @@ describe('executeSetDefaultImportStyle (branches up to the picker)', () => {
   earlyReturn('unsupported pair (.ts → .css)', 'styles/reset.css', 'src/bar.ts');
   // Single-shape destination: exactly one hardcoded variant → no-configurable-style branch, not the picker.
   earlyReturn('single-shape destination → no-configurable-style (.css → .html)', 'pages/index.html', 'styles/global.css');
+  // F3 accept path: an extensionless source into a .md destination is a single hardcoded link variant,
+  // so it lands in no-configurable-style — promptly, never the picker.
+  earlyReturn('extensionless → .md → no-configurable-style (single-shape link)', 'docs/guide.md', 'LICENSE');
   // A multi-selection clipboard reduces to its first copyable non-destination member; the .md → .md
   // primary lands in no-configurable-style — promptly, never the pre-fork blob-stat source-not-found
   // and never the picker.

@@ -69,5 +69,11 @@ describe('markdown', () => {
       const value = buildSnippet(info('logo.png')).value;
       assert.ok(value.startsWith('![') || value.startsWith('<img'), `got "${value}"`);
     });
+    // An extensionless source (LICENSE, Dockerfile) links like a .md source — NOT the `![…]` image
+    // embed that determineImportType's 'image' default arm would otherwise produce.
+    it('extensionless source (LICENSE) → [text](link), not an image embed', () => {
+      const value = buildSnippet(info('LICENSE')).value;
+      assert.strictEqual(value, '[${1:text}](./asset)');
+    });
   });
 });

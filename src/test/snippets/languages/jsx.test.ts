@@ -23,18 +23,18 @@ describe('jsx', () => {
     await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
   });
 
-  it('.js source routes through JS import style (default)', async () => {
+  it('.js source routes through JS import style (default, basename-derived binding)', async () => {
     await vscode.env.clipboard.writeText(source('bar.js'));
     const info = await getFilePathInfo();
     const result = buildSnippet(info);
-    assert.strictEqual(result.value, "import $1 from './bar';");
+    assert.strictEqual(result.value, "import ${1:bar} from './bar';");
   });
 
-  it('.jsx source routes through JS import style (primary match)', async () => {
+  it('.jsx source routes through JS import style (primary match; component case preserved)', async () => {
     await vscode.env.clipboard.writeText(source('App.jsx'));
     const info = await getFilePathInfo();
     const result = buildSnippet(info);
-    assert.strictEqual(result.value, "import $1 from './App';");
+    assert.strictEqual(result.value, "import ${1:App} from './App';");
   });
 
   it('CSS Module .module.css produces styles import', async () => {
@@ -44,32 +44,32 @@ describe('jsx', () => {
     assert.strictEqual(result.value, "import ${1:styles} from './app.module.css';");
   });
 
-  it('image .png produces name import', async () => {
+  it('image .png produces a name import with the basename-derived binding', async () => {
     await vscode.env.clipboard.writeText(source('logo.png'));
     const info = await getFilePathInfo();
     const result = buildSnippet(info);
-    assert.strictEqual(result.value, "import ${1:name} from './logo.png';");
+    assert.strictEqual(result.value, "import ${1:logo} from './logo.png';");
   });
 
-  it('data .json produces name import', async () => {
+  it('data .json produces a name import with the basename-derived binding', async () => {
     await vscode.env.clipboard.writeText(source('config.json'));
     const info = await getFilePathInfo();
     const result = buildSnippet(info);
-    assert.strictEqual(result.value, "import ${1:name} from './config.json';");
+    assert.strictEqual(result.value, "import ${1:config} from './config.json';");
   });
 
-  it('media .mp4 produces url import', async () => {
+  it('media .mp4 produces a url import with the basename-derived binding', async () => {
     await vscode.env.clipboard.writeText(source('clip.mp4'));
     const info = await getFilePathInfo();
     const result = buildSnippet(info);
-    assert.strictEqual(result.value, "import ${1:url} from './clip.mp4';");
+    assert.strictEqual(result.value, "import ${1:clip} from './clip.mp4';");
   });
 
-  it('text track .vtt produces url import', async () => {
+  it('text track .vtt produces a url import with the basename-derived binding', async () => {
     await vscode.env.clipboard.writeText(source('subs.vtt'));
     const info = await getFilePathInfo();
     const result = buildSnippet(info);
-    assert.strictEqual(result.value, "import ${1:url} from './subs.vtt';");
+    assert.strictEqual(result.value, "import ${1:subs} from './subs.vtt';");
   });
 
   it('non-module stylesheet .css produces side-effect import', async () => {

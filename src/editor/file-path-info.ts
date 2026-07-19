@@ -26,12 +26,14 @@ export function parseClipboardPaths(raw: string): string[] {
 }
 
 /**
- * Filters parsed clipboard lines down to the copyable ones — absolute paths that carry a file
- * extension. Mirrors the single-path copy validation (`no-file-to-copy` / `no-extension`) member
- * by member, so a multi-selection drops its invalid members instead of failing wholesale.
+ * Filters parsed clipboard lines down to the copyable ones — the absolute paths. Copy is
+ * destination-agnostic, and an extensionless file (`LICENSE`, `Dockerfile`) is a valid import source
+ * for a Markdown-link destination, so copyability no longer requires an extension; the paste-time
+ * gate (which knows the destination) rejects an extensionless source into a non-`.md` destination.
+ * A multi-selection drops its non-absolute members instead of failing wholesale.
  */
 export function filterCopyablePaths(paths: string[]): string[] {
-  return paths.filter(candidate => path.isAbsolute(candidate) && path.extname(candidate) !== '');
+  return paths.filter(candidate => path.isAbsolute(candidate));
 }
 
 export function getFilePathInfoFromPaths(sourceFilePath: string, destinationFilePath: string): FilePathInfo {

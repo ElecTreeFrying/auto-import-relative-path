@@ -97,6 +97,13 @@ describe('buildImportSnippetVariants', () => {
     assert.ok(variants[0].setting, 'styled variant should have setting');
   });
 
+  it('extensionless source into .md: 1 hardcoded link variant (no setting)', async () => {
+    const variants = await openAndQuery('docs/guide.md', '../LICENSE');
+    assert.strictEqual(variants.length, 1);
+    assert.strictEqual(variants[0].setting, undefined, 'link variant is hardcoded (no setting)');
+    assert.strictEqual(variants[0].snippetText, '[${1:text}](../LICENSE)');
+  });
+
   it('.ts into .tsx: 7 styled variants (TS)', async () => {
     const variants = await openAndQuery('unicode-paths/café-menu.tsx', 'widget.ts');
     assert.strictEqual(variants.length, 7);
@@ -119,25 +126,25 @@ describe('buildImportSnippetVariants', () => {
 
   // Non-script sources into framework destinations are a single hardcoded asset variant
   // (not the styled TS catalogue), mirroring the React (.jsx/.tsx/.mdx) picker behavior.
-  it('.png into .vue: 1 hardcoded name-import variant', async () => {
+  it('.png into .vue: 1 hardcoded name-import variant (basename-derived binding)', async () => {
     const variants = await openAndQuery('src/App.vue', 'logo.png');
     assert.strictEqual(variants.length, 1);
     assert.strictEqual(variants[0].setting, undefined, 'asset variant is hardcoded (no setting)');
-    assert.strictEqual(variants[0].snippetText, "import ${1:name} from './logo.png';");
+    assert.strictEqual(variants[0].snippetText, "import ${1:logo} from './logo.png';");
   });
 
-  it('.mp4 into .svelte: 1 hardcoded url-import variant', async () => {
+  it('.mp4 into .svelte: 1 hardcoded url-import variant (basename-derived binding)', async () => {
     const variants = await openAndQuery('src/App.svelte', 'clip.mp4');
     assert.strictEqual(variants.length, 1);
     assert.strictEqual(variants[0].setting, undefined, 'asset variant is hardcoded (no setting)');
-    assert.strictEqual(variants[0].snippetText, "import ${1:url} from './clip.mp4';");
+    assert.strictEqual(variants[0].snippetText, "import ${1:clip} from './clip.mp4';");
   });
 
-  it('.svg into .astro: 1 hardcoded name-import variant', async () => {
+  it('.svg into .astro: 1 hardcoded name-import variant (basename-derived binding)', async () => {
     const variants = await openAndQuery('src/App.astro', 'icon.svg');
     assert.strictEqual(variants.length, 1);
     assert.strictEqual(variants[0].setting, undefined, 'asset variant is hardcoded (no setting)');
-    assert.strictEqual(variants[0].snippetText, "import ${1:name} from './icon.svg';");
+    assert.strictEqual(variants[0].snippetText, "import ${1:icon} from './icon.svg';");
   });
 
   it('.json into .json: empty variant set (isEmptyVariantSet backstop, same-ext non-dispatch)', async () => {

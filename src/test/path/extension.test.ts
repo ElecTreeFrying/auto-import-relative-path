@@ -33,8 +33,9 @@ describe('extension', () => {
       assert.strictEqual(removeFileExtension('/project/styles/app.module.css'), '/project/styles/app.module');
     });
 
-    it('returns empty string for extensionless path (slice(0,-0) quirk)', () => {
-      assert.strictEqual(removeFileExtension('Makefile'), '');
+    it('keeps the whole name for an extensionless path (guarded against the slice(0,-0) quirk)', () => {
+      assert.strictEqual(removeFileExtension('Makefile'), 'Makefile');
+      assert.strictEqual(removeFileExtension('/repo/LICENSE'), '/repo/LICENSE');
     });
   });
 });

@@ -39,7 +39,7 @@ export function showNotification(
       vscode.window.showWarningMessage('Auto Import: No file selected to copy.');
       break;
     case 'no-extension':
-      vscode.window.showWarningMessage(`Auto Import: ${payload!.basename} has no file extension.`);
+      vscode.window.showWarningMessage(`Auto Import: ${payload!.basename} has no file extension — only Markdown links support extensionless files.`);
       break;
     case 'empty-clipboard':
       vscode.window.showWarningMessage('Auto Import: Clipboard does not contain a file path.');

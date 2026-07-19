@@ -31,10 +31,16 @@ const REACT_DESTS = [
 // Non-script sources only. Script sources (.js/.jsx/.ts/.tsx) legitimately diverge between the two
 // flows — dispatch returns the single config-default snippet, variants returns the full styled list —
 // so they are out of scope here. The duplicated switch only governs non-script sources.
-const NAME_SOURCES = [
+//
+// The name-import group splits by whether the binding is basename-derived: plain assets pre-fill the
+// identifier (`${1:asset}` from the source basename), while component-like sources (.md/.mdx/.vue/
+// .svelte/.astro) keep the generic `${1:name}` — their PascalCase convention is a deferred pathway.
+const PLAIN_NAME_SOURCES = [
   ...IMAGE_FILE_EXTENSIONS,
-  '.json', '.html', '.yml', '.yaml', '.md', '.mdx', '.pdf', '.vue', '.svelte', '.astro',
+  '.json', '.html', '.yml', '.yaml', '.pdf',
 ];
+const COMPONENT_NAME_SOURCES = [ '.md', '.mdx', '.vue', '.svelte', '.astro' ];
+const NAME_SOURCES = [ ...PLAIN_NAME_SOURCES, ...COMPONENT_NAME_SOURCES ];
 const URL_SOURCES = [
   ...MEDIA_FILE_EXTENSIONS,
   ...TEXT_TRACK_FILE_EXTENSIONS,
@@ -80,20 +86,38 @@ describe('react source-switch parity (_react.ts ↔ variants.ts)', () => {
         }
       });
 
-      it('characterization: name-group sources produce a named default import', async () => {
+      it('characterization: plain-asset name sources pre-fill the binding from the basename', async () => {
         await openDest(fixture);
-        for (const ext of NAME_SOURCES) {
+        for (const ext of PLAIN_NAME_SOURCES) {
+          const { dispatch } = await buildBoth(fixture, `asset${ext}`);
+          assert.strictEqual(dispatch, `import \${1:asset} from './asset${ext}';`, `${ext} into ${destExt}`);
+        }
+      });
+
+      it('characterization: component-like name sources keep the generic name binding', async () => {
+        await openDest(fixture);
+        for (const ext of COMPONENT_NAME_SOURCES) {
           const { dispatch } = await buildBoth(fixture, `asset${ext}`);
           assert.strictEqual(dispatch, `import \${1:name} from './asset${ext}';`, `${ext} into ${destExt}`);
         }
       });
 
-      it('characterization: url-group sources (media + text-track) produce a url default import', async () => {
+      it('characterization: url-group sources (media + text-track) pre-fill the binding from the basename', async () => {
         await openDest(fixture);
         for (const ext of URL_SOURCES) {
           const { dispatch } = await buildBoth(fixture, `asset${ext}`);
-          assert.strictEqual(dispatch, `import \${1:url} from './asset${ext}';`, `${ext} into ${destExt}`);
+          assert.strictEqual(dispatch, `import \${1:asset} from './asset${ext}';`, `${ext} into ${destExt}`);
         }
+      });
+
+      // A basename that can't form a legal identifier (leading digit) falls back to the generic
+      // placeholder — `${1:name}` for the name group, `${1:url}` for the url group.
+      it('characterization: an illegal-identifier basename falls back to the generic placeholder', async () => {
+        await openDest(fixture);
+        const nameFallback = await buildBoth(fixture, '404.png');
+        assert.strictEqual(nameFallback.dispatch, "import ${1:name} from './404.png';", `404.png into ${destExt}`);
+        const urlFallback = await buildBoth(fixture, '123.mp4');
+        assert.strictEqual(urlFallback.dispatch, "import ${1:url} from './123.mp4';", `123.mp4 into ${destExt}`);
       });
 
       it('characterization: side-effect-group sources (fonts + stylesheets) produce a bare import', async () => {

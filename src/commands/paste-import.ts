@@ -29,7 +29,9 @@ export async function executePasteImport(): Promise<void> {
   if (trimmedSource === '' || !path.isAbsolute(trimmedSource)) {
     return showNotification('empty-clipboard');
   }
-  if (path.extname(trimmedSource) === '') {
+  // An extensionless source is admitted only into a Markdown destination (as a link); anywhere else
+  // it stays a `no-extension` rejection.
+  if (path.extname(trimmedSource) === '' && destinationFileExt !== '.md') {
     return showNotification('no-extension', { basename: path.basename(sourceFilePath) });
   }
 
@@ -70,6 +72,7 @@ interface PasteCandidate {
  * `no-extension` > `empty-clipboard`.
  */
 async function pasteMultipleImports(sourceFilePaths: string[], destinationFilePath: string): Promise<void> {
+  const destinationIsMarkdown = path.extname(destinationFilePath) === '.md';
   const candidates: PasteCandidate[] = [];
   let sameFileCount = 0;
   let missingBasename: string | undefined;
@@ -80,7 +83,10 @@ async function pasteMultipleImports(sourceFilePaths: string[], destinationFilePa
     if (!path.isAbsolute(sourceFilePath)) {
       continue;
     }
-    if (path.extname(sourceFilePath) === '') {
+    // Extensionless sources import only into a Markdown destination (as a link). Elsewhere they are
+    // remembered for the aggregate `no-extension` toast and skipped; into `.md` they fall through to
+    // the same same-file / stat / gating pipeline as any other source.
+    if (path.extname(sourceFilePath) === '' && !destinationIsMarkdown) {
       extensionlessBasename = path.basename(sourceFilePath);
       continue;
     }

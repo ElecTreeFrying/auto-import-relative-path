@@ -44,42 +44,44 @@ describe('framework-component', () => {
     assert.strictEqual(result.value, "import { $1 } from './App';");
   });
 
-  it('image source produces name import (full extension preserved)', async () => {
+  it('image source produces a name import with the basename-derived binding', async () => {
     await vscode.env.clipboard.writeText(source('logo.png'));
     const info = await getFilePathInfo();
     const result = buildSnippet(info);
-    assert.strictEqual(result.value, "import ${1:name} from './logo.png';");
+    assert.strictEqual(result.value, "import ${1:logo} from './logo.png';");
   });
 
-  it('.json source produces name import (full extension preserved)', async () => {
+  it('.json source produces a name import with the basename-derived binding', async () => {
     await vscode.env.clipboard.writeText(source('config.json'));
     const info = await getFilePathInfo();
     const result = buildSnippet(info);
-    assert.strictEqual(result.value, "import ${1:name} from './config.json';");
+    assert.strictEqual(result.value, "import ${1:config} from './config.json';");
   });
 
-  it('media source produces url import', async () => {
+  it('media source produces a url import with the basename-derived binding', async () => {
     await vscode.env.clipboard.writeText(source('clip.mp4'));
     const info = await getFilePathInfo();
     const result = buildSnippet(info);
-    assert.strictEqual(result.value, "import ${1:url} from './clip.mp4';");
+    assert.strictEqual(result.value, "import ${1:clip} from './clip.mp4';");
   });
 
-  it('text-track source produces url import', async () => {
+  it('text-track source produces a url import with the basename-derived binding', async () => {
     await vscode.env.clipboard.writeText(source('subs.vtt'));
     const info = await getFilePathInfo();
     const result = buildSnippet(info);
-    assert.strictEqual(result.value, "import ${1:url} from './subs.vtt';");
+    assert.strictEqual(result.value, "import ${1:subs} from './subs.vtt';");
   });
 
-  it('.vue self-import produces name import', async () => {
+  // Component-like sources (.vue/.svelte/.astro/.md/.mdx) keep the generic `name` — PascalCase
+  // component naming is a separate, deferred pathway (docs/import-statements/future/framework-roadmap.md).
+  it('.vue self-import keeps the generic name binding (component naming deferred)', async () => {
     await vscode.env.clipboard.writeText(source('App.vue'));
     const info = await getFilePathInfo();
     const result = buildSnippet(info);
     assert.strictEqual(result.value, "import ${1:name} from './App.vue';");
   });
 
-  it('.svelte self-import produces name import', async () => {
+  it('.svelte self-import keeps the generic name binding (component naming deferred)', async () => {
     await vscode.env.clipboard.writeText(source('Widget.svelte'));
     const info = await getFilePathInfo();
     const result = buildSnippet(info);

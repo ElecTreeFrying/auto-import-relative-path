@@ -21,10 +21,9 @@ export async function executeCopyFilePath(): Promise<boolean> {
     showNotification('no-file-to-copy');
     return false;
   }
-  if (path.extname(trimmed) === '') {
-    showNotification('no-extension', { basename: path.basename(trimmed) });
-    return false;
-  }
+  // No extension check here: copy is destination-agnostic, and an extensionless file (LICENSE,
+  // Dockerfile) is a valid source for a Markdown-link paste. The paste-time gate rejects it into a
+  // non-.md destination — that is where the destination is known.
 
   await vscode.env.clipboard.writeText(filePath);
   void showNotification('copy-success', { basenames: [path.basename(filePath)] }).then(dispatchPasteAction);
@@ -32,22 +31,16 @@ export async function executeCopyFilePath(): Promise<boolean> {
 }
 
 /**
- * Multi-selection copy: keeps the copyable members (absolute + extensioned), then re-writes the
+ * Multi-selection copy: keeps the copyable members (the absolute paths), then re-writes the
  * clipboard with exactly that filtered list — newline-joined, the same wire format the built-in
  * `copyFilePath` produced — so the next paste sees precisely what the toast announced. A selection
- * with no copyable member reuses the single-path failure toasts (`no-extension` when an absolute
- * member merely lacks an extension, else `no-file-to-copy`).
+ * with no absolute member fails with the single-path `no-file-to-copy` toast.
  */
 async function copyMultipleFilePaths(copiedPaths: string[]): Promise<boolean> {
   const copyablePaths = filterCopyablePaths(copiedPaths);
 
   if (copyablePaths.length === 0) {
-    const extensionless = copiedPaths.find(candidate => path.isAbsolute(candidate) && path.extname(candidate) === '');
-    if (extensionless) {
-      showNotification('no-extension', { basename: path.basename(extensionless) });
-    } else {
-      showNotification('no-file-to-copy');
-    }
+    showNotification('no-file-to-copy');
     return false;
   }
 

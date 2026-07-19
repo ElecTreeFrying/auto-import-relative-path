@@ -29,7 +29,8 @@ export async function executePasteImportWithStyle(): Promise<void> {
   if (trimmedSource === '' || !path.isAbsolute(trimmedSource)) {
     return showNotification('empty-clipboard');
   }
-  if (path.extname(trimmedSource) === '') {
+  // Extensionless sources are admitted only into a Markdown destination (as a link).
+  if (path.extname(trimmedSource) === '' && destinationFileExt !== '.md') {
     return showNotification('no-extension', { basename: path.basename(sourceFilePath) });
   }
 

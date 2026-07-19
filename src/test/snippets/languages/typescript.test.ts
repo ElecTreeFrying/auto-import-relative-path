@@ -63,34 +63,42 @@ describe('buildTypeScriptImportSnippetByStyle', () => {
   });
 
   describe('indexes 1–6 — fixed shapes (ignore detectedImportName)', () => {
-    it('index 1: ES module default import', () => {
+    // Default-import positions (1, 2, 6) pre-fill the binding with the camelCased basename ('helper').
+    const NAME = '${1:helper}';
+
+    it('index 1: ES module default import (basename-derived binding)', () => {
       const result = buildTypeScriptImportSnippetByStyle(1, PATH);
-      assert.strictEqual(result.value, `import $1 from '${PATH}';`);
+      assert.strictEqual(result.value, `import ${NAME} from '${PATH}';`);
     });
 
-    it('index 2: ES module namespace import', () => {
+    it('index 2: ES module namespace import (basename-derived binding)', () => {
       const result = buildTypeScriptImportSnippetByStyle(2, PATH);
-      assert.strictEqual(result.value, `import * as $1 from '${PATH}';`);
+      assert.strictEqual(result.value, `import * as ${NAME} from '${PATH}';`);
     });
 
-    it('index 3: ES module side-effect import', () => {
+    it('index 3: ES module side-effect import (no binding)', () => {
       const result = buildTypeScriptImportSnippetByStyle(3, PATH);
       assert.strictEqual(result.value, `import '${PATH}';`);
     });
 
-    it('index 4: type-only import', () => {
+    it('index 4: type-only import (not pre-filled)', () => {
       const result = buildTypeScriptImportSnippetByStyle(4, PATH);
       assert.strictEqual(result.value, `import type { $1 } from '${PATH}';`);
     });
 
-    it('index 5: mixed value + type import', () => {
+    it('index 5: mixed value + type import (not pre-filled)', () => {
       const result = buildTypeScriptImportSnippetByStyle(5, PATH);
       assert.strictEqual(result.value, `import { $1, type $2 } from '${PATH}';`);
     });
 
-    it('index 6: dynamic import', () => {
+    it('index 6: dynamic import (basename-derived binding)', () => {
       const result = buildTypeScriptImportSnippetByStyle(6, PATH);
-      assert.strictEqual(result.value, `const $1 = await import('${PATH}');`);
+      assert.strictEqual(result.value, `const ${NAME} = await import('${PATH}');`);
+    });
+
+    it('index 1: falls back to a bare $1 when the basename yields no legal identifier', () => {
+      const result = buildTypeScriptImportSnippetByStyle(1, './assets/404');
+      assert.strictEqual(result.value, "import $1 from './assets/404';");
     });
   });
 

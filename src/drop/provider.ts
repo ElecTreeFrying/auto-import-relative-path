@@ -40,6 +40,7 @@ export class AutoImportOnDropProvider implements vscode.DocumentDropEditProvider
     // unchanged (see joinImportStatements, which renders one statement byte-identically).
     const candidates: DropCandidate[] = [];
     let sameFileCount = 0;
+    let extensionlessBasename: string | undefined;
     let rejectedInfo: FilePathInfo | undefined;
 
     for (const sourceFilePath of sourceFilePaths) {
@@ -49,6 +50,14 @@ export class AutoImportOnDropProvider implements vscode.DocumentDropEditProvider
       }
 
       const info = getFilePathInfoFromPaths(sourceFilePath, destinationFilePath);
+
+      // Extensionless sources import only into a Markdown destination (as a link). Elsewhere, track
+      // the basename for a specific `no-extension` toast rather than letting gating emit the
+      // malformed `Cannot import  into .X` message with an empty source extension.
+      if ((info.sourceFileExt as string) === '' && info.destinationFileExt !== '.md') {
+        extensionlessBasename = path.basename(sourceFilePath);
+        continue;
+      }
 
       if (!isPairSupported(info)) {
         rejectedInfo = info;
@@ -72,12 +81,14 @@ export class AutoImportOnDropProvider implements vscode.DocumentDropEditProvider
     }
 
     if (candidates.length === 0) {
-      // Nothing importable. Mirror the single-file toasts: an unsupported pair takes precedence
-      // over same-file (the order the single-file path applied to its one source).
+      // Nothing importable. Mirror the single-file toast priority: an unsupported pair takes
+      // precedence over same-file, then the extensionless-into-non-Markdown case.
       if (rejectedInfo) {
         showNotification('not-supported', { sourceExt: rejectedInfo.sourceFileExt, destinationExt: rejectedInfo.destinationFileExt });
       } else if (sameFileCount > 0) {
         showNotification('same-file-path');
+      } else if (extensionlessBasename) {
+        showNotification('no-extension', { basename: extensionlessBasename });
       }
       return suppressDrop();
     }

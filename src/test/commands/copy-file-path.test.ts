@@ -30,8 +30,7 @@ describe('executeCopyFilePath', () => {
     // asserted here — showInformationMessage resolves undefined with no user click.
   });
 
-  // Guard branches: with no active editor the built-in copyFilePath leaves the clipboard empty, and a
-  // copied path can legitimately have no extension (Makefile, Dockerfile). Both reject with `false`.
+  // With no active editor the built-in copyFilePath leaves the clipboard empty → reject with `false`.
   it('returns false when there is no active editor (empty-clipboard guard)', async () => {
     await vscode.commands.executeCommand('workbench.action.closeAllEditors');
     await vscode.env.clipboard.writeText('');
@@ -39,7 +38,9 @@ describe('executeCopyFilePath', () => {
     assert.strictEqual(ok, false, 'expected false when no file is available to copy');
   });
 
-  it('returns false for an extensionless active file (no-extension guard)', async () => {
+  // Copy is destination-agnostic: an extensionless file (Makefile, Dockerfile, LICENSE) is a valid
+  // Markdown-link source, so the copy succeeds and the paste-time gate decides the destination.
+  it('copies an extensionless active file and returns true', async () => {
     const uri = vscode.Uri.file(path.join(FIXTURE_ROOT, 'TempNoExtFixture'));
     await vscode.workspace.fs.writeFile(uri, Buffer.from('all:\n\techo hi\n', 'utf-8'));
     try {
@@ -47,7 +48,9 @@ describe('executeCopyFilePath', () => {
       await vscode.window.showTextDocument(doc);
       await vscode.env.clipboard.writeText('');
       const ok = await executeCopyFilePath();
-      assert.strictEqual(ok, false, 'expected false for a copied path with no extension');
+      assert.strictEqual(ok, true, 'extensionless copy now succeeds (paste-time gating decides)');
+      const clip = (await vscode.env.clipboard.readText()).trim();
+      assert.strictEqual(clip, uri.fsPath, 'clipboard should hold the extensionless path');
     } finally {
       await vscode.commands.executeCommand('workbench.action.closeAllEditors');
       try { await vscode.workspace.fs.delete(uri); } catch { /* ignore */ }

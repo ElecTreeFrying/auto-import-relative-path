@@ -37,11 +37,11 @@ describe('tsx', () => {
     assert.strictEqual(result.value, "import { $1 } from './App';");
   });
 
-  it('.js source routes through JS import style (fallback)', async () => {
+  it('.js source routes through JS import style (fallback, basename-derived binding)', async () => {
     await vscode.env.clipboard.writeText(source('util.js'));
     const info = await getFilePathInfo();
     const result = buildSnippet(info);
-    assert.strictEqual(result.value, "import $1 from './util';");
+    assert.strictEqual(result.value, "import ${1:util} from './util';");
   });
 
   it('CSS Module .module.scss produces styles import', async () => {
@@ -51,18 +51,18 @@ describe('tsx', () => {
     assert.strictEqual(result.value, "import ${1:styles} from './app.module.scss';");
   });
 
-  it('image .png produces name import', async () => {
+  it('image .png produces a name import with the basename-derived binding', async () => {
     await vscode.env.clipboard.writeText(source('logo.png'));
     const info = await getFilePathInfo();
     const result = buildSnippet(info);
-    assert.strictEqual(result.value, "import ${1:name} from './logo.png';");
+    assert.strictEqual(result.value, "import ${1:logo} from './logo.png';");
   });
 
-  it('media .mp4 produces url import', async () => {
+  it('media .mp4 produces a url import with the basename-derived binding', async () => {
     await vscode.env.clipboard.writeText(source('clip.mp4'));
     const info = await getFilePathInfo();
     const result = buildSnippet(info);
-    assert.strictEqual(result.value, "import ${1:url} from './clip.mp4';");
+    assert.strictEqual(result.value, "import ${1:clip} from './clip.mp4';");
   });
 
   it('font .woff produces side-effect import', async () => {

@@ -8,5 +8,8 @@ export function extractFileExtension(filePath: string): FileExtension {
 
 export function removeFileExtension(filePath: string): string {
   const ext = extractFileExtension(filePath);
-  return filePath.slice(0, -ext.length);
+  // Guard the empty-extension case: `slice(0, -0)` is `slice(0, 0)` === '' (a zero-width slice), which
+  // would erase an extensionless path (`LICENSE` → ''). Extensionless sources are kept whole so their
+  // relative path survives (`../LICENSE`) for the Markdown-link destination.
+  return ext ? filePath.slice(0, -ext.length) : filePath;
 }

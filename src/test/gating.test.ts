@@ -221,6 +221,36 @@ describe('gating/isPairSupported', () => {
     });
   });
 
+  describe('extensionless source (first clause)', () => {
+    it('extensionless → .md accepted (Markdown link)', () => {
+      assert.strictEqual(isPairSupported(info('', '.md')), true);
+    });
+
+    it('extensionless → .ts rejected', () => {
+      assert.strictEqual(isPairSupported(info('', '.ts')), false);
+    });
+
+    it('extensionless → .js rejected', () => {
+      assert.strictEqual(isPairSupported(info('', '.js')), false);
+    });
+
+    it('extensionless → .jsx rejected (an accept-all destination still rejects extensionless)', () => {
+      assert.strictEqual(isPairSupported(info('', '.jsx')), false);
+    });
+
+    it('extensionless → .tsx rejected (an accept-all destination still rejects extensionless)', () => {
+      assert.strictEqual(isPairSupported(info('', '.tsx')), false);
+    });
+
+    it('extensionless → .html rejected', () => {
+      assert.strictEqual(isPairSupported(info('', '.html')), false);
+    });
+
+    it('extensionless → .tex rejected', () => {
+      assert.strictEqual(isPairSupported(info('', '.tex')), false);
+    });
+  });
+
   // Each destination's allow-list checked with BOTH an in-list accept and an out-of-list reject,
   // so a future edit that widens or narrows one table is caught from the same destination.
   describe('allow-list boundaries (accept and reject share one destination)', () => {

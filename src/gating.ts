@@ -15,6 +15,13 @@ import {
 export function isPairSupported(info: FilePathInfo): boolean {
   const { sourceFileExt, destinationFileExt } = info;
 
+  // An extensionless source (`LICENSE`, `Dockerfile`, `Makefile`) is only importable as a Markdown
+  // link — no bundler resolves an extensionless import in a script/style/markup destination. Checked
+  // first so the boolean is honest for every flow, including the accept-all `.jsx`/`.tsx`/`.mdx`
+  // destinations (which otherwise pass clause 1 and would rely on the empty-snippet backstop).
+  if ((sourceFileExt as string) === '') {
+    return destinationFileExt === '.md';
+  }
   if (!CROSS_IMPORT_DESTINATIONS.includes(destinationFileExt) && sourceFileExt !== destinationFileExt) {
     return false;
   }

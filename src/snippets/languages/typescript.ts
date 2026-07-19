@@ -3,6 +3,7 @@ import * as path from 'path';
 
 import { getAutoImportSetting } from '../../config/settings';
 import { extractFileExtension } from '../../path/extension';
+import { deriveImportName } from '../../path/import-name';
 import { FilePathInfo } from '../../editor/file-path-info';
 import { TYPESCRIPT_IMPORT_OPTIONS, resolveStyleIndex } from '../_styles';
 import { readExportedClassName } from '../_class-name';
@@ -35,6 +36,10 @@ export function buildTypeScriptImportSnippetByStyle(
   relativePath: string,
   detectedImportName?: string,
 ): vscode.SnippetString {
+  // Default-import positions (1, 2, 6) pre-fill the binding from the source basename. The named
+  // import at index 0 keeps its own class-detection / legacy-Angular naming; the type-only positions
+  // (4, 5) stay `$1` because their binding must match an actual export.
+  const name = defaultImportPlaceholder(relativePath);
   switch (styleIndex) {
     case 0: {
       const importName = detectedImportName
@@ -43,9 +48,9 @@ export function buildTypeScriptImportSnippetByStyle(
       return new vscode.SnippetString(`import { ${importName} } from '${relativePath}';`);
     }
     case 1:
-      return new vscode.SnippetString(`import $1 from '${relativePath}';`);
+      return new vscode.SnippetString(`import ${name} from '${relativePath}';`);
     case 2:
-      return new vscode.SnippetString(`import * as $1 from '${relativePath}';`);
+      return new vscode.SnippetString(`import * as ${name} from '${relativePath}';`);
     case 3:
       return new vscode.SnippetString(`import '${relativePath}';`);
     case 4:
@@ -53,12 +58,18 @@ export function buildTypeScriptImportSnippetByStyle(
     case 5:
       return new vscode.SnippetString(`import { $1, type $2 } from '${relativePath}';`);
     case 6:
-      return new vscode.SnippetString(`const $1 = await import('${relativePath}');`);
+      return new vscode.SnippetString(`const ${name} = await import('${relativePath}');`);
     default: {
       const importName = detectedImportName ? `\${1:${detectedImportName}}` : '$1';
       return new vscode.SnippetString(`import { ${importName} } from '${relativePath}';`);
     }
   }
+}
+
+/** The default-import placeholder: `${1:derived}` from the basename, or a bare `$1` when none forms. */
+function defaultImportPlaceholder(relativePath: string): string {
+  const derived = deriveImportName(relativePath);
+  return derived ? `\${1:${derived}}` : '$1';
 }
 
 function generateAngularLegacyImportName(relativePath: string): string {

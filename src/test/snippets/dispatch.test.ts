@@ -43,7 +43,7 @@ describe('buildImportSnippet', () => {
     await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'src/util.js'));
     const info = await getFilePathInfo();
     const result = await buildImportSnippet(info);
-    assert.strictEqual(result.value, "import $1 from './util';");
+    assert.strictEqual(result.value, "import ${1:util} from './util';");
   });
 
   it('.tsx destination produces TSX builder output', async () => {
@@ -166,6 +166,14 @@ describe('buildImportSnippet', () => {
     const info = await getFilePathInfo();
     const result = await buildImportSnippet(info);
     assert.strictEqual(result.value, '');
+  });
+
+  it('extensionless source into .md destination produces a Markdown link', async () => {
+    await openFixture('docs/guide.md');
+    await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'LICENSE'));
+    const info = await getFilePathInfo();
+    const result = await buildImportSnippet(info);
+    assert.strictEqual(result.value, '[${1:text}](../LICENSE)');
   });
 
   // Same-extension pair passes gating (clause 1) but the dispatch switch has no .json case,

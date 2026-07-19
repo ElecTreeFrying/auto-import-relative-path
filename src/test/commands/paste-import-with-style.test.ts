@@ -64,6 +64,14 @@ describe('executePasteImportWithStyle', () => {
       assert.strictEqual(changed, true, 'expected a document change for the single image variant');
       assert.ok(editor.document.getText().includes('logo.png'), 'expected the image import in the document');
     });
+
+    it('extensionless → .md inserts a link directly (single variant, the F3 accept path)', async () => {
+      const editor = await openFixture('docs/guide.md');
+      await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'LICENSE'));
+      const changed = await waitForDocumentChange(() => executePasteImportWithStyle(), 2000);
+      assert.strictEqual(changed, true, 'expected a document change for the single extensionless-link variant');
+      assert.ok(editor.document.getText().includes('](../LICENSE)'), 'expected the extensionless Markdown link in the document');
+    });
   });
 
   // A multi-selection clipboard reduces to its first copyable non-destination member (the picker
