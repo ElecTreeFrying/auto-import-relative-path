@@ -194,7 +194,7 @@ Mechanically, `.jsx`/`.tsx`/`.mdx` carry NO per-destination source allow-list in
 | Data | `.json` | Yes | Yes | Yes |
 | YAML | `.yaml`, `.yml` | Yes | Yes | Yes |
 | Stylesheet | `.css`, `.scss` | Yes | Yes | Yes |
-| Markdown | `.md`, `.mdx` | — | — | Yes |
+| Markdown | `.md`, `.mdx` | Yes | Yes | Yes |
 
 A **stylesheet source** (`.css` / `.scss`) is shaped by where the cursor sits: strictly inside a `<style>` block it emits the CSS/SCSS dialect (`@import` / `@use`, configurable via `cssImportStyle` / `scssImportStyle`); anywhere else it emits a side-effect `import './styles.css';`. See [§ Vue / Svelte / Astro](#vue--svelte--astro) and [§ Vue / Svelte / Astro `<style>` block constraint](#vue--svelte--astro-style-block-constraint).
 
@@ -427,7 +427,7 @@ Every shape in this table keeps the full real source extension on the path verba
 
 ### Vue / Svelte / Astro
 
-Script sources (`.ts`, `.tsx`, `.js`, `.jsx`) use the TypeScript import style. **Stylesheet sources** (`.css` / `.scss`) are context-sensitive: strictly inside a `<style>` block they emit the CSS/SCSS dialect (`@import` for `.css`, `@use` for `.scss`, configurable via `cssImportStyle` / `scssImportStyle`, and honouring the SCSS partial-underscore and `preserveStylesheetFileExtension` rules); everywhere else — the `<script>` block, Astro frontmatter, or template — they emit a side-effect `import './styles.css';`. Every other non-script source is dispatched by source category through the **same `buildAssetImportStatement` switch used by JSX/TSX/MDX** (`_react.ts`) — `import name from` for images, data, and YAML (and, for Astro destinations, Markdown sources); a **PascalCase**-derived default import for framework components (`my-button.vue` → `import MyButton from './my-button.vue';`, falling back to `name` when the basename yields no legal identifier); `import url from` for media and text tracks — with the full source extension preserved on the path. (Fonts and CSS Modules are still not accepted here — a font belongs in an SFC's `@font-face` rule, and the `styles`-import CSS-Modules idiom is React-family only.)
+Script sources (`.ts`, `.tsx`, `.js`, `.jsx`) use the TypeScript import style. **Stylesheet sources** (`.css` / `.scss`) are context-sensitive: strictly inside a `<style>` block they emit the CSS/SCSS dialect (`@import` for `.css`, `@use` for `.scss`, configurable via `cssImportStyle` / `scssImportStyle`, and honouring the SCSS partial-underscore and `preserveStylesheetFileExtension` rules); everywhere else — the `<script>` block, Astro frontmatter, or template — they emit a side-effect `import './styles.css';`. Every other non-script source is dispatched by source category through the **same `buildAssetImportStatement` switch used by JSX/TSX/MDX** (`_react.ts`) — `import name from` for images, data, YAML, and Markdown/MDX (`.md` / `.mdx`); a **PascalCase**-derived default import for framework components (`my-button.vue` → `import MyButton from './my-button.vue';`, falling back to `name` when the basename yields no legal identifier); `import url from` for media and text tracks — with the full source extension preserved on the path. (Fonts and CSS Modules are still not accepted here — a font belongs in an SFC's `@font-face` rule, and the `styles`-import CSS-Modules idiom is React-family only.)
 
 ### LaTeX
 
