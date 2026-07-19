@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 
-import { deriveImportName } from '../../path/import-name';
+import { deriveImportName, deriveComponentName } from '../../path/import-name';
 
 describe('path/deriveImportName', () => {
   describe('camelCase derivation', () => {
@@ -57,5 +57,61 @@ describe('path/deriveImportName', () => {
       // path.extname('.env') === '' — the whole name is the basename, not an extension.
       assert.strictEqual(deriveImportName('.env'), 'env');
     });
+  });
+});
+
+describe('path/deriveComponentName', () => {
+  describe('PascalCase derivation', () => {
+    const cases: Array<[ string, string ]> = [
+      [ 'my-button.vue', 'MyButton' ],        // kebab — the headline case
+      [ 'my_button.svelte', 'MyButton' ],     // snake
+      [ 'button.spec.vue', 'ButtonSpec' ],    // dotted (interior segment kept)
+      [ 'nav-bar.astro', 'NavBar' ],
+      [ 'BaseCard.vue', 'BaseCard' ],         // already PascalCase → idempotent
+      [ 'App.vue', 'App' ],
+      [ 'Widget.svelte', 'Widget' ],
+      [ 'base--button.vue', 'BaseButton' ],   // separator run collapses
+      [ 'spaced name.astro', 'SpacedName' ],  // whitespace splits
+      [ 'my.2nd.thing.vue', 'My2ndThing' ],
+      [ 'x.vue', 'X' ],
+    ];
+    for (const [ input, expected ] of cases) {
+      it(`${input} → ${expected}`, () => {
+        assert.strictEqual(deriveComponentName(input), expected);
+      });
+    }
+  });
+
+  describe('differs from deriveImportName only in first-segment case', () => {
+    it('PascalCases the first segment where deriveImportName preserves it', () => {
+      assert.strictEqual(deriveComponentName('my-button.vue'), 'MyButton');
+      assert.strictEqual(deriveImportName('my-button.vue'), 'myButton');
+    });
+    it('leaves an already-PascalCase name identical on both', () => {
+      assert.strictEqual(deriveComponentName('BaseCard.vue'), 'BaseCard');
+      assert.strictEqual(deriveImportName('BaseCard.vue'), 'BaseCard');
+    });
+  });
+
+  describe('basename invariance (full path === bare basename)', () => {
+    it('derives from the basename only', () => {
+      assert.strictEqual(deriveComponentName('./components/my-button.vue'), 'MyButton');
+      assert.strictEqual(deriveComponentName('../../ui/nav-bar.astro'), 'NavBar');
+    });
+  });
+
+  describe('null when no legal identifier can be formed', () => {
+    const nullCases = [
+      '2fa-widget.vue',   // leading digit
+      '404.svelte',       // leading digit
+      'café-menu.vue',    // non-ASCII (conservative ASCII identifier rule)
+      '--.astro',         // only separators → no segments
+      '   .vue',          // only whitespace → no segments
+    ];
+    for (const input of nullCases) {
+      it(`${input} → null`, () => {
+        assert.strictEqual(deriveComponentName(input), null);
+      });
+    }
   });
 });

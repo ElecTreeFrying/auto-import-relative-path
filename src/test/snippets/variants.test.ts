@@ -147,6 +147,28 @@ describe('buildImportSnippetVariants', () => {
     assert.strictEqual(variants[0].snippetText, "import ${1:icon} from './icon.svg';");
   });
 
+  // A framework SFC source into a framework destination is a single hardcoded variant whose binding
+  // is the PascalCase component name (deriveComponentName), through the same asset switch — this pins
+  // the pick-style picker path for the SFC-naming feature (dispatch parity is covered in react.test.ts).
+  it('.vue into .vue: 1 hardcoded PascalCase component variant', async () => {
+    const variants = await openAndQuery('src/App.vue', 'my-button.vue');
+    assert.strictEqual(variants.length, 1);
+    assert.strictEqual(variants[0].setting, undefined, 'asset variant is hardcoded (no setting)');
+    assert.strictEqual(variants[0].snippetText, "import ${1:MyButton} from './my-button.vue';");
+  });
+
+  it('.svelte into .astro (cross-framework): 1 hardcoded PascalCase component variant', async () => {
+    const variants = await openAndQuery('src/App.astro', 'my-card.svelte');
+    assert.strictEqual(variants.length, 1);
+    assert.strictEqual(variants[0].snippetText, "import ${1:MyCard} from './my-card.svelte';");
+  });
+
+  it('.vue into .vue with an illegal-identifier basename falls back to the generic name', async () => {
+    const variants = await openAndQuery('src/App.vue', '2fa-widget.vue');
+    assert.strictEqual(variants.length, 1);
+    assert.strictEqual(variants[0].snippetText, "import ${1:name} from './2fa-widget.vue';");
+  });
+
   it('.json into .json: empty variant set (isEmptyVariantSet backstop, same-ext non-dispatch)', async () => {
     const variants = await openAndQuery('data/config.json', 'feature-flags.json');
     assert.deepStrictEqual(variants, []);

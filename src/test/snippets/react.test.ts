@@ -32,15 +32,18 @@ const REACT_DESTS = [
 // flows — dispatch returns the single config-default snippet, variants returns the full styled list —
 // so they are out of scope here. The duplicated switch only governs non-script sources.
 //
-// The name-import group splits by whether the binding is basename-derived: plain assets pre-fill the
-// identifier (`${1:asset}` from the source basename), while component-like sources (.md/.mdx/.vue/
-// .svelte/.astro) keep the generic `${1:name}` — their PascalCase convention is a deferred pathway.
+// The name-import group splits three ways by how the binding is derived from the source basename:
+//   - plain assets (image/data/doc) → camelCase pre-fill (`${1:asset}`), via deriveImportName
+//   - framework SFCs (.vue/.svelte/.astro) → PascalCase pre-fill (`${1:Asset}`), via deriveComponentName
+//   - Markdown/MDX (.md/.mdx) → the generic `${1:name}` — their PascalCase-as-Astro-component naming
+//                               is outside the shipped framework-SFC pathway's scope.
 const PLAIN_NAME_SOURCES = [
   ...IMAGE_FILE_EXTENSIONS,
   '.json', '.html', '.yml', '.yaml', '.pdf',
 ];
-const COMPONENT_NAME_SOURCES = [ '.md', '.mdx', '.vue', '.svelte', '.astro' ];
-const NAME_SOURCES = [ ...PLAIN_NAME_SOURCES, ...COMPONENT_NAME_SOURCES ];
+const PASCAL_COMPONENT_SOURCES = [ '.vue', '.svelte', '.astro' ];
+const COMPONENT_NAME_SOURCES = [ '.md', '.mdx' ];
+const NAME_SOURCES = [ ...PLAIN_NAME_SOURCES, ...PASCAL_COMPONENT_SOURCES, ...COMPONENT_NAME_SOURCES ];
 const URL_SOURCES = [
   ...MEDIA_FILE_EXTENSIONS,
   ...TEXT_TRACK_FILE_EXTENSIONS,
@@ -94,7 +97,15 @@ describe('react source-switch parity (_react.ts ↔ variants.ts)', () => {
         }
       });
 
-      it('characterization: component-like name sources keep the generic name binding', async () => {
+      it('characterization: framework SFC sources pre-fill the binding with a PascalCase component name', async () => {
+        await openDest(fixture);
+        for (const ext of PASCAL_COMPONENT_SOURCES) {
+          const { dispatch } = await buildBoth(fixture, `asset${ext}`);
+          assert.strictEqual(dispatch, `import \${1:Asset} from './asset${ext}';`, `${ext} into ${destExt}`);
+        }
+      });
+
+      it('characterization: Markdown/MDX name sources keep the generic name binding', async () => {
         await openDest(fixture);
         for (const ext of COMPONENT_NAME_SOURCES) {
           const { dispatch } = await buildBoth(fixture, `asset${ext}`);
@@ -111,11 +122,13 @@ describe('react source-switch parity (_react.ts ↔ variants.ts)', () => {
       });
 
       // A basename that can't form a legal identifier (leading digit) falls back to the generic
-      // placeholder — `${1:name}` for the name group, `${1:url}` for the url group.
+      // placeholder — `${1:name}` for the name/SFC groups, `${1:url}` for the url group.
       it('characterization: an illegal-identifier basename falls back to the generic placeholder', async () => {
         await openDest(fixture);
         const nameFallback = await buildBoth(fixture, '404.png');
         assert.strictEqual(nameFallback.dispatch, "import ${1:name} from './404.png';", `404.png into ${destExt}`);
+        const sfcFallback = await buildBoth(fixture, '2fa-widget.vue');
+        assert.strictEqual(sfcFallback.dispatch, "import ${1:name} from './2fa-widget.vue';", `2fa-widget.vue into ${destExt}`);
         const urlFallback = await buildBoth(fixture, '123.mp4');
         assert.strictEqual(urlFallback.dispatch, "import ${1:url} from './123.mp4';", `123.mp4 into ${destExt}`);
       });

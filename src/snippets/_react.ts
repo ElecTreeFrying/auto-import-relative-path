@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 
 import { FileExtension } from '../types/file-extension';
 import { extractFileExtension } from '../path/extension';
-import { deriveImportName } from '../path/import-name';
+import { deriveImportName, deriveComponentName } from '../path/import-name';
 import { FilePathInfo } from '../editor/file-path-info';
 import { getAutoImportSetting } from '../config/settings';
 
@@ -40,11 +40,12 @@ export function buildReactImport(opts: ReactImportOptions, info: FilePathInfo): 
  * (`_react.ts`, `languages/framework-component.ts`) and the style-picker variant builder
  * (`variants.ts:buildReactNonScriptVariant`) without re-reading config or doing path math.
  *
- * Shapes: CSS-module sources → a `styles` default import; images/data/docs/components →
- * a named default import; audio-visual and text-track sources → a `url` default import;
- * fonts and plain stylesheets → a side-effect import. Returns `null` for any extension
- * that should never reach here — gating in `src/gating.ts` is responsible for keeping
- * unsupported pairs out, and callers translate `null` into an empty result.
+ * Shapes: CSS-module sources → a `styles` default import; images/data/docs → a basename-derived
+ * named default import; framework SFCs (`.vue`/`.svelte`/`.astro`) → a PascalCase-derived component
+ * default import; audio-visual and text-track sources → a basename-derived `url` default import;
+ * fonts and plain stylesheets → a side-effect import. Returns `null` for any extension that should
+ * never reach here — gating in `src/gating.ts` is responsible for keeping unsupported pairs out, and
+ * callers translate `null` into an empty result.
  */
 export function buildAssetImportStatement(
   sourceFileExt: FileExtension,
@@ -68,15 +69,19 @@ export function buildAssetImportStatement(
     case '.yaml':
     case '.pdf':
       return `import ${defaultImportPlaceholder(importPath, 'name')} from '${importPath}';`;
-    case '.md':
-    case '.mdx':
     case '.vue':
     case '.svelte':
     case '.astro':
-      // Component-like sources keep the generic `name`: their conventional identifier is PascalCase,
-      // a separate default-import auto-naming pathway that is deliberately deferred (see
-      // docs/import-statements/future/framework-roadmap.md). camelCasing them here would ship the
-      // wrong convention.
+      // Framework SFCs are referenced by a PascalCase identifier regardless of the on-disk filename
+      // (`my-button.vue` → `MyButton`), so the binding is pre-filled via `deriveComponentName` rather
+      // than the plain-asset camelCase. Falls back to the generic `name` when no legal identifier forms.
+      return `import ${componentImportPlaceholder(importPath)} from '${importPath}';`;
+    case '.md':
+    case '.mdx':
+      // Markdown/MDX default-imported as a component (into Astro) also reads as PascalCase, but the
+      // shipped PascalCase pathway is scoped to framework SFCs — Markdown naming stays generic (it is
+      // neither camelCased like a plain asset nor PascalCased like an SFC). See
+      // docs/import-statements/future/framework-roadmap.md.
       return `import \${1:name} from '${importPath}';`;
     case '.mp4':
     case '.webm':
@@ -108,4 +113,14 @@ export function buildAssetImportStatement(
 function defaultImportPlaceholder(importPath: string, fallback: string): string {
   const derived = deriveImportName(importPath);
   return `\${1:${derived ?? fallback}}`;
+}
+
+/**
+ * Builds the `${1:…}` default-import placeholder for a framework SFC, pre-filling it with the
+ * PascalCase component identifier derived from the source basename (`deriveComponentName`), and
+ * falling back to the generic `name` label when no legal identifier can be formed.
+ */
+function componentImportPlaceholder(importPath: string): string {
+  const derived = deriveComponentName(importPath);
+  return `\${1:${derived ?? 'name'}}`;
 }

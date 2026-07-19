@@ -72,20 +72,64 @@ describe('framework-component', () => {
     assert.strictEqual(result.value, "import ${1:subs} from './subs.vtt';");
   });
 
-  // Component-like sources (.vue/.svelte/.astro/.md/.mdx) keep the generic `name` — PascalCase
-  // component naming is a separate, deferred pathway (docs/import-statements/future/framework-roadmap.md).
-  it('.vue self-import keeps the generic name binding (component naming deferred)', async () => {
+  // Framework SFCs (.vue/.svelte/.astro) pre-fill the binding with the PascalCase component name
+  // derived from the source basename (`deriveComponentName`).
+  it('.vue self-import derives a PascalCase component binding', async () => {
     await vscode.env.clipboard.writeText(source('App.vue'));
     const info = await getFilePathInfo();
     const result = buildSnippet(info);
-    assert.strictEqual(result.value, "import ${1:name} from './App.vue';");
+    assert.strictEqual(result.value, "import ${1:App} from './App.vue';");
   });
 
-  it('.svelte self-import keeps the generic name binding (component naming deferred)', async () => {
+  it('.svelte self-import derives a PascalCase component binding', async () => {
     await vscode.env.clipboard.writeText(source('Widget.svelte'));
     const info = await getFilePathInfo();
     const result = buildSnippet(info);
-    assert.strictEqual(result.value, "import ${1:name} from './Widget.svelte';");
+    assert.strictEqual(result.value, "import ${1:Widget} from './Widget.svelte';");
+  });
+
+  it('.astro self-import derives a PascalCase component binding', async () => {
+    await vscode.env.clipboard.writeText(source('App.astro'));
+    const info = await getFilePathInfo();
+    const result = buildSnippet(info);
+    assert.strictEqual(result.value, "import ${1:App} from './App.astro';");
+  });
+
+  it('kebab-case SFC basename PascalCases (my-button.vue → MyButton)', async () => {
+    await vscode.env.clipboard.writeText(source('my-button.vue'));
+    const info = await getFilePathInfo();
+    const result = buildSnippet(info);
+    assert.strictEqual(result.value, "import ${1:MyButton} from './my-button.vue';");
+  });
+
+  it('snake_case SFC basename PascalCases (my_widget.svelte → MyWidget)', async () => {
+    await vscode.env.clipboard.writeText(source('my_widget.svelte'));
+    const info = await getFilePathInfo();
+    const result = buildSnippet(info);
+    assert.strictEqual(result.value, "import ${1:MyWidget} from './my_widget.svelte';");
+  });
+
+  it('dotted SFC basename keeps interior segments (button.spec.vue → ButtonSpec)', async () => {
+    await vscode.env.clipboard.writeText(source('button.spec.vue'));
+    const info = await getFilePathInfo();
+    const result = buildSnippet(info);
+    assert.strictEqual(result.value, "import ${1:ButtonSpec} from './button.spec.vue';");
+  });
+
+  it('SFC basename with no legal identifier falls back to the generic name (2fa-widget.vue)', async () => {
+    await vscode.env.clipboard.writeText(source('2fa-widget.vue'));
+    const info = await getFilePathInfo();
+    const result = buildSnippet(info);
+    assert.strictEqual(result.value, "import ${1:name} from './2fa-widget.vue';");
+  });
+
+  // Markdown/MDX sources stay on the generic `name` even into a framework destination — the shipped
+  // PascalCase pathway is scoped to framework SFCs (docs/import-statements/future/framework-roadmap.md).
+  it('.md source keeps the generic name binding (not an SFC)', async () => {
+    await vscode.env.clipboard.writeText(source('intro.md'));
+    const info = await getFilePathInfo();
+    const result = buildSnippet(info);
+    assert.strictEqual(result.value, "import ${1:name} from './intro.md';");
   });
 
   it('Angular .component source gets PascalCase at index 0 (no class detection)', async () => {
