@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 
 import { FileExtension } from '../types/file-extension';
-import { STYLESHEET_FILE_EXTENSIONS } from '../constants/extensions';
+import { FRAMEWORK_COMPONENT_FILE_EXTENSIONS, STYLESHEET_FILE_EXTENSIONS } from '../constants/extensions';
 import { AutoImportConfigNamespace, AutoImportSettingKey, getAutoImportSetting } from '../config/settings';
 import { determineImportType } from '../path/import-type';
 import { FilePathInfo } from '../editor/file-path-info';
@@ -70,6 +70,10 @@ export async function buildImportSnippetVariants(
 
   switch (destinationFileExt) {
     case '.js':
+      if (FRAMEWORK_COMPONENT_FILE_EXTENSIONS.includes(sourceFileExt)) {
+        const variant = buildReactNonScriptVariant(sourceFileExt, fullPath, labelFullPath);
+        return variant ? [ variant ] : [];
+      }
       return JAVASCRIPT_IMPORT_OPTIONS.map(opt =>
         toStyledVariant(
           opt,
@@ -78,6 +82,10 @@ export async function buildImportSnippetVariants(
           'script', 'javascript',
         ));
     case '.ts': {
+      if (FRAMEWORK_COMPONENT_FILE_EXTENSIONS.includes(sourceFileExt)) {
+        const variant = buildReactNonScriptVariant(sourceFileExt, fullPath, labelFullPath);
+        return variant ? [ variant ] : [];
+      }
       const className = await readExportedClassName(sourceFilePath);
       const resolved = className ?? undefined;
       return TYPESCRIPT_IMPORT_OPTIONS.map(opt =>

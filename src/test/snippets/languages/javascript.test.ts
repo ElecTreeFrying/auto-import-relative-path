@@ -1,6 +1,9 @@
 import * as assert from 'assert';
+import * as path from 'path';
+import * as vscode from 'vscode';
 
-import { buildJavaScriptImportSnippetByStyle } from '../../../snippets/languages/javascript';
+import { buildSnippet, buildJavaScriptImportSnippetByStyle } from '../../../snippets/languages/javascript';
+import { getFilePathInfo } from '../../../editor/file-path-info';
 
 const PATH = './utils/helper';
 // The default-import positions pre-fill the binding with the camelCased source basename ('helper').
@@ -50,5 +53,40 @@ describe('buildJavaScriptImportSnippetByStyle', () => {
   it('falls back to a bare $1 when the basename yields no legal identifier', () => {
     const result = buildJavaScriptImportSnippetByStyle(0, './assets/404');
     assert.strictEqual(result.value, "import $1 from './assets/404';");
+  });
+});
+
+// A framework SFC (.vue/.svelte/.astro) source imported into a .js destination is a component
+// default import via the shared asset switch — PascalCase-named, full extension kept — not the
+// extension-stripping script path, and never the configured JavaScript style.
+describe('buildSnippet — framework-component sources into .js', () => {
+  const FIXTURE_ROOT = path.resolve(__dirname, '../../../../src/test/fixtures');
+  const DEST_DIR = path.join(FIXTURE_ROOT, 'src');
+
+  before(async () => {
+    const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(path.join(DEST_DIR, 'sibling.js')));
+    await vscode.window.showTextDocument(doc);
+  });
+
+  after(async () => {
+    await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+  });
+
+  async function snippetFor(sourceName: string): Promise<string> {
+    await vscode.env.clipboard.writeText(path.join(DEST_DIR, sourceName));
+    const info = await getFilePathInfo();
+    return buildSnippet(info).value;
+  }
+
+  it('.vue source derives a PascalCase component default import (extension kept)', async () => {
+    assert.strictEqual(await snippetFor('App.vue'), "import ${1:App} from './App.vue';");
+  });
+
+  it('.svelte source derives a PascalCase component default import', async () => {
+    assert.strictEqual(await snippetFor('Widget.svelte'), "import ${1:Widget} from './Widget.svelte';");
+  });
+
+  it('.astro source derives a PascalCase component default import', async () => {
+    assert.strictEqual(await snippetFor('App.astro'), "import ${1:App} from './App.astro';");
   });
 });

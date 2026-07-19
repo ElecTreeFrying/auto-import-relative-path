@@ -74,6 +74,26 @@ describe('AutoImportOnDropProvider.provideDocumentDropEdits', () => {
     assert.ok(result.additionalEdit instanceof vscode.WorkspaceEdit, 'expected an attached WorkspaceEdit');
   });
 
+  it('delivers a framework component into a script destination via insertText, not additionalEdit (.vue → .ts)', async () => {
+    const doc = await destDocument('src/foo.ts');
+    const result = await drop(doc, 'src/App.vue');
+
+    assert.ok(result, 'expected a DocumentDropEdit for .vue → .ts');
+    assert.strictEqual(result.title, 'Auto Import');
+    // A concrete insertText (NOT an empty-insertText + additionalEdit placement) is what out-ranks
+    // VS Code's built-in TypeScript "drop to update imports" provider — which competes on script
+    // destinations and, unable to import an SFC, otherwise leaves the raw path + a "Not supported" notice.
+    const inserted = (result.insertText as vscode.SnippetString).value;
+    assert.ok(inserted.includes("from './App.vue'"), `expected the component import in insertText, got: "${inserted}"`);
+    assert.strictEqual(result.additionalEdit, undefined, 'component-into-script drops must NOT defer to a placement WorkspaceEdit');
+  });
+
+  it('suppresses a non-component source dropped into a script destination (.png → .ts, narrow allow-list)', async () => {
+    const doc = await destDocument('src/foo.ts');
+    const result = await drop(doc, 'assets/logo.png');
+    assertSuppressed(result);
+  });
+
   it('returns an inline drop edit whose insertText carries the url() snippet (.png → .css)', async () => {
     const doc = await destDocument('styles/reset.css');
     const result = await drop(doc, 'assets/logo.png');

@@ -23,7 +23,7 @@ function waitForDocumentChange(fn: () => Promise<void>, timeoutMs = 500): Promis
   });
 }
 
-// Rejection paths mirror paste-import.ts (shared eleven-clause gating). Single-variant destinations
+// Rejection paths mirror paste-import.ts (shared gating). Single-variant destinations
 // insert directly with no picker — that path is fully testable. The >=2-variant QuickPick is the
 // manual-QA boundary (no Sinon to answer the picker; a stray picker would hang the suite).
 describe('executePasteImportWithStyle', () => {

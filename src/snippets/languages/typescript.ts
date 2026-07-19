@@ -7,6 +7,8 @@ import { deriveImportName } from '../../path/import-name';
 import { FilePathInfo } from '../../editor/file-path-info';
 import { TYPESCRIPT_IMPORT_OPTIONS, resolveStyleIndex } from '../_styles';
 import { readExportedClassName } from '../_class-name';
+import { buildAssetImportStatement } from '../_react';
+import { FRAMEWORK_COMPONENT_FILE_EXTENSIONS } from '../../constants/extensions';
 
 const LEGACY_ANGULAR_FILE_SUFFIXES = [
   '.component',
@@ -17,7 +19,16 @@ const LEGACY_ANGULAR_FILE_SUFFIXES = [
 ];
 
 export async function buildSnippet(info: FilePathInfo): Promise<vscode.SnippetString> {
-  const { sourceFilePath, relativePath } = info;
+  const { sourceFilePath, sourceFileExt, relativePath } = info;
+
+  // A framework SFC (.vue/.svelte/.astro) imported into a .ts destination — common in test/setup
+  // code — is a component default import, not a script import: it routes through the shared asset
+  // switch (PascalCase-named, full extension kept), never the extension-stripping script path. The
+  // narrow TYPESCRIPT_SUPPORTED_EXTENSIONS gate keeps every other cross-extension source out, so this
+  // branch returns before the class-name read that a real .ts source needs.
+  if (FRAMEWORK_COMPONENT_FILE_EXTENSIONS.includes(sourceFileExt)) {
+    return new vscode.SnippetString(buildAssetImportStatement(sourceFileExt, relativePath + sourceFileExt) ?? '');
+  }
 
   const shouldPreserveExtension = getAutoImportSetting('script', 'preserve');
   const fileExtension = shouldPreserveExtension ? extractFileExtension(sourceFilePath) : '';

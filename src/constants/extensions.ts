@@ -37,6 +37,12 @@ export const STYLESHEET_FILE_EXTENSIONS: FileExtension[] = [
   '.css',
 ];
 
+export const FRAMEWORK_COMPONENT_FILE_EXTENSIONS: FileExtension[] = [
+  '.vue',
+  '.svelte',
+  '.astro',
+];
+
 export const HTML_SUPPORTED_EXTENSIONS: FileExtension[] = [
   '.js',
   '.css',
@@ -116,6 +122,16 @@ export const TEX_SUPPORTED_EXTENSIONS: FileExtension[] = [
   ...TEX_GRAPHICS_FILE_EXTENSIONS,
 ];
 
+export const TYPESCRIPT_SUPPORTED_EXTENSIONS: FileExtension[] = [
+  '.ts',
+  ...FRAMEWORK_COMPONENT_FILE_EXTENSIONS,
+];
+
+export const JAVASCRIPT_SUPPORTED_EXTENSIONS: FileExtension[] = [
+  '.js',
+  ...FRAMEWORK_COMPONENT_FILE_EXTENSIONS,
+];
+
 export const SCRIPT_FILE_EXTENSIONS: FileExtension[] = [
   '.ts',
   '.tsx',
@@ -139,4 +155,6 @@ export const CROSS_IMPORT_DESTINATIONS: FileExtension[] = [
   '.svelte',
   '.astro',
   '.tex',
+  '.ts',
+  '.js',
 ];

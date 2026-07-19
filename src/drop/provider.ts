@@ -8,6 +8,8 @@ import { extractFileExtension } from '../path/extension';
 import { isPairSupported } from '../gating';
 import { buildImportSnippet } from '../snippets/dispatch';
 import { joinImportStatements } from '../snippets/compose';
+import { FRAMEWORK_COMPONENT_FILE_EXTENSIONS } from '../constants/extensions';
+import { FileExtension } from '../types/file-extension';
 
 const EDIT_KIND = vscode.DocumentDropOrPasteEditKind.TextUpdateImports.append('autoImport');
 const EDIT_TITLE = 'Auto Import';
@@ -16,6 +18,7 @@ const EDIT_TITLE = 'Auto Import';
 interface DropCandidate {
   value: string;
   placement: ComputedPlacement;
+  sourceFileExt: FileExtension;
 }
 
 /** Offers import snippets when one or more files are dragged from the Explorer onto a supported editor. */
@@ -89,7 +92,7 @@ export class AutoImportOnDropProvider implements vscode.DocumentDropEditProvider
         position.character,
         insideStyleBlock,
       );
-      candidates.push({ value: snippet.value, placement });
+      candidates.push({ value: snippet.value, placement, sourceFileExt: info.sourceFileExt });
     }
 
     if (candidates.length === 0) {
@@ -122,6 +125,21 @@ export class AutoImportOnDropProvider implements vscode.DocumentDropEditProvider
     const finalValue = placement.wrapperPrefix
       ? placement.wrapperPrefix + block + (placement.wrapperSuffix || '')
       : block;
+
+    // A framework-component source dropped into a plain `.ts`/`.js` destination must deliver the import
+    // through `insertText` (at the drop position), NOT the empty-`insertText` + `additionalEdit` placement
+    // every other block uses. VS Code's built-in TypeScript "drop to update imports" provider also bids on
+    // script destinations; it can't import an SFC, so it out-ranks our empty-`insertText` edit and leaves
+    // the raw path plus a "Not supported" notice. A concrete `insertText` makes ours the applied edit.
+    // Scoped to this exact pair: every other destination has no built-in competitor and keeps its
+    // constrained placement (Astro frontmatter, SFC `<script>`, HTML/Markdown cursor, CSS `@import`).
+    const destinationFileExt = extractFileExtension(destinationFilePath);
+    const isScriptDestination = destinationFileExt === '.ts' || destinationFileExt === '.js';
+    const everyBlockIsComponent = blockCandidates.every(candidate =>
+      FRAMEWORK_COMPONENT_FILE_EXTENSIONS.includes(candidate.sourceFileExt));
+    if (isScriptDestination && everyBlockIsComponent) {
+      return new vscode.DocumentDropEdit(new vscode.SnippetString(finalValue), EDIT_TITLE, EDIT_KIND);
+    }
 
     const dropEdit = new vscode.DocumentDropEdit(new vscode.SnippetString(''), EDIT_TITLE, EDIT_KIND);
     const edit = new vscode.WorkspaceEdit();

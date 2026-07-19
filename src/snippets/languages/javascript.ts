@@ -5,9 +5,18 @@ import { extractFileExtension } from '../../path/extension';
 import { deriveImportName } from '../../path/import-name';
 import { FilePathInfo } from '../../editor/file-path-info';
 import { JAVASCRIPT_IMPORT_OPTIONS, resolveStyleIndex } from '../_styles';
+import { buildAssetImportStatement } from '../_react';
+import { FRAMEWORK_COMPONENT_FILE_EXTENSIONS } from '../../constants/extensions';
 
 export function buildSnippet(info: FilePathInfo): vscode.SnippetString {
-  const { sourceFilePath, relativePath } = info;
+  const { sourceFilePath, sourceFileExt, relativePath } = info;
+
+  // A framework SFC (.vue/.svelte/.astro) imported into a .js destination is a component default
+  // import via the shared asset switch (PascalCase-named, full extension kept), not the
+  // extension-stripping script path. JAVASCRIPT_SUPPORTED_EXTENSIONS gates every other source out.
+  if (FRAMEWORK_COMPONENT_FILE_EXTENSIONS.includes(sourceFileExt)) {
+    return new vscode.SnippetString(buildAssetImportStatement(sourceFileExt, relativePath + sourceFileExt) ?? '');
+  }
 
   const shouldPreserveExtension = getAutoImportSetting('script', 'preserve');
   const fileExtension = shouldPreserveExtension ? extractFileExtension(sourceFilePath) : '';

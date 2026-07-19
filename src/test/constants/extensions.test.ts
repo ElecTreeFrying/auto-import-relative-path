@@ -16,6 +16,9 @@ import {
   CROSS_IMPORT_DESTINATIONS,
   SCRIPT_FILE_EXTENSIONS,
   STYLESHEET_FILE_EXTENSIONS,
+  FRAMEWORK_COMPONENT_FILE_EXTENSIONS,
+  TYPESCRIPT_SUPPORTED_EXTENSIONS,
+  JAVASCRIPT_SUPPORTED_EXTENSIONS,
 } from '../../constants/extensions';
 
 describe('constants/extensions', () => {
@@ -100,9 +103,9 @@ describe('constants/extensions', () => {
     }
   });
 
-  it('CROSS_IMPORT_DESTINATIONS has exactly 11 members', () => {
-    assert.strictEqual(CROSS_IMPORT_DESTINATIONS.length, 11);
-    for (const ext of [ '.html', '.md', '.css', '.scss', '.tsx', '.mdx', '.jsx', '.vue', '.svelte', '.astro', '.tex' ]) {
+  it('CROSS_IMPORT_DESTINATIONS has exactly 13 members', () => {
+    assert.strictEqual(CROSS_IMPORT_DESTINATIONS.length, 13);
+    for (const ext of [ '.html', '.md', '.css', '.scss', '.tsx', '.mdx', '.jsx', '.vue', '.svelte', '.astro', '.tex', '.ts', '.js' ]) {
       assert.ok(CROSS_IMPORT_DESTINATIONS.includes(ext as any), `missing ${ext}`);
     }
   });
@@ -133,6 +136,24 @@ describe('constants/extensions', () => {
 
   it('STYLESHEET_FILE_EXTENSIONS has exactly 2 entries', () => {
     assert.deepStrictEqual(STYLESHEET_FILE_EXTENSIONS, [ '.scss', '.css' ]);
+  });
+
+  it('FRAMEWORK_COMPONENT_FILE_EXTENSIONS is the runtime mirror [.vue, .svelte, .astro]', () => {
+    assert.deepStrictEqual(FRAMEWORK_COMPONENT_FILE_EXTENSIONS, [ '.vue', '.svelte', '.astro' ]);
+  });
+
+  it('TYPESCRIPT_SUPPORTED_EXTENSIONS is .ts + the framework components (own extension + SFC sources)', () => {
+    assert.deepStrictEqual(TYPESCRIPT_SUPPORTED_EXTENSIONS, [ '.ts', '.vue', '.svelte', '.astro' ]);
+    for (const ext of [ '.js', '.tsx', '.jsx', '.mdx', '.png', '.json' ]) {
+      assert.ok(!TYPESCRIPT_SUPPORTED_EXTENSIONS.includes(ext as any), `${ext} must not be a .ts-accepted source`);
+    }
+  });
+
+  it('JAVASCRIPT_SUPPORTED_EXTENSIONS is .js + the framework components (own extension + SFC sources)', () => {
+    assert.deepStrictEqual(JAVASCRIPT_SUPPORTED_EXTENSIONS, [ '.js', '.vue', '.svelte', '.astro' ]);
+    for (const ext of [ '.ts', '.jsx', '.css', '.json' ]) {
+      assert.ok(!JAVASCRIPT_SUPPORTED_EXTENSIONS.includes(ext as any), `${ext} must not be a .js-accepted source`);
+    }
   });
 
   it('.ts is not in HTML_SUPPORTED_EXTENSIONS', () => {

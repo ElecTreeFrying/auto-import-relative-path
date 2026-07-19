@@ -105,18 +105,27 @@ describe('executePasteImport', () => {
       assert.strictEqual(changed, false, 'expected no document change for .ts into .html');
     });
 
-    it('.ts into .js rejects (same-extension rule)', async () => {
+    it('.ts into .js rejects (.ts not in JAVASCRIPT_SUPPORTED_EXTENSIONS)', async () => {
       await openFixture('src/sibling.js');
       await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'src/bar.ts'));
       const changed = await waitForDocumentChange(() => executePasteImport());
       assert.strictEqual(changed, false, 'expected no document change for .ts into .js');
     });
 
-    it('.js into .ts rejects (same-extension rule)', async () => {
+    it('.js into .ts rejects (.js not in TYPESCRIPT_SUPPORTED_EXTENSIONS)', async () => {
       await openFixture('src/foo.ts');
       await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'src/sibling.js'));
       const changed = await waitForDocumentChange(() => executePasteImport());
       assert.strictEqual(changed, false, 'expected no document change for .js into .ts');
+    });
+
+    // The narrow allow-list keeps non-component sources out of the classifier-free .ts/.js builders,
+    // so a .png source cleanly rejects rather than emitting a broken extension-stripped import.
+    it('.png into .ts rejects (asset source, not a framework component)', async () => {
+      await openFixture('src/foo.ts');
+      await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'src/logo.png'));
+      const changed = await waitForDocumentChange(() => executePasteImport());
+      assert.strictEqual(changed, false, 'expected no document change for .png into .ts');
     });
 
     it('.scss into .html rejects (not in HTML_SUPPORTED_EXTENSIONS)', async () => {
@@ -153,6 +162,17 @@ describe('executePasteImport', () => {
       assert.notStrictEqual(editor.document.getText(), textBefore, 'document should differ after insertion');
       const allText = editor.document.getText();
       assert.ok(allText.includes("from './bar'"), `expected import path in document, got: ${allText.slice(0, 200)}`);
+    });
+
+    it('.vue into .ts inserts a PascalCase component import (framework source, extension kept)', async () => {
+      const editor = await openFixture('src/foo.ts');
+      await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'src/App.vue'));
+      const textBefore = editor.document.getText();
+      const changed = await waitForDocumentChange(() => executePasteImport(), 2000);
+      assert.strictEqual(changed, true, 'expected document change for valid .vue into .ts');
+      assert.notStrictEqual(editor.document.getText(), textBefore, 'document should differ after insertion');
+      const allText = editor.document.getText();
+      assert.ok(allText.includes("from './App.vue'"), `expected component import path in document, got: ${allText.slice(0, 200)}`);
     });
 
     it('.js into .html inserts <script> tag', async () => {

@@ -1,6 +1,9 @@
 import * as assert from 'assert';
+import * as path from 'path';
+import * as vscode from 'vscode';
 
-import { buildTypeScriptImportSnippetByStyle } from '../../../snippets/languages/typescript';
+import { buildSnippet, buildTypeScriptImportSnippetByStyle } from '../../../snippets/languages/typescript';
+import { getFilePathInfo } from '../../../editor/file-path-info';
 
 const PATH = './utils/helper';
 
@@ -112,5 +115,45 @@ describe('buildTypeScriptImportSnippetByStyle', () => {
       const result = buildTypeScriptImportSnippetByStyle(undefined, './app-root.component');
       assert.strictEqual(result.value, "import { $1 } from './app-root.component';");
     });
+  });
+});
+
+// A framework SFC (.vue/.svelte/.astro) source imported into a .ts destination is a component
+// default import via the shared asset switch — PascalCase-named, full extension kept — not the
+// extension-stripping script path, and never the configured TypeScript style. buildSnippet returns
+// before both the preserve-setting read and the class-name read, so a hand-opened fixture suffices.
+describe('buildSnippet — framework-component sources into .ts', () => {
+  const FIXTURE_ROOT = path.resolve(__dirname, '../../../../src/test/fixtures');
+  const DEST_DIR = path.join(FIXTURE_ROOT, 'src');
+
+  before(async () => {
+    const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(path.join(DEST_DIR, 'foo.ts')));
+    await vscode.window.showTextDocument(doc);
+  });
+
+  after(async () => {
+    await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+  });
+
+  async function snippetFor(sourceName: string): Promise<string> {
+    await vscode.env.clipboard.writeText(path.join(DEST_DIR, sourceName));
+    const info = await getFilePathInfo();
+    return (await buildSnippet(info)).value;
+  }
+
+  it('.vue source derives a PascalCase component default import (extension kept)', async () => {
+    assert.strictEqual(await snippetFor('App.vue'), "import ${1:App} from './App.vue';");
+  });
+
+  it('.svelte source derives a PascalCase component default import', async () => {
+    assert.strictEqual(await snippetFor('Widget.svelte'), "import ${1:Widget} from './Widget.svelte';");
+  });
+
+  it('.astro source derives a PascalCase component default import', async () => {
+    assert.strictEqual(await snippetFor('App.astro'), "import ${1:App} from './App.astro';");
+  });
+
+  it('kebab-case SFC basename PascalCases through the .ts builder (my-button.vue → MyButton)', async () => {
+    assert.strictEqual(await snippetFor('my-button.vue'), "import ${1:MyButton} from './my-button.vue';");
   });
 });

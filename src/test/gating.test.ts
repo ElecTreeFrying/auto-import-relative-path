@@ -15,7 +15,7 @@ function info(sourceFileExt: string, destinationFileExt: string): FilePathInfo {
 }
 
 describe('gating/isPairSupported', () => {
-  describe('same-extension bypass (clause 1)', () => {
+  describe('same-extension acceptance', () => {
     it('.js → .js passes', () => {
       assert.strictEqual(isPairSupported(info('.js', '.js')), true);
     });
@@ -30,14 +30,6 @@ describe('gating/isPairSupported', () => {
   });
 
   describe('cross-import destinations (clause 1)', () => {
-    it('.js → .ts rejected (not in CROSS_IMPORT_DESTINATIONS)', () => {
-      assert.strictEqual(isPairSupported(info('.js', '.ts')), false);
-    });
-
-    it('.ts → .js rejected (not in CROSS_IMPORT_DESTINATIONS)', () => {
-      assert.strictEqual(isPairSupported(info('.ts', '.js')), false);
-    });
-
     it('.js → .tsx accepted (tsx in CROSS_IMPORT_DESTINATIONS)', () => {
       assert.strictEqual(isPairSupported(info('.js', '.tsx')), true);
     });
@@ -245,6 +237,66 @@ describe('gating/isPairSupported', () => {
     });
   });
 
+  describe('TypeScript destination (clause 11)', () => {
+    it('.vue → .ts accepted (framework-component source)', () => {
+      assert.strictEqual(isPairSupported(info('.vue', '.ts')), true);
+    });
+
+    it('.svelte → .ts accepted (framework-component source)', () => {
+      assert.strictEqual(isPairSupported(info('.svelte', '.ts')), true);
+    });
+
+    it('.astro → .ts accepted (framework-component source)', () => {
+      assert.strictEqual(isPairSupported(info('.astro', '.ts')), true);
+    });
+
+    it('.ts → .ts accepted (own extension in TYPESCRIPT_SUPPORTED_EXTENSIONS)', () => {
+      assert.strictEqual(isPairSupported(info('.ts', '.ts')), true);
+    });
+
+    it('.js → .ts rejected (.js not in TYPESCRIPT_SUPPORTED_EXTENSIONS)', () => {
+      assert.strictEqual(isPairSupported(info('.js', '.ts')), false);
+    });
+
+    it('.tsx → .ts rejected (.tsx not in TYPESCRIPT_SUPPORTED_EXTENSIONS)', () => {
+      assert.strictEqual(isPairSupported(info('.tsx', '.ts')), false);
+    });
+
+    it('.png → .ts rejected (asset sources stay out of the narrow allow-list)', () => {
+      assert.strictEqual(isPairSupported(info('.png', '.ts')), false);
+    });
+
+    it('.mdx → .ts rejected', () => {
+      assert.strictEqual(isPairSupported(info('.mdx', '.ts')), false);
+    });
+  });
+
+  describe('JavaScript destination (clause 12)', () => {
+    it('.vue → .js accepted (framework-component source)', () => {
+      assert.strictEqual(isPairSupported(info('.vue', '.js')), true);
+    });
+
+    it('.svelte → .js accepted (framework-component source)', () => {
+      assert.strictEqual(isPairSupported(info('.svelte', '.js')), true);
+    });
+
+    it('.astro → .js accepted (framework-component source)', () => {
+      assert.strictEqual(isPairSupported(info('.astro', '.js')), true);
+    });
+
+    it('.js → .js accepted (own extension in JAVASCRIPT_SUPPORTED_EXTENSIONS)', () => {
+      assert.strictEqual(isPairSupported(info('.js', '.js')), true);
+    });
+
+    it('.ts → .js rejected (.ts not in JAVASCRIPT_SUPPORTED_EXTENSIONS)', () => {
+      assert.strictEqual(isPairSupported(info('.ts', '.js')), false);
+    });
+
+    it('.json → .js rejected (asset sources stay out of the narrow allow-list)', () => {
+      assert.strictEqual(isPairSupported(info('.json', '.js')), false);
+    });
+  });
+
   describe('extensionless source (first clause)', () => {
     it('extensionless → .md accepted (Markdown link)', () => {
       assert.strictEqual(isPairSupported(info('', '.md')), true);
@@ -287,6 +339,8 @@ describe('gating/isPairSupported', () => {
       [ '.css', '.vue', true ], [ '.scss', '.svelte', true ],
       [ '.svelte', '.astro', true ], [ '.scss', '.astro', true ], [ '.html', '.astro', false ],
       [ '.pdf', '.tex', true ], [ '.svg', '.tex', false ],
+      [ '.vue', '.ts', true ], [ '.png', '.ts', false ],
+      [ '.svelte', '.js', true ], [ '.json', '.js', false ],
     ];
     for (const [ src, dest, expected ] of pairs) {
       it(`${src} → ${dest} ${expected ? 'accepted' : 'rejected'}`, () => {

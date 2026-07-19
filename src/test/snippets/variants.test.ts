@@ -41,6 +41,28 @@ describe('buildImportSnippetVariants', () => {
     assert.ok(variants[0].setting, 'styled variant should have setting');
   });
 
+  // Framework-component sources into .ts/.js are a single hardcoded (fixed-shape) variant: the
+  // style picker inserts it directly, and Set Default reports it as fixed-style (setting undefined).
+  it('.vue into .ts: 1 hardcoded component variant (no style setting)', async () => {
+    const variants = await openAndQuery('src/foo.ts', 'App.vue');
+    assert.strictEqual(variants.length, 1);
+    assert.strictEqual(variants[0].setting, undefined);
+    assert.strictEqual(variants[0].snippetText, "import ${1:App} from './App.vue';");
+  });
+
+  it('.astro into .ts: 1 hardcoded component variant', async () => {
+    const variants = await openAndQuery('src/foo.ts', 'App.astro');
+    assert.strictEqual(variants.length, 1);
+    assert.strictEqual(variants[0].snippetText, "import ${1:App} from './App.astro';");
+  });
+
+  it('.svelte into .js: 1 hardcoded component variant (no style setting)', async () => {
+    const variants = await openAndQuery('src/sibling.js', 'Widget.svelte');
+    assert.strictEqual(variants.length, 1);
+    assert.strictEqual(variants[0].setting, undefined);
+    assert.strictEqual(variants[0].snippetText, "import ${1:Widget} from './Widget.svelte';");
+  });
+
   it('.css into .css: 2 styled variants', async () => {
     const variants = await openAndQuery('styles/reset.css', 'global.css');
     assert.strictEqual(variants.length, 2);
