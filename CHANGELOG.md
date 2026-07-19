@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.1.0 (unreleased)
+
+### Added
+- **Import multiple files in one gesture.** Select several files and import them all at once — every gesture fans out over the full selection and inserts one **stacked block** of import statements, one per file, in selection order, as a single insertion at the shared placement:
+  - **Drag-and-drop:** drag an Explorer multi-selection into any supported editor — each dragged file is gated, built, and placed independently, and the surviving statements are stacked at the drop placement.
+  - **Copy/paste:** multi-select in the Explorer, copy with `Cmd/Ctrl+Shift+A` (or run the one-step `Alt+D`), then paste with `Cmd/Ctrl+I` — the copy toast announces every copied path (`Copied 3 paths — logo.svg, app.ts, util.ts`), and paste inserts the same stacked block. Hand-assembled newline-joined path lists on the clipboard work too.
+  - **Independent placeholders:** each statement's tab stops are renumbered, so typing one import's identifier never edits another's.
+  - **Per-member skips:** members that can't import are skipped silently while the rest insert — the destination itself, files that no longer exist, extensionless files (`LICENSE`, `Makefile`), and unsupported pairs. When *nothing* in the selection can import, a single warning reports the most informative failure.
+  - **Inline `url()` rule:** image-into-stylesheet snippets are inline CSS values and can't stack — an all-inline selection inserts the first file only.
+  - **Style pickers stay single-pair:** *Paste as Import (Pick Style)* and *Set Default Import Style* operate on the first usable member of a multi-selection.
+  - Single-file behavior is unchanged, byte-for-byte, on every gesture.
+
+### Fixed
+- **Explorer multi-select no longer breaks the clipboard commands.** Copying a multi-selection used to leave a newline-joined path blob on the clipboard that paste treated as one path, failing with "Source file no longer exists". The clipboard channel now parses one path per line end-to-end.
+
 ## v1.0.0 (2026-07-19)
 
 ### Breaking Changes

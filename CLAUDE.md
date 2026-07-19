@@ -8,7 +8,7 @@ Do NOT append a `Co-Authored-By: Claude ...` trailer (or any other Claude/AI att
 
 ## Project
 
-VS Code extension that generates relative-path import statements for JS/TS/JSX/TSX/MDX/CSS/SCSS/HTML/Markdown/Vue/Svelte/Astro/LaTeX. Input gestures: **copy-paste** (the copy/paste command set) and **drag-and-drop** (a `DocumentDropEditProvider` covering every destination language). The commands (`extension.copyFilePath`, `extension.pasteImport`, `extension.copyPaste`, `extension.pasteImportWithStyle`, `extension.setDefaultImportStyle`, `extension.setImportPlacement`, `extension.togglePreserveScriptExtension`, `extension.resetImportStyles`) are registered in `src/extension.ts`. The keybound commands (`copyFilePath` — `cmd/ctrl+shift+a`, `pasteImport` — `cmd/ctrl+i`, `copyPaste` — `alt+d` in the explorer) get their bindings from `package.json`; the rest are reachable via the Command Palette (and `pasteImportWithStyle` also via the `copy-success` toast button). The drop provider is registered alongside the commands in `activate()` and uses the same snippet pipeline.
+VS Code extension that generates relative-path import statements for JS/TS/JSX/TSX/MDX/CSS/SCSS/HTML/Markdown/Vue/Svelte/Astro/LaTeX. Input gestures: **copy-paste** (the copy/paste command set) and **drag-and-drop** (a `DocumentDropEditProvider` covering every destination language). Both gestures accept Explorer multi-selections — the clipboard channel and the drop provider fan out per file and insert one stacked block, tab stops renumbered via `snippets/compose.ts`; the style-picker commands instead reduce a multi-selection to its primary member. The commands (`extension.copyFilePath`, `extension.pasteImport`, `extension.copyPaste`, `extension.pasteImportWithStyle`, `extension.setDefaultImportStyle`, `extension.setImportPlacement`, `extension.togglePreserveScriptExtension`, `extension.resetImportStyles`) are registered in `src/extension.ts`. The keybound commands (`copyFilePath` — `cmd/ctrl+shift+a`, `pasteImport` — `cmd/ctrl+i`, `copyPaste` — `alt+d` in the explorer) get their bindings from `package.json`; the rest are reachable via the Command Palette (and `pasteImportWithStyle` also via the `copy-success` toast button). The drop provider is registered alongside the commands in `activate()` and uses the same snippet pipeline.
 
 ## Subdirectory guides
 
@@ -28,7 +28,7 @@ Each directory under `src/` has its own nested `CLAUDE.md` guide. Read it before
 | `src/types/` | Cross-cutting type unions (no enums) | [`src/types/CLAUDE.md`](src/types/CLAUDE.md) |
 | `src/test/` | Mocha BDD tests; runs from `out/`, not `dist/` | [`src/test/CLAUDE.md`](src/test/CLAUDE.md) |
 
-> **Local-only trees (gitignored).** `docs/` — the design library (import-statements criteria, decisions, rejection ledgers) — and `qa/` — the manual-QA checklists + fixture workspaces — are kept on disk for development, not tracked or shipped. Their guides live locally at `docs/CLAUDE.md` and `qa/CLAUDE.md`.
+> **Local-only trees (gitignored).** `docs/` — the design library (import-statements criteria, decisions, rejection ledgers) — `qa/` — the manual-QA checklists + fixture workspaces — and `qa-roadmap/` — per-roadmap-item manual-QA sessions (a fixture workspace + checklist per item under test) — are kept on disk for development, not tracked or shipped. Their guides live locally at `docs/CLAUDE.md`, `qa/CLAUDE.md`, and `qa-roadmap/CLAUDE.md`.
 
 ## Commands
 
@@ -86,7 +86,7 @@ These multi-site contracts silently break on drift. The linked guides have the f
 - `tsconfig.json` is `module: Node16`, `target: ES2022`, `strict: false`, `rootDir: src`, `sourceMap: true`, and `types: ["node", "mocha"]`. New source files belong under `src/`. (`sourceMap` is on so `test:coverage` maps `out/` back to `src/`.)
 - Mocha tests are written in BDD style (`describe`/`it`); the runner UI is set to `bdd` in `.vscode-test.mjs`. Tests use Node's built-in `assert` (no Chai/Sinon). The test runner glob is `out/test/**/*.test.js` — only files emitted by `compile-tests` get picked up.
 - **Coverage is opt-in:** `npm run test:coverage` runs the same suite with `vscode-test --coverage` (V8/c8). `.vscode-test.mjs` uses the `{ tests, coverage }` form — the `coverage` block (`includeAll`, `exclude` of `test`/`*.test.*`/`types`, `text`+`html` reporters) is silently ignored unless `--coverage` is passed. Report lands in the git-ignored `coverage/`.
-- `process/` is gitignored — private publishing notes + access tokens; never commit it. `docs/` (the design library) and `qa/` (the manual-QA corpus) are gitignored too — kept locally for development, never tracked or shipped. Under `.claude/`, the shared tooling (`agents/`, `skills/`, `workflows/`) is tracked; `agents/state/` and everything else under `.claude/` stays gitignored.
+- `process/` is gitignored — private publishing notes + access tokens; never commit it. `docs/` (the design library), `qa/` (the manual-QA corpus), and `qa-roadmap/` (per-roadmap-item QA sessions) are gitignored too — kept locally for development, never tracked or shipped. Under `.claude/`, the shared tooling (`agents/`, `skills/`, `workflows/`) is tracked; `agents/state/` and everything else under `.claude/` stays gitignored.
 
 ## Naming conventions
 

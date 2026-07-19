@@ -28,11 +28,13 @@ Drag a file or press a key — the right import lands in your editor. Path, synt
 ## Quick Start
 
 1. **Install** the extension ([see below](#installation)).
-2. **Click** a file in the Explorer and press <kbd>Option</kbd>+<kbd>D</kbd> (<kbd>Alt</kbd>+<kbd>D</kbd> on Windows/Linux) to auto-import — or use the two-step <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> then <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>I</kbd> workflow.
-3. **Or drag** a file from the Explorer directly into an open editor — the import appears at the drop position.
+2. **Click** a file — or multi-select several — in the Explorer and press <kbd>Option</kbd>+<kbd>D</kbd> (<kbd>Alt</kbd>+<kbd>D</kbd> on Windows/Linux) to auto-import — or use the two-step <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> then <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>I</kbd> workflow.
+3. **Or drag** a file — or a whole multi-selection — from the Explorer directly into an open editor — the imports appear at the drop position, one per file.
 4. The import lands in your editor. Your cursor is on the identifier — name it and <kbd>Tab</kbd> out.
 
 > **Two-step workflow:** <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> to copy a file's path, then <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>I</kbd> in any editor to paste the import. The clipboard holds the path until you copy something else — paste into as many files as you like.
+
+> **Several files at once:** every gesture accepts an Explorer multi-selection — the imports land as one stacked block, one per file, each with its own independent placeholder.
 
 > **Pick a style on the fly:** Run *Auto Import: Paste as Import (Pick Style)* from the Command Palette, or click **Paste with Style** on the copy toast. Choose an import shape for one paste without changing your default.
 
@@ -46,6 +48,7 @@ Drag a file or press a key — the right import lands in your editor. Path, synt
 
 - **Eight commands, three keystrokes** — Copy, Paste, and Auto on the keyboard; *Pick Style*, *Set Default Style*, *Set Import Placement*, *Toggle Preserve Script File Extension*, and *Reset All Import Styles* from the Command Palette
 - **Drag-and-drop from Explorer** — drag any supported file into an editor to insert the import at the drop position, no keyboard required
+- **Multi-file import in one gesture** — drag or copy several files at once; every file gets its own statement in one stacked block, placeholders kept independent
 - **Built for every major framework** — Angular, React, Vue, Svelte, Astro — plus vanilla JS/TS, CSS/SCSS, HTML, Markdown, and **LaTeX** (drag an image in → a `figure` float; drop a `.tex` → `\input`; a `.bib` → `\addbibresource`)
 - **38 source extensions** — scripts, stylesheets, images, fonts, video, audio, text tracks, data, documents, components, LaTeX graphics
 - **45 configurable import styles** — ES modules, CommonJS, dynamic `import()`, `@use`, `@forward`, `@import`, HTML tags, Markdown syntax, LaTeX `figure` / `\includegraphics` / `\input` / `\addbibresource`
@@ -59,9 +62,9 @@ Drag a file or press a key — the right import lands in your editor. Path, synt
 
 | Command | macOS | Windows / Linux | What it does |
 |---|---|---|---|
-| **Copy File Path** | <kbd>Cmd+Shift+A</kbd> | <kbd>Ctrl+Shift+A</kbd> | Copies the file path to clipboard. Shows a toast with **Paste Now** and **Paste with Style** buttons. |
-| **Paste as Import** | <kbd>Cmd+I</kbd> | <kbd>Ctrl+I</kbd> | Reads the clipboard path and inserts the import into the active editor. |
-| **Insert Import from Selected File** | <kbd>Option+D</kbd> | <kbd>Alt+D</kbd> | Copy + Paste in one step from the Explorer sidebar. |
+| **Copy File Path** | <kbd>Cmd+Shift+A</kbd> | <kbd>Ctrl+Shift+A</kbd> | Copies the file path — or every path in a multi-selection — to clipboard. Shows a toast with **Paste Now** and **Paste with Style** buttons. |
+| **Paste as Import** | <kbd>Cmd+I</kbd> | <kbd>Ctrl+I</kbd> | Reads the clipboard path(s) and inserts the import — or a stacked block, one per copied file — into the active editor. |
+| **Insert Import from Selected File** | <kbd>Option+D</kbd> | <kbd>Alt+D</kbd> | Copy + Paste in one step from the Explorer sidebar. Multi-selections insert one stacked block. |
 | **Paste as Import (Pick Style)** | Command Palette | Command Palette | Shows a picker of all applicable styles for the current pair, then inserts. Does not change your default. |
 | **Set Default Import Style** | Command Palette | Command Palette | Shows a picker and persists the chosen style to your global settings. The current default is marked with a checkmark. |
 | **Set Import Placement** | Command Palette | Command Palette | Shows a picker of Top / Bottom / Cursor and persists where imports are inserted. The current choice is marked with a checkmark. |
@@ -82,6 +85,7 @@ Drag a file from the Explorer into any supported editor. The import snippet is g
 
 - Uses the same gating, snippet styles, and configuration as paste commands.
 - Follows the same Top / Bottom / Cursor placement setting as paste commands — the drop position is used as the Cursor input.
+- Drag several files at once — every supported file becomes one statement in a single stacked block; same-file and unsupported members are skipped (an all-image drop into CSS inserts the first `url()` only, since inline values can't stack).
 - Unsupported pairs show the same "Cannot import" warning as paste commands; the provider suppresses the drop, so nothing is inserted (no stray path text).
 - See [SPEC — §Drag-and-Drop Import][SPEC-drop] for full behavior and differences from paste.
 

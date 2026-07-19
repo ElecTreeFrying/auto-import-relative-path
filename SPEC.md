@@ -17,15 +17,15 @@ A VS Code extension that generates relative-path import statements for JS, TS, J
 | `extension.togglePreserveScriptExtension` | Auto Import: Toggle Preserve Script File Extension | — | — | Command Palette only |
 | `extension.resetImportStyles` | Auto Import: Reset All Import Styles to Defaults | — | — | Command Palette only |
 
-**Copy** puts the source file's absolute path on the clipboard and shows a "Copied path" toast with two action buttons: **Paste with Style** (runs Paste as Import (Pick Style)) and **Paste Now** (runs Paste as Import). The clipboard write is an explicit re-write after VS Code's built-in `copyFilePath` to guarantee the next paste sees the correct value. If the active item has no copyable absolute file path, Copy shows a "No file selected to copy." warning and stops. If the copied path has no file extension (e.g. `Makefile`, `Dockerfile`), Copy shows a "{basename} has no file extension." warning instead.
+**Copy** puts the source file's absolute path on the clipboard and shows a "Copied path" toast with two action buttons: **Paste with Style** (runs Paste as Import (Pick Style)) and **Paste Now** (runs Paste as Import). The clipboard write is an explicit re-write after VS Code's built-in `copyFilePath` to guarantee the next paste sees the correct value. If the active item has no copyable absolute file path, Copy shows a "No file selected to copy." warning and stops. If the copied path has no file extension (e.g. `Makefile`, `Dockerfile`), Copy shows a "{basename} has no file extension." warning instead. For an Explorer **multi-selection**, the built-in newline-joins every selected path; Copy validates each line, drops non-absolute and extensionless members, re-writes the clipboard with exactly the surviving members (newline-joined, the built-in's own wire format), and announces them in one toast — `Copied 3 paths — logo.svg, app.ts, util.ts`, showing the leading three basenames and eliding the rest as `+K more`. A selection with no copyable member fails with the single-path warnings above.
 
-**Paste** reads the clipboard as the source path, takes the active editor's file as the destination, computes the relative path, gates on the source-destination extension pair, and inserts the resulting import snippet.
+**Paste** reads the clipboard as the source path, takes the active editor's file as the destination, computes the relative path, gates on the source-destination extension pair, and inserts the resulting import snippet. A multi-line clipboard fans out per member into one stacked block — see [§Multi-File Import](#multi-file-import).
 
 **Insert Import from Selected File** runs Copy then Paste sequentially — a single keybind from the explorer sidebar.
 
-**Paste as Import (Pick Style)** performs the same validation as Paste, but shows a QuickPick listing all applicable import styles for the source-destination pair. If only one style applies, the import is inserted directly without showing the picker.
+**Paste as Import (Pick Style)** performs the same validation as Paste, but shows a QuickPick listing all applicable import styles for the source-destination pair. If only one style applies, the import is inserted directly without showing the picker. With a multi-selection on the clipboard it operates on the first copyable member that isn't the destination — the picker flow is single-pair by design.
 
-**Set Default Import Style** shows a QuickPick listing all applicable styles. The current default is marked with a checkmark icon and appears first. If the persisted value matches none of the offered styles (for example, a custom value hand-typed into `settings.json`), no item is marked and the styles appear in their natural order with no current-default indicator. Selecting a style persists the choice to VS Code global settings instead of inserting an import. Destinations that have only one hardcoded shape show a "No configurable style" warning instead.
+**Set Default Import Style** shows a QuickPick listing all applicable styles. The current default is marked with a checkmark icon and appears first. If the persisted value matches none of the offered styles (for example, a custom value hand-typed into `settings.json`), no item is marked and the styles appear in their natural order with no current-default indicator. Selecting a style persists the choice to VS Code global settings instead of inserting an import. Destinations that have only one hardcoded shape show a "No configurable style" warning instead. Multi-selections reduce to the same primary member as Pick Style.
 
 ---
 
@@ -41,14 +41,14 @@ Beyond the per-language `scheme: 'file'` filter, the provider is registered with
 
 ### Behavior
 
-1. The source file's path is resolved from the drag payload: the `text/uri-list` value is tried first (its first line is parsed via `Uri.parse(...).fsPath`); only if that is absent/empty is the `text/plain` value used, and then **only when it is an absolute path** (`path.isAbsolute`). A relative `text/plain` value is not accepted (the provider yields no drop edit). When several files are dragged from the Explorer at once, VS Code delivers them as a newline-separated `text/uri-list`, but only the first URI is parsed; the remaining dragged files are ignored, so one drop produces at most one import.
+1. The source file paths are resolved from the drag payload: the `text/uri-list` value is tried first — split on newlines (`\r\n` or `\n`), blank and `#`-comment lines dropped (RFC 2483), and every surviving line parsed via `Uri.parse(...).fsPath`. Only if that yields nothing is the `text/plain` value used, and then **only when it is an absolute path** (`path.isAbsolute`); a relative `text/plain` value is not accepted (the provider yields no drop edit). When several files are dragged from the Explorer at once, VS Code delivers them as a newline-separated `text/uri-list` and **every** dragged file participates — the provider fans out per member (see [§Multi-File Import](#multi-file-import)).
    - **Unresolvable payload**: if step 1 yields no usable path (the drag has neither a `text/uri-list` entry nor an absolute `text/plain` value), the provider returns `null` silently — no toast and no drop edit are offered. This is the only drop rejection path with no notification; the same-file, unsupported-pair, and empty-snippet checks below each show a toast.
 2. The destination is the file receiving the drop.
-3. **Same-file check**: if source equals destination (case-insensitive), a "same file" toast appears and nothing is inserted.
-4. **Pair gating**: if the source-destination extension pair is unsupported, a "Cannot import" toast appears and nothing is inserted (the provider returns a *suppressing empty edit* that out-ranks VS Code's default insert-relative-path drop — not `null`, which would let that raw-path default through).
-5. **Snippet generation**: the import snippet is produced by the same per-language dispatch used by the paste commands. All configurable styles and settings apply.
-6. **Empty-snippet guard**: if the generated snippet is empty or newline-only (`snippet.value === '' || snippet.value === '\n'`) — an unsupported source/destination combination that cleared pair gating but produced a no-op, e.g. a `.ts` source into a `.jsx` destination — a "Cannot import" toast appears (the same `not-supported` message and `{ sourceExt, destinationExt }` payload as Pair gating, from a distinct call site) and nothing is inserted (the provider returns a *suppressing empty edit*, as in Pair gating). See Rejection rules #3.
-7. **Insertion**: the snippet's final position is determined by `computeImportPlacement()` — the same Top / Bottom / Cursor logic used by the paste commands, parameterized with the drop position as the cursor input. For inline snippets (e.g., images into CSS/SCSS), the `DocumentDropEdit` places the snippet directly at the drop coordinates. For non-inline snippets, a `WorkspaceEdit` via `additionalEdit` places the import at the computed position (not the drop position). Every drop edit (both the inline path and the non-inline `additionalEdit` path) is tagged with the title `Auto Import` and the kind `DocumentDropOrPasteEditKind.TextUpdateImports.append('autoImport')`, so VS Code surfaces it as the "Auto Import" option in the drop-edit picker.
+3. **Same-file check**: a member equal to the destination (case-insensitive) is skipped. When that leaves no member standing, a "same file" toast appears and nothing is inserted.
+4. **Pair gating**: a member whose source-destination extension pair is unsupported is skipped. When no member survives the fan-out, a "Cannot import" toast appears — an unsupported pair takes precedence over same-file for the toast — and nothing is inserted (the provider returns a *suppressing empty edit* that out-ranks VS Code's default insert-relative-path drop — not `null`, which would let that raw-path default through).
+5. **Snippet generation**: each surviving member's import snippet is produced by the same per-language dispatch used by the paste commands. All configurable styles and settings apply.
+6. **Empty-snippet guard**: a member whose generated snippet is empty or newline-only (`snippet.value === '' || snippet.value === '\n'`) — an unsupported source/destination combination that cleared pair gating but produced a no-op, e.g. a `.ts` source into a `.jsx` destination — is skipped and counts as unsupported for the aggregate toast (the same `not-supported` message and `{ sourceExt, destinationExt }` payload as Pair gating, from a distinct call site). See Rejection rules #3.
+7. **Insertion**: the block's final position is determined by `computeImportPlacement()` — the same Top / Bottom / Cursor logic used by the paste commands, parameterized with the drop position as the cursor input. Placement is destination-driven, so the surviving statements are stacked into one block (tab stops renumbered so each import's placeholder stays independent) and a `WorkspaceEdit` via `additionalEdit` places it at the computed position (not the drop position). For inline snippets (e.g., images into CSS/SCSS), the `DocumentDropEdit` places the snippet directly at the drop coordinates; inline values cannot stack, so an all-inline drop inserts the first member only, and a mixed drop keeps the statement-style members and drops the inline ones. Every drop edit (both the inline path and the non-inline `additionalEdit` path) is tagged with the title `Auto Import` and the kind `DocumentDropOrPasteEditKind.TextUpdateImports.append('autoImport')`, so VS Code surfaces it as the "Auto Import" option in the drop-edit picker.
 
 ### Differences from paste commands
 
@@ -60,6 +60,37 @@ Beyond the per-language `scheme: 'file'` filter, the provider is registered with
 | Clipboard validation | Checks for empty/non-absolute/no-extension | Not applicable (Explorer provides a valid file URI) |
 | Source file existence check | `vscode.workspace.fs.stat` before generating | Not performed (Explorer only offers existing files) |
 | Unsupported pair fallback | Warning toast, no insertion | Warning toast, no insertion (provider returns a suppressing empty edit) |
+| Multi-file selection | Clipboard fans out per line → one stacked block | `text/uri-list` fans out per URI → one stacked block |
+
+---
+
+## Multi-File Import
+
+Every import gesture accepts a multi-selection and inserts a **stacked block** of import statements — one per file, in selection order, placed as a single insertion at the shared destination placement. The stack is assembled by shared compose helpers: each statement's snippet tab stops are renumbered past the previous statements' so every import keeps an independent placeholder. (VS Code links equal-numbered tab stops within one inserted snippet — a naive join would make typing one import's `name` edit all of them.)
+
+### Member rules (shared by every gesture)
+
+Each selected file is validated, gated, and built independently. A member is **skipped silently** — the rest still import — when it is:
+
+- the destination file itself (case-insensitive match);
+- missing on disk (clipboard paths only — a dragged file exists by definition);
+- not an absolute path, or extensionless (`LICENSE`, `Makefile`) — clipboard paths only;
+- an unsupported source for the destination (the same pair gating as single-file), or a pair whose builder produces an empty snippet.
+
+When **every** member is skipped, nothing is inserted and a single warning reports the most informative failure, in this precedence: unsupported pair > source not found > same file > no extension > empty clipboard. (The drop provider's set is the applicable subset: unsupported pair > same file.)
+
+### Inline `url()` members
+
+A non-stylesheet source into `.css` / `.scss` produces an inline `url('…')` value, not a standalone statement — inline values cannot stack. An all-inline selection inserts the **first member only** at the cursor/drop position; in a mixed selection the statement-style members are stacked and the inline members are dropped.
+
+### Gesture specifics
+
+- **Copy (`Cmd/Ctrl+Shift+A`) / Insert Import from Selected File (`Alt+D`)** — VS Code's built-in `copyFilePath` newline-joins the Explorer selection; Copy validates each line, re-writes the clipboard with exactly the surviving members, and announces them in one toast (leading three basenames, the rest elided as `+K more`).
+- **Paste (`Cmd/Ctrl+I`)** — a multi-line clipboard fans out per line (any newline-joined list of absolute paths works, copied or hand-assembled); survivors insert as one stacked block at the destination's placement, including the Astro frontmatter and Vue / Svelte script-block constraints.
+- **Drag-and-drop** — a multi-file drag delivers a newline-separated `text/uri-list`; every URI is resolved and fanned out the same way, stacked at the drop placement.
+- **Paste as Import (Pick Style) / Set Default Import Style** — single-pair by design: a multi-selection reduces to its first copyable member that isn't the destination, and the picker/persist flow runs unchanged on that one pair.
+
+Single-file behavior is unchanged on every gesture — one selected file walks the same path with one member.
 
 ---
 

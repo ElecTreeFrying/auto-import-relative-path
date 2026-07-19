@@ -4,7 +4,6 @@ Planned work for upcoming releases of **Auto Import Relative Path**. Nothing her
 
 ## To Do — v1.1.0
 
-- **Import multiple files in one gesture.** Drag — or copy — several files at once and insert a stacked block of import statements, one per file. *(Drag-and-drop is prototyped; multi-select through the keyboard/clipboard commands is still to come.)*
 - **Image and asset imports into `.js` / `.ts`.** Bring plain JavaScript and TypeScript to parity with JSX/TSX — drag an image, media, or stylesheet into a `.js`/`.ts` file and get the matching `import` statement.
 - **Auto-name default imports from the filename.** Pre-fill the import identifier from the source file's name (`logo.svg` → `import logo from './logo.svg'`) instead of a generic placeholder.
 - **Relative paths for extensionless sources.** Support files with no extension — `LICENSE`, `Dockerfile`, `Makefile` — as import sources.
