@@ -1,20 +1,5 @@
 # Changelog
 
-## v1.1.0 (unreleased)
-
-### Added
-- **Import multiple files in one gesture.** Select several files and import them all at once — every gesture fans out over the full selection and inserts one **stacked block** of import statements, one per file, in selection order, as a single insertion at the shared placement:
-  - **Drag-and-drop:** drag an Explorer multi-selection into any supported editor — each dragged file is gated, built, and placed independently, and the surviving statements are stacked at the drop placement.
-  - **Copy/paste:** multi-select in the Explorer, copy with `Cmd/Ctrl+Shift+A` (or run the one-step `Alt+D`), then paste with `Cmd/Ctrl+I` — the copy toast announces every copied path (`Copied 3 paths — logo.svg, app.ts, util.ts`), and paste inserts the same stacked block. Hand-assembled newline-joined path lists on the clipboard work too.
-  - **Independent placeholders:** each statement's tab stops are renumbered, so typing one import's identifier never edits another's.
-  - **Per-member skips:** members that can't import are skipped silently while the rest insert — the destination itself, files that no longer exist, extensionless files (`LICENSE`, `Makefile`), and unsupported pairs. When *nothing* in the selection can import, a single warning reports the most informative failure.
-  - **Inline `url()` rule:** image-into-stylesheet snippets are inline CSS values and can't stack — an all-inline selection inserts the first file only.
-  - **Style pickers stay single-pair:** *Paste as Import (Pick Style)* and *Set Default Import Style* operate on the first usable member of a multi-selection.
-  - Single-file behavior is unchanged, byte-for-byte, on every gesture.
-
-### Fixed
-- **Explorer multi-select no longer breaks the clipboard commands.** Copying a multi-selection used to leave a newline-joined path blob on the clipboard that paste treated as one path, failing with "Source file no longer exists". The clipboard channel now parses one path per line end-to-end.
-
 ## v1.0.0 (2026-07-19)
 
 ### Breaking Changes
@@ -41,6 +26,14 @@
   - **Auto Import: Toggle Preserve Script File Extension** — flips `preserveScriptFileExtension` and shows the new state (On / Off) in a toast. Command Palette only.
   - **Auto Import: Reset All Import Styles to Defaults** — clears every customized import-style override (the **twelve** configurable styles, incl. the three `latex.*` styles) back to its `package.json` default, with an **Undo** action on the confirmation toast; shows an info toast when nothing is customized. Command Palette only.
 - **Drag-and-drop import from Explorer.** Drag any supported source file from the Explorer sidebar into an open editor — the extension generates the same import snippet as the paste commands and inserts it at the drop position. Registered as a `DocumentDropEditProvider` for all 13 supported destination languages. No keybinding needed; no new settings — uses the same styles and configuration as the paste commands. Unsupported pairs show the same "Cannot import" warning as paste commands and insert nothing — the provider suppresses VS Code's default raw-path drop.
+- **Import multiple files in one gesture.** Select several files and import them all at once — every gesture fans out over the full selection and inserts one **stacked block** of import statements, one per file, in selection order, as a single insertion at the shared placement:
+  - **Drag-and-drop:** drag an Explorer multi-selection into any supported editor — each dragged file is gated, built, and placed independently, and the surviving statements are stacked at the drop placement.
+  - **Copy/paste:** multi-select in the Explorer, copy with `Cmd/Ctrl+Shift+A` (or run the one-step `Alt+D`), then paste with `Cmd/Ctrl+I` — the copy toast announces every copied path (`Copied 3 paths — logo.svg, app.ts, util.ts`), and paste inserts the same stacked block. Hand-assembled newline-joined path lists on the clipboard work too. *(This also removes an old rough edge where copying a multi-selection left a newline-joined blob that paste rejected with "Source file no longer exists.")*
+  - **Independent placeholders:** each statement's tab stops are renumbered, so typing one import's identifier never edits another's.
+  - **Per-member skips:** members that can't import are skipped silently while the rest insert — the destination itself, files that no longer exist, extensionless files (`LICENSE`, `Makefile`), and unsupported pairs. When *nothing* in the selection can import, a single warning reports the most informative failure.
+  - **Inline `url()` rule:** image-into-stylesheet snippets are inline CSS values and can't stack — an all-inline selection inserts the first file only.
+  - **Style pickers stay single-pair:** *Paste as Import (Pick Style)* and *Set Default Import Style* operate on the first usable member of a multi-selection.
+  - Single-file behavior is unchanged, byte-for-byte, on every gesture.
 - **`onLanguage` activation events.** The extension now activates when any supported language file is opened (13 `onLanguage:*` entries in `package.json`, plus `workspaceContains:**/*.mdx` and `**/*.tex` for the two pattern-matched destinations), ensuring the drop provider is registered before the user's first drag.
 - **Untrusted, virtual, and remote workspace support.** The manifest now declares `capabilities.untrustedWorkspaces` (supported) and `virtualWorkspaces` (true), so the extension loads in Restricted Mode and in virtual workspaces (e.g. github.dev, vscode.dev) — it only reads file paths and inserts snippets, with no workspace-trust requirement. It also declares `extensionKind: ["workspace"]`, pinning the extension to the workspace host in remote setups (Remote-SSH, WSL, Dev Containers, Codespaces) so imports are generated next to the files they reference.
 - **Smart placement for component files.** Astro imports land inside `---` frontmatter fences. Vue and Svelte imports land inside `<script>` blocks (prefers `<script setup>`, then the instance `<script>` over a module/`context=` script). CSS/SCSS `url()` values insert inline at the exact cursor position. All modes respect the Top/Bottom/Cursor placement setting. Indentation automatically matches the surrounding block.
