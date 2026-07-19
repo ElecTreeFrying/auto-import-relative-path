@@ -275,6 +275,35 @@ describe('editor/placement', () => {
       const lines = [ '# Shopping list', '', '* milk', '* eggs', '* bread' ];
       assert.strictEqual(adjustForCommentBlock(lines, 4, '.mdx' as FileExtension), 4);
     });
+
+    // The framework SFCs sit in SCRIPT_FILE_EXTENSIONS but are NOT JSX-family: their templates use
+    // HTML comments, and their script blocks use plain /* */. They must never span-scan.
+    it('does NOT span-scan the framework SFC destinations (.vue / .svelte / .astro)', () => {
+      const lines = [ 'code', '{/*', '  not a JSX file', '*/}', 'more' ];
+      for (const ext of [ '.vue', '.svelte', '.astro' ]) {
+        assert.strictEqual(
+          adjustForCommentBlock(lines, 2, ext as FileExtension), 2,
+          `${ext} must not hop out of a JSX span`,
+        );
+      }
+    });
+
+    it('does NOT span-scan the plain script destinations (.ts / .js)', () => {
+      const lines = [ 'code', '{/*', '  not a JSX file', '*/}', 'more' ];
+      assert.strictEqual(adjustForCommentBlock(lines, 2, '.ts' as FileExtension), 2);
+      assert.strictEqual(adjustForCommentBlock(lines, 2, '.js' as FileExtension), 2);
+    });
+
+    it('handles a degenerate empty buffer without throwing', () => {
+      assert.strictEqual(adjustForCommentBlock([], 0, '.mdx' as FileExtension), 0);
+      assert.strictEqual(adjustForCommentBlock([ '' ], 0, '.mdx' as FileExtension), 0);
+    });
+
+    it('a span opening on line 0 leaves the gesture at line 0 (nothing above to hop to)', () => {
+      const lines = [ '{/*', '  interior', '*/}' ];
+      assert.strictEqual(adjustForCommentBlock(lines, 1, '.mdx' as FileExtension), 0);
+      assert.strictEqual(adjustForCommentBlock(lines, 0, '.mdx' as FileExtension), 0);
+    });
   });
 
   describe('findJsxCommentSpanStart', () => {
@@ -558,6 +587,46 @@ describe('editor/placement', () => {
           3, 0,
         );
         assert.strictEqual(result.line, 2, `expected the {/* opener line 2, got ${result.line}`);
+      } finally {
+        await setAutoImportSetting('preferences', 'placement', undefined);
+      }
+    });
+
+    it('.jsx Cursor drop inside a {/* */} span hops above the opener', async () => {
+      await setAutoImportSetting('preferences', 'placement', 'Cursor');
+      try {
+        const text = 'import x from "./x";\n\n{/*\n  draft outline\n*/}\n\nexport const P = () => null;';
+        const result = computeImportPlacement(
+          text,
+          '.jsx' as FileExtension,
+          '.js' as FileExtension,
+          3, 0,
+        );
+        assert.strictEqual(result.line, 2, `expected the {/* opener line 2, got ${result.line}`);
+      } finally {
+        await setAutoImportSetting('preferences', 'placement', undefined);
+      }
+    });
+
+    // The span hop rides the Cursor branch only — Top and Bottom never consult the gesture line, so
+    // a span sitting under the drop point must not move them.
+    it('Top placement is unaffected by a {/* */} span (still line 0)', async () => {
+      await setAutoImportSetting('preferences', 'placement', 'Top');
+      try {
+        const text = 'import x from "./x";\n\n{/*\n  draft outline\n*/}\n\n# Notes';
+        const result = computeImportPlacement(text, '.mdx' as FileExtension, '.ts' as FileExtension, 3, 0);
+        assert.strictEqual(result.line, 0);
+      } finally {
+        await setAutoImportSetting('preferences', 'placement', undefined);
+      }
+    });
+
+    it('Bottom placement is unaffected by a {/* */} span (still after the last import)', async () => {
+      await setAutoImportSetting('preferences', 'placement', 'Bottom');
+      try {
+        const text = 'import x from "./x";\n\n{/*\n  draft outline\n*/}\n\n# Notes';
+        const result = computeImportPlacement(text, '.mdx' as FileExtension, '.ts' as FileExtension, 3, 0);
+        assert.strictEqual(result.line, 1, 'Bottom anchors after the last import line, not at the span');
       } finally {
         await setAutoImportSetting('preferences', 'placement', undefined);
       }

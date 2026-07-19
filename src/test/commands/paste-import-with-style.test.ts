@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import { executePasteImportWithStyle } from '../../commands/paste-import-with-style';
+import { setAutoImportSetting } from '../../config/settings';
 
 const FIXTURE_ROOT = path.resolve(__dirname, '../../../src/test/fixtures');
 
@@ -137,6 +138,33 @@ describe('executePasteImportWithStyle', () => {
       await vscode.commands.executeCommand('workbench.action.closeAllEditors');
       await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'src/bar.ts'));
       await assert.doesNotReject(executePasteImportWithStyle());
+    });
+  });
+
+  // The picker command shares insertImportSnippet with the plain paste, so the comment-span walk-up
+  // must apply here too. An asset source into .mdx yields a single variant, which inserts directly
+  // with no QuickPick — the only picker path that can be driven without answering a picker.
+  describe('JSX comment span (single-variant direct insert)', () => {
+    afterEach(async () => {
+      await setAutoImportSetting('preferences', 'placement', undefined);
+    });
+
+    it('inserts above the {/* opener rather than inside the comment', async () => {
+      await setAutoImportSetting('preferences', 'placement', 'Cursor');
+      const editor = await openFixture('docs/notes.mdx');
+      const cursor = new vscode.Position(3, 0); // interior span line, no comment marker
+      editor.selection = new vscode.Selection(cursor, cursor);
+      await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'assets/logo.png'));
+      const changed = await waitForDocumentChange(() => executePasteImportWithStyle(), 2000);
+      assert.strictEqual(changed, true, 'expected the single-variant asset import to insert');
+      assert.ok(
+        editor.document.lineAt(2).text.includes('logo.png'),
+        `expected the import above the {/* opener at line 2, got: "${editor.document.lineAt(2).text}"`,
+      );
+      assert.strictEqual(
+        editor.document.lineAt(3).text.trim(), '{/*',
+        'the span opener must be pushed down intact',
+      );
     });
   });
 });

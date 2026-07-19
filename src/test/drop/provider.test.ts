@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import { AutoImportOnDropProvider } from '../../drop/provider';
+import { setAutoImportSetting } from '../../config/settings';
 
 const FIXTURE_ROOT = path.resolve(__dirname, '../../../src/test/fixtures');
 
@@ -26,6 +27,48 @@ function dropWith(doc: vscode.TextDocument, transfer: vscode.DataTransfer) {
 
 function drop(doc: vscode.TextDocument, sourceRel: string) {
   return dropWith(doc, dataTransferFor(path.join(FIXTURE_ROOT, sourceRel)));
+}
+
+/** Drops at an explicit line AND column, so the drop position actually varies (the default helper drops at 0,0). */
+function dropAtPosition(doc: vscode.TextDocument, sourceRel: string, line: number, column: number) {
+  const token = new vscode.CancellationTokenSource().token;
+  const transfer = dataTransferFor(path.join(FIXTURE_ROOT, sourceRel));
+  return provider.provideDocumentDropEdits(doc, new vscode.Position(line, column), transfer, token);
+}
+
+/**
+ * Runs a drop against a throwaway document and returns the text that actually results.
+ *
+ * A `SnippetTextEdit` is invisible through `WorkspaceEdit`'s public accessors — `size`, `get()`, and
+ * `entries()` all report empty for one — so the edit object cannot be introspected. Applying it and
+ * reading the document back is both the only reliable route and the stronger assertion: it proves
+ * what the user ends up with, not merely what we asked VS Code for.
+ */
+async function textAfterDrop(
+  tempName: string,
+  content: string,
+  sourceRels: string[],
+  line: number,
+  column: number,
+): Promise<string> {
+  const tmp = vscode.Uri.file(path.join(FIXTURE_ROOT, tempName));
+  await vscode.workspace.fs.writeFile(tmp, Buffer.from(content, 'utf-8'));
+  try {
+    const doc = await vscode.workspace.openTextDocument(tmp);
+    const transfer = new vscode.DataTransfer();
+    transfer.set('text/uri-list', new vscode.DataTransferItem(
+      sourceRels.map(rel => vscode.Uri.file(path.join(FIXTURE_ROOT, rel)).toString()).join('\n'),
+    ));
+    const token = new vscode.CancellationTokenSource().token;
+    const result = await provider.provideDocumentDropEdits(doc, new vscode.Position(line, column), transfer, token);
+    assert.ok(result, 'expected a drop edit');
+    assert.ok(result.additionalEdit instanceof vscode.WorkspaceEdit, 'expected an attached placement WorkspaceEdit');
+    assert.strictEqual(await vscode.workspace.applyEdit(result.additionalEdit), true, 'applyEdit must succeed');
+    return doc.getText();
+  } finally {
+    await vscode.commands.executeCommand('workbench.action.closeAllEditors');
+    try { await vscode.workspace.fs.delete(tmp); } catch { /* best-effort cleanup */ }
+  }
 }
 
 /**
@@ -298,5 +341,100 @@ describe('AutoImportOnDropProvider — stylesheet into framework SFC', () => {
     const result = await dropAt(doc, ['styles/theme.scss'], 9);
     assert.ok(result, 'expected a placement edit for .scss into an Astro <style> block');
     assert.ok(result.additionalEdit instanceof vscode.WorkspaceEdit);
+  });
+});
+
+// End-to-end proof that the drop provider EMITS the edit at column 0. The unit tests pin
+// computeImportPlacement's return value; these assert the position the provider actually hands to
+// VS Code, which is what the user sees. Before the own-line fix these landed at the drop column,
+// splicing the import into the middle of the line it was dropped on.
+describe('AutoImportOnDropProvider — a dropped import takes its own line', () => {
+  it('.js into .html dropped mid-line does not splice the line it lands on', async () => {
+    const text = await textAfterDrop(
+      '_own_line.html', '<body>\n  <main>hello</main>\n</body>\n', [ 'pages/app.js' ], 1, 9);
+    assert.ok(
+      text.includes('\n  <main>hello</main>\n'),
+      `the dropped-on line must survive intact, got:\n${text}`,
+    );
+    assert.strictEqual(
+      text.split('\n')[1], '<script src="./pages/app.js"></script>',
+      `the import must own line 1 at column 0, got:\n${text}`,
+    );
+  });
+
+  it('.md into .md dropped mid-word does not splice the prose line', async () => {
+    const text = await textAfterDrop(
+      '_own_line.md', '# Title\n\nSome existing prose.\n', [ 'docs/architecture.md' ], 2, 7);
+    assert.ok(
+      text.includes('\nSome existing prose.\n'),
+      `the prose line must survive intact, got:\n${text}`,
+    );
+    assert.ok(
+      text.split('\n')[2].includes('architecture.md'),
+      `the link must own line 2, got:\n${text}`,
+    );
+  });
+
+  it('.png into .tex dropped mid-line keeps the body line whole and stays out of the preamble', async () => {
+    const text = await textAfterDrop(
+      '_own_line.tex',
+      '\\documentclass{article}\n\\begin{document}\nBody prose here.\n\\end{document}\n',
+      [ 'assets/logo.png' ], 2, 5);
+    assert.ok(text.includes('\nBody prose here.\n'), `the body line must survive intact, got:\n${text}`);
+    assert.strictEqual(
+      text.split('\n')[0], '\\documentclass{article}',
+      'the preamble must be untouched',
+    );
+    assert.ok(text.split('\n')[2].startsWith('\\begin{figure}'), `the figure must own line 2, got:\n${text}`);
+  });
+
+  it('a multi-file drop stacks at column 0 without splicing', async () => {
+    const text = await textAfterDrop(
+      '_own_line_multi.html', '<body>\n  <main>hello</main>\n</body>\n',
+      [ 'pages/app.js', 'assets/logo.png' ], 1, 9);
+    assert.ok(text.includes('\n  <main>hello</main>\n'), `the dropped-on line must survive intact, got:\n${text}`);
+    const lines = text.split('\n');
+    assert.ok(lines[1].startsWith('<script'), `first stacked statement at column 0, got: "${lines[1]}"`);
+    assert.ok(lines[2].startsWith('<img'), `second stacked statement at column 0, got: "${lines[2]}"`);
+  });
+
+  it('the inline url() branch still uses the exact drop position (must NOT be forced to 0)', async () => {
+    const doc = await destDocument('styles/reset.css');
+    const result = await dropAtPosition(doc, 'assets/logo.png', 3, 16);
+    assert.ok(result, 'expected an inline drop edit');
+    assert.strictEqual(result.additionalEdit, undefined, 'inline url() is delivered via insertText, not a placement edit');
+    assert.ok(
+      (result.insertText as vscode.SnippetString).value.includes('url('),
+      'expected the inline url() snippet',
+    );
+  });
+});
+
+// The span hop must reach the DROP flow too, not just paste — both share adjustForCommentBlock.
+describe('AutoImportOnDropProvider — JSX comment span', () => {
+  const SPAN_DOC = 'import { Header } from "./guide";\n\n{/*\n  draft outline\n*/}\n\n# Notes\n';
+
+  afterEach(async () => {
+    await setAutoImportSetting('preferences', 'placement', undefined);
+  });
+
+  it('.ts dropped inside an .mdx {/* */} span lands above the opener, not inside the comment', async () => {
+    await setAutoImportSetting('preferences', 'placement', 'Cursor');
+    const text = await textAfterDrop('_span.mdx', SPAN_DOC, [ 'src/bar.ts' ], 3, 4);
+    const lines = text.split('\n');
+    assert.ok(lines[2].includes('bar'), `expected the import above the opener on line 2, got:\n${text}`);
+    assert.strictEqual(lines[3].trim(), '{/*', `the span opener must be pushed down intact, got:\n${text}`);
+  });
+
+  it('.ts dropped below a closed one-line span is NOT hopped', async () => {
+    await setAutoImportSetting('preferences', 'placement', 'Cursor');
+    const text = await textAfterDrop(
+      '_span_closed.mdx', '{/* a one-line note */}\n\n# Notes\n', [ 'src/bar.ts' ], 1, 0);
+    const lines = text.split('\n');
+    assert.strictEqual(
+      lines[0], '{/* a one-line note */}',
+      `a closed span leaves no state to hop out of, got:\n${text}`,
+    );
+    assert.ok(lines[1].includes('bar'), `the import belongs at the gesture line 1, got:\n${text}`);
   });
 });
