@@ -156,3 +156,70 @@ describe('AutoImportOnDropProvider — framework-destination placement', () => {
     }
   });
 });
+
+// Multi-file drop: dragging several files from the Explorer delivers a newline-separated
+// text/uri-list. The provider fans out over every URI, skips same-file / unsupported members, and
+// stacks the remaining statement-style imports into a single placement edit. The renumber+join that
+// keeps stacked tab stops independent is unit-tested in compose.test.ts; because WorkspaceEdit does
+// not surface SnippetTextEdit content through its public accessors, these cases assert *routing* —
+// which drops produce a placement edit vs. a suppression. The distinguishing cases put a skippable
+// file (unsupported, or the destination itself) FIRST: single-file behaviour reads only that first
+// URI and suppresses, so a passing edit proves the later URIs were processed.
+describe('AutoImportOnDropProvider — multi-file drop', () => {
+  function manyTransfer(absPaths: string[], separator = '\n'): vscode.DataTransfer {
+    const transfer = new vscode.DataTransfer();
+    const uriList = absPaths.map(p => vscode.Uri.file(p).toString()).join(separator);
+    transfer.set('text/uri-list', new vscode.DataTransferItem(uriList));
+    return transfer;
+  }
+  function dropMany(doc: vscode.TextDocument, sourceRels: string[], separator = '\n') {
+    return dropWith(doc, manyTransfer(sourceRels.map(r => path.join(FIXTURE_ROOT, r)), separator));
+  }
+
+  it('stacks two supported sources into one placement WorkspaceEdit (.ts + .ts → .ts)', async () => {
+    const doc = await destDocument('src/foo.ts');
+    const result = await dropMany(doc, ['src/bar.ts', 'src/api-client.ts']);
+    assert.ok(result, 'expected a DocumentDropEdit for two supported sources');
+    assert.ok(result.additionalEdit instanceof vscode.WorkspaceEdit, 'expected a stacked placement edit');
+  });
+
+  it('imports a later supported source even when the FIRST dragged file is unsupported (.css, .ts → .ts)', async () => {
+    const doc = await destDocument('src/foo.ts');
+    const result = await dropMany(doc, ['styles/reset.css', 'src/bar.ts']);
+    assert.ok(result, 'expected an edit, not null');
+    assert.ok(result.additionalEdit instanceof vscode.WorkspaceEdit, 'an unsupported first member must not suppress the whole drop');
+  });
+
+  it('imports a later source even when the FIRST dragged file is the destination itself (same-file)', async () => {
+    const doc = await destDocument('src/foo.ts');
+    const result = await dropMany(doc, ['src/foo.ts', 'src/bar.ts']);
+    assert.ok(result, 'expected an edit, not null');
+    assert.ok(result.additionalEdit instanceof vscode.WorkspaceEdit, 'a same-file first member must not suppress the whole drop');
+  });
+
+  it('parses a CRLF-separated uri-list (skips the unsupported first member, imports the rest)', async () => {
+    const doc = await destDocument('src/foo.ts');
+    const result = await dropMany(doc, ['styles/reset.css', 'src/bar.ts'], '\r\n');
+    assert.ok(result, 'expected an edit, not null');
+    assert.ok(result.additionalEdit instanceof vscode.WorkspaceEdit, 'a CRLF-separated uri-list must split into multiple URIs');
+  });
+
+  it('suppresses the drop when every dragged file is unsupported (.css + .css → .ts)', async () => {
+    const doc = await destDocument('src/foo.ts');
+    const result = await dropMany(doc, ['styles/reset.css', 'styles/reset.css']);
+    assertSuppressed(result);
+  });
+
+  // Mixed set into a stylesheet: an inline url() member (image) plus a statement member (.css).
+  // The statement stacks into a placement WorkspaceEdit; the inline url() is dropped (it can't join
+  // a statement block). The image is listed FIRST — an inline-first-only regression would return an
+  // inline DocumentDropEdit (non-empty insertText, no additionalEdit) instead, so the empty
+  // insertText + WorkspaceEdit here proves the trailing statement drove the edit.
+  it('mixed inline + statement routes to a stacked placement edit, not inline-first-only (.png + .css → .scss)', async () => {
+    const doc = await destDocument('styles/main.scss');
+    const result = await dropMany(doc, ['assets/images/favicon.png', 'styles/global.css']);
+    assert.ok(result, 'expected an edit, not null');
+    assert.strictEqual((result.insertText as vscode.SnippetString).value, '', 'the placement path inserts via additionalEdit, not inline insertText');
+    assert.ok(result.additionalEdit instanceof vscode.WorkspaceEdit, 'the .css statement must drive a stacked placement edit; a leading inline image must not trigger the inline-first-only return');
+  });
+});
