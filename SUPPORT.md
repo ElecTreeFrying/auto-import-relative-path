@@ -57,13 +57,14 @@ Where to get help, how to diagnose common issues, and how to contribute. For fea
 
 ### How do Vue / Svelte / Astro imports work?
 
-All three are fully supported destinations. Script sources (`.ts` / `.tsx` / `.js` / `.jsx`) use the **TypeScript import style**. Non-script sources get an asset-shaped import keyed on the source type — images, data (`.json` / `.yml` / `.yaml`), and (for Astro) `.vue` / `.svelte` / `.md` / `.mdx` components emit a default name import (`import name from './…';`), while media and `.vtt` text tracks emit a url import (`import url from './…';`). Import placement is automatically constrained to the correct region:
+All three are fully supported destinations. Script sources (`.ts` / `.tsx` / `.js` / `.jsx`) use the **TypeScript import style**. Non-script sources get an asset-shaped import keyed on the source type — images, data (`.json` / `.yml` / `.yaml`), and (for Astro) `.vue` / `.svelte` / `.md` / `.mdx` components emit a default name import (`import name from './…';`), while media and `.vtt` text tracks emit a url import (`import url from './…';`). **Stylesheet sources (`.css` / `.scss`) are shaped by where the cursor sits:** inside a `<style>` block they become the CSS/SCSS dialect (`@import` for `.css`, `@use` for `.scss`, configurable via the same `cssImportStyle` / `scssImportStyle` settings); anywhere else — the `<script>` block, Astro frontmatter, or template — they become a side-effect `import './styles.css';`. Import placement is automatically constrained to the correct region:
 
 - **Astro** — inside the `---` frontmatter fences
 - **Vue** — inside the `<script setup>` block (or `<script>` if no setup block exists)
 - **Svelte** — inside the `<script>` block
+- **A stylesheet in a `<style>` block** — beside that block's other `@import` / `@use` rules (a mixed multi-file selection stays script-side)
 
-If no frontmatter or script block exists, one is created at line 0 automatically. Inserted imports also **match the surrounding indentation** — the extension reads the indentation of existing lines inside the frontmatter or `<script>` block (or inherits the block's own indentation when it's empty), so generated imports line up with your code. See [README — §Supported Languages](README.md#supported-languages) and [SPEC — §Framework component destinations](SPEC.md#framework-component-destinations) for the full accepted-source lists.
+If no frontmatter or script block exists, one is created at line 0 automatically (a `<style>` block is never fabricated — without one, the script-side side-effect import is already correct). Inserted imports also **match the surrounding indentation** — the extension reads the indentation of existing lines inside the frontmatter, `<script>`, or `<style>` block (or inherits the block's own indentation when it's empty), so generated imports line up with your code. See [README — §Supported Languages](README.md#supported-languages) and [SPEC — §Framework component destinations](SPEC.md#framework-component-destinations) for the full accepted-source lists.
 
 ### How do LaTeX imports work?
 
@@ -85,7 +86,7 @@ Because the **destination decides the syntax**. Pasting into `.scss` produces `@
 
 ### Why do `.module.css` / `.module.scss` imports look different from plain `.css`?
 
-CSS Modules are special-cased for JSX / TSX / MDX destinations. A `.module.css` or `.module.scss` source emits a **default import** — `import styles from './Button.module.css';` (where `styles` is an editable placeholder) — because that binding is what exposes the generated class map (`styles.button`). A plain `.css` / `.scss` source into the same destination stays a **side-effect import** (`import './Button.css';`), since there's no binding to consume.
+CSS Modules are special-cased for JSX / TSX / MDX destinations — and, in the **script region**, for Vue / Svelte / Astro. A `.module.css` or `.module.scss` source emits a **default import** — `import styles from './Button.module.css';` (where `styles` is an editable placeholder) — because that binding is what exposes the generated class map (`styles.button`). A plain `.css` / `.scss` source into the same destination stays a **side-effect import** (`import './Button.css';`), since there's no binding to consume. (Inside a Vue / Svelte / Astro `<style>` block, a `.module.css` source takes the plain `@import` shape instead — the class-map binding is a script-side idiom.)
 
 ### Does drag-and-drop work from the Explorer?
 
@@ -156,7 +157,7 @@ Each section below is **symptom → cause → fix**. If your issue isn't here, [
 
 **Cause:** The source extension is not allowed for the active editor's destination. The most common cases:
 
-- `.js` and `.ts` destinations only accept the **same extension** (no cross-extension imports — use `.jsx` or `.tsx` for those).
+- `.js` and `.ts` destinations accept their own extension **plus framework components** (`.vue` / `.svelte` / `.astro`); every other cross-extension source is rejected — use `.jsx` or `.tsx` destinations for asset imports.
 - `.html` → `.html` is explicitly rejected (HTML has no relative-import syntax for embedding itself).
 - A typo or unusual extension that's not in the gating tables.
 
