@@ -125,22 +125,22 @@ Single-file behavior is unchanged on every gesture — one selected file walks t
 
 Which source extensions each destination accepts. A source-destination pair not listed here is rejected with a "Cannot import" warning.
 
-Exactly eleven destinations may import a source of a *different* extension (the cross-import set): `.html`, `.md`, `.css`, `.scss`, `.tsx`, `.mdx`, `.jsx`, `.vue`, `.svelte`, `.astro`, `.tex`. Every other destination accepts only its own extension (the same-extension default; see `.js`/`.ts` below). Additionally, an **extensionless** source (`LICENSE`, `Dockerfile`, `Makefile`) may be imported into a `.md` destination as a link. The per-destination tables that follow detail the accepted sources for each destination.
+Exactly thirteen destinations may import a source of a *different* extension (the cross-import set): `.html`, `.md`, `.css`, `.scss`, `.tsx`, `.mdx`, `.jsx`, `.vue`, `.svelte`, `.astro`, `.tex`, `.ts`, `.js`. The `.ts`/`.js` script destinations are the narrowest: they accept only their own extension plus framework-component sources (`.vue`/`.svelte`/`.astro`); every remaining non-cross-import destination accepts only its own extension (the same-extension default). Additionally, an **extensionless** source (`LICENSE`, `Dockerfile`, `Makefile`) may be imported into a `.md` destination as a link. The per-destination tables that follow detail the accepted sources for each destination.
 
-### Same-extension destinations
+### Script destinations (`.js`, `.ts`)
 
-`.js` and `.ts` destinations accept only their own extension. The source extension must equal the destination extension; cross-imports are rejected.
+`.js` and `.ts` destinations accept their own extension **plus framework-component sources** (`.vue`/`.svelte`/`.astro`) — the common test-and-setup-code path (Vitest, Vue Test Utils, `customElement` registration). The own-extension source flows through the configurable script import style; a framework component becomes a fixed **default name import** (`import Name from './Comp.vue';`), PascalCase-derived from the basename with the full extension always kept, shared with the JSX/TSX/MDX component shape and bypassing the script style picker. Every other cross-extension source is rejected.
 
-| Destination | Accepted source |
-|---|---|
-| `.js` | `.js` |
-| `.ts` | `.ts` |
+| Destination | Accepted sources | What gets generated |
+|---|---|---|
+| `.js` | `.js`, `.vue`, `.svelte`, `.astro` | JavaScript import style for `.js`; fixed PascalCase default import for components |
+| `.ts` | `.ts`, `.vue`, `.svelte`, `.astro` | TypeScript import style for `.ts`; fixed PascalCase default import for components |
 
 ### Script-oriented destinations (JSX, TSX, MDX)
 
 These accept script sources through their configurable import style, plus a broad set of non-script sources through hardcoded per-category dispatch.
 
-Mechanically, `.jsx`/`.tsx`/`.mdx` carry NO per-destination source allow-list in `gating.ts` — unlike the stylesheet, markup, and same-extension destinations below (each backed by a `*_SUPPORTED_EXTENSIONS` clause), these three are accepted purely by membership in `CROSS_IMPORT_DESTINATIONS` and therefore accept ANY source extension that clears the cross-import gate. The table below enumerates the 35 asset/script extensions that have a JSX/TSX/MDX shape, so it is exhaustive in practice. (The three LaTeX-only extensions — `.tex`, `.bib`, `.eps` — clear the cross-import gate too, but have no branch in the asset switch, so a `.tex`/`.bib`/`.eps` source dropped into `.jsx`/`.tsx`/`.mdx` falls through to `default:` (`null`) → not-supported.) A newly added file extension is likewise auto-accepted into these three destinations with no gating change. It still needs a source branch in the shared `_react.ts:buildAssetImportStatement` switch — the single canonical asset switch, reached for JSX/TSX/MDX from the default paste flow via `buildReactImport` and the style-picker flow via `variants.ts:buildReactNonScriptVariant` (and, for non-script sources into `.vue`/`.svelte`/`.astro` destinations, from `languages/framework-component.ts`) — to emit a non-empty snippet; without one the extension falls through to that switch's `default:` (`null`), which the paste flow wraps as an empty `SnippetString` and the picker flow drops as a missing variant.
+Mechanically, `.jsx`/`.tsx`/`.mdx` carry NO per-destination source allow-list in `gating.ts` — unlike the stylesheet, markup, and script (`.ts`/`.js`) destinations below (each backed by a `*_SUPPORTED_EXTENSIONS` clause), these three are accepted purely by membership in `CROSS_IMPORT_DESTINATIONS` and therefore accept ANY source extension that clears the cross-import gate. The table below enumerates the 35 asset/script extensions that have a JSX/TSX/MDX shape, so it is exhaustive in practice. (The three LaTeX-only extensions — `.tex`, `.bib`, `.eps` — clear the cross-import gate too, but have no branch in the asset switch, so a `.tex`/`.bib`/`.eps` source dropped into `.jsx`/`.tsx`/`.mdx` falls through to `default:` (`null`) → not-supported.) A newly added file extension is likewise auto-accepted into these three destinations with no gating change. It still needs a source branch in the shared `_react.ts:buildAssetImportStatement` switch — the single canonical asset switch, reached for JSX/TSX/MDX from the default paste flow via `buildReactImport` and the style-picker flow via `variants.ts:buildReactNonScriptVariant` (and, for non-script sources into `.vue`/`.svelte`/`.astro` destinations, from `languages/framework-component.ts`) — to emit a non-empty snippet; without one the extension falls through to that switch's `default:` (`null`), which the paste flow wraps as an empty `SnippetString` and the picker flow drops as a missing variant.
 
 | Source category | Extensions | `.jsx` | `.tsx` | `.mdx` |
 |---|---|---|---|---|
@@ -210,7 +210,7 @@ A **stylesheet source** (`.css` / `.scss`) is shaped by where the cursor sits: s
 
 ### Rejection rules
 
-Pair gating is implemented by `isPairSupported(info)` in `src/gating.ts`, a single boolean that reads only the source/destination extension fields (no path data). Its **first clause special-cases an extensionless source**: it returns `true` only for a `.md` destination (a link) and `false` otherwise — the one early-return in the function. Every other source runs the reject-clause chain: the universal cross-import gate, the explicit `.html → .html` reject, then eight per-destination allow-list guards (the eighth being the `.tex` LaTeX destination). The first matching clause rejects; a pair is accepted by surviving them all. (The same-file and empty-snippet rules below are separate checks in the calling commands/drop provider, not part of this boolean.)
+Pair gating is implemented by `isPairSupported(info)` in `src/gating.ts`, a single boolean that reads only the source/destination extension fields (no path data). Its **first clause special-cases an extensionless source**: it returns `true` only for a `.md` destination (a link) and `false` otherwise — the one early-return in the function. Every other source runs the reject-clause chain: the universal cross-import gate, the explicit `.html → .html` reject, then ten per-destination allow-list guards (the last two being the `.ts` and `.js` script destinations, whose lists are their own extension plus the framework-component sources). The first matching clause rejects; a pair is accepted by surviving them all. (The same-file and empty-snippet rules below are separate checks in the calling commands/drop provider, not part of this boolean.)
 
 1. **Same file**: source path equals destination path (case-insensitive) — "A file cannot import itself."
 2. **Unsupported pair**: source extension not in the destination's accepted list — "Cannot import {ext} into {ext} files."

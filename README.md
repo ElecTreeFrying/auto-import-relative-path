@@ -99,8 +99,8 @@ The extension is **destination-driven** — the file open in your editor decides
 
 | Destination | Accepted sources | What gets generated |
 |---|---|---|
-| `.js` | `.js` | JavaScript import style (7 configurable) |
-| `.ts` | `.ts` | TypeScript import style (7 configurable) |
+| `.js` | `.js`, `.vue`, `.svelte`, `.astro` | JavaScript import style (7 configurable); fixed PascalCase default import for components |
+| `.ts` | `.ts`, `.vue`, `.svelte`, `.astro` | TypeScript import style (7 configurable); fixed PascalCase default import for components |
 | `.jsx` | All except `.ts`, `.tsx` | JS style for scripts; per-category dispatch for others |
 | `.tsx` | All asset & script extensions | TS style for `.ts`/`.tsx`; JS style for `.js`/`.jsx`; per-category for others |
 | `.mdx` | All asset & script extensions | Same as `.tsx` |
@@ -141,7 +141,7 @@ See [SPEC — §Supported File Extensions][SPEC-extensions] for the full 38-exte
 
 - **Same file** — a file cannot import itself (case-insensitive path comparison).
 - **Unsupported pair** — source extension not in the destination's accepted list.
-- **`.js` and `.ts` are strict same-extension** — no cross-language imports. Use `.jsx` or `.tsx` destinations for asset imports.
+- **`.js` and `.ts` accept their own extension plus framework components** — `.vue`/`.svelte`/`.astro` sources import as a fixed PascalCase default (the test-and-setup-code path); every other cross-language source is rejected. Use `.jsx` or `.tsx` destinations for asset imports.
 - **Extensionless sources import only into `.md`** — `LICENSE`/`Dockerfile`/`Makefile` link into Markdown; every other destination rejects them.
 
 See SPEC: [Rejection Rules][SPEC-reject] · [Cross-Import Compatibility][SPEC-compat]
