@@ -7,7 +7,7 @@ Pure path math. **No `vscode` import** — every file here is Node-testable. Don
 - `relative.ts` — `computeRelative(sourceFilePath, destinationFilePath)` returns the import-ready relative path.
 - `extension.ts` — `extractFileExtension` is a thin wrapper over `path.parse`; `removeFileExtension` strips the extension via string slicing (guarded for the extensionless case — see below).
 - `import-type.ts` — `determineImportType(filePath)` maps file extensions to the `ImportType` values (explicit cases plus the `default:` `'image'` catch-all), or `null` (`.html` and `.scss`).
-- `import-name.ts` — `deriveImportName(filePath)` derives a camelCase import identifier from the source basename, or `null` when no legal identifier forms. Pure string/path math; consumed by `snippets/` for default-import auto-naming (see the `## import-name.ts` section below).
+- `import-name.ts` — `deriveImportName(filePath)` (camelCase) and `deriveComponentName(filePath)` (PascalCase, for framework SFCs) derive an import identifier from the source basename, or `null` when no legal identifier forms. Pure string/path math; consumed by `snippets/` for default-import auto-naming (see the `## import-name.ts` section below).
 
 ## `computeRelative` — the `./` prefix rule
 
@@ -26,13 +26,14 @@ This is regression-tested with extensionless paths (`Makefile` → `'Makefile'`,
 
 ## `import-name.ts` — basename → import identifier
 
-`deriveImportName(filePath)` derives a camelCase import identifier from the source basename, or `null`:
+Two sibling derivers turn a source basename into an import binding. Both strip the extension, split the remainder on `-` / `_` / `.` / whitespace (via the shared `basenameSegments` helper), and validate against `/^[A-Za-z_$][\w$]*$/` — a leading-digit or non-ASCII basename (`404.png`, `café-menu.png`) yields `null`, so callers keep their generic placeholder. They differ only in first-segment case:
 
-- Strips the extension, splits the remainder on `-` / `_` / `.` / whitespace, camelCases the segments, and **preserves the first segment's original case** — a lowercase filename stays camelCase (`logo.svg` → `logo`, `my-logo.v2.svg` → `myLogoV2`), a PascalCase filename keeps its case (`App.jsx` → `App`, the React component convention) rather than being lowercased to `app`. It never *transforms* case (kebab → Pascal), so it stays clear of the deferred PascalCase-framework naming.
-- Validates the result against `/^[A-Za-z_$][\w$]*$/`; a leading-digit or non-ASCII basename (`404.png`, `café-menu.png`) yields `null`, so callers keep their generic placeholder.
-- Only the basename is used, so `deriveImportName('./a/b/logo.png')` === `deriveImportName('logo.png')` — the label-vs-payload double-render in `variants.ts` derives the same name from either.
+- `deriveImportName(filePath)` — **camelCase**, for plain default imports. **Preserves the first segment's original case**: a lowercase filename stays camelCase (`logo.svg` → `logo`, `my-logo.v2.svg` → `myLogoV2`), a PascalCase filename keeps its case (`App.jsx` → `App`, the React component convention) rather than being lowercased to `app`. It never *transforms* case (kebab → Pascal) — that is `deriveComponentName`'s job.
+- `deriveComponentName(filePath)` — **PascalCase**, for framework SFC default imports. Capitalizes *every* segment, so `my-button.vue` → `MyButton` (the Vue/Svelte/Astro convention regardless of the on-disk filename); an already-PascalCase name is idempotent (`BaseCard.vue` → `BaseCard`).
 
-Consumers: the default-import positions of `snippets/languages/{javascript,typescript}.ts` and the plain-asset / media groups of `snippets/_react.ts:buildAssetImportStatement`. No `vscode` import — Node-testable, regression-tested in `test/path/import-name.test.ts`.
+Only the basename is used, so `deriveImportName('./a/b/logo.png')` === `deriveImportName('logo.png')` — the label-vs-payload double-render in `variants.ts` derives the same name from either.
+
+Consumers: `deriveImportName` — the default-import positions of `snippets/languages/{javascript,typescript}.ts` and the plain-asset / media groups of `snippets/_react.ts:buildAssetImportStatement`; `deriveComponentName` — the framework-SFC group of that same asset switch. No `vscode` import — Node-testable, regression-tested in `test/path/import-name.test.ts`.
 
 ## `determineImportType` — `ImportType | null`, not just `ImportType`
 
