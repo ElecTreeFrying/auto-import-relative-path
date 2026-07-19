@@ -146,8 +146,16 @@ describe('gating/isPairSupported', () => {
       assert.strictEqual(isPairSupported(info('.json', '.vue')), true);
     });
 
-    it('.css → .vue rejected', () => {
-      assert.strictEqual(isPairSupported(info('.css', '.vue')), false);
+    it('.css → .vue accepted (stylesheet source — <style>-block import)', () => {
+      assert.strictEqual(isPairSupported(info('.css', '.vue')), true);
+    });
+
+    it('.scss → .vue accepted (stylesheet source — <style>-block import)', () => {
+      assert.strictEqual(isPairSupported(info('.scss', '.vue')), true);
+    });
+
+    it('.md → .vue rejected (Markdown needs a plugin — not accepted into Vue)', () => {
+      assert.strictEqual(isPairSupported(info('.md', '.vue')), false);
     });
   });
 
@@ -160,8 +168,16 @@ describe('gating/isPairSupported', () => {
       assert.strictEqual(isPairSupported(info('.svelte', '.svelte')), true);
     });
 
-    it('.scss → .svelte rejected', () => {
-      assert.strictEqual(isPairSupported(info('.scss', '.svelte')), false);
+    it('.scss → .svelte accepted (stylesheet source — <style>-block import)', () => {
+      assert.strictEqual(isPairSupported(info('.scss', '.svelte')), true);
+    });
+
+    it('.css → .svelte accepted (stylesheet source — <style>-block import)', () => {
+      assert.strictEqual(isPairSupported(info('.css', '.svelte')), true);
+    });
+
+    it('.md → .svelte rejected (Markdown needs a plugin — not accepted into Svelte)', () => {
+      assert.strictEqual(isPairSupported(info('.md', '.svelte')), false);
     });
   });
 
@@ -182,8 +198,16 @@ describe('gating/isPairSupported', () => {
       assert.strictEqual(isPairSupported(info('.md', '.astro')), true);
     });
 
-    it('.css → .astro rejected', () => {
-      assert.strictEqual(isPairSupported(info('.css', '.astro')), false);
+    it('.css → .astro accepted (stylesheet source — <style>-block import)', () => {
+      assert.strictEqual(isPairSupported(info('.css', '.astro')), true);
+    });
+
+    it('.scss → .astro accepted (stylesheet source — <style>-block import)', () => {
+      assert.strictEqual(isPairSupported(info('.scss', '.astro')), true);
+    });
+
+    it('.html → .astro rejected (raw HTML is not an accepted Astro source)', () => {
+      assert.strictEqual(isPairSupported(info('.html', '.astro')), false);
     });
   });
 
@@ -260,7 +284,8 @@ describe('gating/isPairSupported', () => {
       [ '.webp', '.css', true ], [ '.mp4', '.css', false ],
       [ '.jpg', '.scss', true ], [ '.html', '.scss', false ],
       [ '.json', '.svelte', true ], [ '.md', '.vue', false ],
-      [ '.svelte', '.astro', true ], [ '.scss', '.astro', false ],
+      [ '.css', '.vue', true ], [ '.scss', '.svelte', true ],
+      [ '.svelte', '.astro', true ], [ '.scss', '.astro', true ], [ '.html', '.astro', false ],
       [ '.pdf', '.tex', true ], [ '.svg', '.tex', false ],
     ];
     for (const [ src, dest, expected ] of pairs) {

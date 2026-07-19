@@ -13,7 +13,10 @@ import * as markdown from './languages/markdown';
 import * as frameworkComponent from './languages/framework-component';
 import * as latex from './languages/latex';
 
-export async function buildImportSnippet(info: FilePathInfo): Promise<vscode.SnippetString> {
+export async function buildImportSnippet(
+  info: FilePathInfo,
+  insideStyleBlock = false,
+): Promise<vscode.SnippetString> {
   switch (info.destinationFileExt) {
     case '.js':
       return javascript.buildSnippet(info);
@@ -35,7 +38,7 @@ export async function buildImportSnippet(info: FilePathInfo): Promise<vscode.Sni
     case '.vue':
     case '.svelte':
     case '.astro':
-      return frameworkComponent.buildSnippet(info);
+      return frameworkComponent.buildSnippet(info, insideStyleBlock);
     case '.tex':
       return latex.buildSnippet(info);
     default:

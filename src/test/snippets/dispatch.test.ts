@@ -185,4 +185,30 @@ describe('buildImportSnippet', () => {
     const result = await buildImportSnippet(info);
     assert.strictEqual(result.value, '');
   });
+
+  // The insideStyleBlock flag threads dispatch → framework-component builder: only the framework
+  // destinations consult it, and only for stylesheet sources.
+  it('.css into .vue with insideStyleBlock=true produces the CSS @import shape', async () => {
+    await openFixture('src/App.vue');
+    await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'src/theme.css'));
+    const info = await getFilePathInfo();
+    const result = await buildImportSnippet(info, true);
+    assert.strictEqual(result.value, "@import './theme.css';");
+  });
+
+  it('.scss into .vue with insideStyleBlock=true produces the SCSS @use shape', async () => {
+    await openFixture('src/App.vue');
+    await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'src/base.scss'));
+    const info = await getFilePathInfo();
+    const result = await buildImportSnippet(info, true);
+    assert.strictEqual(result.value, "@use './base';");
+  });
+
+  it('.css into .vue without the flag produces the script-block side-effect import', async () => {
+    await openFixture('src/App.vue');
+    await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'src/theme.css'));
+    const info = await getFilePathInfo();
+    const result = await buildImportSnippet(info);
+    assert.strictEqual(result.value, "import './theme.css';");
+  });
 });

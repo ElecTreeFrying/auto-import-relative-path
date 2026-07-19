@@ -73,33 +73,30 @@ describe('constants/extensions', () => {
     }
   });
 
-  it('VUE_SUPPORTED_EXTENSIONS has 23 entries', () => {
-    assert.strictEqual(VUE_SUPPORTED_EXTENSIONS.length, 23);
-    for (const ext of [ '.vue', '.ts', '.js', '.jsx', '.tsx', '.json', '.yml', '.yaml' ]) {
+  it('VUE_SUPPORTED_EXTENSIONS has 25 entries', () => {
+    assert.strictEqual(VUE_SUPPORTED_EXTENSIONS.length, 25);
+    for (const ext of [ '.vue', '.ts', '.js', '.jsx', '.tsx', '.json', '.yml', '.yaml', '.css', '.scss' ]) {
       assert.ok(VUE_SUPPORTED_EXTENSIONS.includes(ext as any), `missing ${ext}`);
     }
-    for (const ext of [ '.css', '.scss', '.md', '.mdx' ]) {
+    for (const ext of [ '.md', '.mdx' ]) {
       assert.ok(!VUE_SUPPORTED_EXTENSIONS.includes(ext as any), `${ext} should not be in Vue`);
     }
   });
 
-  it('SVELTE_SUPPORTED_EXTENSIONS has 23 entries', () => {
-    assert.strictEqual(SVELTE_SUPPORTED_EXTENSIONS.length, 23);
-    for (const ext of [ '.svelte', '.ts', '.js', '.jsx', '.tsx', '.json', '.yml', '.yaml' ]) {
+  it('SVELTE_SUPPORTED_EXTENSIONS has 25 entries', () => {
+    assert.strictEqual(SVELTE_SUPPORTED_EXTENSIONS.length, 25);
+    for (const ext of [ '.svelte', '.ts', '.js', '.jsx', '.tsx', '.json', '.yml', '.yaml', '.css', '.scss' ]) {
       assert.ok(SVELTE_SUPPORTED_EXTENSIONS.includes(ext as any), `missing ${ext}`);
     }
-    for (const ext of [ '.css', '.scss', '.md', '.mdx' ]) {
+    for (const ext of [ '.md', '.mdx' ]) {
       assert.ok(!SVELTE_SUPPORTED_EXTENSIONS.includes(ext as any), `${ext} should not be in Svelte`);
     }
   });
 
-  it('ASTRO_SUPPORTED_EXTENSIONS has 27 entries', () => {
-    assert.strictEqual(ASTRO_SUPPORTED_EXTENSIONS.length, 27);
-    for (const ext of [ '.astro', '.vue', '.svelte', '.ts', '.js', '.jsx', '.tsx', '.json', '.yml', '.yaml', '.md', '.mdx' ]) {
+  it('ASTRO_SUPPORTED_EXTENSIONS has 29 entries', () => {
+    assert.strictEqual(ASTRO_SUPPORTED_EXTENSIONS.length, 29);
+    for (const ext of [ '.astro', '.vue', '.svelte', '.ts', '.js', '.jsx', '.tsx', '.json', '.yml', '.yaml', '.md', '.mdx', '.css', '.scss' ]) {
       assert.ok(ASTRO_SUPPORTED_EXTENSIONS.includes(ext as any), `missing ${ext}`);
-    }
-    for (const ext of [ '.css', '.scss' ]) {
-      assert.ok(!ASTRO_SUPPORTED_EXTENSIONS.includes(ext as any), `${ext} should not be in Astro`);
     }
   });
 

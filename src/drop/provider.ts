@@ -3,7 +3,8 @@ import * as path from 'path';
 
 import { FilePathInfo, getFilePathInfoFromPaths } from '../editor/file-path-info';
 import { showNotification } from '../editor/notification';
-import { ComputedPlacement, computeImportPlacement } from '../editor/placement';
+import { ComputedPlacement, computeImportPlacement, isStyleBlockContext } from '../editor/placement';
+import { extractFileExtension } from '../path/extension';
 import { isPairSupported } from '../gating';
 import { buildImportSnippet } from '../snippets/dispatch';
 import { joinImportStatements } from '../snippets/compose';
@@ -35,6 +36,16 @@ export class AutoImportOnDropProvider implements vscode.DocumentDropEditProvider
     const destinationFilePath = document.uri.fsPath;
     const documentText = document.getText();
 
+    // Decided once for the whole drag: style-dialect only when every dragged file is a stylesheet
+    // and the drop lands in a `<style>` block (a mixed drag stays script-dialect). Uniform across the
+    // gesture, so every block candidate keeps sharing one placement. See isStyleBlockContext.
+    const insideStyleBlock = isStyleBlockContext(
+      documentText,
+      extractFileExtension(destinationFilePath),
+      sourceFilePaths.map(sourceFilePath => extractFileExtension(sourceFilePath)),
+      position.line,
+    );
+
     // Fan out over every dragged file: skip the destination itself and any unsupported pair,
     // collect the rest. A single dragged file walks this same loop once, so its behaviour is
     // unchanged (see joinImportStatements, which renders one statement byte-identically).
@@ -64,7 +75,7 @@ export class AutoImportOnDropProvider implements vscode.DocumentDropEditProvider
         continue;
       }
 
-      const snippet = await buildImportSnippet(info);
+      const snippet = await buildImportSnippet(info, insideStyleBlock);
       if (snippet.value === '' || snippet.value === '\n') {
         rejectedInfo = info;
         continue;
@@ -76,6 +87,7 @@ export class AutoImportOnDropProvider implements vscode.DocumentDropEditProvider
         info.sourceFileExt,
         position.line,
         position.character,
+        insideStyleBlock,
       );
       candidates.push({ value: snippet.value, placement });
     }

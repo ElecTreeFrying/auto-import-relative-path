@@ -35,6 +35,7 @@ interface Scenario {
   cursorColumn: number;
   placement?: 'Top' | 'Bottom' | 'Cursor';
   flat: boolean;
+  insideStyleBlock?: boolean;
 }
 
 const SCENARIOS: Scenario[] = [
@@ -53,16 +54,23 @@ const SCENARIOS: Scenario[] = [
   { name: 'vue <script setup> Top', fixture: 'src/App.vue', source: 'src/bar.ts', cursorLine: 1, cursorColumn: 0, placement: 'Top', flat: false },
   { name: 'vue <script setup> Cursor', fixture: 'src/App.vue', source: 'src/bar.ts', cursorLine: 1, cursorColumn: 0, placement: 'Cursor', flat: false },
   { name: 'svelte <script> Bottom', fixture: 'src/App.svelte', source: 'src/bar.ts', cursorLine: 1, cursorColumn: 0, placement: 'Bottom', flat: false },
+  // Stylesheet source into a populated SFC <style> block — the style-block placement branch, driven by
+  // insideStyleBlock. styled.{vue,svelte,astro} carry a <style> block with interior lines.
+  { name: 'vue <style> Bottom', fixture: 'src/styled.vue', source: 'styles/theme.scss', cursorLine: 9, cursorColumn: 0, placement: 'Bottom', flat: false, insideStyleBlock: true },
+  { name: 'vue <style> Top', fixture: 'src/styled.vue', source: 'styles/theme.scss', cursorLine: 9, cursorColumn: 0, placement: 'Top', flat: false, insideStyleBlock: true },
+  { name: 'vue <style> Cursor', fixture: 'src/styled.vue', source: 'styles/theme.scss', cursorLine: 9, cursorColumn: 0, placement: 'Cursor', flat: false, insideStyleBlock: true },
+  { name: 'svelte <style> Bottom', fixture: 'src/styled.svelte', source: 'styles/theme.scss', cursorLine: 7, cursorColumn: 0, placement: 'Bottom', flat: false, insideStyleBlock: true },
+  { name: 'astro <style> Bottom', fixture: 'src/styled.astro', source: 'styles/theme.scss', cursorLine: 9, cursorColumn: 0, placement: 'Bottom', flat: false, insideStyleBlock: true },
 ];
 
-async function insertAndWait(snippet: vscode.SnippetString, info: FilePathInfo): Promise<void> {
+async function insertAndWait(snippet: vscode.SnippetString, info: FilePathInfo, insideStyleBlock = false): Promise<void> {
   const changed = new Promise<void>(resolve => {
     const disposable = vscode.workspace.onDidChangeTextDocument(() => {
       disposable.dispose();
       resolve();
     });
   });
-  insertImportSnippet(snippet, info);
+  insertImportSnippet(snippet, info, insideStyleBlock);
   await changed;
 }
 
@@ -97,7 +105,7 @@ describe('placement parity: insertImportSnippet (command) ↔ computeImportPlace
       const info = await getFilePathInfo();
 
       // Command flow mutates the editor — capture where the marker actually landed.
-      await insertAndWait(new vscode.SnippetString(MARKER), info);
+      await insertAndWait(new vscode.SnippetString(MARKER), info, s.insideStyleBlock);
       const actual = findMarker(editor.document);
 
       // Drop flow computes against the SAME pre-insertion text + cursor.
@@ -107,6 +115,7 @@ describe('placement parity: insertImportSnippet (command) ↔ computeImportPlace
         info.sourceFileExt,
         s.cursorLine,
         s.cursorColumn,
+        s.insideStyleBlock,
       );
 
       assert.strictEqual(actual.line, expected.line, `${s.name}: insertion LINE must match between flows`);

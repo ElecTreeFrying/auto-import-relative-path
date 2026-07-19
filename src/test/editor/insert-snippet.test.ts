@@ -18,14 +18,14 @@ async function revertAndClose(): Promise<void> {
   await vscode.commands.executeCommand('workbench.action.closeAllEditors');
 }
 
-async function insertAndWait(snippet: vscode.SnippetString, info: FilePathInfo): Promise<void> {
+async function insertAndWait(snippet: vscode.SnippetString, info: FilePathInfo, insideStyleBlock = false): Promise<void> {
   const changed = new Promise<void>(resolve => {
     const disposable = vscode.workspace.onDidChangeTextDocument(() => {
       disposable.dispose();
       resolve();
     });
   });
-  insertImportSnippet(snippet, info);
+  insertImportSnippet(snippet, info, insideStyleBlock);
   await changed;
 }
 
@@ -316,6 +316,52 @@ describe('insertImportSnippet', () => {
         await revertAndClose();
         await deleteTempFile(uri);
       }
+    });
+  });
+
+  // Stylesheet source into an SFC <style> block (insideStyleBlock = true) lands the import inside the
+  // <style> block, not the <script> block. styled.vue has a populated <style scoped> at lines 7–11.
+  describe('SFC <style> block (stylesheet source)', () => {
+    it('Bottom lands the import just after the opening <style> tag (line 8), not in the script block', async () => {
+      const editor = await openFixture('src/styled.vue');
+      const info = await setClipboard('src/theme.css');
+      await setCursor(editor, 9); // inside the <style> block
+      await insertAndWait(new vscode.SnippetString("@import './theme.css';"), info, true);
+      assert.ok(
+        editor.document.lineAt(8).text.includes("@import './theme.css';"),
+        `expected the @import inside the <style> block at line 8, got: "${editor.document.lineAt(8).text}"`,
+      );
+      assert.ok(
+        !editor.document.lineAt(1).text.includes('@import'),
+        'the import must NOT land in the <script> block',
+      );
+    });
+
+    it('Cursor lands the import at the cursor line inside the <style> block', async () => {
+      await setAutoImportSetting('preferences', 'placement', 'Cursor');
+      try {
+        const editor = await openFixture('src/styled.vue');
+        const info = await setClipboard('src/base.scss');
+        await setCursor(editor, 9);
+        await insertAndWait(new vscode.SnippetString("@use './base';"), info, true);
+        assert.ok(
+          editor.document.lineAt(9).text.includes("@use './base';"),
+          `expected the @use at cursor line 9, got: "${editor.document.lineAt(9).text}"`,
+        );
+      } finally {
+        await setAutoImportSetting('preferences', 'placement', undefined);
+      }
+    });
+
+    it('without the flag, a stylesheet source lands in the <script> block (side-effect import)', async () => {
+      const editor = await openFixture('src/styled.vue');
+      const info = await setClipboard('src/theme.css');
+      await setCursor(editor, 9);
+      await insertAndWait(new vscode.SnippetString("import './theme.css';"), info, false);
+      assert.ok(
+        editor.document.lineAt(1).text.includes("import './theme.css';"),
+        `expected the side-effect import in the <script> block at line 1, got: "${editor.document.lineAt(1).text}"`,
+      );
     });
   });
 

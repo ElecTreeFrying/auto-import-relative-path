@@ -74,6 +74,31 @@ describe('executePasteImportWithStyle', () => {
     });
   });
 
+  // Stylesheet source into a framework SFC. In the script region it is a single fixed side-effect
+  // variant (inserts directly, no picker); inside a <style> block it enumerates >=2 CSS/SCSS styles,
+  // so the blocking picker opens instead of inserting — the same manual-QA boundary as any >=2 case.
+  describe('stylesheet source into a framework SFC', () => {
+    it('.css into a .vue script region inserts the side-effect import directly (single variant)', async () => {
+      const editor = await openFixture('src/styled.vue');
+      const pos = new vscode.Position(0, 0); // the <script setup> line — outside every <style> block
+      editor.selection = new vscode.Selection(pos, pos);
+      await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'styles/global.css'));
+      const changed = await waitForDocumentChange(() => executePasteImportWithStyle(), 2000);
+      assert.strictEqual(changed, true, 'the single side-effect variant inserts directly');
+      assert.ok(editor.document.getText().includes("import '../styles/global.css';"), 'expected the side-effect import');
+    });
+
+    it('.css into a .vue <style> block opens the style picker (no direct insert)', async () => {
+      const editor = await openFixture('src/styled.vue');
+      const pos = new vscode.Position(9, 0); // inside the <style scoped> block
+      editor.selection = new vscode.Selection(pos, pos);
+      await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'styles/global.css'));
+      const changed = await waitForDocumentChange(() => executePasteImportWithStyle());
+      assert.strictEqual(changed, false, 'a >=2-variant style-block source opens the picker rather than inserting directly');
+      await vscode.commands.executeCommand('workbench.action.closeQuickOpen');
+    });
+  });
+
   // A multi-selection clipboard reduces to its first copyable non-destination member (the picker
   // flows are single-pair by design). The successful insertions double as the regression pin for
   // the old blob bug: pre-fork, a multi-line clipboard was stat'ed whole → source-not-found, no insert.

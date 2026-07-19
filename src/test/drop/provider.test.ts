@@ -237,3 +237,46 @@ describe('AutoImportOnDropProvider — multi-file drop', () => {
     assert.ok(result.additionalEdit instanceof vscode.WorkspaceEdit, 'the .css statement must drive a stacked placement edit; a leading inline image must not trigger the inline-first-only return');
   });
 });
+
+// Stylesheet sources into framework SFCs. Dropping a .css/.scss onto a .vue/.svelte/.astro now
+// produces an import (previously gate-rejected → suppressed). WorkspaceEdit content is not surfaced,
+// so these assert routing: a placement edit vs. suppression. The dialect (@import/@use vs. side-effect)
+// is unit-tested in dispatch/framework-component/variants; here we drop at a <style>-block position.
+describe('AutoImportOnDropProvider — stylesheet into framework SFC', () => {
+  function dropAt(doc: vscode.TextDocument, sourceRels: string[], line: number) {
+    const transfer = new vscode.DataTransfer();
+    const uriList = sourceRels.map(r => vscode.Uri.file(path.join(FIXTURE_ROOT, r)).toString()).join('\n');
+    transfer.set('text/uri-list', new vscode.DataTransferItem(uriList));
+    const token = new vscode.CancellationTokenSource().token;
+    return provider.provideDocumentDropEdits(doc, new vscode.Position(line, 0), transfer, token);
+  }
+
+  it('.css into a .vue (previously gate-rejected) now yields a placement edit, not a suppression', async () => {
+    const doc = await destDocument('src/App.vue');
+    const result = await drop(doc, 'styles/global.css'); // dropped at 0,0 — the script region
+    assert.ok(result, 'expected a DocumentDropEdit — .css → .vue is now supported');
+    assert.ok(result.additionalEdit instanceof vscode.WorkspaceEdit, 'a supported stylesheet source must produce a placement edit');
+  });
+
+  it('.css dropped inside a <style> block yields a placement edit (style dialect)', async () => {
+    const doc = await destDocument('src/styled.vue');
+    const result = await dropAt(doc, ['styles/global.css'], 9); // inside the <style scoped> block
+    assert.ok(result, 'expected a placement edit for .css into a <style> block');
+    assert.strictEqual((result.insertText as vscode.SnippetString).value, '', 'style-block placement is delivered via additionalEdit');
+    assert.ok(result.additionalEdit instanceof vscode.WorkspaceEdit);
+  });
+
+  it('multi-file all-stylesheet drop into a <style> block stacks into one placement edit', async () => {
+    const doc = await destDocument('src/styled.vue');
+    const result = await dropAt(doc, ['styles/global.css', 'styles/theme.scss'], 9);
+    assert.ok(result, 'expected a stacked placement edit for two stylesheet sources');
+    assert.ok(result.additionalEdit instanceof vscode.WorkspaceEdit);
+  });
+
+  it('.scss dropped inside an Astro <style> block yields a placement edit', async () => {
+    const doc = await destDocument('src/styled.astro');
+    const result = await dropAt(doc, ['styles/theme.scss'], 9);
+    assert.ok(result, 'expected a placement edit for .scss into an Astro <style> block');
+    assert.ok(result.additionalEdit instanceof vscode.WorkspaceEdit);
+  });
+});

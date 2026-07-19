@@ -13,12 +13,21 @@ export function buildSnippet(info: FilePathInfo): vscode.SnippetString {
   switch (determineImportType(sourceFilePath)) {
     case 'image':
       return buildCssImageImportSnippet(relativePath + extractFileExtension(sourceFilePath));
-    default: {
-      const preparedPath = prepareScssImportPath(sourceFilePath, relativePath);
-      const styleIndex = resolveStyleIndex(SCSS_IMPORT_OPTIONS, getAutoImportSetting<string>('stylesheet', 'scss'));
-      return buildScssImportSnippetByStyle(styleIndex, preparedPath);
-    }
+    default:
+      return buildScssImportSnippet(sourceFilePath, relativePath);
   }
+}
+
+/**
+ * Config wrapper for the SCSS `@use`/`@import` shapes: prepares the import path (partial-underscore
+ * stripping + extension policy via `prepareScssImportPath`), resolves the user's `scssImportStyle`,
+ * and renders through `buildScssImportSnippetByStyle`. Mirrors `css.ts:buildCssImportSnippet`; reused
+ * by `languages/framework-component.ts` for a `.scss` source dropped inside an SFC `<style>` block.
+ */
+export function buildScssImportSnippet(sourceFilePath: string, relativePath: string): vscode.SnippetString {
+  const preparedPath = prepareScssImportPath(sourceFilePath, relativePath);
+  const styleIndex = resolveStyleIndex(SCSS_IMPORT_OPTIONS, getAutoImportSetting<string>('stylesheet', 'scss'));
+  return buildScssImportSnippetByStyle(styleIndex, preparedPath);
 }
 
 export function buildScssImportSnippetByStyle(

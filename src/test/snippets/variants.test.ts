@@ -8,7 +8,7 @@ import { resolveStyleIndex, JAVASCRIPT_IMPORT_OPTIONS } from '../../snippets/_st
 
 const FIXTURE_ROOT = path.resolve(__dirname, '../../../src/test/fixtures');
 
-async function openAndQuery(destFixture: string, sourceName: string) {
+async function openAndQuery(destFixture: string, sourceName: string, insideStyleBlock = false) {
   const doc = await vscode.workspace.openTextDocument(
     vscode.Uri.file(path.join(FIXTURE_ROOT, destFixture))
   );
@@ -17,7 +17,7 @@ async function openAndQuery(destFixture: string, sourceName: string) {
     path.join(FIXTURE_ROOT, path.dirname(destFixture), sourceName)
   );
   const info = await getFilePathInfo();
-  return buildImportSnippetVariants(info);
+  return buildImportSnippetVariants(info, insideStyleBlock);
 }
 
 async function closeEditor(): Promise<void> {
@@ -236,5 +236,42 @@ describe('buildImportSnippetVariants', () => {
       assert.strictEqual(v.setting!.namespace, 'script');
       assert.strictEqual(v.setting!.key, 'typescript');
     }
+  });
+
+  // Stylesheet source into a framework <style> block (insideStyleBlock = true): the CSS/SCSS style
+  // pickers, carrying the shared `stylesheet` settings (Set Default persists cssImportStyle /
+  // scssImportStyle — the same knobs the plain .css/.scss destinations use). Without style context
+  // the same source is one fixed side-effect variant (no setting).
+  it('.css into a .vue <style> block: 2 CSS styled variants carrying the stylesheet/css setting', async () => {
+    const variants = await openAndQuery('src/App.vue', 'theme.css', true);
+    assert.strictEqual(variants.length, 2);
+    for (const v of variants) {
+      assert.ok(v.setting, 'style-block CSS variant should carry a setting');
+      assert.strictEqual(v.setting!.namespace, 'stylesheet');
+      assert.strictEqual(v.setting!.key, 'css');
+    }
+  });
+
+  it('.scss into a .svelte <style> block: 5 SCSS styled variants carrying the stylesheet/scss setting', async () => {
+    const variants = await openAndQuery('src/App.svelte', 'base.scss', true);
+    assert.strictEqual(variants.length, 5);
+    for (const v of variants) {
+      assert.ok(v.setting, 'style-block SCSS variant should carry a setting');
+      assert.strictEqual(v.setting!.namespace, 'stylesheet');
+      assert.strictEqual(v.setting!.key, 'scss');
+    }
+  });
+
+  it('.css into a .astro <style> block: CSS styled variants (all three SFC destinations share the branch)', async () => {
+    const variants = await openAndQuery('src/App.astro', 'theme.css', true);
+    assert.strictEqual(variants.length, 2);
+    assert.strictEqual(variants[0].setting!.key, 'css');
+  });
+
+  it('.css into .vue WITHOUT style context: 1 fixed side-effect variant (no setting)', async () => {
+    const variants = await openAndQuery('src/App.vue', 'theme.css');
+    assert.strictEqual(variants.length, 1);
+    assert.strictEqual(variants[0].setting, undefined, 'the script-block stylesheet import is hardcoded (no setting)');
+    assert.strictEqual(variants[0].snippetText, "import './theme.css';");
   });
 });

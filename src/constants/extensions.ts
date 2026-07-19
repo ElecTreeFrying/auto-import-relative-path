@@ -32,6 +32,11 @@ export const TEX_GRAPHICS_FILE_EXTENSIONS: FileExtension[] = [
   '.eps',
 ];
 
+export const STYLESHEET_FILE_EXTENSIONS: FileExtension[] = [
+  '.scss',
+  '.css',
+];
+
 export const HTML_SUPPORTED_EXTENSIONS: FileExtension[] = [
   '.js',
   '.css',
@@ -65,6 +70,7 @@ export const VUE_SUPPORTED_EXTENSIONS: FileExtension[] = [
   '.json',
   '.yml',
   '.yaml',
+  ...STYLESHEET_FILE_EXTENSIONS,
   ...IMAGE_FILE_EXTENSIONS,
   ...MEDIA_FILE_EXTENSIONS,
   ...TEXT_TRACK_FILE_EXTENSIONS,
@@ -79,6 +85,7 @@ export const SVELTE_SUPPORTED_EXTENSIONS: FileExtension[] = [
   '.json',
   '.yml',
   '.yaml',
+  ...STYLESHEET_FILE_EXTENSIONS,
   ...IMAGE_FILE_EXTENSIONS,
   ...MEDIA_FILE_EXTENSIONS,
   ...TEXT_TRACK_FILE_EXTENSIONS,
@@ -97,6 +104,7 @@ export const ASTRO_SUPPORTED_EXTENSIONS: FileExtension[] = [
   '.yaml',
   '.md',
   '.mdx',
+  ...STYLESHEET_FILE_EXTENSIONS,
   ...IMAGE_FILE_EXTENSIONS,
   ...MEDIA_FILE_EXTENSIONS,
   ...TEXT_TRACK_FILE_EXTENSIONS,
@@ -117,11 +125,6 @@ export const SCRIPT_FILE_EXTENSIONS: FileExtension[] = [
   '.vue',
   '.svelte',
   '.astro',
-];
-
-export const STYLESHEET_FILE_EXTENSIONS: FileExtension[] = [
-  '.scss',
-  '.css',
 ];
 
 export const CROSS_IMPORT_DESTINATIONS: FileExtension[] = [

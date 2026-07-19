@@ -103,6 +103,35 @@ function findScriptBlock(
   return null;
 }
 
+/**
+ * Finds the `<style…>`…`</style>` block that strictly encloses `cursorLine`, or `null` when the line
+ * is outside every style block. A framework SFC may hold several `<style>` blocks (scoped + global,
+ * or `lang`-tagged variants), so each is tested in turn: the opening tag matches `startsWith('<style')`
+ * (covering `<style scoped>`, `<style lang="scss">`, …) and the close a trimmed `</style>`. Strict
+ * insideness (`cursorLine` between the tag lines, never on them) mirrors the SFC-script and
+ * Astro-frontmatter within-fence checks.
+ */
+export function findEnclosingStyleBounds(
+  lines: string[],
+  cursorLine: number,
+): { openingLine: number; closingLine: number } | null {
+  let openingLine = -1;
+  for (let i = 0; i < lines.length; i++) {
+    const trimmed = lines[i].trim();
+    if (openingLine === -1) {
+      if (trimmed.startsWith('<style')) {
+        openingLine = i;
+      }
+    } else if (trimmed === '</style>') {
+      if (cursorLine > openingLine && cursorLine < i) {
+        return { openingLine, closingLine: i };
+      }
+      openingLine = -1;
+    }
+  }
+  return null;
+}
+
 /** Finds the insertion line for Bottom placement within a bounded region (Astro frontmatter or SFC script block). */
 export function findBottomLineInRange(
   lines: string[],
@@ -136,6 +165,34 @@ export function shouldRepositionCursor(destinationFileExt: FileExtension): boole
 /** Returns `true` for Markdown destinations (`.md`, `.mdx`) where a leading `*` is content, not a comment. */
 export function isMarkdownDestination(destinationFileExt: FileExtension): boolean {
   return destinationFileExt === '.md' || destinationFileExt === '.mdx';
+}
+
+/** Returns `true` for the framework SFC destinations (`.vue`/`.svelte`/`.astro`) that carry `<style>` blocks. */
+export function isFrameworkStyleDestination(destinationFileExt: FileExtension): boolean {
+  return destinationFileExt === '.vue' || destinationFileExt === '.svelte' || destinationFileExt === '.astro';
+}
+
+/**
+ * Decides whether a gesture into a framework SFC takes the `<style>`-block stylesheet dialect
+ * (`@import` / `@use`) instead of the script-block side-effect import. All three conditions must
+ * hold: the destination is a framework SFC, *every* source in the gesture is a stylesheet
+ * (`.css`/`.scss`), and the cursor / drop position sits strictly inside a `<style>` block. A mixed
+ * selection — any non-stylesheet member — stays script-dialect so the whole stacked block lands in
+ * the script region. Pure (no editor read), so the command and drop flows share one detector.
+ */
+export function isStyleBlockContext(
+  documentText: string,
+  destinationFileExt: FileExtension,
+  sourceFileExts: FileExtension[],
+  cursorLine: number,
+): boolean {
+  if (!isFrameworkStyleDestination(destinationFileExt)) {
+    return false;
+  }
+  if (sourceFileExts.length === 0 || !sourceFileExts.every(ext => STYLESHEET_FILE_EXTENSIONS.includes(ext))) {
+    return false;
+  }
+  return findEnclosingStyleBounds(documentText.split('\n'), cursorLine) !== null;
 }
 
 /**
@@ -186,6 +243,7 @@ export function computeImportPlacement(
   sourceFileExt: FileExtension,
   dropLine: number,
   dropColumn: number,
+  insideStyleBlock = false,
 ): ComputedPlacement {
   const lines = documentText.split('\n');
 
@@ -197,6 +255,13 @@ export function computeImportPlacement(
     const adjustedLine = adjustForCommentBlock(lines, dropLine, isMarkdownDestination(destinationFileExt));
     const column = determineInsertionColumn(destinationFileExt, dropColumn);
     return { line: adjustedLine, column, indentation: '', isInline: false };
+  }
+
+  if (insideStyleBlock && isFrameworkStyleDestination(destinationFileExt)) {
+    const bounds = findEnclosingStyleBounds(lines, dropLine);
+    if (bounds) {
+      return computeStyleBlockPlacement(lines, dropLine, bounds);
+    }
   }
 
   if (destinationFileExt === '.astro') {
@@ -220,6 +285,39 @@ export function computeImportPlacement(
     default: {
       const line = computeBottomLine(lines);
       return { line, column: 0, indentation: '', isInline: false };
+    }
+  }
+}
+
+/**
+ * Positions an import within an already-located `<style>` block (bounds enclose `dropLine`). Honors
+ * the user's Top / Bottom / Cursor setting inside the block — the same within-region logic as
+ * `computeSfcPlacement`, but scoped to the style block rather than the `<script>` pair. Column 0 (the
+ * framework destinations sit in `SCRIPT_FILE_EXTENSIONS`); the indentation prefix carries the block's
+ * indent.
+ */
+function computeStyleBlockPlacement(
+  lines: string[],
+  dropLine: number,
+  bounds: { openingLine: number; closingLine: number },
+): ComputedPlacement {
+  const { openingLine, closingLine } = bounds;
+  const placement = getAutoImportSetting<string>('preferences', 'placement');
+
+  switch (placement) {
+    case 'Top': {
+      const indentation = detectBlockIndentation(lines, openingLine, closingLine);
+      return { line: openingLine + 1, column: 0, indentation, isInline: false };
+    }
+    case 'Cursor': {
+      const adjustedLine = adjustForCommentBlock(lines, dropLine);
+      const indentation = getLineIndentation(lines[adjustedLine] || '') || detectBlockIndentation(lines, openingLine, closingLine);
+      return { line: adjustedLine, column: 0, indentation, isInline: false };
+    }
+    case 'Bottom':
+    default: {
+      const bottom = findBottomLineInRange(lines, openingLine, closingLine);
+      return { line: bottom.line, column: 0, indentation: bottom.indentation, isInline: false };
     }
   }
 }

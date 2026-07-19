@@ -9,11 +9,14 @@ import {
   detectBlockIndentation,
   findAstroFrontmatterBounds,
   findBottomLineInRange,
+  findEnclosingStyleBounds,
   findSfcScriptBounds,
   getLineIndentation,
   isCommentLine,
+  isFrameworkStyleDestination,
   isImportLine,
   isInlineSnippet,
+  isStyleBlockContext,
   shouldRepositionCursor,
 } from '../../editor/placement';
 import { FileExtension } from '../../types/file-extension';
@@ -718,6 +721,139 @@ describe('editor/placement', () => {
     it('Vue: cursor strictly inside the script block lands at the cursor line', () => {
       const r = computeImportPlacement(vue, '.vue' as FileExtension, '.ts' as FileExtension, 2, 0);
       assert.strictEqual(r.line, 2);
+    });
+  });
+
+  describe('findEnclosingStyleBounds', () => {
+    // 0:<script> 1:</script> 2:<template> 3:  <div/> 4:</template> 5:<style scoped> 6:.a {} 7:</style>
+    const lines = [ '<script setup>', '</script>', '<template>', '  <div/>', '</template>', '<style scoped>', '.a {}', '</style>' ];
+
+    it('finds the block strictly enclosing the cursor line', () => {
+      assert.deepStrictEqual(findEnclosingStyleBounds(lines, 6), { openingLine: 5, closingLine: 7 });
+    });
+
+    it('returns null when the cursor sits ON the opening <style> tag (strict insideness)', () => {
+      assert.strictEqual(findEnclosingStyleBounds(lines, 5), null);
+    });
+
+    it('returns null when the cursor sits ON the closing </style> tag (strict insideness)', () => {
+      assert.strictEqual(findEnclosingStyleBounds(lines, 7), null);
+    });
+
+    it('returns null when the cursor is outside every style block (in the script block)', () => {
+      assert.strictEqual(findEnclosingStyleBounds(lines, 0), null);
+    });
+
+    it('matches a lang-tagged opening tag (<style lang="scss">)', () => {
+      const scss = [ '<style lang="scss">', '$c: red;', '</style>' ];
+      assert.deepStrictEqual(findEnclosingStyleBounds(scss, 1), { openingLine: 0, closingLine: 2 });
+    });
+
+    it('picks the enclosing block when several <style> blocks exist', () => {
+      const multi = [
+        '<style>', 'a {}', '</style>',        // 0..2
+        '<template></template>',              // 3
+        '<style scoped>', 'b {}', '</style>', // 4..6
+      ];
+      assert.deepStrictEqual(findEnclosingStyleBounds(multi, 1), { openingLine: 0, closingLine: 2 });
+      assert.deepStrictEqual(findEnclosingStyleBounds(multi, 5), { openingLine: 4, closingLine: 6 });
+      assert.strictEqual(findEnclosingStyleBounds(multi, 3), null, 'a line between blocks is enclosed by neither');
+    });
+
+    it('returns null for an unclosed <style> block', () => {
+      assert.strictEqual(findEnclosingStyleBounds([ '<style>', '.a {}' ], 1), null);
+    });
+  });
+
+  describe('isFrameworkStyleDestination', () => {
+    it('.vue / .svelte / .astro return true', () => {
+      assert.strictEqual(isFrameworkStyleDestination('.vue' as FileExtension), true);
+      assert.strictEqual(isFrameworkStyleDestination('.svelte' as FileExtension), true);
+      assert.strictEqual(isFrameworkStyleDestination('.astro' as FileExtension), true);
+    });
+
+    it('non-framework destinations return false', () => {
+      assert.strictEqual(isFrameworkStyleDestination('.ts' as FileExtension), false);
+      assert.strictEqual(isFrameworkStyleDestination('.css' as FileExtension), false);
+      assert.strictEqual(isFrameworkStyleDestination('.tsx' as FileExtension), false);
+    });
+  });
+
+  describe('isStyleBlockContext', () => {
+    const vueStyle = '<script setup>\n</script>\n<template>\n  <div/>\n</template>\n<style scoped>\n.a {}\n</style>';
+    const cursorInStyle = 6; // the `.a {}` line, strictly inside <style>
+
+    it('framework dest + all-stylesheet sources + cursor inside <style> → true', () => {
+      assert.strictEqual(
+        isStyleBlockContext(vueStyle, '.vue' as FileExtension, [ '.css' as FileExtension ], cursorInStyle), true);
+      assert.strictEqual(
+        isStyleBlockContext(vueStyle, '.vue' as FileExtension, [ '.scss' as FileExtension, '.css' as FileExtension ], cursorInStyle), true);
+    });
+
+    it('false when the destination is not a framework SFC (even with a stylesheet source in a <style> block)', () => {
+      assert.strictEqual(
+        isStyleBlockContext(vueStyle, '.css' as FileExtension, [ '.css' as FileExtension ], cursorInStyle), false);
+    });
+
+    it('false when any source is not a stylesheet (mixed selection stays script-dialect)', () => {
+      assert.strictEqual(
+        isStyleBlockContext(vueStyle, '.vue' as FileExtension, [ '.css' as FileExtension, '.png' as FileExtension ], cursorInStyle), false);
+    });
+
+    it('false for an empty source list', () => {
+      assert.strictEqual(isStyleBlockContext(vueStyle, '.vue' as FileExtension, [], cursorInStyle), false);
+    });
+
+    it('false when the cursor is outside the <style> block (in the script block)', () => {
+      assert.strictEqual(
+        isStyleBlockContext(vueStyle, '.vue' as FileExtension, [ '.css' as FileExtension ], 0), false);
+    });
+  });
+
+  describe('computeImportPlacement — style-block context (insideStyleBlock)', () => {
+    // 0:<script setup> 1:</script> 2:<template> 3:  <div/> 4:</template> 5:<style scoped> 6:.a {} 7:</style>
+    const vueStyle = '<script setup>\n</script>\n<template>\n  <div/>\n</template>\n<style scoped>\n.a {}\n</style>';
+
+    it('a .css source into a .vue <style> block places inside the block (Bottom → after opening tag)', () => {
+      const r = computeImportPlacement(vueStyle, '.vue' as FileExtension, '.css' as FileExtension, 6, 0, true);
+      assert.strictEqual(r.isInline, false);
+      assert.strictEqual(r.line, 6, 'Bottom in an import-less <style> block lands just after the opening tag');
+    });
+
+    it('ignores the style branch when insideStyleBlock is false (falls through to the SFC script block)', () => {
+      const r = computeImportPlacement(vueStyle, '.vue' as FileExtension, '.css' as FileExtension, 6, 0, false);
+      // No import lines in the empty <script setup>, so Bottom-in-script falls back to after the opening tag.
+      assert.strictEqual(r.line, 1);
+    });
+
+    it('defensively falls through to SFC placement when insideStyleBlock is set but no <style> block exists', () => {
+      const noStyle = '<script setup>\nimport x;\n</script>\n<template></template>';
+      const r = computeImportPlacement(noStyle, '.vue' as FileExtension, '.css' as FileExtension, 0, 0, true);
+      assert.strictEqual(r.line, 2, 'no <style> block → SFC script-block placement (after the last import)');
+    });
+  });
+
+  // Top / Cursor within a <style> block require the placement setting (restored after).
+  describe('computeImportPlacement — style-block context Top / Cursor', () => {
+    before(async () => {
+      await setAutoImportSetting('preferences', 'placement', 'Top', vscode.ConfigurationTarget.Global);
+    });
+    after(async () => {
+      await setAutoImportSetting('preferences', 'placement', undefined, vscode.ConfigurationTarget.Global);
+    });
+
+    // 5:<style scoped> 6:.a {} 7:.b {} 8:</style>
+    const vueStyle = '<script setup>\n</script>\n<template>\n  <div/>\n</template>\n<style scoped>\n.a {}\n.b {}\n</style>';
+
+    it('Top places just after the opening <style> tag', async () => {
+      const r = computeImportPlacement(vueStyle, '.vue' as FileExtension, '.scss' as FileExtension, 7, 0, true);
+      assert.strictEqual(r.line, 6);
+    });
+
+    it('Cursor (set below) places at the cursor line inside the block', async () => {
+      await setAutoImportSetting('preferences', 'placement', 'Cursor', vscode.ConfigurationTarget.Global);
+      const r = computeImportPlacement(vueStyle, '.vue' as FileExtension, '.scss' as FileExtension, 7, 0, true);
+      assert.strictEqual(r.line, 7);
     });
   });
 });

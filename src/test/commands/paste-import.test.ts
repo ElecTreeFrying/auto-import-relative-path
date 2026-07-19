@@ -126,20 +126,6 @@ describe('executePasteImport', () => {
       assert.strictEqual(changed, false, 'expected no document change for .scss into .html');
     });
 
-    it('.css into .vue rejects (not in VUE_SUPPORTED_EXTENSIONS)', async () => {
-      await openFixture('src/App.vue');
-      await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'styles/global.css'));
-      const changed = await waitForDocumentChange(() => executePasteImport());
-      assert.strictEqual(changed, false, 'expected no document change for .css into .vue');
-    });
-
-    it('.scss into .astro rejects (not in ASTRO_SUPPORTED_EXTENSIONS)', async () => {
-      await openFixture('src/App.astro');
-      await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'styles/main.scss'));
-      const changed = await waitForDocumentChange(() => executePasteImport());
-      assert.strictEqual(changed, false, 'expected no document change for .scss into .astro');
-    });
-
     // The only gating-passes-but-empty-snippet pair: .jsx accepts cross-imports, but the JSX
     // builder has no .ts/.tsx branch, so the snippet is empty and clauses 10/11 reject it.
     it('.ts into .jsx triggers not-supported (gating passes, empty snippet)', async () => {
@@ -200,6 +186,76 @@ describe('executePasteImport', () => {
       assert.notStrictEqual(editor.document.getText(), textBefore, 'document should differ after insertion');
       const allText = editor.document.getText();
       assert.ok(allText.includes('./global.css'), `expected SCSS import with .css preserved, got: ${allText.slice(0, 200)}`);
+    });
+  });
+
+  // Stylesheet source into a framework SFC: the shape depends on where the cursor sits. Inside a
+  // <style> block it is the @import/@use dialect; in the script region it is a side-effect import.
+  // (These pairs were gate-rejected before this feature — see the removed 'rejects' cases.)
+  describe('stylesheet source into a framework SFC', () => {
+    function setCursor(editor: vscode.TextEditor, line: number): void {
+      const pos = new vscode.Position(line, 0);
+      editor.selection = new vscode.Selection(pos, pos);
+    }
+
+    it('.css into a .vue <style> block inserts the @import shape', async () => {
+      const editor = await openFixture('src/styled.vue');
+      setCursor(editor, 9); // inside <style scoped>
+      await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'styles/global.css'));
+      const changed = await waitForDocumentChange(() => executePasteImport(), 2000);
+      assert.strictEqual(changed, true, 'expected the @import to insert');
+      assert.ok(editor.document.getText().includes("@import '../styles/global.css';"),
+        `expected @import in the <style> block, got: ${editor.document.getText()}`);
+    });
+
+    it('.scss into a .vue <style> block inserts the @use shape (extension dropped)', async () => {
+      const editor = await openFixture('src/styled.vue');
+      setCursor(editor, 9);
+      await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'styles/theme.scss'));
+      const changed = await waitForDocumentChange(() => executePasteImport(), 2000);
+      assert.strictEqual(changed, true, 'expected the @use to insert');
+      assert.ok(editor.document.getText().includes("@use '../styles/theme';"),
+        `expected @use in the <style> block, got: ${editor.document.getText()}`);
+    });
+
+    it('.css into a .vue script region inserts the side-effect import (not @import)', async () => {
+      const editor = await openFixture('src/styled.vue');
+      setCursor(editor, 0); // the <script setup> line — outside every <style> block
+      await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'styles/global.css'));
+      const changed = await waitForDocumentChange(() => executePasteImport(), 2000);
+      assert.strictEqual(changed, true, 'expected the side-effect import to insert');
+      const allText = editor.document.getText();
+      assert.ok(allText.includes("import '../styles/global.css';"), `expected side-effect import, got: ${allText}`);
+      assert.ok(!allText.includes('@import'), 'must not use the style dialect outside a <style> block');
+    });
+
+    it('two stylesheet sources into a <style> block stack in the style dialect', async () => {
+      const editor = await openFixture('src/styled.vue');
+      setCursor(editor, 9);
+      await vscode.env.clipboard.writeText([
+        path.join(FIXTURE_ROOT, 'styles/global.css'),
+        path.join(FIXTURE_ROOT, 'styles/theme.scss'),
+      ].join('\n'));
+      const changed = await waitForDocumentChange(() => executePasteImport(), 2000);
+      assert.strictEqual(changed, true, 'expected the stacked style block to insert');
+      const allText = editor.document.getText();
+      assert.ok(allText.includes("@import '../styles/global.css';"), 'the .css member → @import');
+      assert.ok(allText.includes("@use '../styles/theme';"), 'the .scss member → @use');
+    });
+
+    it('a mixed selection (stylesheet + script) into a <style> block stays script-dialect (D4)', async () => {
+      const editor = await openFixture('src/styled.vue');
+      setCursor(editor, 9);
+      await vscode.env.clipboard.writeText([
+        path.join(FIXTURE_ROOT, 'styles/global.css'),
+        path.join(FIXTURE_ROOT, 'src/bar.ts'),
+      ].join('\n'));
+      const changed = await waitForDocumentChange(() => executePasteImport(), 2000);
+      assert.strictEqual(changed, true, 'expected the mixed selection to insert');
+      const allText = editor.document.getText();
+      assert.ok(allText.includes("import '../styles/global.css';"), 'the .css member stays a side-effect import in a mixed selection');
+      assert.ok(allText.includes("from './bar'"), 'the .ts member imports too');
+      assert.ok(!allText.includes('@import') && !allText.includes('@use'), 'a mixed selection must not use the style dialect');
     });
   });
 

@@ -4,7 +4,8 @@ import * as path from 'path';
 import { FilePathInfo, getFilePathInfo, getFilePathInfoFromPaths, parseClipboardPaths } from '../editor/file-path-info';
 import { insertImportSnippet } from '../editor/insert-snippet';
 import { clearNotifications, showNotification } from '../editor/notification';
-import { isInlineSnippet } from '../editor/placement';
+import { isInlineSnippet, isStyleBlockContext } from '../editor/placement';
+import { extractFileExtension } from '../path/extension';
 import { isPairSupported } from '../gating';
 import { joinImportStatements } from '../snippets/compose';
 import { buildImportSnippet } from '../snippets/dispatch';
@@ -19,7 +20,7 @@ export async function executePasteImport(): Promise<void> {
 
   const clipboardPaths = parseClipboardPaths(await vscode.env.clipboard.readText());
   if (clipboardPaths.length > 1) {
-    return pasteMultipleImports(clipboardPaths, editor.document.uri.fsPath);
+    return pasteMultipleImports(clipboardPaths, editor);
   }
 
   const info = await getFilePathInfo();
@@ -45,7 +46,16 @@ export async function executePasteImport(): Promise<void> {
     return showNotification('source-not-found', { basename: path.basename(sourceFilePath) });
   }
 
-  const snippet = await buildImportSnippet(info);
+  // A stylesheet source dropped inside an SFC `<style>` block takes the `@import`/`@use` dialect and
+  // style-block placement; anywhere else it stays the script-block side-effect import.
+  const insideStyleBlock = isStyleBlockContext(
+    editor.document.getText(),
+    destinationFileExt,
+    [ sourceFileExt ],
+    editor.selection.anchor.line,
+  );
+
+  const snippet = await buildImportSnippet(info, insideStyleBlock);
 
   if (
     !isPairSupported(info)
@@ -55,7 +65,7 @@ export async function executePasteImport(): Promise<void> {
     return showNotification('not-supported', { sourceExt: sourceFileExt, destinationExt: destinationFileExt });
   }
 
-  insertImportSnippet(snippet, info);
+  insertImportSnippet(snippet, info, insideStyleBlock);
 }
 
 /** A clipboard member that cleared every check and produced a non-empty snippet. */
@@ -71,8 +81,18 @@ interface PasteCandidate {
  * most informative first: `not-supported` > `source-not-found` > `same-file-path` >
  * `no-extension` > `empty-clipboard`.
  */
-async function pasteMultipleImports(sourceFilePaths: string[], destinationFilePath: string): Promise<void> {
-  const destinationIsMarkdown = path.extname(destinationFilePath) === '.md';
+async function pasteMultipleImports(sourceFilePaths: string[], editor: vscode.TextEditor): Promise<void> {
+  const destinationFilePath = editor.document.uri.fsPath;
+  const destinationFileExt = extractFileExtension(destinationFilePath);
+  const destinationIsMarkdown = destinationFileExt === '.md';
+  // Decided once for the whole gesture: style-dialect only when every member is a stylesheet and the
+  // cursor sits in a `<style>` block (a mixed selection stays script-dialect). See isStyleBlockContext.
+  const insideStyleBlock = isStyleBlockContext(
+    editor.document.getText(),
+    destinationFileExt,
+    sourceFilePaths.map(sourceFilePath => extractFileExtension(sourceFilePath)),
+    editor.selection.anchor.line,
+  );
   const candidates: PasteCandidate[] = [];
   let sameFileCount = 0;
   let missingBasename: string | undefined;
@@ -109,7 +129,7 @@ async function pasteMultipleImports(sourceFilePaths: string[], destinationFilePa
       continue;
     }
 
-    const snippet = await buildImportSnippet(info);
+    const snippet = await buildImportSnippet(info, insideStyleBlock);
     if (snippet.value === '' || snippet.value === '\n') {
       rejectedInfo = info;
       continue;
@@ -138,12 +158,12 @@ async function pasteMultipleImports(sourceFilePaths: string[], destinationFilePa
   // all-inline inserts the first only; a mixed set keeps the statement-style members.
   const blockCandidates = candidates.filter(candidate => !isInlineSnippet(candidate.info.sourceFileExt, candidate.info.destinationFileExt));
   if (blockCandidates.length === 0) {
-    return insertImportSnippet(new vscode.SnippetString(candidates[0].value), candidates[0].info);
+    return insertImportSnippet(new vscode.SnippetString(candidates[0].value), candidates[0].info, insideStyleBlock);
   }
 
   // joinImportStatements ends the block with '\n' and insertImportSnippet appends its own trailing
   // newline, so strip the composed one. Indentation is joined empty: editor.insertSnippet
   // re-indents interior lines to the insertion column (the LaTeX figure relies on the same).
   const block = joinImportStatements(blockCandidates.map(candidate => candidate.value), '').slice(0, -1);
-  insertImportSnippet(new vscode.SnippetString(block), blockCandidates[0].info);
+  insertImportSnippet(new vscode.SnippetString(block), blockCandidates[0].info, insideStyleBlock);
 }

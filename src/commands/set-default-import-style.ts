@@ -4,6 +4,7 @@ import * as path from 'path';
 import { getAutoImportSetting, setAutoImportSetting } from '../config/settings';
 import { filterCopyablePaths, getFilePathInfo, getFilePathInfoFromPaths, parseClipboardPaths } from '../editor/file-path-info';
 import { clearNotifications, showNotification } from '../editor/notification';
+import { isStyleBlockContext } from '../editor/placement';
 import { isPairSupported } from '../gating';
 import { buildImportSnippetVariants, ImportSnippetVariant } from '../snippets/variants';
 
@@ -45,7 +46,17 @@ export async function executeSetDefaultImportStyle(): Promise<void> {
     return showNotification('source-not-found', { basename: path.basename(sourceFilePath) });
   }
 
-  const variants = await buildImportSnippetVariants(info);
+  // Inside an SFC `<style>` block a stylesheet source exposes the configurable CSS/SCSS styles;
+  // elsewhere it is a fixed side-effect shape (→ the no-configurable-style guard below). Computed from
+  // the primary member (this flow is single-pair).
+  const insideStyleBlock = isStyleBlockContext(
+    editor.document.getText(),
+    destinationFileExt,
+    [ sourceFileExt ],
+    editor.selection.anchor.line,
+  );
+
+  const variants = await buildImportSnippetVariants(info, insideStyleBlock);
 
   const isEmptyVariantSet =
     variants.length === 0

@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 
 import { FileExtension } from '../types/file-extension';
+import { STYLESHEET_FILE_EXTENSIONS } from '../constants/extensions';
 import { AutoImportConfigNamespace, AutoImportSettingKey, getAutoImportSetting } from '../config/settings';
 import { determineImportType } from '../path/import-type';
 import { FilePathInfo } from '../editor/file-path-info';
@@ -55,7 +56,10 @@ export interface ImportSnippetVariant {
   };
 }
 
-export async function buildImportSnippetVariants(info: FilePathInfo): Promise<ImportSnippetVariant[]> {
+export async function buildImportSnippetVariants(
+  info: FilePathInfo,
+  insideStyleBlock = false,
+): Promise<ImportSnippetVariant[]> {
   const { sourceFilePath, sourceFileExt, destinationFileExt, relativePath } = info;
 
   const shouldPreserveScriptExtension = getAutoImportSetting<boolean>('script', 'preserve');
@@ -92,7 +96,8 @@ export async function buildImportSnippetVariants(info: FilePathInfo): Promise<Im
     case '.vue':
     case '.svelte':
     case '.astro':
-      return buildFrameworkComponentVariants(sourceFileExt, scriptPath, labelScriptPath, fullPath, labelFullPath);
+      return buildFrameworkComponentVariants(
+        sourceFileExt, sourceFilePath, relativePath, scriptPath, labelScriptPath, fullPath, labelFullPath, insideStyleBlock);
     case '.css':
       return buildCssVariants(sourceFilePath, fullPath, labelFullPath);
     case '.scss':
@@ -159,10 +164,13 @@ function buildTsxVariants(
 
 function buildFrameworkComponentVariants(
   sourceFileExt: FileExtension,
+  sourceFilePath: string,
+  relativePath: string,
   scriptPath: string,
   labelScriptPath: string,
   fullPath: string,
   labelFullPath: string,
+  insideStyleBlock: boolean,
 ): ImportSnippetVariant[] {
   if (sourceFileExt === '.ts' || sourceFileExt === '.tsx'
     || sourceFileExt === '.js' || sourceFileExt === '.jsx') {
@@ -173,6 +181,14 @@ function buildFrameworkComponentVariants(
         buildTypeScriptImportSnippetByStyle(opt.value, labelScriptPath),
         'script', 'typescript',
       ));
+  }
+  // Inside a `<style>` block, a stylesheet source enumerates the CSS / SCSS style pickers (the same
+  // `stylesheet` settings the plain `.css`/`.scss` destinations persist) rather than the single
+  // hardcoded side-effect variant. The source extension picks which catalogue.
+  if (insideStyleBlock && STYLESHEET_FILE_EXTENSIONS.includes(sourceFileExt)) {
+    return sourceFileExt === '.scss'
+      ? buildScssVariants(sourceFilePath, relativePath, fullPath, labelFullPath)
+      : buildCssVariants(sourceFilePath, fullPath, labelFullPath);
   }
   const variant = buildReactNonScriptVariant(sourceFileExt, fullPath, labelFullPath);
   return variant ? [variant] : [];

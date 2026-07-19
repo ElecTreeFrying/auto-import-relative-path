@@ -244,13 +244,13 @@
           },
           "auto-import.importStatement.styleSheet.preserveStylesheetFileExtension": {
             "title": "Preserve stylesheet file extension in imports",
-            "description": "Keep the source .css / .scss extension on the generated import path. Exception: .css extensions are always preserved inside .scss imports — Sass requires the extension to recognise a foreign-language import, and this setting has no effect there.",
+            "description": "Keep the source .css / .scss extension on the generated import path. Applies to .scss-into-.scss imports and to a .scss source imported inside a Vue / Svelte / Astro <style> block. Exception: .css extensions are always preserved inside .scss imports — Sass requires the extension to recognise a foreign-language import, and this setting has no effect there.",
             "type": "boolean",
             "default": false
           },
           "auto-import.importStatement.styleSheet.cssImportStyle": {
             "title": "CSS @import style",
-            "description": "Template used when a .css source is imported into a .css destination. '_relativePath_' is replaced with the computed relative path.",
+            "description": "Template used when a .css source is imported into a .css destination, or into a Vue / Svelte / Astro <style> block. '_relativePath_' is replaced with the computed relative path.",
             "type": "string",
             "default": "@import '_relativePath_';",
             "enum": [
@@ -276,7 +276,7 @@
           },
           "auto-import.importStatement.styleSheet.scssImportStyle": {
             "title": "SCSS @import / @use style",
-            "description": "Template used when a .scss or .css source is imported into a .scss destination. Modern Sass uses @use for a true module system; legacy Sass uses @import. Leading underscores on partial filenames (e.g. _variables.scss) are stripped automatically to match Sass's partial-resolution convention.",
+            "description": "Template used when a .scss or .css source is imported into a .scss destination, or into a Vue / Svelte / Astro <style> block. Modern Sass uses @use for a true module system; legacy Sass uses @import. Leading underscores on partial filenames (e.g. _variables.scss) are stripped automatically to match Sass's partial-resolution convention.",
             "type": "string",
             "default": "@use '_relativePath_';",
             "enum": [

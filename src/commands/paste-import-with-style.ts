@@ -4,6 +4,7 @@ import * as path from 'path';
 import { filterCopyablePaths, getFilePathInfo, getFilePathInfoFromPaths, parseClipboardPaths } from '../editor/file-path-info';
 import { insertImportSnippet } from '../editor/insert-snippet';
 import { clearNotifications, showNotification } from '../editor/notification';
+import { isStyleBlockContext } from '../editor/placement';
 import { isPairSupported } from '../gating';
 import { buildImportSnippetVariants, ImportSnippetVariant } from '../snippets/variants';
 
@@ -44,7 +45,16 @@ export async function executePasteImportWithStyle(): Promise<void> {
     return showNotification('source-not-found', { basename: path.basename(sourceFilePath) });
   }
 
-  const variants = await buildImportSnippetVariants(info);
+  // Inside an SFC `<style>` block a stylesheet source enumerates the CSS/SCSS pickers; elsewhere it is
+  // the single hardcoded side-effect variant. Computed from the primary member (picker is single-pair).
+  const insideStyleBlock = isStyleBlockContext(
+    editor.document.getText(),
+    destinationFileExt,
+    [ sourceFileExt ],
+    editor.selection.anchor.line,
+  );
+
+  const variants = await buildImportSnippetVariants(info, insideStyleBlock);
 
   const isEmptyVariantSet =
     variants.length === 0
@@ -56,7 +66,7 @@ export async function executePasteImportWithStyle(): Promise<void> {
   }
 
   if (variants.length === 1) {
-    return insertImportSnippet(new vscode.SnippetString(variants[0].snippetText), info);
+    return insertImportSnippet(new vscode.SnippetString(variants[0].snippetText), info, insideStyleBlock);
   }
 
   const picked = await vscode.window.showQuickPick(toQuickPickItems(variants), {
@@ -66,7 +76,7 @@ export async function executePasteImportWithStyle(): Promise<void> {
   if (!picked) {
     return;
   }
-  return insertImportSnippet(new vscode.SnippetString(picked.snippetText), info);
+  return insertImportSnippet(new vscode.SnippetString(picked.snippetText), info, insideStyleBlock);
 }
 
 function toQuickPickItems(variants: ImportSnippetVariant[]): ImportStyleQuickPickItem[] {

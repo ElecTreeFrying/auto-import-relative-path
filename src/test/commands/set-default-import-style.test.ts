@@ -61,4 +61,20 @@ describe('executeSetDefaultImportStyle (branches up to the picker)', () => {
     'docs/architecture.md',
     [ path.join(FIXTURE_ROOT, 'docs/guide.md'), path.join(FIXTURE_ROOT, 'docs/api-reference.md') ].join('\n'),
   );
+
+  // A stylesheet source in a framework SFC's script region is a single fixed side-effect variant →
+  // no-configurable-style (default cursor 0,0 in styled.vue is the <script setup> line).
+  earlyReturn('.css into a .vue script region → no-configurable-style (side-effect single-shape)', 'src/styled.vue', 'styles/global.css');
+
+  // Inside a <style> block the same source exposes >=2 configurable CSS styles, so the command
+  // reaches the persist picker instead of early-returning (the picker is the manual-QA boundary here;
+  // completesPromptly is false precisely because the blocking QuickPick opened — dismissed in afterEach).
+  it('.css into a .vue <style> block reaches the configurable picker (does not early-return)', async () => {
+    await openFixture('src/styled.vue');
+    const editor = vscode.window.activeTextEditor!;
+    const pos = new vscode.Position(9, 0); // inside the <style scoped> block
+    editor.selection = new vscode.Selection(pos, pos);
+    await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'styles/global.css'));
+    assert.strictEqual(await completesPromptly(() => executeSetDefaultImportStyle()), false);
+  });
 });

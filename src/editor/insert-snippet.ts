@@ -10,16 +10,22 @@ import {
   detectBlockIndentation,
   findAstroFrontmatterBounds,
   findBottomLineInRange,
+  findEnclosingStyleBounds,
   findSfcScriptBounds,
   getLineIndentation,
   isCommentLine,
+  isFrameworkStyleDestination,
   isImportLine,
   isInlineSnippet,
   isMarkdownDestination,
   shouldRepositionCursor,
 } from './placement';
 
-export function insertImportSnippet(snippet: vscode.SnippetString, info: FilePathInfo): void {
+export function insertImportSnippet(
+  snippet: vscode.SnippetString,
+  info: FilePathInfo,
+  insideStyleBlock = false,
+): void {
   const { sourceFileExt, destinationFileExt } = info;
 
   if (isInlineSnippet(sourceFileExt, destinationFileExt)) {
@@ -33,6 +39,10 @@ export function insertImportSnippet(snippet: vscode.SnippetString, info: FilePat
   }
 
   const placement = getAutoImportSetting<string>('preferences', 'placement');
+
+  if (insideStyleBlock && isFrameworkStyleDestination(destinationFileExt)) {
+    return insertSnippetAtStyleBlock(snippet, placement);
+  }
 
   if (destinationFileExt === '.astro') {
     return insertSnippetAtAstroFrontmatter(snippet, placement);
@@ -134,6 +144,40 @@ function insertSnippetAtAstroFrontmatter(snippet: vscode.SnippetString, placemen
       }
       const bottom = findBottomLineInRange(lines, openingLine, closingLine);
       insertSnippetAtPosition(snippet, bottom.line, bottom.indentation);
+      return;
+    }
+    case 'Bottom':
+    default: {
+      const bottom = findBottomLineInRange(lines, openingLine, closingLine);
+      insertSnippetAtPosition(snippet, bottom.line, bottom.indentation);
+      return;
+    }
+  }
+}
+
+function insertSnippetAtStyleBlock(snippet: vscode.SnippetString, placement: string | undefined): void {
+  const editor = vscode.window.activeTextEditor;
+  const lines = editor.document.getText().split('\n');
+  const bounds = findEnclosingStyleBounds(lines, editor.selection.anchor.line);
+
+  if (!bounds) {
+    // The caller decided the cursor was inside a <style> block; if it can no longer be located
+    // (an edit shifted the document between detection and insertion), fall back to Bottom.
+    return insertSnippetAtBottom(snippet);
+  }
+
+  const { openingLine, closingLine } = bounds;
+
+  switch (placement) {
+    case 'Top': {
+      const indentation = detectBlockIndentation(lines, openingLine, closingLine);
+      insertSnippetAtPosition(snippet, openingLine + 1, indentation);
+      return;
+    }
+    case 'Cursor': {
+      const cursorLine = adjustForCommentBlock(lines, editor.selection.anchor.line);
+      const indentation = getLineIndentation(lines[cursorLine] || '') || detectBlockIndentation(lines, openingLine, closingLine);
+      insertSnippetAtPosition(snippet, cursorLine, indentation);
       return;
     }
     case 'Bottom':

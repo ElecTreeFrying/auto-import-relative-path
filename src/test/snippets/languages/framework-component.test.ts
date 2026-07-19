@@ -138,4 +138,54 @@ describe('framework-component', () => {
     const result = buildSnippet(info);
     assert.strictEqual(result.value, "import { ${1:AppRootComponent} } from './app-root.component';");
   });
+
+  // Stylesheet sources: inside a <style> block (insideStyleBlock = true) they take the CSS/SCSS
+  // dialect; everywhere else they fall through to the script-block side-effect import. The source
+  // extension — not the block's lang — picks CSS vs. SCSS shapes.
+  describe('stylesheet sources — <style>-block context vs. script context', () => {
+    it('.css source in a <style> block → CSS @import (default style, full extension kept)', async () => {
+      await vscode.env.clipboard.writeText(source('theme.css'));
+      const info = await getFilePathInfo();
+      assert.strictEqual(buildSnippet(info, true).value, "@import './theme.css';");
+    });
+
+    it('.scss source in a <style> block → SCSS @use (default style, extension dropped)', async () => {
+      await vscode.env.clipboard.writeText(source('base.scss'));
+      const info = await getFilePathInfo();
+      assert.strictEqual(buildSnippet(info, true).value, "@use './base';");
+    });
+
+    it('.scss partial in a <style> block strips the leading underscore (_variables.scss → variables)', async () => {
+      await vscode.env.clipboard.writeText(source('_variables.scss'));
+      const info = await getFilePathInfo();
+      assert.strictEqual(buildSnippet(info, true).value, "@use './variables';");
+    });
+
+    it('.css source WITHOUT style context → script-block side-effect import', async () => {
+      await vscode.env.clipboard.writeText(source('theme.css'));
+      const info = await getFilePathInfo();
+      assert.strictEqual(buildSnippet(info).value, "import './theme.css';");
+      assert.strictEqual(buildSnippet(info, false).value, "import './theme.css';");
+    });
+
+    it('.scss source WITHOUT style context → script-block side-effect import (extension kept)', async () => {
+      await vscode.env.clipboard.writeText(source('base.scss'));
+      const info = await getFilePathInfo();
+      assert.strictEqual(buildSnippet(info).value, "import './base.scss';");
+    });
+
+    // CSS Modules: the basename guard fires only in script context (a default `styles` import); in a
+    // <style> block the source is a plain stylesheet and takes the @import shape (D7).
+    it('.module.css in script context → default `styles` import (module guard)', async () => {
+      await vscode.env.clipboard.writeText(source('palette.module.css'));
+      const info = await getFilePathInfo();
+      assert.strictEqual(buildSnippet(info).value, "import ${1:styles} from './palette.module.css';");
+    });
+
+    it('.module.css in a <style> block → CSS @import (module guard does not apply in style context)', async () => {
+      await vscode.env.clipboard.writeText(source('palette.module.css'));
+      const info = await getFilePathInfo();
+      assert.strictEqual(buildSnippet(info, true).value, "@import './palette.module.css';");
+    });
+  });
 });
