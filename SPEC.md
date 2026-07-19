@@ -193,7 +193,10 @@ Mechanically, `.jsx`/`.tsx`/`.mdx` carry NO per-destination source allow-list in
 | Text track | `.vtt` | Yes | Yes | Yes |
 | Data | `.json` | Yes | Yes | Yes |
 | YAML | `.yaml`, `.yml` | Yes | Yes | Yes |
+| Stylesheet | `.css`, `.scss` | Yes | Yes | Yes |
 | Markdown | `.md`, `.mdx` | — | — | Yes |
+
+A **stylesheet source** (`.css` / `.scss`) is shaped by where the cursor sits: strictly inside a `<style>` block it emits the CSS/SCSS dialect (`@import` / `@use`, configurable via `cssImportStyle` / `scssImportStyle`); anywhere else it emits a side-effect `import './styles.css';`. See [§ Vue / Svelte / Astro](#vue--svelte--astro) and [§ Vue / Svelte / Astro `<style>` block constraint](#vue--svelte--astro-style-block-constraint).
 
 ### LaTeX destination
 
@@ -424,7 +427,7 @@ Every shape in this table keeps the full real source extension on the path verba
 
 ### Vue / Svelte / Astro
 
-Script sources (`.ts`, `.tsx`, `.js`, `.jsx`) use the TypeScript import style. Non-script sources are dispatched by source category through the **same `buildAssetImportStatement` switch used by JSX/TSX/MDX** (`_react.ts`) — `import name from` for images, data, and YAML (and, for Astro destinations, Markdown sources); a **PascalCase**-derived default import for framework components (`my-button.vue` → `import MyButton from './my-button.vue';`, falling back to `name` when the basename yields no legal identifier); `import url from` for media and text tracks — with the full source extension preserved on the path. (The accepted category set is narrower here than for JSX/TSX/MDX: framework destinations don't accept fonts, stylesheets, or CSS Modules.)
+Script sources (`.ts`, `.tsx`, `.js`, `.jsx`) use the TypeScript import style. **Stylesheet sources** (`.css` / `.scss`) are context-sensitive: strictly inside a `<style>` block they emit the CSS/SCSS dialect (`@import` for `.css`, `@use` for `.scss`, configurable via `cssImportStyle` / `scssImportStyle`, and honouring the SCSS partial-underscore and `preserveStylesheetFileExtension` rules); everywhere else — the `<script>` block, Astro frontmatter, or template — they emit a side-effect `import './styles.css';`. Every other non-script source is dispatched by source category through the **same `buildAssetImportStatement` switch used by JSX/TSX/MDX** (`_react.ts`) — `import name from` for images, data, and YAML (and, for Astro destinations, Markdown sources); a **PascalCase**-derived default import for framework components (`my-button.vue` → `import MyButton from './my-button.vue';`, falling back to `name` when the basename yields no legal identifier); `import url from` for media and text tracks — with the full source extension preserved on the path. (Fonts and CSS Modules are still not accepted here — a font belongs in an SFC's `@font-face` rule, and the `styles`-import CSS-Modules idiom is React-family only.)
 
 ### LaTeX
 
@@ -530,6 +533,18 @@ For `.vue` and `.svelte` destinations, import placement is constrained to within
 In Cursor mode, when the cursor is inside the block, the same comment-block walk-up applies before insertion. The inserted import is indented to match the surrounding block — Top uses the block's detected indentation (the indent of its first content line); Bottom reuses the last existing import's own indentation (falling back to the block's); Cursor uses the cursor line's own indentation (falling back to the block's). When Cursor falls back to Bottom (cursor outside the tags), it inherits Bottom's indentation. Imports inserted outside a frontmatter/script block (the general Top/Bottom/Cursor flow) are not re-indented. This rule applies to both the paste and drag-drop flows.
 
 If no script block exists, a new `<script>`/`</script>` pair is created at line 0 and the import is placed inside it.
+
+### Vue / Svelte / Astro `<style>` block constraint
+
+When a **stylesheet source** (`.css` / `.scss`) is imported strictly inside a `<style…>`…`</style>` block of a `.vue` / `.svelte` / `.astro` destination, placement is constrained to that enclosing style block (chosen by which block contains the cursor / drop line — a file may hold several). This takes precedence over the frontmatter / script-block constraints above, so the stylesheet import lands beside the block's other `@import` / `@use` rules rather than in the script region.
+
+| Mode | Behavior |
+|---|---|
+| Top | Insert after the opening `<style…>` tag. |
+| Bottom | Scan the style block for import markers (`@import` / `@use` / `@forward`), insert after the last match. Falls back to after the opening tag. |
+| Cursor | Insert at the cursor line if the cursor is strictly between the `<style>` and `</style>` lines (not on the tag lines themselves). Otherwise falls back to Bottom. |
+
+Indentation matches the block, mirroring the frontmatter / script-block rules. This applies **only** when the gesture is entirely stylesheet sources landing inside a `<style>` block; a mixed multi-file selection, or a stylesheet dropped outside a style block, takes the script-side placement above (a side-effect `import`). No `<style>` block is ever synthesised — without one, the script-side placement is already correct. This rule applies to both the paste and drag-drop flows.
 
 ### Insertion column
 
@@ -678,8 +693,8 @@ The two near-duplicate empty/non-absolute messages differ by originating command
 **Extension stripping**: the import path keeps or drops the source extension depending on which builder renders it.
 
 - **Script sources** (`.ts`, `.tsx`, `.js`, `.jsx`): the extension is stripped by default and kept when `preserveScriptFileExtension` is on. This applies for script destinations (`.js`/`.ts`/`.jsx`/`.tsx`/`.mdx`) and for script sources into `.vue`/`.svelte`/`.astro`. (`.mdx` is never a *script source* — no builder strips an `.mdx` path; see the exception below.)
-- **`.scss` source → `.scss` destination**: the `.scss` extension is stripped by default and kept when `preserveStylesheetFileExtension` is on. (A `.css` source into `.scss` always keeps `.css` — Sass needs it.)
-- **`.css` source → `.css` destination**: the `.css` extension is ALWAYS kept; the CSS builder does not consult `preserveStylesheetFileExtension`.
+- **`.scss` source → `.scss` destination** (and a `.scss` source into a framework SFC `<style>` block): the `.scss` extension is stripped by default and kept when `preserveStylesheetFileExtension` is on. (A `.css` source into `.scss` always keeps `.css` — Sass needs it.)
+- **`.css` source → `.css` destination** (and a `.css` source into a framework SFC `<style>` block): the `.css` extension is ALWAYS kept; the CSS builder does not consult `preserveStylesheetFileExtension`.
 - **HTML, Markdown, and all other source types** (images, fonts, media, data, documents, YAML, components) always preserve the full extension.
 - **LaTeX graphics** (`.pdf`/`.png`/`.jpg`/`.jpeg`/`.eps` → `.tex`): the extension is **kept** by default and dropped when `preserveGraphicsFileExtension` is off — the *inverse* default of the script/stylesheet toggles. **LaTeX `\input`/`\include`** (`.tex` → `.tex`): the `.tex` extension is always dropped (`\include` requires it omitted). **LaTeX bibliography**: `\addbibresource` keeps `.bib`, `\bibliography` drops it.
 

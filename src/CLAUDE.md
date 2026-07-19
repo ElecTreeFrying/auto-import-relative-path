@@ -47,7 +47,7 @@ See each directory's `CLAUDE.md` for the deep rules:
 |-----------|--------------|---------------|
 | `commands/` | The registered commands | Clipboard is the data channel; failure paths return void, never throw |
 | `drop/` | DocumentDropEditProvider | Same gating as commands (`isPairSupported`); same snippet pipeline; placement via `computeImportPlacement` |
-| `editor/` | vscode-API helpers | Inline insertion for non-stylesheet → stylesheet (`url()` at exact cursor, no `\n`); forced-cursor for HTML/MD/LaTeX; Astro frontmatter constrains to `---` fences; Vue/Svelte constrains to `<script>` block |
+| `editor/` | vscode-API helpers | Inline insertion for non-stylesheet → stylesheet (`url()` at exact cursor, no `\n`); forced-cursor for HTML/MD/LaTeX; a stylesheet source into an SFC `<style>` block constrains to that block; Astro frontmatter constrains to `---` fences; Vue/Svelte constrains to `<script>` block |
 | `snippets/` | Per-language builders + dispatch | Style `description` strings are byte-exact contracts with `package.json` enums |
 | `path/` | Pure path math | No `vscode` import; `./` prefix rule is regression-tested |
 | `config/` | Workspace config | Three-site byte-exact sync (`package.json` ↔ `_styles.ts` ↔ per-language `switch`) |

@@ -52,7 +52,7 @@ Drag a file or press a key — the right import lands in your editor. Path, synt
 - **Built for every major framework** — Angular, React, Vue, Svelte, Astro — plus vanilla JS/TS, CSS/SCSS, HTML, Markdown, and **LaTeX** (drag an image in → a `figure` float; drop a `.tex` → `\input`; a `.bib` → `\addbibresource`)
 - **38 source extensions** — scripts, stylesheets, images, fonts, video, audio, text tracks, data, documents, components, LaTeX graphics (plus extensionless files like `LICENSE` into Markdown)
 - **45 configurable import styles** — ES modules, CommonJS, dynamic `import()`, `@use`, `@forward`, `@import`, HTML tags, Markdown syntax, LaTeX `figure` / `\includegraphics` / `\input` / `\addbibresource`
-- **Framework-aware placement** — imports land inside Astro `---` frontmatter and Vue / Svelte `<script>` blocks automatically
+- **Framework-aware placement** — imports land inside Astro `---` frontmatter and Vue / Svelte `<script>` blocks automatically; a stylesheet dropped in a `<style>` block becomes an `@import` / `@use` right there
 - **Smart identifiers** — default imports auto-named from the filename (`logo.svg` → `import logo`), PascalCase component naming for Vue/Svelte/Astro (`my-button.vue` → `import MyButton`), plus exported-class detection for TypeScript, Angular PascalCase auto-fill, and CSS Modules `styles` binding
 - **~10 KB gzipped, zero dependencies, no telemetry**
 
@@ -108,9 +108,9 @@ The extension is **destination-driven** — the file open in your editor decides
 | `.scss` | `.scss`, `.css`, images | `@use` / `@forward` / `@import` (configurable) or inline `url()` for images |
 | `.html` | `.js`, `.css`, images, video, audio, `.vtt` | `<script>`, `<link>`, `<img>`, `<video>`, `<audio>`, `<track>` |
 | `.md` | `.md`, images, extensionless files (`LICENSE`, `Dockerfile`, `Makefile`) | `[text](path)` link · Markdown image syntax · `[text](path)` link for extensionless |
-| `.vue` | `.vue`, scripts, images, media, data | TS style for scripts; PascalCase component import for `.vue`; `import name`/`import url` for assets |
-| `.svelte` | `.svelte`, scripts, images, media, data | TS style for scripts; PascalCase component import for `.svelte`; `import name`/`import url` for assets |
-| `.astro` | `.astro`, `.vue`, `.svelte`, scripts, images, media, data, `.md`, `.mdx` | TS style for scripts; PascalCase component import for `.vue`/`.svelte`/`.astro`; `import name`/`import url` for assets |
+| `.vue` | `.vue`, scripts, styles (`.css`/`.scss`), images, media, data | TS style for scripts; `@import`/`@use` inside a `<style>` block (side-effect `import` elsewhere) for stylesheets; PascalCase component import for `.vue`; `import name`/`import url` for assets |
+| `.svelte` | `.svelte`, scripts, styles (`.css`/`.scss`), images, media, data | TS style for scripts; `@import`/`@use` inside a `<style>` block (side-effect `import` elsewhere) for stylesheets; PascalCase component import for `.svelte`; `import name`/`import url` for assets |
+| `.astro` | `.astro`, `.vue`, `.svelte`, scripts, styles (`.css`/`.scss`), images, media, data, `.md`, `.mdx` | TS style for scripts; `@import`/`@use` inside a `<style>` block (side-effect `import` elsewhere) for stylesheets; PascalCase component import for `.vue`/`.svelte`/`.astro`; `import name`/`import url` for assets |
 | `.tex` | `.tex`, `.bib`, graphics (`.pdf`/`.png`/`.jpg`/`.jpeg`/`.eps`) | `\input`/`\include` · `\addbibresource`/`\bibliography` · `figure`/`\includegraphics` |
 
 See [SPEC — §Supported File Extensions][SPEC-extensions] for the full 38-extension breakdown by category.
@@ -212,7 +212,7 @@ See SPEC: [JavaScript][SPEC-js] · [TypeScript][SPEC-ts]
 
 Setting: `auto-import.importStatement.styleSheet.cssImportStyle`
 
-Used for `.css` sources imported into `.css` destinations.
+Used for `.css` sources imported into `.css` destinations, or into a Vue / Svelte / Astro `<style>` block.
 
 | # | Snippet | Description |
 |---|---|---|
@@ -233,7 +233,7 @@ No trailing newline — this is meant to be placed inside a `background-image`, 
 
 Setting: `auto-import.importStatement.styleSheet.scssImportStyle`
 
-Used for `.scss` and `.css` sources imported into `.scss` destinations.
+Used for `.scss` and `.css` sources imported into `.scss` destinations, or into a Vue / Svelte / Astro `<style>` block.
 
 | # | Snippet | Description |
 |---|---|---|
@@ -375,7 +375,7 @@ See [SPEC — §JSX / TSX / MDX][SPEC-react] for the full source-category dispat
 
 ### Vue / Svelte / Astro
 
-Script sources (`.ts`, `.tsx`, `.js`, `.jsx`) use the **TypeScript import style**. Non-script sources use a category-based default import — images and data (`.json`/`.yaml`/`.yml`) get a default name import (`import name from '...'`); framework components (`.vue`/`.svelte`/`.astro`) get a **PascalCase**-derived default import (`my-button.vue` → `import MyButton from '...'`); `.md`/`.mdx` (which reach only `.astro` destinations) keep the generic name import; and media and text tracks (`.vtt`) get a url import (`import url from '...'`). All non-script sources keep the full source extension on the path.
+Script sources (`.ts`, `.tsx`, `.js`, `.jsx`) use the **TypeScript import style**. **Stylesheet sources** (`.css`/`.scss`) follow the cursor: strictly inside a `<style>` block they emit the CSS/SCSS dialect (`@import` for `.css`, `@use` for `.scss`, configurable via the same `cssImportStyle`/`scssImportStyle` settings); anywhere else (the `<script>` block, Astro frontmatter, or template) they emit a side-effect `import './styles.css';`. Other non-script sources use a category-based default import — images and data (`.json`/`.yaml`/`.yml`) get a default name import (`import name from '...'`); framework components (`.vue`/`.svelte`/`.astro`) get a **PascalCase**-derived default import (`my-button.vue` → `import MyButton from '...'`); `.md`/`.mdx` (which reach only `.astro` destinations) keep the generic name import; and media and text tracks (`.vtt`) get a url import (`import url from '...'`). All non-script sources keep the full source extension on the path.
 
 Import placement is constrained to framework-specific regions — see [Placement](#placement).
 
@@ -500,6 +500,14 @@ If no script block exists, a new `<script>` / `</script>` pair is created at lin
 See [SPEC — §Vue / Svelte Script Block][SPEC-sfc] for the full constraint logic.
 
 [SPEC-sfc]: SPEC.md#vue--svelte-script-block-constraint
+
+### Vue / Svelte / Astro `<style>` block
+
+When a stylesheet source (`.css`/`.scss`) is imported strictly inside a `<style>` block of a `.vue`/`.svelte`/`.astro` file, the `@import`/`@use` lands in that block (beside its other style rules) instead of the script region — Top/Bottom/Cursor behave as above, scoped to the `<style>` block. A stylesheet dropped outside a `<style>` block, or a mixed multi-file selection, takes the script-side placement (a side-effect `import`). No `<style>` block is ever created.
+
+See [SPEC — §Vue / Svelte / Astro `<style>` Block][SPEC-style] for the full constraint logic.
+
+[SPEC-style]: SPEC.md#vue--svelte--astro-style-block-constraint
 
 ### Insertion column
 

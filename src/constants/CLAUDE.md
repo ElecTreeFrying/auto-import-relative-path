@@ -24,7 +24,7 @@ Runtime gating tables for source/destination extension pairs.
 | `TEX_SUPPORTED_EXTENSIONS` | `gating.ts:isPairSupported` | Sources accepted for `.tex` destinations — `.tex`, `.bib`, + `...TEX_GRAPHICS_FILE_EXTENSIONS` |
 | `CROSS_IMPORT_DESTINATIONS` | `gating.ts:isPairSupported` | Destinations allowed to import a *different* extension. Destinations not listed require source extension to equal destination extension. |
 | `SCRIPT_FILE_EXTENSIONS` | `editor/insert-snippet.ts:determineInsertionColumn` (internal), `editor/placement.ts:determineInsertionColumn` (internal) | Force column-0 placement for script destinations. |
-| `STYLESHEET_FILE_EXTENSIONS` | `editor/placement.ts:isInlineSnippet`, `editor/insert-snippet.ts:determineInsertionColumn` (internal), `editor/placement.ts:determineInsertionColumn` (internal) | Gate inline `url()` insertion for non-stylesheet sources; force column-0 placement for stylesheet destinations. |
+| `STYLESHEET_FILE_EXTENSIONS` | `editor/placement.ts` (`isInlineSnippet`, `isStyleBlockContext`, internal `determineInsertionColumn`), `editor/insert-snippet.ts:determineInsertionColumn` (internal); spread into `VUE_/SVELTE_/ASTRO_SUPPORTED_EXTENSIONS`; the stylesheet-source guard in `snippets/languages/framework-component.ts` + `snippets/variants.ts` | Gate inline `url()` insertion for non-stylesheet sources; force column-0 placement for stylesheet destinations; accept `.css`/`.scss` sources into the framework SFC destinations and route them to the `<style>`-block dialect. Declared **above** the `*_SUPPORTED_EXTENSIONS` lists (they spread it), so it cannot move below them. |
 
 ## Why both a runtime table and a compile-time type union exist
 
@@ -34,7 +34,7 @@ Runtime: these tables are the runtime safety net. Keep them in sync with `types/
 
 ## Hidden coupling — touch with care
 
-`SCRIPT_FILE_EXTENSIONS` is consumed by `editor/insert-snippet.ts:determineInsertionColumn` and `editor/placement.ts:determineInsertionColumn`. `STYLESHEET_FILE_EXTENSIONS` is consumed by `editor/placement.ts:isInlineSnippet` (which gates whether a non-stylesheet source into a stylesheet destination triggers inline `url()` insertion) and both `determineInsertionColumn` implementations. They look like generic categorisation but changing them silently affects column-0 forcing and inline-insertion gating. Renaming or repurposing them silently changes insertion behaviour.
+`SCRIPT_FILE_EXTENSIONS` is consumed by `editor/insert-snippet.ts:determineInsertionColumn` and `editor/placement.ts:determineInsertionColumn`. `STYLESHEET_FILE_EXTENSIONS` is consumed by `editor/placement.ts:isInlineSnippet` (which gates whether a non-stylesheet source into a stylesheet destination triggers inline `url()` insertion), `editor/placement.ts:isStyleBlockContext` and the `framework-component.ts` / `variants.ts` builders (which use it to recognise a stylesheet source destined for an SFC `<style>` block), and both `determineInsertionColumn` implementations. It is also spread into `VUE_/SVELTE_/ASTRO_SUPPORTED_EXTENSIONS` — which forces its declaration **above** those lists (a `const` cannot reference a later `const`). They look like generic categorisation but changing them silently affects column-0 forcing, inline-insertion gating, and which sources the framework SFCs accept. Renaming or repurposing them silently changes insertion behaviour.
 
 ## Adding a new accepted source/destination pair
 

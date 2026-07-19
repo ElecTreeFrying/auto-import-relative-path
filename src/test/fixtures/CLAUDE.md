@@ -38,6 +38,8 @@ workspace/
 │   ├── sibling.js, other.js            CommonJS baseline
 │   ├── widget.tsx, badge.jsx           React baseline
 │   ├── App.vue, App.svelte, App.astro  framework-component destinations
+│   ├── styled.vue, styled.svelte, styled.astro   framework SFCs with populated <style> blocks (style-block dialect)
+│   ├── theme.css, base.scss, _variables.scss, palette.module.css   stylesheet sources for SFC <style>-block imports
 │   ├── api-client.ts, http.ts          realistic library layer
 │   ├── logger.ts, env.ts
 │   ├── format-date.ts, format-currency.ts, validators.ts
@@ -157,6 +159,7 @@ The `Coverage matrix` above answers "where do I find a fixture for X?"; this tab
 | `src/types/*.ts`, `src/lib/*.ts`, `src/server/*.ts`, `src/models/*.ts` | TypeScript export-shape coverage for `src/snippets/languages/typescript.ts` (`interface`, `type`, `enum`, `const enum`, `namespace`, abstract class, default class/function, barrel re-export) |
 | `src/components/*.{jsx,tsx}` | React-component shape coverage for `src/snippets/_react.ts:buildReactImport` (function component, class component, HOC, forwardRef, generic, memoized, default export) |
 | `src/App.vue`, `src/App.svelte`, `src/App.astro` | `src/snippets/languages/framework-component.ts:buildSnippet` — Vue/Svelte/Astro destinations delegating to `buildTypeScriptImportSnippet` |
+| `src/styled.{vue,svelte,astro}` (populated `<style>` blocks) + `src/{theme.css, base.scss, _variables.scss, palette.module.css}` (stylesheet sources) | `src/snippets/languages/framework-component.ts:buildSnippet` — the `<style>`-block stylesheet dialect (`insideStyleBlock`); `src/editor/placement.ts:{findEnclosingStyleBounds, isStyleBlockContext, computeStyleBlockPlacement}` and the drop/command placement parity for it |
 | `assets/{logo.png, icon.gif, photo.jpeg, photo.jpg, thumb.webp, icon.svg, banner.avif, font.woff2, regular.ttf}`, `assets/{images,icons,fonts}/*` | `IMAGE_FILE_EXTENSIONS` + font-extension paths through `src/snippets/_react.ts` and the non-script branches of `src/snippets/languages/{html,css,scss,markdown}.ts` |
 | `assets/media/{clip.mp4, demo.webm, animation.mov, song.mp3, effect.ogg, voice.wav, track.m4a, captions.vtt}` | `MEDIA_FILE_EXTENSIONS` + `TEXT_TRACK_FILE_EXTENSIONS` paths through `src/snippets/_react.ts` (url import), `src/snippets/languages/html.ts` (video/audio/text-track tags), and `src/path/import-type.ts:determineImportType` |
 | `data/{config.json, config.yaml, locale.yml, *.json, *.yaml}` | JSON/YAML branches in `src/snippets/_react.ts:buildReactImport`'s hardcoded non-script `switch` |
@@ -167,7 +170,7 @@ When refactoring any of the code sites above, run the matching test(s) under `sr
 
 ## Baseline filenames are immutable
 
-The baseline filenames (`foo.ts`, `bar.ts`, `helpers.ts`, `sibling.js`, `other.js`, `widget.tsx`, `badge.jsx`, `app-root.component.ts`, `auth.module.ts`, `highlight.directive.ts`, `trim.pipe.ts`, `user.service.ts`, `_partial.scss`, `_variables.scss`, `main.scss`, `secondary.scss`, `global.css`, `reset.css`, `_partials/_nested.scss`, `index.html`, `about.html`, `README.md`, `guide.md`, `logo.png`, `icon.gif`, `photo.jpeg`, `photo.jpg`, `thumb.webp`, `icon.svg`, `banner.avif`, `font.woff2`, `regular.ttf`, `config.json`, `config.yaml`, `locale.yml`, `empty-file.ts`, `comments-only.ts`, `with-imports.ts`, `with-requires.js`, `my files/spaced.ts`, `App.vue`, `App.svelte`, `App.astro`, `clip.mp4`, `song.mp3`, `captions.vtt`, `texture.bmp`, `theme.module.css`, `main.tex`) are referenced directly by the fixture-driven test files under `src/test/`. Renaming a baseline produces a *silent* break: a test will try to open a fixture path that no longer exists, and nothing in the toolchain will warn until the suite runs.
+The baseline filenames (`foo.ts`, `bar.ts`, `helpers.ts`, `sibling.js`, `other.js`, `widget.tsx`, `badge.jsx`, `app-root.component.ts`, `auth.module.ts`, `highlight.directive.ts`, `trim.pipe.ts`, `user.service.ts`, `_partial.scss`, `_variables.scss`, `main.scss`, `secondary.scss`, `global.css`, `reset.css`, `_partials/_nested.scss`, `index.html`, `about.html`, `README.md`, `guide.md`, `logo.png`, `icon.gif`, `photo.jpeg`, `photo.jpg`, `thumb.webp`, `icon.svg`, `banner.avif`, `font.woff2`, `regular.ttf`, `config.json`, `config.yaml`, `locale.yml`, `empty-file.ts`, `comments-only.ts`, `with-imports.ts`, `with-requires.js`, `my files/spaced.ts`, `App.vue`, `App.svelte`, `App.astro`, `styled.vue`, `styled.svelte`, `styled.astro`, `theme.css`, `base.scss`, `palette.module.css`, `clip.mp4`, `song.mp3`, `captions.vtt`, `texture.bmp`, `theme.module.css`, `main.tex`) are referenced directly by the fixture-driven test files under `src/test/`. Renaming a baseline produces a *silent* break: a test will try to open a fixture path that no longer exists, and nothing in the toolchain will warn until the suite runs.
 
 **Workflow when a baseline must change:**
 
