@@ -38,4 +38,3 @@ assets/*.mov
 # (already-tracked files were unaffected, so the breakage only showed up on a fresh clone).
 /import-statement-design/
 /qa/
-/qa-roadmap/

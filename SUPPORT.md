@@ -57,7 +57,7 @@ Where to get help, how to diagnose common issues, and how to contribute. For fea
 
 ### How do Vue / Svelte / Astro imports work?
 
-All three are fully supported destinations. Script sources (`.ts` / `.tsx` / `.js` / `.jsx`) use the **TypeScript import style**. Non-script sources get an asset-shaped import keyed on the source type — images, data (`.json` / `.yml` / `.yaml`), and `.md` / `.mdx` (Markdown/MDX as components) emit a default name import (`import name from './…';`) — as do `.vue` / `.svelte` components, but **only into Astro** (Islands) — while media and `.vtt` text tracks emit a url import (`import url from './…';`). **Stylesheet sources (`.css` / `.scss`) are shaped by where the cursor sits:** inside a `<style>` block they become the CSS/SCSS dialect (`@import` for `.css`, `@use` for `.scss`, configurable via the same `cssImportStyle` / `scssImportStyle` settings); anywhere else — the `<script>` block, Astro frontmatter, or template — they become a side-effect `import './styles.css';`. Import placement is automatically constrained to the correct region:
+All three are fully supported destinations. Script sources (`.ts` / `.tsx` / `.js` / `.jsx`) use the **TypeScript import style**. Non-script sources get an asset-shaped import keyed on the source type — images, data (`.json` / `.yml` / `.yaml`), and `.md` / `.mdx` (Markdown/MDX as components) emit a default name import (`import name from './…';`); a `.vue` / `.svelte` / `.astro` component instead emits a **PascalCase** default import (`my-button.vue` → `import MyButton from './my-button.vue';`) — into its own framework (self-imports included), with `.vue` / `.svelte` also accepted into Astro (Islands) — while media and `.vtt` text tracks emit a url import (`import url from './…';`). **Stylesheet sources (`.css` / `.scss`) are shaped by where the cursor sits:** inside a `<style>` block they become the CSS/SCSS dialect (`@import` for `.css`, `@use` for `.scss`, configurable via the same `cssImportStyle` / `scssImportStyle` settings); anywhere else — the `<script>` block, Astro frontmatter, or template — they become a side-effect `import './styles.css';`. Import placement is automatically constrained to the correct region:
 
 - **Astro** — inside the `---` frontmatter fences
 - **Vue** — inside the `<script setup>` block (or `<script>` if no setup block exists)
@@ -272,20 +272,20 @@ npm install
 
 Press <kbd>F5</kbd> inside VS Code to launch an Extension Development Host with the extension loaded. The default build task (`npm: watch`) starts automatically and rebuilds on every save.
 
-See [README — §Commands & Keybindings](README.md#commands--keybindings) for the full command table and [SPEC.md](SPEC.md) for the detailed architecture specification. Each `src/<dir>/` also has its own `CLAUDE.md` (architecture invariants) and `README.md` (navigation) for directory-specific guidance.
+See [README — §Commands & Keybindings](README.md#commands--keybindings) for the full command table and [SPEC.md](SPEC.md) for the detailed architecture specification. Each `src/<dir>/` also has its own `CLAUDE.md` (architecture invariants) for directory-specific guidance.
 
 ### Adding a new file-type pair
 
 To accept a new source extension for an existing destination (e.g. `.yaml` for `.html`):
 
-1. **`src/constants/extensions.ts`** — add the source to the matching `*_SUPPORTED_EXTENSIONS` table (`HTML_SUPPORTED_EXTENSIONS`, `MARKDOWN_SUPPORTED_EXTENSIONS`, `CSS_SUPPORTED_EXTENSIONS`, `SCSS_SUPPORTED_EXTENSIONS`, `VUE_SUPPORTED_EXTENSIONS`, `SVELTE_SUPPORTED_EXTENSIONS`, `ASTRO_SUPPORTED_EXTENSIONS`, or `TEX_SUPPORTED_EXTENSIONS`).
+1. **`src/constants/extensions.ts`** — add the source to the matching `*_SUPPORTED_EXTENSIONS` table (`HTML_SUPPORTED_EXTENSIONS`, `MARKDOWN_SUPPORTED_EXTENSIONS`, `CSS_SUPPORTED_EXTENSIONS`, `SCSS_SUPPORTED_EXTENSIONS`, `VUE_SUPPORTED_EXTENSIONS`, `SVELTE_SUPPORTED_EXTENSIONS`, `ASTRO_SUPPORTED_EXTENSIONS`, `TEX_SUPPORTED_EXTENSIONS`, `TYPESCRIPT_SUPPORTED_EXTENSIONS`, or `JAVASCRIPT_SUPPORTED_EXTENSIONS`).
 2. **`src/snippets/languages/<destination>.ts`** — make sure the per-language `buildSnippet` knows how to handle that source. The shared gating in `src/gating.ts` won't catch a source that lands at the per-language `switch`'s `default:` and emits an empty snippet.
 
 ### Adding a new file extension
 
 To add a new file extension entirely (e.g. accepting `.bmp` everywhere `.png` is accepted), **four sites** must stay in sync:
 
-1. **`src/types/file-extension.ts`** — add to the relevant category sub-type (`ImageFileExtension`, `ScriptFileExtension`, `StyleSheetFileExtension`, etc).
+1. **`src/types/file-extension.ts`** — add to the relevant category sub-type (`ImageFileExtension`, `ScriptFileExtension`, `StylesheetFileExtension`, etc).
 2. **`src/constants/extensions.ts`** — add to the matching runtime gating table (`IMAGE_FILE_EXTENSIONS` mirrors `ImageFileExtension`).
 3. **`src/snippets/dispatch.ts`** (if it's a new destination) or the relevant `src/snippets/languages/*.ts` / `src/snippets/_react.ts` (if it's a new source for JSX/TSX/MDX).
 4. **`src/snippets/variants.ts`** — add a matching `case` so the picker commands (`pasteImportWithStyle`, `setDefaultImportStyle`) work for the new extension.

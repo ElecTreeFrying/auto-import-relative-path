@@ -84,7 +84,7 @@ Drag a file from the Explorer into any supported editor. The import snippet is g
 ![Drag-and-drop demo](https://raw.githubusercontent.com/ElecTreeFrying/auto-import-relative-path/main/assets/demo-drag.gif)
 
 - Uses the same gating, snippet styles, and configuration as paste commands.
-- Follows the same Top / Bottom / Cursor placement setting as paste commands — the drop line is used as the Cursor input, and the dropped import always takes its own line, matching the surrounding indentation; a drop onto a blank line reuses it (paste keeps your caret column; a drop ignores the mouse column).
+- Follows the same Top / Bottom / Cursor placement setting as paste commands — the drop line is used as the Cursor input, and the dropped import always takes its own line; in HTML, Markdown, and LaTeX it matches the target line's indentation and a drop onto a blank line reuses it (paste keeps your caret column there; a drop ignores the mouse column).
 - Drag several files at once — every supported file becomes one statement in a single stacked block; same-file and unsupported members are skipped (an all-image drop into CSS inserts the first `url()` only, since inline values can't stack).
 - Unsupported pairs show the same "Cannot import" warning as paste commands; the provider suppresses the drop, so nothing is inserted (no stray path text).
 - See [SPEC — §Drag-and-Drop Import][SPEC-drop] for full behavior and differences from paste.
@@ -112,6 +112,8 @@ The extension is **destination-driven** — the file open in your editor decides
 | `.svelte` | `.svelte`, scripts, styles (`.css`/`.scss`), images, media, data, `.md`, `.mdx` | TS style for scripts; `@import`/`@use` inside a `<style>` block (side-effect `import` elsewhere) for stylesheets; PascalCase component import for `.svelte`; `import name`/`import url` for assets |
 | `.astro` | `.astro`, `.vue`, `.svelte`, scripts, styles (`.css`/`.scss`), images, media, data, `.md`, `.mdx` | TS style for scripts; `@import`/`@use` inside a `<style>` block (side-effect `import` elsewhere) for stylesheets; PascalCase component import for `.vue`/`.svelte`/`.astro`; `import name`/`import url` for assets |
 | `.tex` | `.tex`, `.bib`, graphics (`.pdf`/`.png`/`.jpg`/`.jpeg`/`.eps`) | `\input`/`\include` · `\addbibresource`/`\bibliography` · `figure`/`\includegraphics` |
+
+LaTeX sources (`.tex` / `.bib` / `.eps`) import only into `.tex`, and extensionless files only into `.md` — the "All …" rows above exclude them.
 
 See [SPEC — §Supported File Extensions][SPEC-extensions] for the full 38-extension breakdown by category.
 
@@ -462,7 +464,7 @@ These take effect regardless of the user's setting:
 
 | Condition | Forced placement | Reason |
 |---|---|---|
-| HTML, Markdown, or LaTeX destination | Cursor (line and column) | No canonical import block for embedded tags; for LaTeX, line 0 is the preamble. |
+| HTML, Markdown, or LaTeX destination | Cursor — paste keeps the caret column; a drop takes its own line at the target line's indent | No canonical import block for embedded tags; for LaTeX, line 0 is the preamble. |
 | Image into `.css` / `.scss` | Inline at cursor (line and column), no trailing newline | `url()` is a CSS value fragment, not a statement. |
 
 See [SPEC — §Placement Overrides][SPEC-overrides] for the complete override logic.
@@ -515,7 +517,7 @@ See [SPEC — §Vue / Svelte / Astro `<style>` Block][SPEC-style] for the full c
 |---|---|
 | Script (`.js`, `.ts`, `.jsx`, `.tsx`, `.mdx`, `.vue`, `.svelte`, `.astro`) | Column 0 |
 | Stylesheet (`.css`, `.scss`) | Column 0 |
-| HTML, Markdown, LaTeX | Cursor's current column |
+| HTML, Markdown, LaTeX | Paste: cursor's current column. Drop: own line at the target line's structural indent (a blank target line is reused in place) |
 
 See [SPEC — §Insertion Column][SPEC-column] for column rules by destination type.
 

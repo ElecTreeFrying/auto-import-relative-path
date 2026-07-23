@@ -28,7 +28,7 @@ Each directory under `src/` has its own nested `CLAUDE.md` guide. Read it before
 | `src/types/` | Cross-cutting type unions (no enums) | [`src/types/CLAUDE.md`](src/types/CLAUDE.md) |
 | `src/test/` | Mocha BDD tests; runs from `out/`, not `dist/` | [`src/test/CLAUDE.md`](src/test/CLAUDE.md) |
 
-> **Local-only trees (gitignored).** `import-statement-design/` — the design library (the import-statement rubric, shipped picker shapes, decisions + rejection ledgers) — `qa/` — the manual-QA checklists + fixture workspaces — and `qa-roadmap/` — per-roadmap-item manual-QA sessions (a fixture workspace + checklist per item under test) — are kept on disk for development, not tracked or shipped. Their guides live locally at `import-statement-design/CLAUDE.md`, `qa/CLAUDE.md`, and `qa-roadmap/CLAUDE.md`.
+> **Local-only trees (gitignored).** `import-statement-design/` — the design library (the import-statement rubric, shipped picker shapes, decisions + rejection ledgers) — and `qa/` — the manual-QA checklists + fixture workspaces, plus `qa/staging/` holding per-roadmap-item acceptance sessions awaiting their fold into the corpus — are kept on disk for development, not tracked or shipped. Their guides live locally at `import-statement-design/CLAUDE.md` and `qa/CLAUDE.md`.
 
 ## Commands
 
@@ -69,7 +69,7 @@ src/
 └── test/                       # Mocha BDD tests (runs from out/, not dist/)
 ```
 
-Allowed dependency direction: `commands → gating, editor, snippets, config, constants, types`; `drop → gating, editor, snippets, constants, types`; `gating → editor, constants, types`; `snippets → config, path, editor, types, constants`; `editor → config, path, constants, types`; `path → types`. Lower layers never import from higher layers. Internal-only sibling modules in `snippets/` are prefixed with `_` (`_styles.ts`, `_react.ts`, `_class-name.ts`).
+Allowed dependency direction: `commands → gating, editor, snippets, config, constants, path, types`; `drop → gating, editor, snippets, constants, path, types`; `gating → editor, constants, types`; `snippets → config, path, editor, types, constants`; `editor → config, path, constants, types`; `path → types`. Lower layers never import from higher layers. Internal-only sibling modules in `snippets/` are prefixed with `_` (`_styles.ts`, `_react.ts`, `_class-name.ts`).
 
 ## Cross-cutting sync rules
 
@@ -86,7 +86,7 @@ These multi-site contracts silently break on drift. The linked guides have the f
 - `tsconfig.json` is `module: Node16`, `target: ES2022`, `strict: false`, `rootDir: src`, `sourceMap: true`, and `types: ["node", "mocha"]`. New source files belong under `src/`. (`sourceMap` is on so `test:coverage` maps `out/` back to `src/`.)
 - Mocha tests are written in BDD style (`describe`/`it`); the runner UI is set to `bdd` in `.vscode-test.mjs`. Tests use Node's built-in `assert` (no Chai/Sinon). The test runner glob is `out/test/**/*.test.js` — only files emitted by `compile-tests` get picked up.
 - **Coverage is opt-in:** `npm run test:coverage` runs the same suite with `vscode-test --coverage` (V8/c8). `.vscode-test.mjs` uses the `{ tests, coverage }` form — the `coverage` block (`includeAll`, `exclude` of `test`/`*.test.*`/`types`, `text`+`html` reporters) is silently ignored unless `--coverage` is passed. Report lands in the git-ignored `coverage/`.
-- `process/` is gitignored — private publishing notes + access tokens; never commit it. `import-statement-design/` (the design library), `qa/` (the manual-QA corpus), and `qa-roadmap/` (per-roadmap-item QA sessions) are gitignored too — kept locally for development, never tracked or shipped. Under `.claude/`, the shared tooling (`agents/`, `skills/`, `workflows/`) is tracked; `agents/state/` and everything else under `.claude/` stays gitignored.
+- `process/` is gitignored — private publishing notes + access tokens; never commit it. `import-statement-design/` (the design library) and `qa/` (the manual-QA corpus, including the `qa/staging/` roadmap-item sessions) are gitignored too — kept locally for development, never tracked or shipped. Under `.claude/`, `.gitignore` carves out `agents/`, `skills/`, and `workflows/` as trackable; `agents/state/` and everything else under `.claude/` stays gitignored.
 
 ## Naming conventions
 
