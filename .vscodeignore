@@ -20,7 +20,9 @@ SUPPORT.md
 package-lock.json
 process/**
 .claude/**
+.remember/**
 import-statement-design/**
 assets/*.gif
 assets/*.mov
+assets/extension-icon-original.png
 **/.DS_Store
