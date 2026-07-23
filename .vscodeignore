@@ -16,7 +16,6 @@ coverage/**
 CLAUDE.md
 SPEC.md
 SUPPORT.md
-ROADMAP.md
 package-lock.json
 process/**
 .claude/**

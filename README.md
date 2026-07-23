@@ -661,14 +661,6 @@ See [CHANGELOG.md][CHANGELOG] for full release notes.
 
 ---
 
-## Roadmap
-
-See [ROADMAP.md][ROADMAP] for planned work and deferred features.
-
-[ROADMAP]: ROADMAP.md
-
----
-
 ## Contributing
 
 Contributions, bug reports, and feature requests are welcome. See [SUPPORT.md][SUPPORT-CONTRIB] for build/test commands and the architecture overview.

@@ -98,7 +98,7 @@ These multi-site contracts silently break on drift. The linked guides have the f
 
 Internal docs must not carry facts that silently rot when code changes.
 
-**Scope — the maintainer-facing docs:** every `CLAUDE.md` guide under `src/`, `qa/`, and `import-statement-design/`, plus the QA checklists and `ROADMAP.md`.
+**Scope — the maintainer-facing docs:** every `CLAUDE.md` guide under `src/`, `qa/`, and `import-statement-design/`, plus the QA checklists.
 
 **Exempt — the reader-facing root docs:** `README.md`, `SPEC.md`, and `SUPPORT.md` keep their counts, totals, and bundle sizes. They orient users and carry the marketplace-facing selling points, so those numbers are deliberate copy — maintained by hand at release time, not avoided. Do not sweep them. `CHANGELOG.md` is likewise exempt: dates and versions are its content.
 
