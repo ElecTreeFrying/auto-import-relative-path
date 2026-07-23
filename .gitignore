@@ -33,9 +33,9 @@ process
 assets/*.mov
 
 # Design library & QA corpus — kept locally, not tracked in the repo.
-# Anchored to the repo root: an unanchored `docs/` also matches nested directories, which
-# silently swallowed new fixtures under `src/test/fixtures/docs/` (already-tracked files were
-# unaffected, so the breakage only showed up on a fresh clone).
-/docs/
+# Anchored to the repo root: an unanchored entry also matches nested directories — an
+# unanchored `docs/` once silently swallowed new fixtures under `src/test/fixtures/docs/`
+# (already-tracked files were unaffected, so the breakage only showed up on a fresh clone).
+/import-statement-design/
 /qa/
 /qa-roadmap/

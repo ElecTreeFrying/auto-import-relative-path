@@ -20,7 +20,7 @@ ROADMAP.md
 package-lock.json
 process/**
 .claude/**
-docs/**
+import-statement-design/**
 assets/*.gif
 assets/*.mov
 **/.DS_Store

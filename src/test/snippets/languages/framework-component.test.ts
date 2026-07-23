@@ -124,7 +124,7 @@ describe('framework-component', () => {
   });
 
   // Markdown/MDX sources stay on the generic `name` even into a framework destination — the shipped
-  // PascalCase pathway is scoped to framework SFCs (docs/import-statements/decisions/framework-components.md, decision #14).
+  // PascalCase pathway is scoped to framework SFCs (import-statement-design/framework-components.md, decision #14).
   it('.md source keeps the generic name binding (not an SFC)', async () => {
     await vscode.env.clipboard.writeText(source('intro.md'));
     const info = await getFilePathInfo();

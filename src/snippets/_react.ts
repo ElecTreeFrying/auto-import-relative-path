@@ -81,7 +81,7 @@ export function buildAssetImportStatement(
       // Markdown/MDX default-imported as a component (into a framework destination) also reads as
       // PascalCase, but the shipped PascalCase pathway is scoped to framework SFCs — Markdown naming
       // stays generic (neither camelCased like a plain asset nor PascalCased like an SFC). See
-      // docs/import-statements/decisions/framework-components.md (locked-in decision #14).
+      // import-statement-design/framework-components.md (locked-in decision #14).
       return `import \${1:name} from '${importPath}';`;
     case '.mp4':
     case '.webm':

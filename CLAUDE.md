@@ -28,7 +28,7 @@ Each directory under `src/` has its own nested `CLAUDE.md` guide. Read it before
 | `src/types/` | Cross-cutting type unions (no enums) | [`src/types/CLAUDE.md`](src/types/CLAUDE.md) |
 | `src/test/` | Mocha BDD tests; runs from `out/`, not `dist/` | [`src/test/CLAUDE.md`](src/test/CLAUDE.md) |
 
-> **Local-only trees (gitignored).** `docs/` — the design library (import-statements criteria, decisions, rejection ledgers) — `qa/` — the manual-QA checklists + fixture workspaces — and `qa-roadmap/` — per-roadmap-item manual-QA sessions (a fixture workspace + checklist per item under test) — are kept on disk for development, not tracked or shipped. Their guides live locally at `docs/CLAUDE.md`, `qa/CLAUDE.md`, and `qa-roadmap/CLAUDE.md`.
+> **Local-only trees (gitignored).** `import-statement-design/` — the design library (the import-statement rubric, shipped picker shapes, decisions + rejection ledgers) — `qa/` — the manual-QA checklists + fixture workspaces — and `qa-roadmap/` — per-roadmap-item manual-QA sessions (a fixture workspace + checklist per item under test) — are kept on disk for development, not tracked or shipped. Their guides live locally at `import-statement-design/CLAUDE.md`, `qa/CLAUDE.md`, and `qa-roadmap/CLAUDE.md`.
 
 ## Commands
 
@@ -86,7 +86,7 @@ These multi-site contracts silently break on drift. The linked guides have the f
 - `tsconfig.json` is `module: Node16`, `target: ES2022`, `strict: false`, `rootDir: src`, `sourceMap: true`, and `types: ["node", "mocha"]`. New source files belong under `src/`. (`sourceMap` is on so `test:coverage` maps `out/` back to `src/`.)
 - Mocha tests are written in BDD style (`describe`/`it`); the runner UI is set to `bdd` in `.vscode-test.mjs`. Tests use Node's built-in `assert` (no Chai/Sinon). The test runner glob is `out/test/**/*.test.js` — only files emitted by `compile-tests` get picked up.
 - **Coverage is opt-in:** `npm run test:coverage` runs the same suite with `vscode-test --coverage` (V8/c8). `.vscode-test.mjs` uses the `{ tests, coverage }` form — the `coverage` block (`includeAll`, `exclude` of `test`/`*.test.*`/`types`, `text`+`html` reporters) is silently ignored unless `--coverage` is passed. Report lands in the git-ignored `coverage/`.
-- `process/` is gitignored — private publishing notes + access tokens; never commit it. `docs/` (the design library), `qa/` (the manual-QA corpus), and `qa-roadmap/` (per-roadmap-item QA sessions) are gitignored too — kept locally for development, never tracked or shipped. Under `.claude/`, the shared tooling (`agents/`, `skills/`, `workflows/`) is tracked; `agents/state/` and everything else under `.claude/` stays gitignored.
+- `process/` is gitignored — private publishing notes + access tokens; never commit it. `import-statement-design/` (the design library), `qa/` (the manual-QA corpus), and `qa-roadmap/` (per-roadmap-item QA sessions) are gitignored too — kept locally for development, never tracked or shipped. Under `.claude/`, the shared tooling (`agents/`, `skills/`, `workflows/`) is tracked; `agents/state/` and everything else under `.claude/` stays gitignored.
 
 ## Naming conventions
 
@@ -98,16 +98,16 @@ These multi-site contracts silently break on drift. The linked guides have the f
 
 Internal docs must not carry facts that silently rot when code changes.
 
-**Scope — the maintainer-facing docs:** every `CLAUDE.md` guide under `src/`, `qa/`, and `docs/`, plus the QA checklists and `ROADMAP.md`.
+**Scope — the maintainer-facing docs:** every `CLAUDE.md` guide under `src/`, `qa/`, and `import-statement-design/`, plus the QA checklists and `ROADMAP.md`.
 
 **Exempt — the reader-facing root docs:** `README.md`, `SPEC.md`, and `SUPPORT.md` keep their counts, totals, and bundle sizes. They orient users and carry the marketplace-facing selling points, so those numbers are deliberate copy — maintained by hand at release time, not avoided. Do not sweep them. `CHANGELOG.md` is likewise exempt: dates and versions are its content.
 
 When writing or editing an in-scope doc:
 
 - **Enumerate, never count.** Lists self-maintain; counts are a second copy of a list's length with no sync gate. "The commands (`a`, `b`, …)", never "the eight commands". No table row-counts, no "N styles/clauses/sites/languages". The named multi-site contracts (four-site extension sync, three-site config sync, two-site button-label sync) are names — keep them, and never "reconcile" a count you think is wrong: reword or flag it.
-- **No dates or decision trails.** Git blame owns chronology. State the present rule; drop "as of …", "previously X, now Y", "added in commit `abc123`", "later promoted". (External-ecosystem dates — "Sass deprecated `@import` in 2022" — are evidence, not provenance; they stay. `docs/import-statements/decisions/` ledger rows are append-only records; their internals stay.)
+- **No dates or decision trails.** Git blame owns chronology. State the present rule; drop "as of …", "previously X, now Y", "added in commit `abc123`", "later promoted". (External-ecosystem dates — "Sass deprecated `@import` in 2022" — are evidence, not provenance; they stay. The `import-statement-design/` Design-Decisions ledger rows — each topic file's Part 2 — are append-only records; their internals stay.)
 - **No code-volume or coverage numbers.** Point at the tool ("run `npm run test:coverage`") or drop the number.
 - **Symbols, not line numbers.** "the `switch` in `executeCopyFilePath`", never "`copy-file-path.ts:23-30`".
 - **No temporal deixis** ("currently", "now", "for now") and **no positional references** ("the first three…") — name things by property instead.
 - **Uniqueness claims only as policed invariants**, phrased as rules ("Barrel files are avoided; `commands/index.ts` is the deliberate exception") — delete passing observations ("the only …").
-- **Numbers that ARE the fact keep:** design thresholds (the 30% Frequency bar, the ~7 picker ceiling), `engines.vscode ^1.97`, config/enum values and keybindings, QA case numbers and the 1-indexed checklist convention, the "Picker inventory" ceiling ledger in `docs/import-statements/spec/statements.md`, fixture-content constants the checklists depend on.
+- **Numbers that ARE the fact keep:** design thresholds (the 30% Frequency bar, the ~7 picker ceiling), `engines.vscode ^1.97`, config/enum values and keybindings, QA case numbers and the 1-indexed checklist convention, the "Picker inventory" ceiling ledger in `import-statement-design/statements.md`, fixture-content constants the checklists depend on.

@@ -41,7 +41,7 @@ Non-script sources delegate to `buildAssetImportStatement(sourceFileExt, importP
 - CSS Modules (`.module.css`/`.module.scss`) → `import ${1:styles} from '<path>';` (checked before the `switch`; `styles` is the CSS-Modules idiom — never basename-derived)
 - **Plain assets** `.gif`/`.jpeg`/`.jpg`/`.png`/`.svg`/`.avif`/`.webp`/`.json`/`.html`/`.yml`/`.yaml`/`.pdf` → `import ${1:⟨derived⟩} from '<path>';` — the binding is **pre-filled** from the source basename via `path/import-name.ts:deriveImportName`, falling back to `${1:name}` when no legal identifier forms. (`.pdf` reaches THIS asset switch only from JSX/TSX/MDX, the any-source destinations; for `.tex` destinations `.pdf` is instead a graphics source gated by `TEX_GRAPHICS_FILE_EXTENSIONS` and rendered by `latex.ts:buildTexGraphicsImportSnippetByStyle`. `isPairSupported()` keeps `.pdf` out of every other destination.)
 - **Framework SFCs** `.vue`/`.svelte`/`.astro` → `import ${1:⟨PascalCase⟩} from '<path>';` — the binding is **pre-filled** with the conventional PascalCase component identifier via `path/import-name.ts:deriveComponentName` (`my-button.vue` → `MyButton`), falling back to `${1:name}` when no legal identifier forms.
-- **Markdown/MDX** `.md`/`.mdx` → `import ${1:name} from '<path>';` — kept generic (neither camelCased like a plain asset nor PascalCased like an SFC): the shipped PascalCase pathway is scoped to framework SFCs, so Markdown-as-component naming stays out (see `docs/import-statements/decisions/framework-components.md`, locked-in decision #14).
+- **Markdown/MDX** `.md`/`.mdx` → `import ${1:name} from '<path>';` — kept generic (neither camelCased like a plain asset nor PascalCased like an SFC): the shipped PascalCase pathway is scoped to framework SFCs, so Markdown-as-component naming stays out (see `import-statement-design/framework-components.md`, locked-in decision #14).
 - `.mp4`/`.webm`/`.mov`/`.mp3`/`.ogg`/`.wav`/`.m4a`/`.vtt` → `import ${1:⟨derived⟩} from '<path>';` — basename-derived, falling back to `${1:url}`.
 - `.woff`/`.woff2`/`.ttf`/`.eot`/`.css`/`.scss` → `import '<path>';` (side-effect — no binding)
 - `default:` → `null`, which `buildReactImport` wraps as an empty `SnippetString` (means an unsupported extension slipped through gating in `src/gating.ts`).
@@ -55,7 +55,7 @@ The picker flow's `variants.ts:buildReactNonScriptVariant`, `languages/framework
 - **Inside a `<style…>` block** (`insideStyleBlock` true) — the source takes the **stylesheet dialect**: a `.css` source → `languages/css.ts:buildCssImportSnippet` (respects `cssImportStyle`; full extension kept), a `.scss` source → `languages/scss.ts:buildScssImportSnippet` (respects `scssImportStyle` + `preserveStylesheetFileExtension`, strips a partial's leading `_`, always keeps a foreign `.css`). The **source extension** — not the block's `lang` attribute — picks CSS vs. SCSS. `framework-component.ts` tests the source against `STYLESHEET_FILE_EXTENSIONS` and delegates to those two `css.ts`/`scss.ts` wrappers.
 - **Anywhere else** (script block / frontmatter / template) — the source falls through to `_react.ts:buildAssetImportStatement`, whose `.css`/`.scss` arm is the **side-effect** `import '<path>';` (the canonical global-stylesheet shape). The CSS-Modules `${1:styles}` guard fires only here (script context), never in a `<style>` block.
 
-Placement mirrors the shape: a style-dialect gesture lands inside the enclosing `<style>` block (`insertSnippetAtStyleBlock` / `computeStyleBlockPlacement`, `editor/`); a script-dialect one lands in the `<script>`/frontmatter region. A **mixed** multi-file gesture (any non-stylesheet member) stays script-dialect for the whole block, which is why `isStyleBlockContext` requires *every* source to be a stylesheet. No `<style>` block is ever synthesised — without one, the script dialect is already correct. Full design (local library): `docs/import-statements/spec/framework-components.md`; rationale + rejection ledger: `docs/import-statements/decisions/framework-components.md`.
+Placement mirrors the shape: a style-dialect gesture lands inside the enclosing `<style>` block (`insertSnippetAtStyleBlock` / `computeStyleBlockPlacement`, `editor/`); a script-dialect one lands in the `<script>`/frontmatter region. A **mixed** multi-file gesture (any non-stylesheet member) stays script-dialect for the whole block, which is why `isStyleBlockContext` requires *every* source to be a stylesheet. No `<style>` block is ever synthesised — without one, the script dialect is already correct. Full design + rationale (local library): `import-statement-design/framework-components.md`.
 
 ## Language quirks
 
@@ -81,7 +81,7 @@ The default-import positions across every builder pre-fill their `${1:…}` bind
 - **TS builder** (`buildTypeScriptImportSnippetByStyle`) — styles 1, 2, 6 (index 0 keeps its class-detection / Angular mechanism; the type positions stay `$1`).
 - **Asset switch** (`_react.ts:buildAssetImportStatement`) — the plain-asset name group and the media/text-track url group. Framework SFCs (`.vue`/`.svelte`/`.astro`) use the PascalCase sibling `deriveComponentName` instead (`my-button.vue` → `MyButton`); Markdown/MDX keep the generic `${1:name}`; CSS-modules keeps `${1:styles}`.
 
-On `null` (a leading-digit or non-ASCII basename like `404.png`), each caller falls back to its prior placeholder (`$1` / `${1:name}` / `${1:url}`). A pre-filled tab stop arrives selected, so type-over behaviour is identical to a bare `$1` — the feature is strictly additive. Full rationale: `docs/import-statements/decisions/statements.md`.
+On `null` (a leading-digit or non-ASCII basename like `404.png`), each caller falls back to its prior placeholder (`$1` / `${1:name}` / `${1:url}`). A pre-filled tab stop arrives selected, so type-over behaviour is identical to a bare `$1` — the feature is strictly additive. Full rationale: `import-statement-design/statements.md`.
 
 ### SCSS — partial filename + `.css` always preserved
 
@@ -106,7 +106,7 @@ Markdown emits `[text](path)` for Markdown-to-Markdown links (fixed), with confi
 - **Per-relationship extension policy.** Graphics honour `latex.preserveGraphicsFileExtension` (**default `true` — keep**, inverted from the script/stylesheet preserve toggles); `\input` / `\include` always drop `.tex`; `\addbibresource` keeps `.bib`, `\bibliography` drops it (so the bib renderer takes the extensionless path *plus* the extension and decides per case).
 - **Graphics format set ≠ web images.** `TEX_GRAPHICS_FILE_EXTENSIONS` (`.pdf`/`.png`/`.jpg`/`.jpeg`/`.eps`) is the engine-renderable set — `.svg`/`.gif`/`.webp`/`.avif` are deliberately excluded (`pdflatex` can't render them).
 
-Full design (local design library): `docs/import-statements/spec/latex.md` · rationale + rejection ledger: `docs/import-statements/decisions/latex.md`.
+Full design + rationale (local design library): `import-statement-design/latex.md`.
 
 ## Adding a new destination language
 
