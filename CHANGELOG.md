@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.0.0 (2026-07-19)
+## v1.0.0 (2026-07-28)
 
 ### Breaking Changes
 - **Minimum VS Code version is `^1.97.0`.** The drag-and-drop import provider needs the drop-edit APIs (`DocumentDropOrPasteEditKind`, 3-argument `DocumentDropEdit`) finalized in VS Code 1.97 (February 2025), so the extension requires VS Code 1.97 or newer and won't load on builds older than 1.97. (This is the empirical floor for those APIs — and a slight *widening* versus the 0.6.x line, which required `^1.98.0`.) Recent Cursor, VSCodium, and Code Server builds that track the VS Code API at 1.97+ remain supported.
