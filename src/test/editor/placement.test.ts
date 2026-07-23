@@ -11,6 +11,7 @@ import {
   findBottomLineInRange,
   findEnclosingStyleBounds,
   findJsxCommentSpanStart,
+  findNeighborIndentation,
   findSfcScriptBounds,
   getLineIndentation,
   isCommentLine,
@@ -92,6 +93,24 @@ describe('editor/placement', () => {
     it('returns empty for block with no content', () => {
       const lines = [ '<script>', '', '', '</script>' ];
       assert.strictEqual(detectBlockIndentation(lines, 0, 3), '');
+    });
+  });
+
+  describe('findNeighborIndentation', () => {
+    it('takes the nearest non-blank line below first', () => {
+      assert.strictEqual(findNeighborIndentation([ '    above', '', '  below' ], 1), '  ');
+    });
+
+    it('falls back to the nearest non-blank line above', () => {
+      assert.strictEqual(findNeighborIndentation([ '  above', '', '   ' ], 1), '  ');
+    });
+
+    it('scans past intervening blank lines', () => {
+      assert.strictEqual(findNeighborIndentation([ 'top', '', '', '\t\tbottom' ], 1), '\t\t');
+    });
+
+    it('returns empty when every other line is blank', () => {
+      assert.strictEqual(findNeighborIndentation([ '', '   ', '' ], 1), '');
     });
   });
 
@@ -508,7 +527,7 @@ describe('editor/placement', () => {
       assert.strictEqual(result.column, 10);
     });
 
-    it('repositions cursor for HTML destination (drop column forced to 0)', () => {
+    it('repositions cursor for HTML destination (column-0 content line keeps column 0)', () => {
       const text = '<html>\n<head>\n</head>\n<body>\n</body>\n</html>';
       const result = computeImportPlacement(
         text,
@@ -521,7 +540,7 @@ describe('editor/placement', () => {
       assert.strictEqual(result.column, 0);
     });
 
-    it('repositions cursor for Markdown destination (drop column forced to 0)', () => {
+    it('repositions cursor for Markdown destination (column-0 content line keeps column 0)', () => {
       const text = '# Title\n\nSome text\n\nMore text';
       const result = computeImportPlacement(
         text,
@@ -534,7 +553,7 @@ describe('editor/placement', () => {
       assert.strictEqual(result.column, 0);
     });
 
-    it('repositions cursor for LaTeX destination (body cursor line, not the preamble at line 0; drop column forced to 0)', () => {
+    it('repositions cursor for LaTeX destination (body cursor line, not the preamble at line 0; column-0 content line)', () => {
       const text = '\\documentclass{article}\n\\begin{document}\nSome prose.\n\\end{document}';
       const result = computeImportPlacement(
         text,
@@ -545,6 +564,107 @@ describe('editor/placement', () => {
       assert.strictEqual(result.isInline, false);
       assert.strictEqual(result.line, 2);
       assert.strictEqual(result.column, 0);
+    });
+
+    it('a drop above an indented content line takes that line\'s indent column', () => {
+      const text = '<body class="page">\n  <p>Existing paragraph content.</p>\n</body>';
+      const result = computeImportPlacement(
+        text,
+        '.html' as FileExtension,
+        '.js' as FileExtension,
+        1, 10,
+      );
+      assert.strictEqual(result.line, 1);
+      assert.strictEqual(result.column, 2, 'the import lands as the displaced line\'s sibling');
+      assert.strictEqual(result.indentation, '');
+      assert.strictEqual(result.replaceLineEndColumn, undefined);
+    });
+
+    it('a tab-indented content line yields its tab count as the column', () => {
+      const text = '<div>\n\t\t<span>x</span>\n</div>';
+      const result = computeImportPlacement(
+        text,
+        '.html' as FileExtension,
+        '.js' as FileExtension,
+        1, 4,
+      );
+      assert.strictEqual(result.column, 2);
+    });
+
+    it('a drop onto a whitespace-only line reuses it with the below-neighbor indent (the stray-blank fix)', () => {
+      const text = '<body class="page">\n      \n  <p>Existing paragraph content.</p>\n</body>';
+      const result = computeImportPlacement(
+        text,
+        '.html' as FileExtension,
+        '.js' as FileExtension,
+        1, 6,
+      );
+      assert.strictEqual(result.line, 1);
+      assert.strictEqual(result.column, 0);
+      assert.strictEqual(result.indentation, '  ', 'indent borrowed from the <p> below');
+      assert.strictEqual(result.replaceLineEndColumn, 6, 'the six-space line is replaced, not pushed down');
+    });
+
+    it('a Markdown drop onto a blank line between flush prose reuses it with no indent', () => {
+      const text = '# Indented heading\n      \nSome existing prose on a content line.';
+      const result = computeImportPlacement(
+        text,
+        '.md' as FileExtension,
+        '.png' as FileExtension,
+        1, 6,
+      );
+      assert.strictEqual(result.line, 1);
+      assert.strictEqual(result.indentation, '');
+      assert.strictEqual(result.replaceLineEndColumn, 6);
+    });
+
+    it('a blank line with content only above takes the up-fallback indent', () => {
+      const text = '  <p>Text</p>\n   ';
+      const result = computeImportPlacement(
+        text,
+        '.html' as FileExtension,
+        '.js' as FileExtension,
+        1, 0,
+      );
+      assert.strictEqual(result.indentation, '  ');
+      assert.strictEqual(result.replaceLineEndColumn, 3);
+    });
+
+    it('a blank final line reuses with zero length (append at EOF)', () => {
+      const text = '<body>\n  <p>Text</p>\n</body>\n';
+      const result = computeImportPlacement(
+        text,
+        '.html' as FileExtension,
+        '.js' as FileExtension,
+        3, 0,
+      );
+      assert.strictEqual(result.line, 3);
+      assert.strictEqual(result.indentation, '', 'nearest non-blank above is </body> at column 0');
+      assert.strictEqual(result.replaceLineEndColumn, 0);
+    });
+
+    it('an empty document reuses line 0 with no indentation', () => {
+      const result = computeImportPlacement(
+        '',
+        '.md' as FileExtension,
+        '.md' as FileExtension,
+        0, 0,
+      );
+      assert.strictEqual(result.line, 0);
+      assert.strictEqual(result.indentation, '');
+      assert.strictEqual(result.replaceLineEndColumn, 0);
+    });
+
+    it('a drop inside a comment run lands above it at the run\'s first-line indent', () => {
+      const text = '# Title\n  // note\n  // more\nSome prose';
+      const result = computeImportPlacement(
+        text,
+        '.md' as FileExtension,
+        '.md' as FileExtension,
+        2, 0,
+      );
+      assert.strictEqual(result.line, 1, 'above the whole comment run');
+      assert.strictEqual(result.column, 2, 'at the run\'s own indent');
     });
 
     it('Markdown cursor on a * bullet lands AT the cursor, not the top of the run', () => {

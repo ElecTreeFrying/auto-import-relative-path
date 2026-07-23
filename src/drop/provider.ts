@@ -152,10 +152,18 @@ export class AutoImportOnDropProvider implements vscode.DocumentDropEditProvider
     const dropEdit = new vscode.DocumentDropEdit(new vscode.SnippetString(''), EDIT_TITLE, EDIT_KIND);
     const edit = new vscode.WorkspaceEdit();
     edit.set(document.uri, [
-      vscode.SnippetTextEdit.insert(
-        new vscode.Position(placement.line, placement.column),
-        new vscode.SnippetString(finalValue),
-      ),
+      placement.replaceLineEndColumn !== undefined
+        ? vscode.SnippetTextEdit.replace(
+            // Reuse the whitespace-only target line: replacing its content (instead of inserting
+            // above it) leaves no stray blank line, so the block's trailing newline is dropped —
+            // joinImportStatements guarantees exactly one.
+            new vscode.Range(placement.line, 0, placement.line, placement.replaceLineEndColumn),
+            new vscode.SnippetString(finalValue.slice(0, -1)),
+          )
+        : vscode.SnippetTextEdit.insert(
+            new vscode.Position(placement.line, placement.column),
+            new vscode.SnippetString(finalValue),
+          ),
     ]);
     dropEdit.additionalEdit = edit;
 

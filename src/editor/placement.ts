@@ -59,6 +59,26 @@ export function detectBlockIndentation(lines: string[], openingLine: number, clo
   return '';
 }
 
+/**
+ * Returns the indentation of the nearest non-blank line to `line` — scanning below first (the
+ * structure a dropped import joins), then above — or `''` when every other line is blank. Serves
+ * the blank-line-reuse arm of the forced-cursor drop placement, where the reused line carries no
+ * meaningful indentation of its own.
+ */
+export function findNeighborIndentation(lines: string[], line: number): string {
+  for (let i = line + 1; i < lines.length; i++) {
+    if (lines[i].trim().length > 0) {
+      return getLineIndentation(lines[i]);
+    }
+  }
+  for (let i = line - 1; i >= 0; i--) {
+    if (lines[i].trim().length > 0) {
+      return getLineIndentation(lines[i]);
+    }
+  }
+  return '';
+}
+
 /** Finds the opening and closing `---` fence lines. Returns `null` if fewer than two fences exist. */
 export function findAstroFrontmatterBounds(lines: string[]): { openingLine: number; closingLine: number } | null {
   let openingLine = -1;
@@ -288,6 +308,12 @@ export interface ComputedPlacement {
   isInline: boolean;
   wrapperPrefix?: string;
   wrapperSuffix?: string;
+  /**
+   * When set, the drop reuses the whitespace-only target line instead of inserting above it: the
+   * provider replaces the line's content (columns 0..this value) with the block, trailing newline
+   * stripped, so no stray blank line is left behind. Set only by the forced-cursor branch.
+   */
+  replaceLineEndColumn?: number;
 }
 
 /** Computes the proper insertion position for an import without touching the editor. */
@@ -307,10 +333,22 @@ export function computeImportPlacement(
 
   if (shouldRepositionCursor(destinationFileExt)) {
     const adjustedLine = adjustForCommentBlock(lines, dropLine, destinationFileExt);
-    // A drop column is where the mouse button came up, not intent: the import takes its own line and
-    // the snippet's trailing newline pushes the drop line down. The command flow deliberately differs
-    // — insert-snippet.ts:determineInsertionColumn keeps the caret column for these destinations.
-    return { line: adjustedLine, column: 0, indentation: '', isInline: false };
+    const lineText = lines[adjustedLine] ?? '';
+    // A drop column is where the mouse button came up, not intent: the import takes its own line.
+    // A whitespace-only target line is reused outright (no stray blank left below it); a content
+    // line keeps its own indent column, so the import lands as its sibling and the displaced line
+    // is re-indented by snippet whitespace normalization. The command flow deliberately differs —
+    // insert-snippet.ts:determineInsertionColumn keeps the caret column for these destinations.
+    if (lineText.trim().length === 0) {
+      return {
+        line: adjustedLine,
+        column: 0,
+        indentation: findNeighborIndentation(lines, adjustedLine),
+        isInline: false,
+        replaceLineEndColumn: lineText.length,
+      };
+    }
+    return { line: adjustedLine, column: getLineIndentation(lineText).length, indentation: '', isInline: false };
   }
 
   if (insideStyleBlock && isFrameworkStyleDestination(destinationFileExt)) {

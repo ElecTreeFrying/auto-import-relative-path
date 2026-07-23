@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 import { insertImportSnippet } from '../../editor/insert-snippet';
-import { computeImportPlacement } from '../../editor/placement';
+import { computeImportPlacement, getLineIndentation } from '../../editor/placement';
 import { getFilePathInfo, FilePathInfo } from '../../editor/file-path-info';
 import { setAutoImportSetting } from '../../config/settings';
 
@@ -29,8 +29,9 @@ const MARKER = 'ZZPARITYZZ';
 //
 // COLUMN also diverges by design on the forced-cursor destinations (.html/.md/.tex): a caret column
 // is typing intent, so paste keeps it, while a drop column is where the mouse button came up, so the
-// drop forces 0 and the import takes its own line. Those scenarios set `dropForcesColumnZero` and
-// assert each side's column separately — line parity still holds.
+// drop ignores it and takes the target line's structural indent instead (column 0 when that line is
+// blank — the drop then reuses the line via replaceLineEndColumn). Those scenarios set `forcedCursor`
+// and assert each side's column separately — line parity still holds.
 
 interface Scenario {
   name: string;
@@ -40,8 +41,8 @@ interface Scenario {
   cursorColumn: number;
   placement?: 'Top' | 'Bottom' | 'Cursor';
   flat: boolean;
-  /** Forced-cursor markup destinations: paste keeps the caret column, drop forces column 0. */
-  dropForcesColumnZero?: boolean;
+  /** Forced-cursor markup destinations: paste keeps the caret column, drop takes the target line's structural indent (0 on a blank line). */
+  forcedCursor?: boolean;
   insideStyleBlock?: boolean;
 }
 
@@ -50,9 +51,9 @@ const SCENARIOS: Scenario[] = [
   { name: 'script Bottom skips comment imports', fixture: 'comments-only.ts', source: 'src/bar.ts', cursorLine: 0, cursorColumn: 0, placement: 'Bottom', flat: true },
   { name: 'script Top', fixture: 'with-imports.ts', source: 'src/bar.ts', cursorLine: 1, cursorColumn: 0, placement: 'Top', flat: true },
   { name: 'script Cursor', fixture: 'with-imports.ts', source: 'src/bar.ts', cursorLine: 1, cursorColumn: 0, placement: 'Cursor', flat: true },
-  { name: 'html forced cursor (line parity; drop forces column 0)', fixture: 'pages/index.html', source: 'pages/app.js', cursorLine: 8, cursorColumn: 2, flat: true, dropForcesColumnZero: true },
-  { name: 'markdown forced cursor', fixture: 'docs/guide.md', source: 'docs/architecture.md', cursorLine: 3, cursorColumn: 0, flat: true },
-  { name: 'latex forced cursor (line parity; drop forces column 0)', fixture: 'paper/main.tex', source: 'assets/logo.png', cursorLine: 6, cursorColumn: 2, flat: true, dropForcesColumnZero: true },
+  { name: 'html forced cursor (line parity; drop takes the line indent)', fixture: 'pages/index.html', source: 'pages/app.js', cursorLine: 8, cursorColumn: 2, flat: true, forcedCursor: true },
+  { name: 'markdown forced cursor (blank target line reused at column 0)', fixture: 'docs/guide.md', source: 'docs/architecture.md', cursorLine: 3, cursorColumn: 0, flat: true, forcedCursor: true },
+  { name: 'latex forced cursor (line parity; drop takes the line indent)', fixture: 'paper/main.tex', source: 'assets/logo.png', cursorLine: 6, cursorColumn: 2, flat: true, forcedCursor: true },
   { name: 'inline image into stylesheet', fixture: 'styles/reset.css', source: 'assets/logo.png', cursorLine: 3, cursorColumn: 16, flat: true },
   // Cursor inside a JSX {/* … */} span: both flows must hop above the opener rather than insert
   // the import commented-out. Interior span lines carry no comment prefix, so this exercises the
@@ -130,9 +131,11 @@ describe('placement parity: insertImportSnippet (command) ↔ computeImportPlace
       );
 
       assert.strictEqual(actual.line, expected.line, `${s.name}: insertion LINE must match between flows`);
-      if (s.dropForcesColumnZero) {
+      if (s.forcedCursor) {
         assert.strictEqual(actual.column, s.cursorColumn, `${s.name}: paste must keep the caret column`);
-        assert.strictEqual(expected.column, 0, `${s.name}: drop must force column 0`);
+        const targetLine = documentText.split('\n')[expected.line] ?? '';
+        const expectedColumn = targetLine.trim().length === 0 ? 0 : getLineIndentation(targetLine).length;
+        assert.strictEqual(expected.column, expectedColumn, `${s.name}: drop must take the target line's structural indent`);
       } else if (s.flat) {
         assert.strictEqual(actual.column, expected.column, `${s.name}: insertion COLUMN must match between flows`);
       }

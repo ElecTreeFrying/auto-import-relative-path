@@ -344,21 +344,24 @@ describe('AutoImportOnDropProvider — stylesheet into framework SFC', () => {
   });
 });
 
-// End-to-end proof that the drop provider EMITS the edit at column 0. The unit tests pin
-// computeImportPlacement's return value; these assert the position the provider actually hands to
-// VS Code, which is what the user sees. Before the own-line fix these landed at the drop column,
-// splicing the import into the middle of the line it was dropped on.
+// End-to-end proof of the position the provider actually hands to VS Code, which is what the user
+// sees (the unit tests pin computeImportPlacement's return value). A dropped import takes its own
+// line at the target line's structural indent — never spliced mid-line (the pre-own-line-fix bug)
+// and never flush-left against indented content.
 describe('AutoImportOnDropProvider — a dropped import takes its own line', () => {
-  it('.js into .html dropped mid-line does not splice the line it lands on', async () => {
+  it('.js into .html dropped mid-line does not splice the line it lands on (import at the line indent)', async () => {
     const text = await textAfterDrop(
       '_own_line.html', '<body>\n  <main>hello</main>\n</body>\n', [ 'pages/app.js' ], 1, 9);
-    assert.ok(
-      text.includes('\n  <main>hello</main>\n'),
-      `the dropped-on line must survive intact, got:\n${text}`,
-    );
+    const lines = text.split('\n');
     assert.strictEqual(
-      text.split('\n')[1], '<script src="./pages/app.js"></script>',
-      `the import must own line 1 at column 0, got:\n${text}`,
+      lines[1], '  <script src="./pages/app.js"></script>',
+      `the import must own line 1 at the displaced line's indent, got:\n${text}`,
+    );
+    // endsWith, not a full-line equal: the displaced line's own indent rides snippet whitespace
+    // normalization (guaranteed in the editor, host-dependent here) — intactness is the claim.
+    assert.ok(
+      lines[2].endsWith('<main>hello</main>'),
+      `the dropped-on line must survive intact below the import, got:\n${text}`,
     );
   });
 
@@ -388,14 +391,16 @@ describe('AutoImportOnDropProvider — a dropped import takes its own line', () 
     assert.ok(text.split('\n')[2].startsWith('\\begin{figure}'), `the figure must own line 2, got:\n${text}`);
   });
 
-  it('a multi-file drop stacks at column 0 without splicing', async () => {
+  it('a multi-file drop stacks at the line indent without splicing', async () => {
     const text = await textAfterDrop(
       '_own_line_multi.html', '<body>\n  <main>hello</main>\n</body>\n',
       [ 'pages/app.js', 'assets/logo.png' ], 1, 9);
-    assert.ok(text.includes('\n  <main>hello</main>\n'), `the dropped-on line must survive intact, got:\n${text}`);
     const lines = text.split('\n');
-    assert.ok(lines[1].startsWith('<script'), `first stacked statement at column 0, got: "${lines[1]}"`);
-    assert.ok(lines[2].startsWith('<img'), `second stacked statement at column 0, got: "${lines[2]}"`);
+    assert.ok(lines[1].startsWith('  <script'), `first stacked statement at the line indent, got: "${lines[1]}"`);
+    // The second statement's indent rides snippet whitespace normalization (host-dependent here,
+    // pinned by the manual QA session) — trimStart keeps the stacking claim itself asserted.
+    assert.ok(lines[2].trimStart().startsWith('<img'), `second stacked statement must follow, got: "${lines[2]}"`);
+    assert.ok(lines[3].endsWith('<main>hello</main>'), `the dropped-on line must survive intact, got:\n${text}`);
   });
 
   it('the inline url() branch still uses the exact drop position (must NOT be forced to 0)', async () => {
@@ -406,6 +411,50 @@ describe('AutoImportOnDropProvider — a dropped import takes its own line', () 
     assert.ok(
       (result.insertText as vscode.SnippetString).value.includes('url('),
       'expected the inline url() snippet',
+    );
+  });
+});
+
+// The blank-line-reuse arm: a whitespace-only target line is replaced by the import block
+// (SnippetTextEdit.replace, trailing newline stripped) instead of being pushed down — the
+// stray-blank-below defect. Replacement starts at column 0, so these results are byte-stable
+// regardless of snippet whitespace normalization.
+describe('AutoImportOnDropProvider — a whitespace-only target line is reused', () => {
+  it('.js into .html dropped on a six-space line: the line becomes the indented import', async () => {
+    const text = await textAfterDrop(
+      '_reuse.html', '<body class="page">\n      \n  <p>Existing.</p>\n</body>\n', [ 'pages/app.js' ], 1, 6);
+    assert.strictEqual(
+      text,
+      '<body class="page">\n  <script src="./pages/app.js"></script>\n  <p>Existing.</p>\n</body>\n',
+      'the blank line is replaced in place — indented from the <p> below, no stray blank, line count unchanged',
+    );
+  });
+
+  it('.md into .md dropped on a blank line: reused with no stray blank left behind', async () => {
+    const text = await textAfterDrop(
+      '_reuse.md', '# Title\n   \nSome prose.\n', [ 'docs/architecture.md' ], 1, 3);
+    const lines = text.split('\n');
+    assert.ok(lines[1].includes('architecture.md'), `the link must replace the blank line 1, got:\n${text}`);
+    assert.strictEqual(lines[2], 'Some prose.', `no stray blank may remain between link and prose, got:\n${text}`);
+    assert.strictEqual(lines.length, 4, 'line count must be unchanged');
+  });
+
+  it('a multi-file drop onto a blank line stacks both imports at the borrowed indent', async () => {
+    const text = await textAfterDrop(
+      '_reuse_multi.html', '<body>\n      \n  <main>hello</main>\n</body>\n',
+      [ 'pages/app.js', 'assets/logo.png' ], 1, 6);
+    const lines = text.split('\n');
+    assert.strictEqual(lines[1], '  <script src="./pages/app.js"></script>', `first statement replaces the blank line, got:\n${text}`);
+    assert.ok(lines[2].startsWith('  <img'), `second statement stacks below at the same borrowed indent, got: "${lines[2]}"`);
+    assert.strictEqual(lines[3], '  <main>hello</main>', 'the content below must be untouched');
+  });
+
+  it('a blank final line appends the import at EOF without a stray blank', async () => {
+    const text = await textAfterDrop(
+      '_reuse_eof.html', '<body>\n</body>\n', [ 'pages/app.js' ], 2, 0);
+    assert.strictEqual(
+      text, '<body>\n</body>\n<script src="./pages/app.js"></script>',
+      'the empty final line becomes the import (up-fallback indent, no trailing blank)',
     );
   });
 });
