@@ -9,7 +9,7 @@ import {
   executeTogglePreserveScriptExtension,
   executeResetImportStyles,
 } from './commands';
-import { AutoImportOnDropProvider } from './drop/provider';
+import { AutoImportOnDropProvider, EDIT_KIND } from './drop/provider';
 import { DROP_LANGUAGE_SELECTORS } from './drop/selector';
 
 export function activate(context: vscode.ExtensionContext): void {
@@ -25,7 +25,12 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.languages.registerDocumentDropEditProvider(
       DROP_LANGUAGE_SELECTORS,
       new AutoImportOnDropProvider(),
-      { dropMimeTypes: [ 'text/uri-list' ] },
+      // `providedDropEditKinds` declares our edit's kind up front so VS Code ranks it against
+      // competing providers. Without it, our `.tsx`/`.jsx` edit lost to the built-in TypeScript
+      // "drop to update imports" provider (a raw default import inserted at the drop point); declaring
+      // our more-specific `TextUpdateImports.autoImport` kind makes ours the applied edit, preserving
+      // the span-hop / column-0 placement. See EDIT_KIND in drop/provider.ts.
+      { dropMimeTypes: [ 'text/uri-list' ], providedDropEditKinds: [ EDIT_KIND ] },
     ),
   );
 }

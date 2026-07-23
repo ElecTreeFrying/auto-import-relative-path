@@ -11,7 +11,15 @@ import { joinImportStatements } from '../snippets/compose';
 import { FRAMEWORK_COMPONENT_FILE_EXTENSIONS } from '../constants/extensions';
 import { FileExtension } from '../types/file-extension';
 
-const EDIT_KIND = vscode.DocumentDropOrPasteEditKind.TextUpdateImports.append('autoImport');
+/**
+ * The kind tag on every drop edit this provider produces. It is a sub-kind of the built-in
+ * `TextUpdateImports` kind that VS Code's own TypeScript/JavaScript "drop to update imports" provider
+ * also bids under. Declaring it in the registration metadata (`providedDropEditKinds`) is what lets
+ * VS Code rank our edit **above** that built-in for `.tsx`/`.jsx` destinations, so our import — with
+ * its span-hop / column-0 placement — is the one applied instead of the built-in's raw default import.
+ * Exported for that registration in `extension.ts`.
+ */
+export const EDIT_KIND = vscode.DocumentDropOrPasteEditKind.TextUpdateImports.append('autoImport');
 const EDIT_TITLE = 'Auto Import';
 
 /** A dragged source that cleared gating and produced a non-empty snippet, with its computed placement. */
