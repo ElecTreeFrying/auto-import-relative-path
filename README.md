@@ -84,7 +84,7 @@ Drag a file from the Explorer into any supported editor. The import snippet is g
 ![Drag-and-drop demo](https://raw.githubusercontent.com/ElecTreeFrying/auto-import-relative-path/main/assets/demo-drag.gif)
 
 - Uses the same gating, snippet styles, and configuration as paste commands.
-- Follows the same Top / Bottom / Cursor placement setting as paste commands — the drop line is used as the Cursor input, and the dropped import always takes its own line (paste keeps your caret column; a drop ignores the mouse column).
+- Follows the same Top / Bottom / Cursor placement setting as paste commands — the drop line is used as the Cursor input, and the dropped import always takes its own line, matching the surrounding indentation; a drop onto a blank line reuses it (paste keeps your caret column; a drop ignores the mouse column).
 - Drag several files at once — every supported file becomes one statement in a single stacked block; same-file and unsupported members are skipped (an all-image drop into CSS inserts the first `url()` only, since inline values can't stack).
 - Unsupported pairs show the same "Cannot import" warning as paste commands; the provider suppresses the drop, so nothing is inserted (no stray path text).
 - See [SPEC — §Drag-and-Drop Import][SPEC-drop] for full behavior and differences from paste.
