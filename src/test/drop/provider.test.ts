@@ -430,6 +430,16 @@ describe('AutoImportOnDropProvider — a whitespace-only target line is reused',
     );
   });
 
+  it('a CRLF document reuses the blank line with line endings preserved', async () => {
+    const text = await textAfterDrop(
+      '_reuse_crlf.html', '<body class="page">\r\n      \r\n  <p>Existing.</p>\r\n</body>\r\n', [ 'pages/app.js' ], 1, 6);
+    assert.strictEqual(
+      text,
+      '<body class="page">\r\n  <script src="./pages/app.js"></script>\r\n  <p>Existing.</p>\r\n</body>\r\n',
+      'the reuse replace must cover exactly the CRLF line content and keep the EOLs',
+    );
+  });
+
   it('.md into .md dropped on a blank line: reused with no stray blank left behind', async () => {
     const text = await textAfterDrop(
       '_reuse.md', '# Title\n   \nSome prose.\n', [ 'docs/architecture.md' ], 1, 3);

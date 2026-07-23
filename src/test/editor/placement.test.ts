@@ -605,6 +605,18 @@ describe('editor/placement', () => {
       assert.strictEqual(result.replaceLineEndColumn, 6, 'the six-space line is replaced, not pushed down');
     });
 
+    it('a CRLF whitespace-only line reuses with the CR excluded from the replace length', () => {
+      const text = '<body class="page">\r\n      \r\n  <p>Existing.</p>\r\n</body>';
+      const result = computeImportPlacement(
+        text,
+        '.html' as FileExtension,
+        '.js' as FileExtension,
+        1, 6,
+      );
+      assert.strictEqual(result.replaceLineEndColumn, 6, 'six spaces — the split-artifact \\r is not line content');
+      assert.strictEqual(result.indentation, '  ');
+    });
+
     it('a Markdown drop onto a blank line between flush prose reuses it with no indent', () => {
       const text = '# Indented heading\n      \nSome existing prose on a content line.';
       const result = computeImportPlacement(

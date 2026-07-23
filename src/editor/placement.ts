@@ -333,7 +333,9 @@ export function computeImportPlacement(
 
   if (shouldRepositionCursor(destinationFileExt)) {
     const adjustedLine = adjustForCommentBlock(lines, dropLine, destinationFileExt);
-    const lineText = lines[adjustedLine] ?? '';
+    // The \r a CRLF document leaves after the \n split is stripped, so the reuse range end
+    // matches the line's real content length (the editor's line text excludes the EOL).
+    const lineText = (lines[adjustedLine] ?? '').replace(/\r$/, '');
     // A drop column is where the mouse button came up, not intent: the import takes its own line.
     // A whitespace-only target line is reused outright (no stray blank left below it); a content
     // line keeps its own indent column, so the import lands as its sibling and the displaced line
