@@ -18,7 +18,7 @@
     "url": "https://github.com/ElecTreeFrying/auto-import-relative-path.git"
   },
   "bugs": {
-    "email": "octobergroup721@gmail.com",
+    "email": "electreefrying.git@gmail.com",
     "url": "https://github.com/ElecTreeFrying/auto-import-relative-path/issues"
   },
   "qna": "https://github.com/ElecTreeFrying/auto-import-relative-path/issues",
@@ -75,11 +75,15 @@
     "Snippets"
   ],
   "keywords": [
+    "relative path",
     "auto import",
     "relative import",
+    "copy relative path",
+    "import path",
     "paste import",
     "import statement",
     "copy file path",
+    "file path",
     "drag and drop",
     "react",
     "nextjs",
@@ -91,20 +95,16 @@
     "tsx",
     "sass",
     "react native",
-    "expo",
     "nodejs",
     "deno",
     "bun",
     "vite",
     "tex",
-    "overleaf",
     "esm",
     "commonjs",
     "require",
     "css modules",
-    "monorepo",
-    "solidjs",
-    "qwik"
+    "monorepo"
   ],
   "main": "./dist/extension.js",
   "extensionKind": [

@@ -43,7 +43,7 @@ Where to get help, how to diagnose common issues, and how to contribute. For fea
 
 ### Does this extension send my data anywhere?
 
-**No.** It is 100% local — no telemetry, no network calls, no AI. The whole bundle is ~10 KB gzipped, and you can read every line of the [source on GitHub][source].
+**No.** It is 100% local — no telemetry, no network calls, no AI. The whole bundle is ~12 KB gzipped, and you can read every line of the [source on GitHub][source].
 
 [source]: https://github.com/ElecTreeFrying/auto-import-relative-path/tree/main/src
 

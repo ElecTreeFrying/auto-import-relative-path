@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.0.0 (2026-07-28)
+## v1.0.0 (2026-07-24)
 
 ### Breaking Changes
 - **Minimum VS Code version is `^1.97.0`.** The drag-and-drop import provider needs the drop-edit APIs (`DocumentDropOrPasteEditKind`, 3-argument `DocumentDropEdit`) finalized in VS Code 1.97 (February 2025), so the extension requires VS Code 1.97 or newer and won't load on builds older than 1.97. (This is the empirical floor for those APIs — and a slight *widening* versus the 0.6.x line, which required `^1.98.0`.) Recent Cursor, VSCodium, and Code Server builds that track the VS Code API at 1.97+ remain supported.
@@ -12,6 +12,7 @@
 - **Markdown link default changed from image syntax to link syntax.** `markdownImportStyle` now defaults to `[text](path)` instead of `![text](path)`. Image embeds belong under the dedicated `markdownImageImportStyle` setting.
 
 ### Added
+- **Review prompt.** After you have generated a number of imports, a single notification asks for a Marketplace review, offering **Rate It**, **Not Now**, and **Never Ask Again**. It counts gestures rather than files, never repeats once answered or dismissed, and is governed by the new `auto-import.preferences.requestReview` setting (default `true`) for anyone who would rather never see it.
 - **Five new destination languages.** Vue (`.vue`), Svelte (`.svelte`), Astro (`.astro`), MDX (`.mdx`), and **LaTeX** (`.tex`) are now supported as import destinations — bringing the total to **13 destination file types**.
 - **LaTeX (`.tex`) — figures, file includes, and bibliographies.** Drag or paste a file into a `.tex` document and get the right LaTeX command, via a dedicated `auto-import.importStatement.latex.*` settings namespace. Three source relationships, each with its own configurable style:
   - **Graphics** (`.pdf`, `.png`, `.jpg`, `.jpeg`, `.eps`) → a `figure` float by default (`\begin{figure}[htbp] … \includegraphics[width=0.5\textwidth]{…} … \caption{} \label{fig:} … \end{figure}`, with `\caption` before `\label` for correct `\ref` numbering), or a bare / sized `\includegraphics`. The accepted graphics set is **engine-renderable only** — `.svg` / `.gif` / `.webp` / `.avif` are rejected (`pdflatex` can't render them). `preserveGraphicsFileExtension` (default *on* — keep) governs the path, the inverse of the script/stylesheet preserve toggles.
@@ -47,7 +48,7 @@
 - **Class-name detection for TypeScript.** The named-import shape (`import { Name } from '…'`) now auto-fills the identifier from the source file's `export class Name` declaration when available. Falls back to Angular-convention PascalCase derivation (`.component`, `.directive`, `.pipe`, `.service`, `.module` suffixes), then to a `$1` tab-stop placeholder.
 - **New import styles per language.** TypeScript: `import type { }`, mixed value + type, dynamic `await import()`. JavaScript: mixed default + named, `await import()`. SCSS: `@use '…' as name`, `@forward '…'`. HTML script: `defer`, `type="module"`, `async`. HTML image: lazy-loading with `loading="lazy"`, CLS-safe dimensions with `width`/`height` attributes. HTML `<video>` (new): controls, background autoplay, poster, and metadata-preload variants. HTML `<audio>` (new): controls and metadata-preload variants.
 - **Comprehensive test coverage.** 38 automated test files covering path math, import-type classification, extension gating tables, style-table integrity, class-name detection, and per-language snippet builders for every supported destination (JavaScript, TypeScript, CSS, SCSS, HTML, Markdown, JSX, TSX, framework components, LaTeX). Eight-command registration guard test. Integration demo workspace with fixture files for every supported pair.
-- **Toolchain modernization.** Webpack replaced by esbuild (~10 KB gzipped production bundle). Unified `typescript-eslint` package replaces the separate parser and plugin. `npm-run-all` powers parallel `watch:tsc` + `watch:esbuild` scripts. Build pipeline: `compile` runs `check-types && lint && esbuild`; `watch` runs both watchers concurrently.
+- **Toolchain modernization.** Webpack replaced by esbuild (~12 KB gzipped production bundle). Unified `typescript-eslint` package replaces the separate parser and plugin. `npm-run-all` powers parallel `watch:tsc` + `watch:esbuild` scripts. Build pipeline: `compile` runs `check-types && lint && esbuild`; `watch` runs both watchers concurrently.
 
 ### Changed
 - **Command palette titles renamed for clarity.** `Auto Import: Paste` → *Paste as Import*. `Auto Import: Copy` → *Copy File Path*. `Auto Import: Auto` → *Insert Import from Selected File*.
