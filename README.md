@@ -323,6 +323,14 @@ See [CHANGELOG.md][CHANGELOG] for full release notes.
 
 ---
 
+## Roadmap
+
+Planned and in-progress work is tracked in [ROADMAP.md][ROADMAP].
+
+[ROADMAP]: ROADMAP.md
+
+---
+
 ## Contributing
 
 Contributions, bug reports, and feature requests are welcome. See [SUPPORT.md][SUPPORT-CONTRIB] for build/test commands and the architecture overview.

@@ -2,6 +2,8 @@
 
 A VS Code extension that generates relative-path import statements for JS, TS, JSX, TSX, MDX, CSS, SCSS, HTML, Markdown, Vue, Svelte, Astro, and LaTeX files. Two input gestures: **copy-paste** (copy a source file's path, open a destination, paste) and **drag-and-drop** (drag a file from the Explorer into an open editor). Both compute the relative path and insert the correctly-shaped import statement for that language pair. Eight commands, three keybindings, one drop provider, twenty configuration settings.
 
+This document specifies shipped behavior; planned and in-progress work is tracked in [ROADMAP.md](ROADMAP.md).
+
 ---
 
 ## Commands & Keybindings

@@ -30,10 +30,12 @@ Where to get help, how to diagnose common issues, and how to contribute. For fea
 | [README][README]            | Feature overview, commands, full configuration reference           |
 | [SPEC.md][SPEC]             | Full specification — commands, extensions, styles, placement, path logic |
 | [CHANGELOG][CHANGELOG]      | Release notes and version history                                 |
+| [Roadmap][roadmap]          | Planned and in-progress work                                      |
 | [GitHub Issues][issues]     | Bug reports, feature requests, questions                          |
 | [VS Code Marketplace][marketplace] | Install page, reviews, version listings                    |
 
 [CHANGELOG]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/main/CHANGELOG.md
+[roadmap]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/main/ROADMAP.md
 [issues]: https://github.com/ElecTreeFrying/auto-import-relative-path/issues
 [marketplace]: https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import
 
@@ -252,7 +254,7 @@ The faster the reproducer, the faster the fix.
 
 ## Feature requests
 
-Open an issue labelled **enhancement** on [GitHub Issues][issues]. Include:
+Check the [Roadmap][roadmap] first — it tracks planned and in-progress work, so your idea may already be on the way. Otherwise, open an issue labelled **enhancement** on [GitHub Issues][issues]. Include:
 
 - The workflow it would improve (the *why*, not just the *what*).
 - Which file types are involved (source extension, destination extension).
