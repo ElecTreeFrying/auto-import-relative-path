@@ -1,0 +1,77 @@
+name: Bug report
+description: An import statement came out wrong, errored, or didn't behave as documented
+labels: [ "bug" ]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What did you see, and what did you expect instead?
+      placeholder: 'e.g. dragging a .scss file into a .vue <style> block inserted a script-side side-effect import instead of @use…'
+    validations:
+      required: true
+  - type: dropdown
+    id: gesture
+    attributes:
+      label: Which gesture?
+      options:
+        - Drag-and-drop from the Explorer
+        - Copy then paste (Cmd/Ctrl+Shift+A → Cmd/Ctrl+I)
+        - One-step copy-paste (Alt+D in the Explorer)
+        - Paste as Import (Pick Style)
+        - A settings command (Set Default Import Style · Set Import Placement · Toggle Preserve Extension · Reset All Import Styles)
+    validations:
+      required: true
+  - type: input
+    id: pair
+    attributes:
+      label: Source file → destination file
+      description: The two file types involved. Multi-selections — list them all.
+      placeholder: 'e.g. logo.svg → App.tsx · styles.scss → main.scss · figure.pdf → paper.tex'
+    validations:
+      required: true
+  - type: textarea
+    id: statement
+    attributes:
+      label: Statement inserted vs. expected
+      placeholder: |
+        Inserted:  import './styles.css';
+        Expected:  @use './styles' as styles;
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open a .vue file, put the cursor inside the <style> block
+        2. Drag theme.scss from the Explorer onto that line
+        3. Observe the inserted statement
+    validations:
+      required: true
+  - type: textarea
+    id: settings
+    attributes:
+      label: Relevant settings
+      description: Any non-default `auto-import.*` settings — import styles, placement, the preserve-extension toggles.
+      placeholder: |
+        auto-import.importStatement.styleSheet.scssImportStyle: 2
+        auto-import.preferences.importStatementPlacement: Cursor
+        auto-import.importStatement.script.preserveScriptFileExtension: true
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Where does it happen?
+      options:
+        - VS Code desktop
+        - VSCodium / Cursor / Windsurf (VS Code-compatible build)
+        - Remote — SSH, WSL, Dev Container, or Codespaces
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: VS Code version · extension version
+      placeholder: e.g. 1.102.0 · 1.0.0
+    validations:
+      required: true

@@ -1,0 +1,17 @@
+.spinner {
+  display: inline-flex;
+  gap: 4px;
+
+  &__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: spinner-bounce 1.4s infinite ease-in-out both;
+  }
+}
+
+@keyframes spinner-bounce {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1); }
+}

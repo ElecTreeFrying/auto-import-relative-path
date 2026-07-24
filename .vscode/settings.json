@@ -1,13 +1,28 @@
 // Place your settings in this file to overwrite default and user settings.
 {
 	"files.exclude": {
-		"out": false, // set this to true to hide the "out" folder with the compiled JS files
-		"dist": false // set this to true to hide the "dist" folder with the compiled JS files
-	},
+    "out": false,
+    "dist": false,
+    ".vscode-test/vscode-darwin-arm64-1.125.1/Visual Studio Code.app/Contents/Resources/app/extensions/terminal-suggest/**/third_party/": true,
+    ".vscode-test/vscode-darwin-arm64-1.122.1/Visual Studio Code.app/Contents/Resources/app/extensions/terminal-suggest/**/third_party/": true,
+    ".vscode-test/vscode-darwin-arm64-1.121.0/Visual Studio Code.app/Contents/Resources/app/extensions/terminal-suggest/**/third_party/": true,
+    ".vscode-test/vscode-darwin-arm64-1.119.0/Visual Studio Code.app/Contents/Resources/app/extensions/terminal-suggest/**/third_party/": true,
+    ".vscode-test/vscode-darwin-arm64-1.129.0/Visual Studio Code.app/Contents/Resources/app/extensions/terminal-suggest/**/third_party/": true,
+    ".vscode-test/vscode-darwin-arm64-1.129.1/Visual Studio Code.app/Contents/Resources/app/extensions/terminal-suggest/**/third_party/": true,
+    ".vscode-test/vscode-darwin-arm64-1.128.0/Visual Studio Code.app/Contents/Resources/app/extensions/terminal-suggest/**/third_party/": true,
+    ".vscode-test/vscode-darwin-arm64-1.123.0/Visual Studio Code.app/Contents/Resources/app/extensions/terminal-suggest/**/third_party/": true,
+    ".vscode-test/vscode-darwin-arm64-1.124.2/Visual Studio Code.app/Contents/Resources/app/extensions/terminal-suggest/**/third_party/": true,
+    ".vscode-test/vscode-darwin-arm64-1.126.0/Visual Studio Code.app/Contents/Resources/app/extensions/terminal-suggest/**/third_party/": true,
+    ".vscode-test/nativescript-angular-html-snippets/**/*.vsix": true,
+    ".vscode-test/nativescript-angular-html-snippets/**/node_modules/": true,
+    ".vscode-test/nativescript-angular-html-snippets/**/.DS_Store": true,
+    ".vscode-test/nativescript-angular-html-snippets/**/.claude/": true,
+    ".vscode-test/nativescript-angular-html-snippets/**/tools/": true
+  },
 	"search.exclude": {
 		"out": true, // set this to false to include "out" folder in search results
 		"dist": true // set this to false to include "dist" folder in search results
 	},
 	// Turn off tsc task auto detection since we have the necessary tasks as npm scripts
-	"typescript.tsc.autoDetect": "off"
+	"typescript.tsc.autoDetect": "off",
 }

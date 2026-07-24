@@ -1,0 +1,17 @@
+{
+  "workbench.startupEditor": "none",
+  "workbench.welcomePage.walkthroughs.openOnInstall": false,
+  "files.hotExit": "off",
+  "files.autoSave": "off",
+  "files.simpleDialog.enable": true,
+  "window.dialogStyle": "custom",
+  "security.workspace.trust.enabled": false,
+  "telemetry.telemetryLevel": "off",
+  "update.mode": "none",
+  "extensions.autoUpdate": false,
+  "extensions.ignoreRecommendations": true,
+  "workbench.editor.enablePreview": false,
+  "workbench.list.openMode": "doubleClick",
+  "editor.minimap.enabled": false,
+  "auto-import.preferences.requestReview": false
+}

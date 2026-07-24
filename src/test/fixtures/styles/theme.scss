@@ -1,0 +1,14 @@
+@use './variables' as vars;
+
+:root {
+  --color-primary: #{vars.$color-primary};
+  --color-secondary: #{vars.$color-secondary};
+  --color-danger: #{vars.$color-danger};
+  --color-success: #{vars.$color-success};
+  --content-max-width: #{vars.$content-max-width};
+}
+
+[data-theme='dark'] {
+  --color-primary: #60a5fa;
+  --color-secondary: #9ca3af;
+}

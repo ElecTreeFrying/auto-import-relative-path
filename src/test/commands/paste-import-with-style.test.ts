@@ -1,0 +1,170 @@
+import * as assert from 'assert';
+import * as path from 'path';
+import * as vscode from 'vscode';
+
+import { executePasteImportWithStyle } from '../../commands/paste-import-with-style';
+import { setAutoImportSetting } from '../../config/settings';
+
+const FIXTURE_ROOT = path.resolve(__dirname, '../../../src/test/fixtures');
+
+async function openFixture(relativePath: string): Promise<vscode.TextEditor> {
+  const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(path.join(FIXTURE_ROOT, relativePath)));
+  return vscode.window.showTextDocument(doc);
+}
+
+function waitForDocumentChange(fn: () => Promise<void>, timeoutMs = 500): Promise<boolean> {
+  return new Promise(resolve => {
+    const timeout = setTimeout(() => { disposable.dispose(); resolve(false); }, timeoutMs);
+    const disposable = vscode.workspace.onDidChangeTextDocument(() => {
+      clearTimeout(timeout);
+      disposable.dispose();
+      resolve(true);
+    });
+    fn();
+  });
+}
+
+// Rejection paths mirror paste-import.ts (shared gating). Single-variant destinations
+// insert directly with no picker — that path is fully testable. The >=2-variant QuickPick is the
+// manual-QA boundary (no Sinon to answer the picker; a stray picker would hang the suite).
+describe('executePasteImportWithStyle', () => {
+  afterEach(async () => {
+    await vscode.commands.executeCommand('workbench.action.closeAllEditors');
+  });
+
+  describe('rejections (no document change)', () => {
+    const reject = (label: string, dest: string, clip: string) =>
+      it(label, async () => {
+        await openFixture(dest);
+        await vscode.env.clipboard.writeText(clip.startsWith('/') ? clip : path.join(FIXTURE_ROOT, clip));
+        const changed = await waitForDocumentChange(() => executePasteImportWithStyle());
+        assert.strictEqual(changed, false, `expected no document change: ${label}`);
+      });
+
+    reject('empty clipboard', 'pages/index.html', '/');
+    reject('non-absolute path', 'pages/index.html', 'relative/styles.css');
+    reject('path without extension', 'pages/index.html', '/usr/local/bin/Makefile');
+    reject('same-file', 'pages/index.html', 'pages/index.html');
+    reject('source not found', 'pages/index.html', 'styles/does-not-exist.css');
+    reject('unsupported pair (.scss → .html)', 'pages/index.html', 'styles/main.scss');
+  });
+
+  describe('single-variant destinations insert directly (no picker)', () => {
+    it('.css → .html inserts a <link> tag', async () => {
+      const editor = await openFixture('pages/index.html');
+      await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'styles/global.css'));
+      const changed = await waitForDocumentChange(() => executePasteImportWithStyle(), 2000);
+      assert.strictEqual(changed, true, 'expected a document change for the single stylesheet variant');
+      assert.ok(editor.document.getText().includes('<link'), 'expected a <link> tag in the document');
+    });
+
+    it('.png → .jsx inserts a named default import', async () => {
+      const editor = await openFixture('src/badge.jsx');
+      await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'assets/logo.png'));
+      const changed = await waitForDocumentChange(() => executePasteImportWithStyle(), 2000);
+      assert.strictEqual(changed, true, 'expected a document change for the single image variant');
+      assert.ok(editor.document.getText().includes('logo.png'), 'expected the image import in the document');
+    });
+
+    it('extensionless → .md inserts a link directly (single variant, the F3 accept path)', async () => {
+      const editor = await openFixture('docs/guide.md');
+      await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'LICENSE'));
+      const changed = await waitForDocumentChange(() => executePasteImportWithStyle(), 2000);
+      assert.strictEqual(changed, true, 'expected a document change for the single extensionless-link variant');
+      assert.ok(editor.document.getText().includes('](../LICENSE)'), 'expected the extensionless Markdown link in the document');
+    });
+  });
+
+  // Stylesheet source into a framework SFC. In the script region it is a single fixed side-effect
+  // variant (inserts directly, no picker); inside a <style> block it enumerates >=2 CSS/SCSS styles,
+  // so the blocking picker opens instead of inserting — the same manual-QA boundary as any >=2 case.
+  describe('stylesheet source into a framework SFC', () => {
+    it('.css into a .vue script region inserts the side-effect import directly (single variant)', async () => {
+      const editor = await openFixture('src/styled.vue');
+      const pos = new vscode.Position(0, 0); // the <script setup> line — outside every <style> block
+      editor.selection = new vscode.Selection(pos, pos);
+      await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'styles/global.css'));
+      const changed = await waitForDocumentChange(() => executePasteImportWithStyle(), 2000);
+      assert.strictEqual(changed, true, 'the single side-effect variant inserts directly');
+      assert.ok(editor.document.getText().includes("import '../styles/global.css';"), 'expected the side-effect import');
+    });
+
+    it('.css into a .vue <style> block opens the style picker (no direct insert)', async () => {
+      const editor = await openFixture('src/styled.vue');
+      const pos = new vscode.Position(9, 0); // inside the <style scoped> block
+      editor.selection = new vscode.Selection(pos, pos);
+      await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'styles/global.css'));
+      const changed = await waitForDocumentChange(() => executePasteImportWithStyle());
+      assert.strictEqual(changed, false, 'a >=2-variant style-block source opens the picker rather than inserting directly');
+      await vscode.commands.executeCommand('workbench.action.closeQuickOpen');
+    });
+  });
+
+  // A multi-selection clipboard reduces to its first copyable non-destination member (the picker
+  // flows are single-pair by design). The successful insertions double as the regression pin for
+  // the old blob bug: pre-fork, a multi-line clipboard was stat'ed whole → source-not-found, no insert.
+  describe('multi-path clipboard reduces to the primary member', () => {
+    it('inserts the first member only (.md → .md single-variant link)', async () => {
+      const editor = await openFixture('docs/architecture.md');
+      const textBefore = editor.document.getText();
+      assert.ok(!textBefore.includes('./guide.md'), 'fixture precondition: destination must not already link guide.md');
+      await vscode.env.clipboard.writeText([
+        path.join(FIXTURE_ROOT, 'docs/guide.md'),
+        path.join(FIXTURE_ROOT, 'docs/api-reference.md'),
+      ].join('\n'));
+      const changed = await waitForDocumentChange(() => executePasteImportWithStyle(), 2000);
+      assert.strictEqual(changed, true, 'expected the primary member to insert');
+      const allText = editor.document.getText();
+      assert.ok(allText.includes('./guide.md'), 'primary member link expected');
+      assert.ok(!allText.includes('./api-reference.md'), 'secondary member must not insert');
+    });
+
+    it('skips the destination itself when selecting the primary member', async () => {
+      const editor = await openFixture('docs/architecture.md');
+      const textBefore = editor.document.getText();
+      assert.ok(!textBefore.includes('./guide.md'), 'fixture precondition: destination must not already link guide.md');
+      await vscode.env.clipboard.writeText([
+        path.join(FIXTURE_ROOT, 'docs/architecture.md'),
+        path.join(FIXTURE_ROOT, 'docs/guide.md'),
+      ].join('\n'));
+      const changed = await waitForDocumentChange(() => executePasteImportWithStyle(), 2000);
+      assert.strictEqual(changed, true, 'expected the non-destination member to insert');
+      assert.ok(editor.document.getText().includes('./guide.md'), 'non-destination member link expected');
+    });
+  });
+
+  describe('no active editor', () => {
+    it('returns without inserting and does not throw when no editor is open', async () => {
+      await vscode.commands.executeCommand('workbench.action.closeAllEditors');
+      await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'src/bar.ts'));
+      await assert.doesNotReject(executePasteImportWithStyle());
+    });
+  });
+
+  // The picker command shares insertImportSnippet with the plain paste, so the comment-span walk-up
+  // must apply here too. An asset source into .mdx yields a single variant, which inserts directly
+  // with no QuickPick — the only picker path that can be driven without answering a picker.
+  describe('JSX comment span (single-variant direct insert)', () => {
+    afterEach(async () => {
+      await setAutoImportSetting('preferences', 'placement', undefined);
+    });
+
+    it('inserts above the {/* opener rather than inside the comment', async () => {
+      await setAutoImportSetting('preferences', 'placement', 'Cursor');
+      const editor = await openFixture('docs/notes.mdx');
+      const cursor = new vscode.Position(3, 0); // interior span line, no comment marker
+      editor.selection = new vscode.Selection(cursor, cursor);
+      await vscode.env.clipboard.writeText(path.join(FIXTURE_ROOT, 'assets/logo.png'));
+      const changed = await waitForDocumentChange(() => executePasteImportWithStyle(), 2000);
+      assert.strictEqual(changed, true, 'expected the single-variant asset import to insert');
+      assert.ok(
+        editor.document.lineAt(2).text.includes('logo.png'),
+        `expected the import above the {/* opener at line 2, got: "${editor.document.lineAt(2).text}"`,
+      );
+      assert.strictEqual(
+        editor.document.lineAt(3).text.trim(), '{/*',
+        'the span opener must be pushed down intact',
+      );
+    });
+  });
+});
