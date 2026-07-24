@@ -22,7 +22,11 @@ process/**
 .claude/**
 .remember/**
 import-statement-design/**
+launch/**
 assets/*.gif
 assets/*.mov
 assets/extension-icon-original.png
+assets/social-preview.png
 **/.DS_Store
+.extester/**
+.mocharc-ui.js

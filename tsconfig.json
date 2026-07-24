@@ -15,5 +15,5 @@
 		// "noUnusedParameters": true,  /* Report errors on unused parameters. */
 	},
 	"include": ["src/**/*"],
-	"exclude": ["src/test/fixtures"]
+	"exclude": ["src/test/fixtures", "src/test/ui-workspace"]
 }

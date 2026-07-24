@@ -8,7 +8,9 @@ Mocha BDD tests that run from `out/`, not `dist/`. The suite owns its fixtures i
 - **Node `assert`** only — no Chai, no Sinon.
 - **Tests compile via `tsc -p . --outDir out`** (`npm run compile-tests`), not the esbuild pipeline. The runner glob is `out/test/**/*.test.js`.
 - Test file names mirror the source path: `src/path/relative.ts` → `test/path/relative.test.ts`.
-- Not every command has a command-level test file: the settings-only `set-import-placement` and `toggle-preserve-script-extension` are covered by the activation/registration smoke checks in `extension.test.ts`.
+- `test/qa/` holds checklist-anchored gap tests — each describe/it title carries its `qa/checklists/` anchor (e.g. `[general.md §5.4]`). They join the headless suite (`npm test`).
+- `test/ui/` holds the ExTester UI suite: specs are named `*.ui-test.ts` so the `out/test/**/*.test.js` runner glob never picks them up; they run via `npm run qa:ui` against a real VS Code instance. `test/ui-workspace/` is that suite's fixture tree — excluded from `tsc` and ESLint like `fixtures/`, and staged to a short-path storage dir at runtime so the git tree is never mutated.
+- Every command has behavior-level coverage: the settings-only `set-import-placement` and `toggle-preserve-script-extension` are exercised in `qa/settings-commands.test.ts` (the stubbed-QuickPick pattern), alongside the activation/registration smoke checks in `extension.test.ts`.
 - Cross-module contracts are pinned by structural tests that read source: `editor/placement-parity.test.ts` (command flow ↔ drop flow placement) and `snippets/dispatch-variants-parity.test.ts` (the dispatch ↔ variants destination switch).
 
 ## Two independent compilation pipelines
