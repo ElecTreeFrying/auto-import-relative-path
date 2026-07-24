@@ -12,6 +12,9 @@
   "engines": {
     "vscode": "^1.97.0"
   },
+  "config": {
+    "uiTestVscodeVersion": "1.130.0"
+  },
   "homepage": "https://github.com/ElecTreeFrying/auto-import-relative-path",
   "repository": {
     "type": "git",
@@ -490,18 +493,28 @@
     "check-types": "tsc --noEmit",
     "lint": "eslint src",
     "test": "vscode-test",
-    "test:coverage": "npm run pretest && vscode-test --coverage"
+    "test:coverage": "npm run pretest && vscode-test --coverage",
+    "qa": "run-s qa:core qa:ui",
+    "qa:core": "npm test",
+    "qa:ui": "run-s qa:ui:setup qa:ui:compile qa:ui:vsix qa:ui:run",
+    "qa:ui:setup": "extest setup-tests -s /tmp/auto-import-extester -c \"$npm_package_config_uiTestVscodeVersion\"",
+    "qa:ui:compile": "npm run compile-tests",
+    "qa:ui:vsix": "extest install-vsix -s /tmp/auto-import-extester -e /tmp/auto-import-extester/exts",
+    "qa:ui:run": "extest run-tests 'out/test/ui/**/*.ui-test.js' -s /tmp/auto-import-extester -e /tmp/auto-import-extester/exts -c \"$npm_package_config_uiTestVscodeVersion\" -m .mocharc-ui.js -o src/test/ui/instance-settings.json"
   },
   "devDependencies": {
-    "@types/vscode": "1.97.0",
+    "@nut-tree-fork/nut-js": "^4.2.6",
     "@types/mocha": "^10.0.10",
     "@types/node": "^22.19.18",
+    "@types/vscode": "1.97.0",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2",
     "esbuild": "^0.28.0",
     "eslint": "^9.39.3",
+    "mocha": "^11.7.6",
     "npm-run-all": "^4.1.5",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.59.2",
-    "@vscode/test-cli": "^0.0.12",
-    "@vscode/test-electron": "^2.5.2"
+    "vscode-extension-tester": "^8.23.0"
   }
 }
