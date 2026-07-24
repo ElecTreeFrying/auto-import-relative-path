@@ -51,6 +51,8 @@ describe('[general.md §8 / tsx.md §9] native drag from Explorer into the edito
       return text.includes("import { Widget } from './Widget';");
     });
     if (!landed) {
+      const after = await editor.getText().catch(() => '<read error>');
+      console.log('DIAG editor text after drag attempts:', JSON.stringify(after.slice(0, 200)));
       markDragBroken();
       skipForAccessibility(this, detectDragBackend());
     }
