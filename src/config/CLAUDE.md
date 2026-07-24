@@ -14,7 +14,7 @@ Namespaces:
 
 | `namespaceKey` | `vscode.workspace.getConfiguration(...)` namespace |
 |----------------|-----------------------------------------------------|
-| `preferences` | `auto-import.preferences` |
+| `preferences` | `auto-import.preferences` (`placement`, `requestReview`) |
 | `script` | `auto-import.importStatement.script` |
 | `stylesheet` | `auto-import.importStatement.styleSheet` |
 | `markup` | `auto-import.importStatement.markup` |
@@ -25,6 +25,8 @@ The `Object.freeze` is intentional — mutations throw at runtime. Treat the map
 The `stylesheet` namespace's active settings (`css` → `cssImportStyle`, `scss` → `scssImportStyle`, `preserve` → `preserveStylesheetFileExtension`) are **shared** across two contexts: a `.css`/`.scss` *destination*, and a `.css`/`.scss` *source* imported into a framework SFC's `<style>` block (`snippets/languages/framework-component.ts` reuses `css.ts`/`scss.ts`'s config wrappers). One setting drives both — a documented consequence, not drift; there is deliberately no separate SFC-stylesheet setting (mirrors the framework decision to add no new three-site sync surface).
 
 The **dormant** setting keys are `cssImage`, `scssImage`, `htmlStyleSheet`, and `markdown`. They exist in the map and in `package.json` for backward compatibility (single-shape settings with only one enum value — users may have them in their `settings.json` from prior versions), but no code path reads them via `getAutoImportSetting` or writes them via `setAutoImportSetting`. They must not be removed from `package.json` without migration tooling to clean up existing user configurations. Both `cssImage` and `scssImage` resolve to the same single-entry `CSS_IMAGE_IMPORT_OPTIONS` table in `src/snippets/_styles.ts`; `htmlStyleSheet` → `HTML_STYLESHEET_IMPORT_OPTIONS` and `markdown` → `MARKDOWN_IMPORT_OPTIONS` — all dead exports. There is no `SCSS_IMAGE_IMPORT_OPTIONS`: `scss.ts` reuses `buildCssImageImportSnippet` from `languages/css.ts` for image imports, the same builder `css.ts` calls. Either way the snippet builders hardcode the single shape directly and never call `resolveStyleIndex` (see [`src/snippets/CLAUDE.md`](../snippets/CLAUDE.md) → "Parity-only tables", and the SCSS note below it).
+
+`preferences.requestReview` is a **boolean**, so it is outside the three-site byte-exact sync below — that rule governs the style `enum` strings only. It needs the `package.json` property plus the two type-level sites here (`AUTO_IMPORT_CONFIG` entry, `SettingsKeyMap` literal); there is no `_styles.ts` table and no per-language `switch`. Its sole reader is `editor/review-prompt.ts`.
 
 ## Three-site byte-exact sync rule
 

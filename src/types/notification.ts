@@ -13,4 +13,6 @@ export type NotificationType =
   | 'preserve-script-extension-toggled'
   | 'styles-reset'
   | 'no-styles-to-reset'
-  | 'styles-restored';
+  | 'styles-restored'
+  /** The one-time Marketplace-review ask; raised by `editor/review-prompt.ts`, not a command. */
+  | 'review-request';

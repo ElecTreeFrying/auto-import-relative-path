@@ -14,6 +14,7 @@ export function showNotification(type: 'default-style-saved', payload: { descrip
 export function showNotification(type: 'placement-saved', payload: { placement: string }): void;
 export function showNotification(type: 'preserve-script-extension-toggled', payload: { enabled: boolean }): void;
 export function showNotification(type: 'styles-reset', payload: { count: number }): Thenable<string | undefined>;
+export function showNotification(type: 'review-request', payload: { count: number }): Thenable<string | undefined>;
 export function showNotification(
   type: NotificationType,
   payload?: { sourceExt?: string; destinationExt?: string; basename?: string; basenames?: string[]; description?: string; placement?: string; enabled?: boolean; count?: number },
@@ -82,6 +83,13 @@ export function showNotification(
     case 'styles-restored':
       vscode.window.showInformationMessage('Auto Import: Import styles restored.');
       break;
+    case 'review-request':
+      return vscode.window.showInformationMessage(
+        `Auto Import: You have generated ${payload!.count} imports. Mind leaving a quick review?`,
+        'Rate It',
+        'Not Now',
+        'Never Ask Again',
+      );
   }
 }
 

@@ -565,6 +565,7 @@ Indentation matches the block, mirroring the frontmatter / script-block rules. T
 | Setting | Type | Default | Values |
 |---|---|---|---|
 | `auto-import.preferences.importStatementPlacement` | string | `"Bottom"` | `"Top"`, `"Bottom"`, `"Cursor"` |
+| `auto-import.preferences.requestReview` | boolean | `true` | `true`, `false` |
 
 ### Script
 

@@ -7,6 +7,7 @@ const AUTO_IMPORT_CONFIG = freeze({
     namespace: 'auto-import.preferences',
     settings: freeze({
       placement: 'importStatementPlacement',
+      requestReview: 'requestReview',
     }),
   }),
   script: freeze({
@@ -58,7 +59,7 @@ export type AutoImportConfigNamespace =
   | 'latex';
 
 type SettingsKeyMap = {
-  preferences: 'placement';
+  preferences: 'placement' | 'requestReview';
   script: 'preserve' | 'javascript' | 'typescript';
   stylesheet: 'preserve' | 'css' | 'cssImage' | 'scss' | 'scssImage';
   markup: 'htmlScript' | 'htmlImage' | 'htmlVideo' | 'htmlAudio'

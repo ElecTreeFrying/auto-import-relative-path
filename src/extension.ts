@@ -11,8 +11,13 @@ import {
 } from './commands';
 import { AutoImportOnDropProvider, EDIT_KIND } from './drop/provider';
 import { DROP_LANGUAGE_SELECTORS } from './drop/selector';
+import { initReviewPrompt } from './editor/review-prompt';
 
 export function activate(context: vscode.ExtensionContext): void {
+  // Hands the global memento to the review-prompt counter before any command can fire. `activate` is
+  // the only holder of an ExtensionContext, so this stashes it rather than threading it downward.
+  initReviewPrompt(context);
+
   context.subscriptions.push(
     vscode.commands.registerCommand('extension.copyFilePath', () => executeCopyFilePath()),
     vscode.commands.registerCommand('extension.pasteImport', () => executePasteImport()),
