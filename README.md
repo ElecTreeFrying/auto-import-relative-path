@@ -21,7 +21,7 @@
 
 Drag a file or press a key — the right import lands in your editor. Path, syntax, and placement handled automatically.
 
-![Auto Import Relative Path demo](assets/demo.gif)
+![Auto Import Relative Path demo](https://raw.githubusercontent.com/ElecTreeFrying/auto-import-relative-path/main/assets/demo.gif)
 
 ---
 
@@ -81,7 +81,7 @@ See [SPEC — §Commands & Keybindings][SPEC-commands] for command IDs, context 
 
 Drag a file from the Explorer into any supported editor. The import snippet is generated with the same styles and settings as the paste commands, and inserted on its own line at the drop point — never spliced into the middle of the line it lands on. No keybinding needed.
 
-![Drag-and-drop demo](assets/demo-drag.gif)
+![Drag-and-drop demo](https://raw.githubusercontent.com/ElecTreeFrying/auto-import-relative-path/main/assets/demo-drag.gif)
 
 - Uses the same gating, snippet styles, and configuration as paste commands.
 - Follows the same Top / Bottom / Cursor placement setting as paste commands — the drop line is used as the Cursor input, and the dropped import always takes its own line; in HTML, Markdown, and LaTeX it matches the target line's indentation and a drop onto a blank line reuses it (paste keeps your caret column there; a drop ignores the mouse column).
