@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.0.1 (2026-07-24)
+
+### Fixed
+- **Packaging — ship the minified production bundle.** The v1.0.0 package inadvertently included the unminified development build, roughly doubling the size of `dist/extension.js`. v1.0.1 ships the intended production-minified bundle (~44 KB, ~12 KB gzipped). Packaging-only fix — no functional, API, or settings changes.
+
 ## v1.0.0 (2026-07-24)
 
 ### Breaking Changes
