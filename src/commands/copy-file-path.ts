@@ -57,10 +57,10 @@ async function copyMultipleFilePaths(copiedPaths: string[]): Promise<boolean> {
 function dispatchPasteAction(action: string | undefined): void {
   switch (action) {
     case 'Paste with Style':
-      void vscode.commands.executeCommand('extension.pasteImportWithStyle');
+      void vscode.commands.executeCommand('auto-import.pasteImportWithStyle');
       break;
     case 'Paste Now':
-      void vscode.commands.executeCommand('extension.pasteImport');
+      void vscode.commands.executeCommand('auto-import.pasteImport');
       break;
   }
 }
