@@ -8,7 +8,7 @@
     "name": "John James Ermitaño",
     "email": "jjgermitano@gmail.com"
   },
-  "icon": "assets/extension-icon.png",
+  "icon": "images/icon.png",
   "engines": {
     "vscode": "^1.97.0"
   },
@@ -69,7 +69,7 @@
     "workspaceContains:**/*.tex"
   ],
   "galleryBanner": {
-    "color": "#4B0F7F",
+    "color": "#3B0764",
     "theme": "dark"
   },
   "license": "MIT",
@@ -122,6 +122,38 @@
   "contributes": {
     "commands": [
       {
+        "command": "auto-import.pasteImport",
+        "title": "Auto Import: Paste as Import"
+      },
+      {
+        "command": "auto-import.copyFilePath",
+        "title": "Auto Import: Copy File Path"
+      },
+      {
+        "command": "auto-import.copyPaste",
+        "title": "Auto Import: Insert Import from Selected File"
+      },
+      {
+        "command": "auto-import.pasteImportWithStyle",
+        "title": "Auto Import: Paste as Import (Pick Style)"
+      },
+      {
+        "command": "auto-import.setDefaultImportStyle",
+        "title": "Auto Import: Set Default Import Style"
+      },
+      {
+        "command": "auto-import.setImportPlacement",
+        "title": "Auto Import: Set Import Placement"
+      },
+      {
+        "command": "auto-import.togglePreserveScriptExtension",
+        "title": "Auto Import: Toggle Preserve Script File Extension"
+      },
+      {
+        "command": "auto-import.resetImportStyles",
+        "title": "Auto Import: Reset All Import Styles to Defaults"
+      },
+      {
         "command": "extension.pasteImport",
         "title": "Auto Import: Paste as Import"
       },
@@ -156,24 +188,60 @@
     ],
     "keybindings": [
       {
-        "command": "extension.pasteImport",
+        "command": "auto-import.pasteImport",
         "key": "ctrl+i",
         "mac": "cmd+i",
         "when": "editorTextFocus"
       },
       {
-        "command": "extension.copyFilePath",
+        "command": "auto-import.copyFilePath",
         "key": "ctrl+shift+a",
         "mac": "cmd+shift+a",
         "when": "editorTextFocus || filesExplorerFocus"
       },
       {
-        "command": "extension.copyPaste",
+        "command": "auto-import.copyPaste",
         "key": "alt+d",
         "mac": "alt+d",
         "when": "filesExplorerFocus"
       }
     ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "extension.pasteImport",
+          "when": "false"
+        },
+        {
+          "command": "extension.copyFilePath",
+          "when": "false"
+        },
+        {
+          "command": "extension.copyPaste",
+          "when": "false"
+        },
+        {
+          "command": "extension.pasteImportWithStyle",
+          "when": "false"
+        },
+        {
+          "command": "extension.setDefaultImportStyle",
+          "when": "false"
+        },
+        {
+          "command": "extension.setImportPlacement",
+          "when": "false"
+        },
+        {
+          "command": "extension.togglePreserveScriptExtension",
+          "when": "false"
+        },
+        {
+          "command": "extension.resetImportStyles",
+          "when": "false"
+        }
+      ]
+    },
     "configuration": [
       {
         "title": "Auto Import Relative Path",

@@ -13,20 +13,42 @@ import { AutoImportOnDropProvider, EDIT_KIND } from './drop/provider';
 import { DROP_LANGUAGE_SELECTORS } from './drop/selector';
 import { initReviewPrompt } from './editor/review-prompt';
 
+/**
+ * Each command's id suffix → the handler it runs. Every entry is registered under BOTH prefixes in
+ * `COMMAND_PREFIXES`, so a single row here yields `auto-import.<suffix>` and `extension.<suffix>`.
+ */
+const COMMAND_HANDLERS: ReadonlyArray<readonly [ string, () => void ]> = [
+  [ 'copyFilePath', () => executeCopyFilePath() ],
+  [ 'pasteImport', () => executePasteImport() ],
+  [ 'copyPaste', () => executeCopyPaste() ],
+  [ 'pasteImportWithStyle', () => executePasteImportWithStyle() ],
+  [ 'setDefaultImportStyle', () => executeSetDefaultImportStyle() ],
+  [ 'setImportPlacement', () => executeSetImportPlacement() ],
+  [ 'togglePreserveScriptExtension', () => executeTogglePreserveScriptExtension() ],
+  [ 'resetImportStyles', () => executeResetImportStyles() ],
+];
+
+/**
+ * `auto-import.*` is the visible namespace — it is what `contributes.keybindings` targets and what the
+ * Command Palette shows. `extension.*` predates it and stays registered forever so any keybinding a user
+ * already bound keeps firing; VS Code has no command-alias mechanism, so dropping an id silently breaks
+ * those bindings with no error anywhere. `contributes.menus.commandPalette` hides the legacy family with
+ * `when: "false"` so nothing appears twice.
+ */
+const COMMAND_PREFIXES: readonly string[] = [ 'auto-import', 'extension' ];
+
 export function activate(context: vscode.ExtensionContext): void {
   // Hands the global memento to the review-prompt counter before any command can fire. `activate` is
   // the only holder of an ExtensionContext, so this stashes it rather than threading it downward.
   initReviewPrompt(context);
 
+  for (const [ suffix, run ] of COMMAND_HANDLERS) {
+    for (const prefix of COMMAND_PREFIXES) {
+      context.subscriptions.push(vscode.commands.registerCommand(`${prefix}.${suffix}`, run));
+    }
+  }
+
   context.subscriptions.push(
-    vscode.commands.registerCommand('extension.copyFilePath', () => executeCopyFilePath()),
-    vscode.commands.registerCommand('extension.pasteImport', () => executePasteImport()),
-    vscode.commands.registerCommand('extension.copyPaste', () => executeCopyPaste()),
-    vscode.commands.registerCommand('extension.pasteImportWithStyle', () => executePasteImportWithStyle()),
-    vscode.commands.registerCommand('extension.setDefaultImportStyle', () => executeSetDefaultImportStyle()),
-    vscode.commands.registerCommand('extension.setImportPlacement', () => executeSetImportPlacement()),
-    vscode.commands.registerCommand('extension.togglePreserveScriptExtension', () => executeTogglePreserveScriptExtension()),
-    vscode.commands.registerCommand('extension.resetImportStyles', () => executeResetImportStyles()),
     vscode.languages.registerDocumentDropEditProvider(
       DROP_LANGUAGE_SELECTORS,
       new AutoImportOnDropProvider(),

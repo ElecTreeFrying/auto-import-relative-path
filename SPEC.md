@@ -10,14 +10,16 @@ This document specifies shipped behavior; planned and in-progress work is tracke
 
 | Command | Title | macOS | Win / Linux | Context |
 |---|---|---|---|---|
-| `extension.copyFilePath` | Auto Import: Copy File Path | `Cmd+Shift+A` | `Ctrl+Shift+A` | `editorTextFocus \|\| filesExplorerFocus` |
-| `extension.pasteImport` | Auto Import: Paste as Import | `Cmd+I` | `Ctrl+I` | `editorTextFocus` |
-| `extension.copyPaste` | Auto Import: Insert Import from Selected File | `Alt+D` | `Alt+D` | `filesExplorerFocus` |
-| `extension.pasteImportWithStyle` | Auto Import: Paste as Import (Pick Style) | — | — | Command Palette + copy-success toast button |
-| `extension.setDefaultImportStyle` | Auto Import: Set Default Import Style | — | — | Command Palette only |
-| `extension.setImportPlacement` | Auto Import: Set Import Placement | — | — | Command Palette only |
-| `extension.togglePreserveScriptExtension` | Auto Import: Toggle Preserve Script File Extension | — | — | Command Palette only |
-| `extension.resetImportStyles` | Auto Import: Reset All Import Styles to Defaults | — | — | Command Palette only |
+| `auto-import.copyFilePath` | Auto Import: Copy File Path | `Cmd+Shift+A` | `Ctrl+Shift+A` | `editorTextFocus \|\| filesExplorerFocus` |
+| `auto-import.pasteImport` | Auto Import: Paste as Import | `Cmd+I` | `Ctrl+I` | `editorTextFocus` |
+| `auto-import.copyPaste` | Auto Import: Insert Import from Selected File | `Alt+D` | `Alt+D` | `filesExplorerFocus` |
+| `auto-import.pasteImportWithStyle` | Auto Import: Paste as Import (Pick Style) | — | — | Command Palette + copy-success toast button |
+| `auto-import.setDefaultImportStyle` | Auto Import: Set Default Import Style | — | — | Command Palette only |
+| `auto-import.setImportPlacement` | Auto Import: Set Import Placement | — | — | Command Palette only |
+| `auto-import.togglePreserveScriptExtension` | Auto Import: Toggle Preserve Script File Extension | — | — | Command Palette only |
+| `auto-import.resetImportStyles` | Auto Import: Reset All Import Styles to Defaults | — | — | Command Palette only |
+
+**Legacy command ids.** Every command above is *also* registered under its original `extension.<name>` id — `extension.pasteImport`, `extension.copyFilePath`, and so on. Those ids are permanent: a keybinding, macro, or `tasks.json` entry that references one keeps working. They are contributed but hidden from the Command Palette (`contributes.menus.commandPalette` with `when: "false"`), so each command appears exactly once in the palette while both ids stay bindable. The `auto-import.*` family is canonical and is what `contributes.keybindings` targets.
 
 **Copy** puts the source file's absolute path on the clipboard and shows a "Copied path" toast with two action buttons: **Paste with Style** (runs Paste as Import (Pick Style)) and **Paste Now** (runs Paste as Import). The clipboard write is an explicit re-write after VS Code's built-in `copyFilePath` to guarantee the next paste sees the correct value. If the active item has no copyable absolute file path, Copy shows a "No file selected to copy." warning and stops. **Extensionless files copy fine** (`Makefile`, `Dockerfile`, `LICENSE`): copy is destination-agnostic, so a missing extension is no longer rejected here — the paste-time gate decides (an extensionless source imports only into a `.md` destination). For an Explorer **multi-selection**, the built-in newline-joins every selected path; Copy validates each line, drops non-absolute members, re-writes the clipboard with exactly the surviving members (newline-joined, the built-in's own wire format), and announces them in one toast — `Copied 3 paths — logo.svg, app.ts, util.ts`, showing the leading three basenames and eliding the rest as `+K more`. A selection with no absolute member fails with the "No file selected to copy." warning.
 
