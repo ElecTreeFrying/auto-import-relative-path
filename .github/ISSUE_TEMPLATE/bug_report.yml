@@ -2,12 +2,20 @@ name: Bug report
 description: An import statement came out wrong, errored, or didn't behave as documented
 labels: [ "bug" ]
 body:
+  - type: checkboxes
+    id: prior
+    attributes:
+      label: Before filing
+      options:
+        - label: I searched [existing issues](https://github.com/ElecTreeFrying/auto-import-relative-path/issues?q=is%3Aissue) and this isn't a duplicate
+          required: true
+        - label: I checked [SUPPORT.md](https://github.com/ElecTreeFrying/auto-import-relative-path/blob/main/SUPPORT.md) for a known cause and fix
   - type: textarea
     id: what-happened
     attributes:
-      label: What happened
-      description: What did you see, and what did you expect instead?
-      placeholder: 'e.g. dragging a .scss file into a .vue <style> block inserted a script-side side-effect import instead of @use…'
+      label: Summary
+      description: One or two sentences — what went wrong, and how much it affects your work.
+      placeholder: 'e.g. dragging any .scss file into a .vue <style> block inserts a script-side import instead of @use — every SCSS-into-Vue drop is affected'
     validations:
       required: true
   - type: dropdown
@@ -34,6 +42,7 @@ body:
     id: statement
     attributes:
       label: Statement inserted vs. expected
+      description: Paste both lines exactly as they appeared.
       placeholder: |
         Inserted:  import './styles.css';
         Expected:  @use './styles' as styles;
@@ -43,6 +52,7 @@ body:
     id: repro
     attributes:
       label: Steps to reproduce
+      description: Numbered steps, starting from a fresh editor.
       placeholder: |
         1. Open a .vue file, put the cursor inside the <style> block
         2. Drag theme.scss from the Explorer onto that line
@@ -53,7 +63,7 @@ body:
     id: settings
     attributes:
       label: Relevant settings
-      description: Any non-default `auto-import.*` settings — import styles, placement, the preserve-extension toggles.
+      description: 'Cmd/Ctrl+Shift+P → **Preferences: Open User Settings (JSON)** — paste any non-default `auto-import.*` lines (import styles, placement, preserve-extension toggles).'
       placeholder: |
         auto-import.importStatement.styleSheet.scssImportStyle: 2
         auto-import.preferences.importStatementPlacement: Cursor
@@ -71,7 +81,8 @@ body:
   - type: input
     id: versions
     attributes:
-      label: VS Code version · extension version
-      placeholder: e.g. 1.102.0 · 1.0.0
+      label: VS Code version · extension version · OS
+      description: 'VS Code → **Help / Code → About**. Extension version is on its entry in the Extensions pane. OS matters here — relative paths are built differently per platform.'
+      placeholder: 'e.g. 1.102.0 · 1.0.1 · macOS 15.5'
     validations:
       required: true

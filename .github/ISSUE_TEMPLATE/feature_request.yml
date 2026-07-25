@@ -2,6 +2,14 @@ name: Feature request
 description: A new import shape, language pair, or capability you're missing
 labels: [ "enhancement" ]
 body:
+  - type: checkboxes
+    id: prior
+    attributes:
+      label: Before filing
+      options:
+        - label: I searched [existing issues](https://github.com/ElecTreeFrying/auto-import-relative-path/issues?q=is%3Aissue) and this isn't already requested
+          required: true
+        - label: I checked [SPEC.md — Supported File Extensions](https://github.com/ElecTreeFrying/auto-import-relative-path/blob/main/SPEC.md#supported-file-extensions) and it isn't already supported
   - type: textarea
     id: what
     attributes:
