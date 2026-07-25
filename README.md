@@ -21,7 +21,7 @@
 
 Drag a file or press a key — the right import lands in your editor. Path, syntax, and placement handled automatically.
 
-![Auto Import Relative Path demo](https://raw.githubusercontent.com/ElecTreeFrying/auto-import-relative-path/main/assets/demo.gif)
+![Auto Import Relative Path demo](https://raw.githubusercontent.com/ElecTreeFrying/auto-import-relative-path/main/images/demo.gif)
 
 ---
 
@@ -40,7 +40,7 @@ Drag a file or press a key — the right import lands in your editor. Path, synt
 
 [**See the full specification**][SPEC]
 
-[SPEC]: SPEC.md
+[SPEC]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/main/SPEC.md
 
 ---
 
@@ -75,13 +75,13 @@ All eight are searchable in the Command Palette (<kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+
 
 See [SPEC — §Commands & Keybindings][SPEC-commands] for command IDs, context clauses, and workflow details.
 
-[SPEC-commands]: SPEC.md#commands--keybindings
+[SPEC-commands]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/main/SPEC.md#commands--keybindings
 
 ### Drag-and-Drop
 
 Drag a file from the Explorer into any supported editor. The import snippet is generated with the same styles and settings as the paste commands, and inserted on its own line at the drop point — never spliced into the middle of the line it lands on. No keybinding needed.
 
-![Drag-and-drop demo](https://raw.githubusercontent.com/ElecTreeFrying/auto-import-relative-path/main/assets/demo-drag.gif)
+![Drag-and-drop demo](https://raw.githubusercontent.com/ElecTreeFrying/auto-import-relative-path/main/images/demo-drag.gif)
 
 - Uses the same gating, snippet styles, and configuration as paste commands.
 - Follows the same Top / Bottom / Cursor placement setting as paste commands — the drop line is used as the Cursor input, and the dropped import always takes its own line; in HTML, Markdown, and LaTeX it matches the target line's indentation and a drop onto a blank line reuses it (paste keeps your caret column there; a drop ignores the mouse column).
@@ -89,7 +89,7 @@ Drag a file from the Explorer into any supported editor. The import snippet is g
 - Unsupported pairs show the same "Cannot import" warning as paste commands; the provider suppresses the drop, so nothing is inserted (no stray path text).
 - See [SPEC — §Drag-and-Drop Import][SPEC-drop] for full behavior and differences from paste.
 
-[SPEC-drop]: SPEC.md#drag-and-drop-import
+[SPEC-drop]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/main/SPEC.md#drag-and-drop-import
 
 ---
 
@@ -117,7 +117,7 @@ LaTeX sources (`.tex` / `.bib` / `.eps`) import only into `.tex`, and extensionl
 
 See [SPEC — §Supported File Extensions][SPEC-extensions] for the full 38-extension breakdown by category.
 
-[SPEC-extensions]: SPEC.md#supported-file-extensions
+[SPEC-extensions]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/main/SPEC.md#supported-file-extensions
 
 <details>
 <summary><strong>Extension groups</strong></summary>
@@ -148,8 +148,8 @@ See [SPEC — §Supported File Extensions][SPEC-extensions] for the full 38-exte
 
 See SPEC: [Rejection Rules][SPEC-reject] · [Cross-Import Compatibility][SPEC-compat]
 
-[SPEC-reject]: SPEC.md#rejection-rules
-[SPEC-compat]: SPEC.md#cross-import-compatibility
+[SPEC-reject]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/main/SPEC.md#rejection-rules
+[SPEC-compat]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/main/SPEC.md#cross-import-compatibility
 
 ---
 
@@ -159,8 +159,8 @@ Every destination language has its own set of import shapes, most of them config
 
 See [SPEC — §Import Statement Styles][SPEC-styles] for all 45 styles with their defaults, and [SPEC — §Snippet Placeholders][SPEC-placeholders] for how `name` and `_relativePath_` resolve.
 
-[SPEC-styles]: SPEC.md#import-statement-styles
-[SPEC-placeholders]: SPEC.md#snippet-placeholders
+[SPEC-styles]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/main/SPEC.md#import-statement-styles
+[SPEC-placeholders]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/main/SPEC.md#snippet-placeholders
 
 ---
 
@@ -178,7 +178,7 @@ Some destinations override this automatically: HTML / Markdown / LaTeX and image
 
 See [SPEC — §Placement][SPEC-placement] for Bottom-mode import detection, every override, the framework block constraints, and insertion-column rules.
 
-[SPEC-placement]: SPEC.md#placement
+[SPEC-placement]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/main/SPEC.md#placement
 
 ---
 
@@ -253,7 +253,7 @@ Values for `importStatementPlacement`: `Top`, `Bottom`, `Cursor`. See [Placement
 
 See [SPEC — §Configuration Reference][SPEC-config] for every setting with all enum values.
 
-[SPEC-config]: SPEC.md#configuration-reference
+[SPEC-config]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/main/SPEC.md#configuration-reference
 
 ---
 
@@ -263,7 +263,7 @@ Relative paths are computed from the destination's directory to the source, alwa
 
 See [SPEC — §Path Computation][SPEC-path] for the complete algorithm and every edge case.
 
-[SPEC-path]: SPEC.md#path-computation
+[SPEC-path]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/main/SPEC.md#path-computation
 
 ---
 
@@ -276,7 +276,7 @@ See [SPEC — §Path Computation][SPEC-path] for the complete algorithm and ever
 - **Drag from Explorer for zero-keystroke imports.** Drag a file from the sidebar directly into your editor — the import lands on its own line at the drop point with the same style as paste. Great for quickly pulling in components or assets without touching the keyboard.
 - **Mixing CSS into SCSS just works.** The `.css` extension is preserved even when `preserveStylesheetFileExtension` is off, because Sass needs it.
 - **HTML, Markdown, and LaTeX ignore your placement setting.** Insertion is always at the cursor for these languages (for LaTeX, in the document body — never the preamble). Leave `importStatementPlacement` set to `Bottom` for scripts — it won't affect your markup.
-- **Rebind anything.** `extension.copyFilePath`, `extension.pasteImport`, and `extension.copyPaste` are rebindable from VS Code's keyboard shortcuts editor. The five Command Palette–only commands can be given keybindings from the same editor.
+- **Rebind anything.** `auto-import.copyFilePath`, `auto-import.pasteImport`, and `auto-import.copyPaste` are rebindable from VS Code's keyboard shortcuts editor. The five Command Palette–only commands can be given keybindings from the same editor.
 
 ---
 
@@ -310,8 +310,8 @@ If a keybinding does nothing, an import looks wrong, or you see an unexpected wa
 
 See [SPEC — §Notification Reference][SPEC-notifications] for a complete list of all warning and info messages.
 
-[SUPPORT]: SUPPORT.md
-[SPEC-notifications]: SPEC.md#notification-reference
+[SUPPORT]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/main/SUPPORT.md
+[SPEC-notifications]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/main/SPEC.md#notification-reference
 
 ---
 
@@ -319,7 +319,7 @@ See [SPEC — §Notification Reference][SPEC-notifications] for a complete list 
 
 See [CHANGELOG.md][CHANGELOG] for full release notes.
 
-[CHANGELOG]: CHANGELOG.md
+[CHANGELOG]: https://marketplace.visualstudio.com/items/ElecTreeFrying.auto-import/changelog
 
 ---
 
@@ -327,7 +327,7 @@ See [CHANGELOG.md][CHANGELOG] for full release notes.
 
 Planned and in-progress work is tracked in [ROADMAP.md][ROADMAP].
 
-[ROADMAP]: ROADMAP.md
+[ROADMAP]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/main/ROADMAP.md
 
 ---
 
@@ -335,7 +335,7 @@ Planned and in-progress work is tracked in [ROADMAP.md][ROADMAP].
 
 Contributions, bug reports, and feature requests are welcome. See [SUPPORT.md][SUPPORT-CONTRIB] for build/test commands and the architecture overview.
 
-[SUPPORT-CONTRIB]: SUPPORT.md#contributing
+[SUPPORT-CONTRIB]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/main/SUPPORT.md#contributing
 
 ---
 
