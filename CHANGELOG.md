@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.0.2 (2026-07-25)
+
+### Added
+
+- **Namespaced command ids.** Every command is now also registered as `auto-import.<name>` — `auto-import.pasteImport`, `auto-import.copyFilePath`, `auto-import.copyPaste`, and so on. That family is what the Command Palette lists and what the three default keybindings target. The original `extension.<name>` ids stay registered permanently, so any keybinding, macro, or `tasks.json` entry referencing one keeps working untouched; they're hidden from the palette so each command appears exactly once.
+
+### Fixed
+
+- **Documentation links now work from the Marketplace listing.** The README's spec and support-guide links resolved only when read on GitHub — on the extension's Marketplace page they led nowhere, and the demo GIFs didn't load. Both now resolve from either surface.
+
+### Changed
+
+- **Repo housekeeping.** Image assets moved from `assets/` back to `images/`, and the extension icon is now `images/icon.png`. The Marketplace gallery banner was retuned to match the icon. Packaging and metadata only.
+- New GitHub **issue forms** (bug report / feature request) with contact links, replacing free-form issues.
+
 ## v1.0.1 (2026-07-24)
 
 ### Fixed
