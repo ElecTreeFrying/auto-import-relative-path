@@ -14,6 +14,7 @@
 [license-badge]: https://img.shields.io/github/license/ElecTreeFrying/auto-import-relative-path
 [vscode-badge]: https://img.shields.io/badge/vscode-%3E%3D1.97.0-blue
 [package]: https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import
+[repo]: https://github.com/ElecTreeFrying/auto-import-relative-path
 
 > **Never type an import path again.**
 
@@ -287,7 +288,7 @@ See [SPEC — §Path Computation][SPEC-path] for the complete algorithm and ever
 - **Marketplace:** Extensions view (<kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>) → search **Auto Import Relative Path** by *ElecTreeFrying* → **Install**.
 - **CLI:** `code --install-extension ElecTreeFrying.auto-import`
 - **Direct:** [VS Code Marketplace listing][package]
-- **Cursor / Windsurf / VSCodium / Gitpod:** search **Auto Import Relative Path** in the Extensions panel — served via [Open VSX][open-vsx].
+- **Cursor / Windsurf / VSCodium / Gitpod:** Search **Auto Import Relative Path** in the Extensions panel — served via [Open VSX][open-vsx].
 
 [open-vsx]: https://open-vsx.org/extension/ElecTreeFrying/auto-import
 
@@ -295,11 +296,11 @@ See [SPEC — §Path Computation][SPEC-path] for the complete algorithm and ever
 
 ## Compatibility
 
-- **VS Code** 1.97.0 or later.
+- **VS Code:** 1.97.0 or later.
 - **Registries:** Available on both the [VS Code Marketplace][package] and [Open VSX][open-vsx].
 - **Compatible hosts:** Cursor, Windsurf, VSCodium, Gitpod, Code Server, and other forks that implement the VS Code API at the same engine version — installable directly from their Extensions panel via Open VSX.
 - **Platforms:** macOS, Windows, Linux. Paths are normalized to forward slashes on all platforms.
-- **Bundle:** ~12 KB gzipped (~44 KB minified). Zero runtime dependencies.
+- **Footprint:** ~12 KB gzipped (~44 KB minified). Zero runtime dependencies.
 - **Telemetry:** None. Everything runs locally.
 
 ---
@@ -309,6 +310,8 @@ See [SPEC — §Path Computation][SPEC-path] for the complete algorithm and ever
 If a keybinding does nothing, an import looks wrong, or you see an unexpected warning — see [SUPPORT.md][SUPPORT] for symptom → cause → fix.
 
 See [SPEC — §Notification Reference][SPEC-notifications] for a complete list of all warning and info messages.
+
+Still stuck? Please open an issue on [GitHub Issues][issues].
 
 [SUPPORT]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/main/SUPPORT.md
 [SPEC-notifications]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/main/SPEC.md#notification-reference
@@ -333,8 +336,11 @@ Planned and in-progress work is tracked in [ROADMAP.md][ROADMAP].
 
 ## Contributing
 
-Contributions, bug reports, and feature requests are welcome. See [SUPPORT.md][SUPPORT-CONTRIB] for build/test commands and the architecture overview.
+Contributions, bug reports, and feature requests are welcome in [GitHub Issues][issues]. See [SUPPORT.md][SUPPORT-CONTRIB] for build/test commands and the architecture overview.
 
+See [SPEC.md][SPEC] for the full behavior contract — behavior changes belong there too.
+
+[issues]: https://github.com/ElecTreeFrying/auto-import-relative-path/issues
 [SUPPORT-CONTRIB]: https://github.com/ElecTreeFrying/auto-import-relative-path/blob/main/SUPPORT.md#contributing
 
 ---
@@ -347,7 +353,6 @@ Contributions, bug reports, and feature requests are welcome. See [SUPPORT.md][S
 - Leave a review on the [VS Code Marketplace][reviews]
 - Send a donation to any address below
 
-[repo]: https://github.com/ElecTreeFrying/auto-import-relative-path
 [reviews]: https://marketplace.visualstudio.com/items?itemName=ElecTreeFrying.auto-import&ssr=false#review-details
 
 | Network | Address |
