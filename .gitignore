@@ -19,38 +19,27 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 
-# Project-private assets & notes
+# Local-only working trees — kept on disk, never committed.
+# The `/`-anchored entries are anchored deliberately: an unanchored entry also matches nested
+# directories — an unanchored `docs/` once silently swallowed new fixtures under
+# `src/test/fixtures/docs/` (already-tracked files were unaffected, so the breakage only
+# showed up on a fresh clone).
 process
-
-# Claude Code
-.claude/*
-!.claude/agents/
-!.claude/skills/
-!.claude/workflows/
-.claude/agents/state/
-
-# Large local media (screen-recording tests — not shipped)
-assets/*.mov
-
-# Icon design master — the full-resolution source the shipped icon is cropped from.
-assets/extension-icon-original.png
-
-# GitHub social-preview card — uploaded via the repo's Settings UI, not served from the tree; kept local.
-assets/social-preview.png
-
-# Design library & QA corpus — kept locally, not tracked in the repo.
-# Anchored to the repo root: an unanchored entry also matches nested directories — an
-# unanchored `docs/` once silently swallowed new fixtures under `src/test/fixtures/docs/`
-# (already-tracked files were unaffected, so the breakage only showed up on a fresh clone).
 /import-statement-design/
 /qa/
-
-# Launch/marketing playbook — post drafts and demo scripts, kept locally, never shipped.
 /launch/
+# Agent session state. Self-ignored by .remember/.gitignore too; named here so the tree stays
+# ignored even if that file is ever lost.
+.remember/
+.claude/
 
-# Playwright MCP screenshot/console output (tooling artifact)
+# Local media — masters and cards that never enter the tree
+images/*.mov
+images/icon-original.png
+images/social-preview.png
+
+# Tooling artifacts
 .playwright-mcp/
-
 # ExTester screenshots/artifacts if a stale in-repo storage dir ever reappears. The real storage
 # (downloaded VS Code/ChromeDriver, isolated profile, staged UI workspace, failure screenshots)
 # lives at /tmp/auto-import-extester — a short path, because an in-repo storage dir pushes the
