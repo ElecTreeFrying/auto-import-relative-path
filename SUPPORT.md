@@ -318,6 +318,7 @@ npm run test:coverage             # same chain + V8/c8 coverage report (opt-in; 
 
 If this extension saves you time, consider:
 
+- **Sponsoring** via [GitHub Sponsors](https://github.com/sponsors/ElecTreeFrying)
 - **Starring** the repo on [GitHub](https://github.com/ElecTreeFrying/auto-import-relative-path)
 - **Leaving a review** on the [VS Code Marketplace][marketplace]
 - **Donating** — addresses are listed in the [README's Support section][donate]
