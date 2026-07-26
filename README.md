@@ -285,7 +285,7 @@ See [SPEC — §Path Computation][SPEC-path] for the complete algorithm and ever
 
 **Requires VS Code 1.97.0 or later.**
 
-- **Marketplace:** Extensions view (<kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>) → search **Auto Import Relative Path** by *ElecTreeFrying* → **Install**.
+- **Marketplace:** Extensions view (<kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>) → search **Auto Import Relative Path** by *WinterNova5* → **Install**.
 - **CLI:** `code --install-extension ElecTreeFrying.auto-import`
 - **Direct:** [VS Code Marketplace listing][package]
 - **Cursor / Windsurf / VSCodium / Gitpod:** Search **Auto Import Relative Path** in the Extensions panel — served via [Open VSX][open-vsx].
@@ -366,7 +366,7 @@ See [SPEC.md][SPEC] for the full behavior contract — behavior changes belong t
 
 ## Related
 
-- **[All extensions by ElecTreeFrying][all]** on the VS Code Marketplace.
+- **[All extensions by WinterNova5][all]** on the VS Code Marketplace.
 
 [all]: https://marketplace.visualstudio.com/publishers/ElecTreeFrying
 
