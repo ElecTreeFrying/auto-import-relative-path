@@ -765,3 +765,13 @@ The manifest declares how the extension loads across VS Code's workspace-trust, 
 | `extensionKind` | `["workspace"]` | Runs on the workspace host in remote setups (Remote-SSH, WSL, Dev Containers, Codespaces), so relative paths are computed next to the files they reference rather than on the local UI host. |
 
 The drop provider is registered with a `scheme: 'file'` selector (see Drag-and-Drop → Supported destination languages), so it activates only for on-disk, file-backed documents — independent of these host declarations.
+
+---
+
+## Localization
+
+The manifest is localized into eight display languages. `displayName`, `description`, every command title, and every setting's title, description, and enum descriptions render in VS Code's display language when it is Simplified Chinese (`zh-cn`), Spanish (`es`), French (`fr`), Brazilian Portuguese (`pt-br`), Russian (`ru`), German (`de`), Japanese (`ja`), or Turkish (`tr`); English is the base (`package.nls.json`) and the per-key fallback for every other display language. All nine `package.nls*.json` files ship in the VSIX; the Marketplace listing shows the English base.
+
+Titles keep the **Auto Import** brand prefix verbatim in every language — only the action text is translated (`Auto Import: Paste as Import` → de `Auto Import: Als Import einfügen`, fr `Auto Import : Coller comme importation`, zh-cn `Auto Import: 粘贴为导入语句`) — so typing "Auto Import" in the Command Palette surfaces the full command set under any display language. The legacy `extension.*` ids resolve through the same keys as their `auto-import.*` twins, so both namespaces carry identical titles in every language.
+
+Deliberately not localized: configuration **values** — the import-style enum strings, the placement values `Top` / `Bottom` / `Cursor`, and every default in the [Configuration Reference](#configuration-reference) — are runtime-matched settings values and stay English in every display language; only their descriptions are translated. Runtime UI — toasts, Quick Picks, and their action buttons — is English.
