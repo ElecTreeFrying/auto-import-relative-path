@@ -28,9 +28,7 @@ process
 /import-statement-design/
 /qa/
 /launch/
-# Agent session state. Self-ignored by .remember/.gitignore too; named here so the tree stays
-# ignored even if that file is ever lost.
-.remember/
+# Agent session state.
 .claude/
 
 # Local media — masters and cards that never enter the tree
